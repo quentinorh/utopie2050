@@ -1,7 +1,7 @@
 <div class="navbar navbar-expand-sm navbar-light navbar-lewagon">
   <div class="container-fluid">
     <%= link_to root_path, class: "navbar-brand" do %>
-      <h1>Utopie2050</h1>
+      <h1>Utopia 2050</h1>
       <%# <%= image_tag "https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/logo.png" %>
     <% end %>
 
@@ -12,9 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <% if user_signed_in? %>
-          <li class="nav-item active">
-            <%= link_to "Home", "#", class: "nav-link" %>
-          </li>
+          <%= link_to 'New Post', new_post_path, class: "btn btn-primary mb-3" %>
           <li class="nav-item">
             <%= link_to "Messages", "#", class: "nav-link" %>
           </li>

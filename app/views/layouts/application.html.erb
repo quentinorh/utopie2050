@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Utopie2050</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Utopia 2050</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body><%= render "shared/navbar" %>
-<%= render "shared/flashes" %>
+  <body>
 
-    <%= yield %>
+    <%= render 'shared/navbar' %>
+    <div class="container mt-4">
+      <%= yield %>
+    </div>
+    <%= render 'shared/flashes' %>
   </body>
 </html>

@@ -1,13 +1,38 @@
-<h1>Posts</h1>
-<%= link_to 'New Post', new_post_path %>
-<ul>
+<svg style="visibility:hidden;" width="0" height="0">
+  <filter id="duotone" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
+  </filter>
+</svg>
+
+<div class="row">
   <% @posts.each do |post| %>
-    <div>
-      <h2><%= link_to post.title, post %></h2>
-      <p><%= post.body %></p>
-      <% if post.photo? %>
-        <%= image_tag post.photo.url %>
-      <% end %>
-    </div>
+    <%= link_to post, class: "card-link col-sm-5 col-lg-3 mb-4 d-flex" do %>
+      <div class="post-card d-flex flex-column position-relative" style="width: 100%; margin: 0; padding: 0; border: 0; --card-color: <%= post.color || 'transparent' %>;">
+        <% if post.photo.present? %>
+          <div class="image-container" style="margin: 0; padding: 0;">
+            <%
+              if post.color
+                match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
+                hue = match[1].to_i
+              else
+                hue = 0
+              end
+              color_matrix = hue_to_feColorMatrix(hue)
+            %>
+            <svg style="visibility:hidden;" width="0" height="0">
+              <filter id="duotone-<%= post.id %>" color-interpolation-filters="sRGB">
+                <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
+              </filter>
+            </svg>
+            <%= cl_image_tag post.photo.key, width: 400, height: 300, crop: :fill, style: "filter: url(#duotone-#{post.id}); display: block; margin: 0; padding: 0;", class: "card-img-top" %>
+          </div>
+        <% end %>
+        <div class="card-body flex-grow-1">
+          <h5 class="card-title"><%= post.title %></h5>
+          <p class="card-text"><%= truncate(post.body, length: 100) %></p>
+        </div>
+        <div class="color-line" style="background-color: <%= post.color || 'transparent' %>; margin: 0; padding: 0;"></div>
+      </div>
+    <% end %>
   <% end %>
-</ul>
+</div>
