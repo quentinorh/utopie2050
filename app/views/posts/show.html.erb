@@ -1,16 +1,11 @@
-<h1><%= @post.title %></h1>
-<p><%= @post.body %></p>
 <% if @post.photo.present? %>
   <%
-    # Extraire la teinte de la couleur HSL
     if @post.color
       match = @post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
       hue = match[1].to_i
     else
       hue = 0
     end
-
-    # Générer la matrice de couleurs pour le filtre SVG
     color_matrix = hue_to_feColorMatrix(hue)
   %>
   <svg style="visibility:hidden;" width="0" height="0">
@@ -20,8 +15,22 @@
   </svg>
 
   <div class="image-container">
-    <%= cl_image_tag @post.photo.key, width: 600, height: 400, crop: :fill, style: "filter: url(#duotone);" %>
+    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, style: "filter: url(#duotone);" %>
   </div>
 <% end %>
-<%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %> |
+
+<div class="blankspace"></div>
+
+<h1><%= @post.title %></h1>
+<p><%= @post.body %></p>
+
+
+<div class="blankspace"></div>
+
 <%= link_to 'Back', posts_path, class: "btn btn-primary" %>
+<% if user_signed_in? && current_user == @post.user %>
+  <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+  <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+<% end %>
+
+<div class="blankspace"></div>
