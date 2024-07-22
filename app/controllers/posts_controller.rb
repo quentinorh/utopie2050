@@ -48,6 +48,11 @@ class PostsController < ApplicationController
     end
   end
 
+  def user_posts
+    @user = User.find(params[:user_id])
+    @posts = @user.posts
+  end
+
   def search_unsplash
     @photos = Unsplash::Photo.search(params[:query])
     respond_to do |format|

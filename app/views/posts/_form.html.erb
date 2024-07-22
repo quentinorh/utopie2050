@@ -1,7 +1,7 @@
 <%= form_with(model: @post, local: true, html: { multipart: true }) do |form| %>
   <% if @post.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
+      <h2><%= pluralize(@post.errors.count, "error") %> erreurs ont empêché ce post d'être sauvegardé :</h2>
       <ul>
         <% @post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -63,6 +63,12 @@
       </div>
       <%= form.hidden_field :color, id: "colorInput", value: "hsl(0, 70%, 80%)", data: { color_picker_target: "colorInput" } %>
     </div>
+  </div>
+
+  <div class="mb-3">
+    <h4>Brouillon ?</h4>
+    <%= form.check_box :draft, class: "form-check-input" %>
+    <%= form.label :draft, "Marquer comme brouillon", class: "form-check-label" %>
   </div>
 
   <div class="actions">

@@ -5,6 +5,9 @@ class Post < ApplicationRecord
   validates :title, :body, presence: true
   validate :image_presence
 
+  scope :published, -> { where(draft: false) }
+  scope :drafts, -> { where(draft: true) }
+
   private
 
   def image_presence

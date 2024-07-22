@@ -22,8 +22,7 @@
 <div class="blankspace"></div>
 
 <h1><%= @post.title %></h1>
-<p><%= @post.body %></p>
-
+<p><%= simple_format(@post.body) %></p>
 
 <div class="blankspace"></div>
 

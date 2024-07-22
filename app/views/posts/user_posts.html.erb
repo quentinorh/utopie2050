@@ -1,0 +1,26 @@
+<h1>Les textes de <%= @user.username %></h1>
+
+<%= link_to 'Nouveau futur', new_post_path, class: "btn btn-primary mb-3" %>
+
+<div class="row">
+  <% @posts.each do |post| %>
+    <div class="col-sm-6 col-lg-4 mb-4 d-flex">
+      <div class="post-card d-flex flex-column position-relative" style="width: 100%;">
+        <% if post.photo.present? %>
+          <div class="image-container" style="margin: 0; padding: 0;">
+            <%= cl_image_tag post.photo.key, width: 400, height: 300, crop: :fill, class: "card-img-top" %>
+          </div>
+        <% end %>
+        <div class="card-body flex-grow-1" style="background-color: <%= post.color || 'transparent' %>;">
+          <h5 class="card-title"><%= link_to post.title, post %></h5>
+          <p class="card-text"><%= simple_format(post.body) %></p>
+        </div>
+        <div class="color-line" style="background-color: <%= post.color || 'transparent' %>; height: 5px; margin: 0; padding: 0;"></div>
+        <div class="card-footer">
+          <%= link_to 'Edit', edit_post_path(post), class: "btn btn-secondary" %>
+          <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
