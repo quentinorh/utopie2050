@@ -11,16 +11,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <% if user_signed_in? %>
-          <%= link_to 'New Post', new_post_path, class: "btn btn-primary mb-3" %>
-          <%# <li class="nav-item">
-            <%= link_to "Messages", "#", class: "nav-link" %>
-          <%# </li> %>
+          <%= link_to 'Nouveau futur', new_post_path, class: "btn btn-primary" %>
           <li class="nav-item dropdown">
-            <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", class: "avatar", alt: "dropdown menu" %>
+            <a href="#" class="avatar-circle" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="avatar-initial"><%= current_user.username[0].upcase %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %>
+              <%= link_to "Editer profil", edit_user_registration_path, class: "dropdown-item" %>
               <%= link_to "Action", "#", class: "dropdown-item" %>
               <%= link_to "Another action", "#", class: "dropdown-item" %>
               <%= link_to "Se déconnecter", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item" %>

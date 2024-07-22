@@ -11,18 +11,18 @@
   <% end %>
 
   <div class="mb-3">
-    <%= form.label :title, class: "form-label" %>
+    <%= form.label :title, "Titre", class: "form-label" %>
     <%= form.text_field :title, class: "form-control" %>
   </div>
 
   <div class="mb-3">
-    <%= form.label :body, class: "form-label" %>
-    <%= form.text_area :body, class: "form-control" %>
+    <%= form.label :body, "Texte", class: "form-label" %>
+    <%= form.text_area :body, class: "form-control text-area" %>
   </div>
 
   <ul class="nav nav-tabs" id="imageTab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="true">Upload Image</a>
+      <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="true">Charger une image</a>
     </li>
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="unsplash-tab" data-bs-toggle="tab" href="#unsplash" role="tab" aria-controls="unsplash" aria-selected="false">Unsplash</a>
@@ -36,7 +36,7 @@
         <%= form.file_field :photo, class: "form-control" %>
         <div class="form-check">
           <%= form.check_box :image_rights, class: "form-check-input" %>
-          <%= form.label :image_rights, "I certify that I have the rights to this image", class: "form-check-label" %>
+          <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "form-check-label" %>
         </div>
       </div>
     </div>
@@ -52,7 +52,7 @@
   </div>
 
   <div class="mb-3" data-controller="color-picker">
-    <%= form.label :color, "Select Color", class: "form-label" %>
+    <%= form.label :color, "Sélectionner une couleur", class: "form-label" %>
     <div class="color-slider-wrapper">
       <input type="range" min="0" max="360" value="0" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
       <div class="color-bar"></div>
@@ -61,6 +61,10 @@
   </div>
 
   <div class="actions">
-    <%= form.submit "Create Post", class: "btn btn-primary" %>
+    <% if @post.new_record? %>
+      <%= form.submit "Créer le futur", class: "btn btn-primary" %>
+    <% else %>
+      <%= form.submit "Éditer le futur", class: "btn btn-primary" %>
+    <% end %>
   </div>
 <% end %>
