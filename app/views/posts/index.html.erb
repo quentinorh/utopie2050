@@ -4,8 +4,8 @@
   </filter>
 </svg>
 
-<div class="row">
-  <% @posts.each do |post| %>
+<% @posts.each do |post| %>
+  <div class="d-flex">
     <%
       if post.color
         match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
@@ -29,5 +29,8 @@
         <% end %>
       </div>
     <% end %>
-  <% end %>
-</div>
+    <div class="d-flex align-items-center" >
+      <p class="post-body"><%= truncate(post.body, length: 300) %></p>
+    </div>
+  </div>
+<% end %>
