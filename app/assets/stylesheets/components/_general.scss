@@ -10,6 +10,14 @@ h5 {
   text-transform: capitalize;
 }
 
+a {
+  text-decoration: none !important;
+}
+
 .blankspace {
   height: 30px;
+}
+
+.btn {
+  border-radius: 5px;
 }

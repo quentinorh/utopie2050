@@ -1,6 +1,6 @@
 module ApplicationHelper
   def hue_to_feColorMatrix(hue)
-    rgb = hsv_to_rgb(hue / 360.0, 0.7, 0.6)
+    rgb = hsv_to_rgb(hue / 360.0, 1, 1)
     r, g, b = rgb.map { |c| c / 255.0 }
     # Adjust the matrix to apply the color to dark areas and blend to white
     matrix = [

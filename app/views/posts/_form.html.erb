@@ -57,11 +57,16 @@
     <h4>Couleur</h4>
     <div class="mb-3" data-controller="color-picker">
       <%= form.label :color, "Sélectionner une couleur", class: "form-label" %>
+      <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
+      <%
+        hue = color_value.match(/hsl\((\d+),/)[1] rescue 0
+      %>
       <div class="color-slider-wrapper">
-        <input type="range" min="0" max="360" value="0" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
+        <input type="range" min="0" max="360" value="<%= hue %>" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
         <div class="color-bar"></div>
       </div>
-      <%= form.hidden_field :color, id: "colorInput", value: "hsl(0, 70%, 80%)", data: { color_picker_target: "colorInput" } %>
+      <%= form.hidden_field :color, id: "colorInput", value: "#{color_value}", data: { color_picker_target: "colorInput" } %>
+
     </div>
   </div>
 

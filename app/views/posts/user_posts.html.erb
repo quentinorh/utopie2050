@@ -1,9 +1,9 @@
-<h1>Les textes de <%= @user.username %></h1>
+<h1>Les futurs de <%= @user.username %></h1>
 <div class="blankspace"></div>
 <ul class="posts-list">
   <% @posts.each do |post| %>
     <li class="post-inline">
-      <h5 class="card-title"><%= link_to post.title, post %></h5>
+      <h5 class="card-title"><%= link_to post.title, post, class: "card-title" %></h5>
       <div class="post-inline-items">
         <%= link_to 'Edit', edit_post_path(post), class: "btn btn-secondary" %>
         <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "btn btn-danger" %>

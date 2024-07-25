@@ -10,3 +10,13 @@
 .navbar-lewagon .navbar-brand img {
   width: 40px;
 }
+
+.dropdown-menu {
+  top: 60px !important;
+}
+
+.btn-primary {
+  background-color: $yellow;
+  border: 0;
+  --bs-btn-padding-y: 0.5rem;
+}
