@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        sans: ['Apfel', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         primary: '#1D4ED8',    
@@ -40,6 +40,17 @@ module.exports = {
         'xs': '10px', 
         'sm': '20px',    
         'base': '50px'
+      },
+      fontSize: {
+        'xxs': '0.625rem',  
+        'xxl': '1.75rem',   
+        'xxxl': '2rem',     
+        '4xl': '2.5rem',    
+        '5xl': '3rem',      
+        '6xl': '3.5rem',    
+        '7xl': '4rem',      
+        '8xl': '4.5rem',    
+        '9xl': '5rem',      
       },
     },
   },
