@@ -13,10 +13,10 @@ module.exports = {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        primary: '#1D4ED8',    // Example primary color
-        secondary: '#F59E0B',  // Example secondary color
-        accent: '#10B981',     // Example accent color
-        neutral: '#F3F4F6',    // Example neutral color
+        primary: '#1D4ED8',    
+        secondary: '#F59E0B',  
+        accent: '#10B981',     
+        neutral: '#F3F4F6',   
         custom: {
           100: '#F1F5F9',
           200: '#E2E8F0',
@@ -28,6 +28,18 @@ module.exports = {
           800: '#1E293B',
           900: '#0F172A',
         },
+      },
+      margin: {
+        'none': '20px',       
+        'xs': '10px',  
+        'sm': '20px',       
+        'base': '50px'      
+      },
+      padding: {
+        'none': '20px',      
+        'xs': '10px', 
+        'sm': '20px',    
+        'base': '50px'
       },
     },
   },
