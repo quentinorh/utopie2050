@@ -1,4 +1,9 @@
-<h1> Tous les posts </h1>
+<!-- Hero -->
+<div class="h-60 w-full aspect-video flex items-center justify-center relative">
+  <div class="flex flex-col z-10 items-center">
+    <h1 class="text-gray-900 text-display">Manifeste</h1>
+  </div>
+</div>
 
 <svg style="visibility:hidden;" width="0" height="0">
   <filter id="duotone" color-interpolation-filters="sRGB">
@@ -6,34 +11,49 @@
   </filter>
 </svg>
 
-<% @posts.each do |post| %>
-  <div class="d-flex">
-    <%
-      if post.color
-        match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
-        hue = match[1].to_i
-      else
-        hue = 0
-      end
-      color_matrix = hue_to_feColorMatrix(hue)
-    %>
-    <%= link_to post, class: "card-link col-sm-5 col-lg-3 mb-4 d-flex" do %>
-      <div class="book-cover" style="background-color: <%= post.color || 'transparent' %>; filter: brightness(0.8) contrast(1.5);">
-        <div class="author-name"><%= post.user.username %></div>
-        <div class="title"><%= post.title %></div>
-        <% if post.photo.present? %>
-          <svg style="visibility:hidden;" width="0" height="0">
-            <filter id="duotone-<%= post.id %>" color-interpolation-filters="sRGB">
-              <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
-            </filter>
-          </svg>
-          <div class="image-container" style="background-image: url(<%= cl_image_path post.photo.key %>); filter: url(#duotone-<%= post.id %>);"></div>
-        <% end %>
-      </div>
+<div class="w-full p-base bg-gray-100 grid grid-cols-2" data-controller="animation">
+
+  <div class="w-full h-full">
+    <img src="https://picsum.photos/200/300" data-animation-target="postsGalleryImage">
+  </div>
+
+  <div class="w-full flex flex-col">
+    <% @posts.each do |post| %>
+    
+    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { action: "mouseover->animation#postsGallery", image_path: cl_image_path(post.photo.key) } do %>
+      <span><%= post.title %></span>
     <% end %>
-    <div class="d-flex align-items-center" >
-      <p class="post-body"><%= truncate(post.body, length: 300) %></p>
+  <% end %>
+  </div>
+</div>
+
+<% @posts.each do |post| %>
+  <%
+    if post.color
+      match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
+      hue = match[1].to_i
+    else
+      hue = 0
+    end
+    color_matrix = hue_to_feColorMatrix(hue)
+  %>
+  
+  <%= link_to post, class: "card-link col-sm-5 col-lg-3 mb-4 d-flex" do %>
+    <div class="book-cover" style="background-color: <%= post.color || 'transparent' %>; filter: brightness(0.8) contrast(1.5);">
+      <div class="author-name"><%= post.user.username %></div>
+      <div class="title"><%= post.title %></div>
+      <% if post.photo.present? %>
+        <svg style="visibility:hidden;" width="0" height="0">
+          <filter id="duotone-<%= post.id %>" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
+          </filter>
+        </svg>
+        <div class="image-container" style="background-image: url(<%= cl_image_path post.photo.key %>); filter: url(#duotone-<%= post.id %>);"></div>
+      <% end %>
     </div>
+  <% end %>
+  <div class="d-flex align-items-center" >
+    <p class="post-body"><%= truncate(post.body, length: 300) %></p>
   </div>
 <% end %>
 
