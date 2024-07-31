@@ -14,7 +14,7 @@
   <div>
     <label for="title" class="tw-form-label">Titre</label>
     <div class="mt-xs">
-      <%= form.text_field :title, class: "tw-form" %>
+      <%= form.text_field :title, class: "tw-form-input" %>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
   <div class="mt-sm">
     <label for="body" class="tw-form-label">Texte</label>
     <div class="mt-xs">
-      <%= form.text_area :body, class: "tw-form" %>
+      <%= form.text_area :body, class: "tw-form-input" %>
     </div>
   </div>
 
@@ -36,7 +36,7 @@
       </li>
     </ul>
     <div class="mt-xs">
-      <%= form.file_field :photo, class: "tw-form" %>
+      <%= form.file_field :photo, class: "tw-form-input" %>
       <div class="flex items-center gap-2 mt-xs">
         <%= form.check_box :image_rights, class: "tw-form-checkbox" %>
         <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>

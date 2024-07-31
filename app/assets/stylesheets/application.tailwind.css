@@ -22,11 +22,15 @@
   }
 
   /* Forms */
+  .tw-wrapper-html {
+    @apply text-left bg-white rounded-md border border-gray-300 p-2 focus-within:border-high-primary  focus-within:ring-1 focus-within:ring-high-primary;
+  }
+  
   .tw-form-label {
     @apply block text-sm font-medium leading-6 text-gray-900
   }
 
-  .tw-form {
+  .tw-form-input {
     @apply block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6
   }
 
