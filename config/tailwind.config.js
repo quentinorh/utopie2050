@@ -1,5 +1,13 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
+const spacings = {
+  'none': '20px',
+  'xs': '10px',
+  'sm': '20px',
+  'base': '50px',
+  'xl': '100px'
+};
+
 module.exports = {
   content: [
     './public/*.html',
@@ -23,18 +31,13 @@ module.exports = {
         },
       },
       margin: {
-        'none': '20px',       
-        'xs': '10px',  
-        'sm': '20px',       
-        'base': '50px',
-        'x-large': '100px'      
+        ...spacings      
       },
       padding: {
-        'none': '20px',      
-        'xs': '10px', 
-        'sm': '20px',    
-        'base': '50px',
-        'xl': '100px'
+        ...spacings
+      },
+      gap: {
+        ...spacings
       },
       fontSize: {
         'xxs': '0.625rem',  
