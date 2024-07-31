@@ -1,20 +1,58 @@
-<h2>Les futurs de <%= @user.username %></h2>
+<div class="px-xs lg:px-base my-base">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">Les futurs de <%= @user.username %></h1>
+      <p class="mt-sm text-sm text-gray-700">A list of all the users in your account including their name, title, email and role.</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <button type="button" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add user</button>
+    </div>
+  </div>
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle px-xs lg:px-base">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden">Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden">Role</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <% @posts.each do |post| %>
+                <tr class="bg-white hover:bg-gray-100">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"><%= link_to post.title, post %></td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= post.created_at %></td>
+
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <% if post.draft %>
+                      Brouillon 
+                    <% end %></td>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <div class="flex gap-sm justify-end">
+                      <%= link_to 'Edit', edit_post_path(post), class: "tw-btn-secondary" %>
+                      <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <div class="blankspace"></div>
 <ul class="posts-list">
-  <% @posts.each do |post| %>
-    <li class="post-inline d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <h5 class="card-title">
-          <%= link_to post.title, post, class: "card-title" %>
-        </h5>
-        <% if post.draft %>
-          <div class="draft-icon">brouillon</div> <!-- Icône de brouillon -->
-        <% end %>
-      </div>
-      <div class="post-inline-items">
-        <%= link_to 'Edit', edit_post_path(post), class: "btn btn-secondary" %>
-        <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-      </div>
-    </li>
-  <% end %>
+  
 </ul>
