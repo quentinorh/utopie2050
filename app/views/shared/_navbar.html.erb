@@ -58,7 +58,10 @@
           <div class="relative ml-3">
             <div>
               <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-                <span class="text-white" data-navbar-target="username"><%= current_user.username[0].upcase %></span>
+                <span class="text-white" data-navbar-target="username">
+                  <% if user_signed_in? %>
+                    <%= current_user.username[0].upcase %></span>
+                  <% end %>
                 <span class="hidden" data-navbar-target="closeMenu"><i class="text-white fa fa-close"></i></span>
               </div>
             </div>
