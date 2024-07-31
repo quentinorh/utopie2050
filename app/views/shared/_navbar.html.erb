@@ -1,4 +1,4 @@
-<nav class="bg-white shadow">
+<nav class="bg-white shadow" data-controller="navbar">
   <div class="p-sm">
     <div class="flex justify-between">
       <div class="flex">
@@ -57,8 +57,9 @@
           <!-- Profile dropdown -->
           <div class="relative ml-3">
             <div>
-              <div class="h-8 w-8 relative flex rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                <span class="avatar-initial"><%= current_user.username[0].upcase %></span>
+              <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
+                <span class="text-white" data-navbar-target="username"><%= current_user.username[0].upcase %></span>
+                <span class="hidden" data-navbar-target="closeMenu"><i class="text-white fa fa-close"></i></span>
               </div>
             </div>
 
@@ -72,7 +73,7 @@
                 From: "transform opacity-100 scale-100"
                 To: "transform opacity-0 scale-95"
             -->
-            <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+            <div class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
               <% if user_signed_in? %>
                 <%= link_to "Mes futurs", user_posts_path(current_user.id), class: "tw-nav-link" %>
                 <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
