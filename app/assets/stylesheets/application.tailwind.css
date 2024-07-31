@@ -33,5 +33,10 @@
   .tw-content p {
     @apply my-sm
   }
+
+  /* Gallery animation */ 
+  .tw-gallery-image {
+    @apply absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out
+  }
 }
 
