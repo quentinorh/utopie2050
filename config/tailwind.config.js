@@ -33,24 +33,26 @@ module.exports = {
         'none': '20px',       
         'xs': '10px',  
         'sm': '20px',       
-        'base': '50px'      
+        'base': '50px',
+        'x-large': '100px'      
       },
       padding: {
         'none': '20px',      
         'xs': '10px', 
         'sm': '20px',    
-        'base': '50px'
+        'base': '50px',
+        'xl': '100px'
       },
       fontSize: {
         'xxs': '0.625rem',  
-        'xxl': '1.75rem',   
-        'xxxl': '2rem',     
-        '4xl': '2.5rem',    
-        '5xl': '3rem',      
-        '6xl': '3.5rem',    
-        '7xl': '4rem',      
-        '8xl': '4.5rem',    
-        '9xl': '5rem',      
+        'xs': '1.75rem',   
+        'sm': '13px',     
+        'base': '2.5rem',    
+        'l': '3rem',      
+        'xl': '40px',    
+        'xxl': '4rem',      
+        'xxxl': '4.5rem',    
+        'display': '5rem',      
       },
     },
   },

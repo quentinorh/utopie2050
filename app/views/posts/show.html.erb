@@ -8,23 +8,26 @@
     end
     color_matrix = hue_to_feColorMatrix(hue)
   %>
-  <svg style="visibility:hidden;" width="0" height="0">
-    <filter id="duotone" color-interpolation-filters="sRGB">
-      <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
-    </filter>
-  </svg>
+  <% end %>
+  
+<svg style="visibility:hidden;" width="0" height="0">
+  <filter id="duotone" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
+  </filter>
+</svg>
 
-  <div class="image-container">
-    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, style: "filter: url(#duotone);" %>
-  </div>
-<% end %>
+<!-- Hero -->
+<div class="h-60 w-full aspect-video flex items-center justify-center relative">
+  <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
+  <h1 class="text-gray-900 z-10"><%= @post.title %></h1>
+</div>
 
-<div class="blankspace"></div>
+<!-- Content -->
+<div class="tw-content w-full px-xl text-xl my-sm">
+  <p><%= simple_format(@post.body) %></p>
+</div>
 
-<h1><%= @post.title %></h1>
-<p><%= simple_format(@post.body) %></p>
 
-<div class="blankspace"></div>
 
 <%= link_to 'Back', posts_path, class: "btn btn-primary" %>
 <% if user_signed_in? && current_user == @post.user %>
@@ -32,4 +35,3 @@
   <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
 <% end %>
 
-<div class="blankspace"></div>
