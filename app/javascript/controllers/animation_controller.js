@@ -1,8 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
+import gsap from 'gsap';
 
 export default class extends Controller {
   static targets = ['postsGalleryImage', 'postsGalleryWrapper'];
-
+  connect() {
+    console.log(gsap)
+  }
   postsGallery(event) {
     const imagePath = event.currentTarget.dataset.imagePath;
     const postColor = event.currentTarget.dataset.postColor;
