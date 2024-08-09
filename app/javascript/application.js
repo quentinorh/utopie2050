@@ -1,17 +1,15 @@
 import "@hotwired/turbo-rails"
 import "controllers"
-// import Lenis from "lenis"
+import Lenis from '@studio-freight/lenis';
 
-// const lenis = new Lenis()
+const lenis = new Lenis({
+  lerp: 0.1, 
+  wheelMultiplier: 1
+})
 
-// lenis.on('scroll', (e) => {
-//   console.log(e)
-// })
+function raf(time) {
+  lenis.raf(time)
+  requestAnimationFrame(raf)
+}
 
-// function raf(time) {
-//   lenis.raf(time)
-//   requestAnimationFrame(raf)
-// }
-
-// requestAnimationFrame(raf)
-// console.log("jkl")
+requestAnimationFrame(raf)
