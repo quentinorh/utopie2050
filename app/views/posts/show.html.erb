@@ -16,38 +16,41 @@
   </filter>
 </svg>
 
-<!-- Hero -->
-<div class="h-60 w-full aspect-video flex items-center justify-center relative">
-  <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
-  <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display"><%= @post.title %></h1>
-    <div class="flex gap-2">
-      <% if user_signed_in? && current_user == @post.user %>
-        <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-        <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-      <% end %>
+<div data-controller="scroll">
+  <!-- Hero -->
+  <div class="h-60 w-full aspect-video flex items-center justify-center relative">
+    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
+    <div class="flex flex-col z-10 items-center">
+      <h1 class="text-gray-900 text-display"><%= @post.title %></h1>
+      
+      <div class="flex gap-2">
+        <% if user_signed_in? && current_user == @post.user %>
+          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div >
+    <nav class="bg-white shadow sticky top-0">
+      <div class="py-sm px-sm lg:px-xl">
+        <div class="flex justify-between">
+            <span>Temps de lecture 2 min</span>
+            <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
+          </div>
+        </div>
+      </div>  
+    </nav>
+
+    <!-- Content -->
+    <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content">
+      <p><%= simple_format(@post.body) %></p>
     </div>
   </div>
 </div>
 
-<div data-controller="scroll">
-  <nav class="bg-white shadow sticky top-0">
-    <div class="py-sm px-sm lg:px-xl">
-      <div class="flex justify-between">
-          <span>Temps de lecture 2 min</span>
-          <span data-scroll-target="scrollPercentage">Scroll : 00%</span>
-        </div>
-      </div>
-    </div>  
-  </nav>
-
-  <!-- Content -->
-  <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content">
-    <p><%= simple_format(@post.body) %></p>
-  </div>
-</div>
 <!-- Previous / Next -->
-
 <div class="bg-black-900 w-full flex h-full text-white p-xl">
   <div class="aspect-square h-full w-full flex flex-col gap-sm">
     <span>Titre précédent</span>
