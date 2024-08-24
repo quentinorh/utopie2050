@@ -1,5 +1,9 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
+const navbarHeight = { 
+  'navbar-height': '60px',
+};
+
 const spacings = {
   'none': '20px',
   'xs': '10px',
@@ -38,6 +42,12 @@ module.exports = {
       },
       gap: {
         ...spacings
+      },
+      height: {
+        ...navbarHeight
+      },
+      top: {
+        ...navbarHeight
       },
       fontSize: {
         'xxs': 'xxx',  
