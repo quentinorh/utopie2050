@@ -15,21 +15,16 @@ export default class extends Controller {
 
   updateScrollPercentage() {
     const content = this.contentTarget;
-    console.log(this.scrollPercentageTarget);
-    console.log(parseInt(this.scrollPercentageTarget.textContent))
     const scrollPercentage = this.calculateScrollPercentage(content);
-
     this.scrollPercentageTarget.textContent = scrollPercentage;
   }
 
   calculateScrollPercentage(element) {
-    const scrollTop = element.scrollTop;
-    const scrollHeight = element.scrollHeight;
-    const clientHeight = element.clientHeight;
-
-    const scrollableHeight = scrollHeight - clientHeight;
-    const scrollPercentage = (scrollTop / scrollableHeight) * 100;
-
-    return Math.round(scrollPercentage);
+    let scrollTop = window.scrollY;
+    let docHeight = document.body.offsetHeight;
+    let winHeight = window.innerHeight;
+    let scrollPercent = scrollTop / (docHeight - winHeight);
+    
+    return Math.round(scrollPercent * 100);
   }
 }

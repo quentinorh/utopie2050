@@ -32,17 +32,17 @@
     </div>
   </div>
 
-  <div >
-    <nav class="bg-white shadow sticky top-0">
-      <div class="py-sm px-sm lg:px-xl">
-        <div class="flex justify-between">
-            <span>Temps de lecture 2 min</span>
-            <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
-          </div>
-        </div>
-      </div>  
-    </nav>
+  <nav class="bg-white shadow sticky top-0 z-99">
+    <div class="py-sm px-sm lg:px-xl">
+      <div class="flex justify-between">
+        <span>Temps de lecture 2 min</span>
+        <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
+      </div>
+    </div>
+  </nav>
+ 
 
+  <div >
     <!-- Content -->
     <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content">
       <p><%= simple_format(@post.body) %></p>
