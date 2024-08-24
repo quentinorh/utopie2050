@@ -16,7 +16,7 @@
   </filter>
 </svg>
 
-<div data-controller="scroll">
+<div data-controller="scroll text-to-speech">
   <!-- Hero -->
   <div class="h-60 w-full aspect-video flex items-center justify-center relative">
     <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
@@ -36,15 +36,16 @@
     <div class="py-sm px-sm lg:px-xl">
       <div class="flex justify-between">
         <span>Temps de lecture 2 min</span>
+        <button data-action="click->text-to-speech#speak">Lire la description audio</button>
+        <span data-action="click->text-to-speech#stop">Stop la description audio</span>
         <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
       </div>
     </div>
   </nav>
- 
 
   <div >
     <!-- Content -->
-    <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content">
+    <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content" data-text-to-speech-target="content">
       <p><%= simple_format(@post.body) %></p>
     </div>
   </div>
