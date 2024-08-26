@@ -1,4 +1,36 @@
-<h2>Sign up</h2>
+<div class="bg-black-100 min-h-screen">
+  <div class="pt-16 text-xl flex flex-col items-center w-full">
+    <div class="bg-white p-sm rounded-lg shadow w-1/2 lg:w-1/3">
+      <h2 class="text-center">S'inscrire sur SP—2050</h2>
+        <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+          <div class="form-inputs">
+            <%= f.input :email,
+                        required: false,
+                        autofocus: true,
+                        input_html: { autocomplete: "email" },
+                        input_html: { class:'tw-form-input'},
+                        label_html: { class:"tw-form-label mt-sm"} %>
+            <%= f.input :password,
+                        required: false,
+                        input_html: { autocomplete: "current-password" },
+                        input_html: { class:'tw-form-input'},
+                        label_html: { class:"tw-form-label mt-sm"} %>
+            <%= f.input :remember_me, 
+            as: :boolean,
+            input_html: { class: 'tw-form-checkbox' },
+            label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
+
+          </div>
+
+          <div class="form-actions">
+            <%= f.button :submit, "Je me connecte", class:"tw-btn-primary w-full" %>
+          </div>
+        <% end %>
+    </div>
+  </div>
+</div>
+
+<%# <%= render "devise/shared/links" %>
 
 <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= f.error_notification %>
@@ -7,20 +39,30 @@
     <%= f.input :username,
                 required: true,
                 autofocus: true,
-                input_html: { autocomplete: "username" } %>
+                input_html: { autocomplete: "username" },
+                input_html: { class:'tw-form-input'},
+                label_html: { class:"tw-form-label mt-sm"}
+    %>
     <%= f.input :email,
                 required: true,
-                input_html: { autocomplete: "email" } %>
+                input_html: { autocomplete: "email" },
+                input_html: { class:'tw-form-input'},
+                label_html: { class:"tw-form-label mt-sm"}
+    %>
     <%= f.input :password,
                 required: true,
                 hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
+                input_html: { autocomplete: "new-password" },
+                input_html: { class:'tw-form-input'},
+                label_html: { class:"tw-form-label mt-sm"} %>
     <%= f.input :password_confirmation,
                 required: true,
-                input_html: { autocomplete: "new-password" } %>
+                input_html: { autocomplete: "new-password" },
+                input_html: { class:'tw-form-input'},
+                label_html: { class:"tw-form-label mt-sm"} %>
   </div>
 
   <div class="form-actions">
-    <%= f.button :submit, "Sign up" %>
+    <%= f.button :submit, "Je m'inscris", class:"tw-btn-primary w-full" %>
   </div>
 <% end %>

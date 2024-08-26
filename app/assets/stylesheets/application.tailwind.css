@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .tw-btn-primary{
+    @apply rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+  }
+  
+  .tw-btn-secondary{
+    @apply rounded-md bg-transparent px-3.5 py-2.5 border border-gray-100 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+  }
+
+  .tw-btn-danger {
+    @apply rounded-md bg-red-100 px-3.5 py-2.5 border border-gray-100 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600
+  }
+
+  /* Navigation */
+  .tw-nav-link{
+    @apply block px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors duration-200
+  }
+
+  /* Forms */
+  .tw-wrapper-html {
+    @apply text-left bg-white rounded-md border border-gray-300 p-2 focus-within:border-high-primary  focus-within:ring-1 focus-within:ring-high-primary;
+  }
+  
+  .tw-form-label {
+    @apply block text-sm font-medium leading-6 text-gray-900
+  }
+
+  .tw-form-input {
+    @apply block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6
+  }
+
+  .tw-form-checkbox {
+    @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600
+  }
+
+  /* Styling posts */
+  .tw-content p {
+    @apply my-sm
+  }
+
+  /* Gallery animation */ 
+  .tw-gallery-image {
+    @apply absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out
+  }
+}
+

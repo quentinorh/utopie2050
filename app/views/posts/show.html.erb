@@ -8,28 +8,61 @@
     end
     color_matrix = hue_to_feColorMatrix(hue)
   %>
-  <svg style="visibility:hidden;" width="0" height="0">
-    <filter id="duotone" color-interpolation-filters="sRGB">
-      <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
-    </filter>
-  </svg>
+  <% end %>
+  
+<svg style="visibility:hidden;" width="0" height="0">
+  <filter id="duotone" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
+  </filter>
+</svg>
 
-  <div class="image-container">
-    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, style: "filter: url(#duotone);" %>
+<div data-controller="scroll text-to-speech">
+  <!-- Hero -->
+  <div class="h-60 w-full aspect-video flex items-center justify-center relative">
+    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
+    <div class="flex flex-col z-10 items-center">
+      <h1 class="text-gray-900 text-display"><%= @post.title %></h1>
+      
+      <div class="flex gap-2">
+        <% if user_signed_in? && current_user == @post.user %>
+          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+        <% end %>
+      </div>
+    </div>
   </div>
-<% end %>
 
-<div class="blankspace"></div>
+  <nav class="bg-white shadow sticky top-[theme('top.navbar-height')] z-99">
+    <div class="py-sm px-sm lg:px-xl">
+      <div class="flex justify-between">
+        <span>Temps de lecture 2 min</span>
+        <button data-action="click->text-to-speech#speak">Lire la description audio</button>
+        <span data-action="click->text-to-speech#stop">Stop la description audio</span>
+        <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
+      </div>
+    </div>
+  </nav>
 
-<h1><%= @post.title %></h1>
-<p><%= simple_format(@post.body) %></p>
+  <div >
+    <!-- Content -->
+    <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content" data-text-to-speech-target="content">
+      <p><%= simple_format(@post.body) %></p>
+    </div>
+  </div>
+</div>
 
-<div class="blankspace"></div>
+<!-- Previous / Next -->
+<div class="bg-black-900 w-full flex h-full text-white p-xl">
+  <div class="aspect-square h-full w-full flex flex-col gap-sm">
+    <span>Titre précédent</span>
+    <h2 class="text-display"> Équilibre instable </h2>
+    <span>Quentin Ornant | 21.12.2024 | 8 min</span>
+  </div>
+  <div class="aspect-square h-full w-full flex justify-end flex-col gap-sm">
+    <span>Titre suivant</span>
+    <h2 class="text-display"> Équilibre instable </h2>
+    <span>Quentin Ornant | 21.12.2024 | 8 min</span>
+  </div>
+</div>
 
-<%= link_to 'Back', posts_path, class: "btn btn-primary" %>
-<% if user_signed_in? && current_user == @post.user %>
-  <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-  <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-<% end %>
-
-<div class="blankspace"></div>
+<%= render 'shared/footer' %>
