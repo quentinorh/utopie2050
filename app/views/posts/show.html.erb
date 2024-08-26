@@ -17,22 +17,8 @@
 </svg>
 
 <div data-controller="scroll text-to-speech">
-  <!-- Hero -->
-  <div class="h-60 w-full aspect-video flex items-center justify-center relative">
-    <%= cl_image_tag @post.photo.key, width: 600, height: 200, crop: :fill, class:"w-full h-full absolute inset-0 z-0", style: "filter: url(#duotone);" %>
-    <div class="flex flex-col z-10 items-center">
-      <h1 class="text-gray-900 text-display"><%= @post.title %></h1>
-      
-      <div class="flex gap-2">
-        <% if user_signed_in? && current_user == @post.user %>
-          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-        <% end %>
-      </div>
-    </div>
-  </div>
 
-  <nav class="bg-white shadow sticky top-[theme('top.navbar-height')] z-99">
+  <nav class="bg-white shadow sticky top-[theme('top.navbar-height')] z-[99]">
     <div class="py-sm px-sm lg:px-xl">
       <div class="flex justify-between">
         <span>Temps de lecture 2 min</span>
@@ -43,10 +29,25 @@
     </div>
   </nav>
 
-  <div >
-    <!-- Content -->
-    <div class="tw-content w-full px-sm lg:px-xl text-xl my-base" data-scroll-target="content" data-text-to-speech-target="content">
-      <p><%= simple_format(@post.body) %></p>
+  <div class="flex gap-xl">
+    <!-- Colonne de gauche fixe -->
+    <div class="w-1/2 sticky top-[120px] max-h-screen flex flex-col items-center justify-center z-0">
+      <%= cl_image_tag @post.photo.key, width: 300, height: 300, crop: :fill, class: "w-full h-full mb-4", style: "filter: url(#duotone);" %>
+      <h1 class="text-2xl font-bold mb-2"><%= @post.title %></h1>
+      <p class="text-gray-600"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
+      <div class="flex gap-2">
+        <% if user_signed_in? && current_user == @post.user %>
+          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Colonne de droite défilante -->
+    <div class="w-1/2 overflow-y-auto p-8">
+      <div class="tw-content text-xl" data-scroll-target="content" data-text-to-speech-target="content">
+        <%= simple_format(@post.body) %>
+      </div>
     </div>
   </div>
 </div>
