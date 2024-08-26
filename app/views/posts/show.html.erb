@@ -9,43 +9,71 @@
     color_matrix = hue_to_feColorMatrix(hue)
   %>
   <% end %>
+  <!-- Duotone filter -->
+  <svg style="visibility:hidden;" width="0" height="0">
+    <filter id="duotone" color-interpolation-filters="sRGB">
+      <!-- Grab the SourceGraphic (implicit) and convert it to grayscale -->
+      <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>">
+      </feColorMatrix>
+
+      <!-- Map the grayscale result to the gradient map provided in tableValues -->
+      <feComponentTransfer color-interpolation-filters="sRGB">
+          <feFuncR type="table" tableValues="<%= color_matrix %>"></feFuncR>
+          <feFuncG type="table" tableValues=".125490196  .941176471"></feFuncG>
+          <feFuncB type="table" tableValues=".<%= color_matrix %>"></feFuncB>
+      </feComponentTransfer>
+    </filter>
+
+    <image xlink:href=".." width="100%" x="0" y="0" height="100%" 
+           filter="url(#duotone)"></image>
+    </filter>
+  </svg>
   
-<svg style="visibility:hidden;" width="0" height="0">
-  <filter id="duotone" color-interpolation-filters="sRGB">
-    <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
-  </filter>
-</svg>
 
 <div data-controller="scroll text-to-speech">
 
-  <nav class="bg-white shadow sticky top-[theme('top.navbar-height')] z-[99]">
-    <div class="py-sm px-sm lg:px-xl">
+  <nav class="bg-white shadow sticky top-[theme('top.navbar-height')] z-[99] font-mono text-sm uppercase leading-[100%]">
+    <div class="p-sm">
       <div class="flex justify-between">
-        <span>Temps de lecture 2 min</span>
-        <button data-action="click->text-to-speech#speak">Lire la description audio</button>
-        <span data-action="click->text-to-speech#stop">Stop la description audio</span>
-        <span>Scroll : <span data-scroll-target="scrollPercentage">00</span>%</span>
+        <div class="flex gap-sm">
+          <button data-action="click->text-to-speech#speak">Lecture audio</button>
+          <span data-action="click->text-to-speech#stop" class="hidden">Stop la description audio</span>
+          <span>|</span>
+          <span>1 min 30</span>
+        </div>
+        <div class="flex gap-sm">
+          <span class="tw-overtitre">Lecture 1 MIN 32</span>
+          <span class="text-gray-500"><span data-scroll-target="scrollPercentage">00</span>%</span>
+        </div>
       </div>
     </div>
   </nav>
 
-  <div class="flex gap-xl">
+  <div class="flex gap-xl min-h-screen">
     <!-- Colonne de gauche fixe -->
-    <div class="w-1/2 sticky top-[120px] max-h-screen flex flex-col items-center justify-center z-0">
-      <%= cl_image_tag @post.photo.key, width: 300, height: 300, crop: :fill, class: "w-full h-full mb-4", style: "filter: url(#duotone);" %>
-      <h1 class="text-2xl font-bold mb-2"><%= @post.title %></h1>
-      <p class="text-gray-600"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
-      <div class="flex gap-2">
-        <% if user_signed_in? && current_user == @post.user %>
-          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-        <% end %>
+    <div class="w-1/3 sticky top-[120px] max-h-screen flex flex-col items-center justify-center z-0 ">
+      <div class="absolute top-0 left-0 z-[99]">
+        <h1 class="text-display text-black-900 p-2" style="background-color: <%= @post.color %>"><%= @post.title %></h1>
+        <div class="relative p-sm">
+          <span class="text-2xl" style="background-color: <%= @post.color %>">Peyo du 34</span>
+          <p class="bg-black-900 text-white inline-block p-2 transform -rotate-90 origin-top-left"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
+        </div>
+        <div class="flex gap-2 p-sm">
+          <% if user_signed_in? && current_user == @post.user %>
+            <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+            <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+          <% end %>
+        </div>
       </div>
+      <div class="w-full h-full mb-4 relative" style="background-image: url('<%= cl_image_path @post.photo.key, width: 300, height: 300, crop: :fill %>'); background-size: cover; background-position: center; filter: url(#duotone);">
+        
+      </div>
+     
     </div>
 
     <!-- Colonne de droite défilante -->
-    <div class="w-1/2 overflow-y-auto p-8">
-      <div class="tw-content text-xl" data-scroll-target="content" data-text-to-speech-target="content">
+    <div class="w-2/3 overflow-y-auto p-8">
+      <div class="tw-content text-xl text-mono" data-scroll-target="content" data-text-to-speech-target="content">
         <%= simple_format(@post.body) %>
       </div>
     </div>

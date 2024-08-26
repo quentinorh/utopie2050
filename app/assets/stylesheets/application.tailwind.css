@@ -37,10 +37,14 @@
   .tw-form-checkbox {
     @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600
   }
+  /* Fonts */
+  .tw-overtitre {
+    @apply text-sm
+  }
 
   /* Styling posts */
   .tw-content p {
-    @apply my-sm
+    @apply my-sm leading-[140%] tracking-[0.2px]
   }
 
   /* Gallery animation */ 
@@ -48,4 +52,3 @@
     @apply absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out
   }
 }
-

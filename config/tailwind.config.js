@@ -23,6 +23,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Apfel', ...defaultTheme.fontFamily.sans],
+        mono: ['Roboto Mono', 'monospace'],
       },
       colors: {
         primary: '#1D4ED8',    
@@ -31,6 +32,7 @@ module.exports = {
         neutral: '#F3F4F6',   
         black: {
           100: '#EFEFEF',
+          500: '#989898',
           900: '#323232',
         },
       },
@@ -52,10 +54,10 @@ module.exports = {
       fontSize: {
         'xxs': 'xxx',  
         'xs': 'xx',   
-        'sm': '0.8rem',     
+        'sm': '0.75rem',     
         'base': 'xx',    
         'l': 'xx',      
-        'xl': '2rem',    
+        'xl': '1.1875rem',    
         'xxl': '4rem',      
         'xxxl': '7.5rem',    
         'display': '5rem',      
