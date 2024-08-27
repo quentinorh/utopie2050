@@ -11,8 +11,10 @@ class Post < ApplicationRecord
   def calculate_reading_time
     words_per_minute = 238
     word_count = body.split.size
-    reading_time_minutes = (word_count.to_f / words_per_minute).ceil
-    reading_time_minutes
+    reading_time_seconds = (word_count.to_f / words_per_minute * 60).round
+    minutes = reading_time_seconds / 60
+    seconds = reading_time_seconds % 60
+    "#{minutes} min #{seconds.to_s.rjust(2, '0')}"
   end
 
   private
