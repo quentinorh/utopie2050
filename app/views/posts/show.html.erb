@@ -72,7 +72,17 @@
     </div>
 
     <!-- Colonne de droite défilante -->
-    <div class="w-full xl:w-2/3 overflow-y-auto p-sm xl:p-0">
+    <div class="w-full xl:w-2/3 overflow-y-auto p-sm xl:p-0 xl:pr-sm">
+      <div class="flex justify-between font-mono text-sm pt-sm uppercase">
+        <div>
+          <p>Publié le</p>
+          <p><%= @post.created_at.strftime("%d.%m.%Y") %></p>
+        </div>
+        <div>
+          <p>Lecture moyenne</p>
+          <p class="text-right"><%= @post.calculate_reading_time %> min</p>
+        </div>
+      </div>
       <div class="tw-content text-xl pt-0 xl:pt-[50vh]" data-scroll-target="content" data-text-to-speech-target="content">
         <%= simple_format(@post.body) %>
       </div>

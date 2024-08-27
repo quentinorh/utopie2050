@@ -7,6 +7,13 @@ class Post < ApplicationRecord
 
   scope :published, -> { where(draft: false) }
   scope :drafts, -> { where(draft: true) }
+  
+  def calculate_reading_time
+    words_per_minute = 238
+    word_count = body.split.size
+    reading_time_minutes = (word_count.to_f / words_per_minute).ceil
+    reading_time_minutes
+  end
 
   private
 
