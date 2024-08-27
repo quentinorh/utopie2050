@@ -33,11 +33,12 @@ export default class extends Controller {
   }
 
   calculateScrollPercentage(element) {
-    let scrollTop = window.scrollY;
-    let docHeight = document.body.offsetHeight;
-    let winHeight = window.innerHeight;
-    let scrollPercent = scrollTop / (docHeight - winHeight);
+    let elementTop = element.offsetTop;
+    let elementHeight = element.offsetHeight;
+    let scrollTop = window.scrollY - elementTop;
+    let visibleHeight = window.innerHeight;
+    let scrollPercent = scrollTop / (elementHeight - visibleHeight);
     
-    return Math.round(scrollPercent * 100);
+    return Math.max(0, Math.min(100, Math.round(scrollPercent * 100)));
   }
 }
