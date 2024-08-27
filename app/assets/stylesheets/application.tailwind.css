@@ -42,6 +42,13 @@
     @apply text-sm
   }
 
+  .word {
+    @apply overflow-hidden inline-block
+  }
+
+  h1 .word {
+    @apply leading-[100%]
+  }
   /* Styling posts */
   .tw-content p {
     @apply my-sm leading-[140%] tracking-[0.2px]
