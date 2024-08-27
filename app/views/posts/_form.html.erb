@@ -1,124 +1,104 @@
+<div data-controller="chapter">
+  <%= form_with(model: @post, local: true, html: { multipart: true }) do |form| %>
+    <% if @post.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@post.errors.count, "erreur") %> erreurs ont empêché ce post d'être sauvegardé :</h2>
+        <ul>
+          <% @post.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
+    <!-- Titre -->
+    <div>
+      <label for="title" class="tw-form-label">Titre</label>
+      <div class="mt-xs">
+        <%= form.text_field :title, class: "tw-form-input" %>
+      </div>
+    </div>
 
-<%= form_with(model: @post, local: true, html: { multipart: true }) do |form| %>
-  <% if @post.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@post.errors.count, "error") %> erreurs ont empêché ce post d'être sauvegardé :</h2>
-      <ul>
-        <% @post.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+    <!-- Chapitres -->
+    <div class="mt-sm">
+      <h3>Chapitres</h3>
+      <div id="chapters" data-chapter-target="chapters">
+        <%= form.fields_for :chapters do |chapter_form| %>
+          <div class="chapter-fields" data-chapter-target="chapter">
+            <label>Titre du chapitre</label>
+            <%= chapter_form.text_field :title, class: "tw-form-input" %>
+
+            <label>Contenu du chapitre</label>
+            <%= chapter_form.text_area :body, class: "tw-form-input" %>
+
+            <%= chapter_form.hidden_field :position %>
+            <%= chapter_form.hidden_field :_destroy %> <!-- Ajout d'un champ caché pour _destroy -->
+
+            <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary", data: { action: "click->chapter#removeChapter" } %>
+          </div>
         <% end %>
+      </div>
+
+      <div class="mt-xs">
+        <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-primary", data: { action: "click->chapter#addChapter" } %>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="mt-sm">
+      <label for="body" class="tw-form-label">Illustration</label>
+      <ul class="nav nav-tabs" id="imageTab" role="tablist">
+        <li class="flex gap-2" role="presentation">
+          <a class="tw-btn-secondary"> Charger une image </a>
+          <a class="tw-btn-secondary"> Unsplash </a>
+        </li>
       </ul>
-    </div>
-  <% end %>
-
-  <!-- Titre -->
-  <div>
-    <label for="title" class="tw-form-label">Titre</label>
-    <div class="mt-xs">
-      <%= form.text_field :title, class: "tw-form-input" %>
-    </div>
-  </div>
-
-  <!-- Chapitres -->
-  <div class="mt-sm">
-    <h3>Chapitres</h3>
-    <div id="chapters">
-      <%= form.fields_for :chapters do |chapter_form| %>
-        <div class="chapter-fields">
-          <label>Titre du chapitre</label>
-          <%= chapter_form.text_field :title, class: "tw-form-input" %>
-
-          <label>Contenu du chapitre</label>
-          <%= chapter_form.text_area :body, class: "tw-form-input" %>
-
-          <%= chapter_form.hidden_field :position %>
-          <%= chapter_form.check_box :_destroy %>
-          <%= chapter_form.label :_destroy, "Supprimer ce chapitre" %>
+      <div class="mt-xs">
+        <%= form.file_field :photo, class: "tw-form-input" %>
+        <div class="flex items-center gap-2 mt-xs">
+          <%= form.check_box :image_rights, class: "tw-form-checkbox" %>
+          <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>
         </div>
+      </div>
+      <div class="flex gap-2 mt-xs">
+        <%= text_field_tag :query, nil, placeholder: "Recherche Unsplash", class: "form-control", data: { unsplash_target: "query" } %>
+        <%= button_tag "Chercher", data: { action: "click->unsplash#search" }, type: :button, class: "tw-btn-primary" %>
+      </div>
+      <div data-unsplash-target="results" class="mt-3"></div>
+      <%= form.hidden_field :unsplash_image_url, data: { unsplash_target: "hidden" } %>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="mt-sm">
+      <label for="body" class="tw-form-label">Couleur</label>
+      <div class="mt-xs flex items-center gap-2" data-controller="color-picker">
+        <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label" %>
+        <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
+        <% hue = color_value.match(/hsl\((\d+),/)[1] rescue 0 %>
+        <div class="color-slider-wrapper">
+          <input type="range" min="0" max="360" value="<%= hue %>" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
+          <div class="color-bar"></div>
+        </div>
+        <%= form.hidden_field :color, id: "colorInput", value: "#{color_value}", data: { color_picker_target: "colorInput" } %>
+      </div>
+    </div>
+
+    <!-- Draft -->
+    <div class="mt-sm">
+      <label for="body" class="tw-form-label">Enregistrer en tant que brouillon ?</label>
+      <div class="mt-xs flex items-center gap-2">
+        <%= form.check_box :draft, class: "tw-form-checkbox" %>
+        <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-sm">
+      <% if @post.new_record? %>
+        <%= form.submit "Créer le futur", class: "tw-btn-primary w-full" %>
+      <% else %>
+        <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full" %>
       <% end %>
     </div>
-
-    <div class="mt-xs">
-      <%= button_tag "Ajouter un chapitre", type: :button, id: "add-chapter-button", class: "tw-btn-primary" %>
-    </div>
-  </div>
-
-  <!-- Image -->
-  <div class="mt-sm">
-    <label for="body" class="tw-form-label">Illustration</label>
-    <ul class="nav nav-tabs" id="imageTab" role="tablist">
-      <li class="flex gap-2" role="presentation">
-        <a class="tw-btn-secondary"> Charger une image </a>
-        <a class="tw-btn-secondary"> Unsplash </a>
-      </li>
-    </ul>
-    <div class="mt-xs">
-      <%= form.file_field :photo, class: "tw-form-input" %>
-      <div class="flex items-center gap-2 mt-xs">
-        <%= form.check_box :image_rights, class: "tw-form-checkbox" %>
-        <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>
-      </div>
-    </div>
-    <div class="flex gap-2 mt-xs">
-      <%= text_field_tag :query, nil, placeholder: "Recherche Unsplash", class: "form-control", data: { unsplash_target: "query" } %>
-      <%= button_tag "Chercher", data: { action: "click->unsplash#search" }, type: :button, class: "tw-btn-primary" %>
-    </div>
-    <div data-unsplash-target="results" class="mt-3"></div>
-    <%= form.hidden_field :unsplash_image_url, data: { unsplash_target: "hidden" } %>
-  </div>
-
-  <!-- Color Picker -->
-  <div class="mt-sm">
-    <label for="body" class="tw-form-label">Couleur</label>
-    <div class="mt-xs flex items-center gap-2" data-controller="color-picker">
-      <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label" %>
-      <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
-      <% hue = color_value.match(/hsl\((\d+),/)[1] rescue 0 %>
-      <div class="color-slider-wrapper">
-        <input type="range" min="0" max="360" value="<%= hue %>" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
-        <div class="color-bar"></div>
-      </div>
-      <%= form.hidden_field :color, id: "colorInput", value: "#{color_value}", data: { color_picker_target: "colorInput" } %>
-    </div>
-  </div>
-
-  <!-- Draft -->
-  <div class="mt-sm">
-    <label for="body" class="tw-form-label">Enregistrer en tant que brouillon ?</label>
-    <div class="mt-xs flex items-center gap-2">
-      <%= form.check_box :draft, class: "tw-form-checkbox" %>
-      <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="mt-sm">
-    <% if @post.new_record? %>
-      <%= form.submit "Créer le futur", class: "tw-btn-primary w-full" %>
-    <% else %>
-      <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full" %>
-    <% end %>
-  </div>
-<% end %>
-
-<template id="chapter-template">
-  <div class="chapter-fields">
-    <label>Titre du chapitre</label>
-    <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
-
-    <label>Contenu du chapitre</label>
-    <textarea name="post[chapters_attributes][][body]" class="tw-form-input"></textarea>
-
-    <input type="hidden" name="post[chapters_attributes][][position]" value="<%= @post.chapters.size + 1 %>">
-    <input type="checkbox" name="post[chapters_attributes][][_destroy]" class="tw-form-checkbox">
-    <label>Supprimer ce chapitre</label>
-  </div>
-</template>
-
-<script>
-  document.getElementById('add-chapter-button').addEventListener('click', function() {
-    const template = document.getElementById('chapter-template').content.cloneNode(true);
-    document.getElementById('chapters').appendChild(template);
-  });
-</script>
+  <% end %>
+</div>

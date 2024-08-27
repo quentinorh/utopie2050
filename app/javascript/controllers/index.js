@@ -11,6 +11,9 @@ application.register("unsplash", UnsplashController)
 import ColorPickerController from "./color_picker_controller"
 application.register("color-picker", ColorPickerController)
 
+import ChapterController from "./chapter_controller"
+application.register("chapter", ChapterController)
+
 // Eager load all controllers defined in the import map under controllers/**/*_controller
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)

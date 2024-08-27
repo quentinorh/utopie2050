@@ -24,11 +24,11 @@
       </feComponentTransfer>
     </filter>
 
-    <image xlink:href=".." width="100%" x="0" y="0" height="100%" 
+    <image xlink:href=".." width="100%" x="0" y="0" height="100%"
            filter="url(#duotone)"></image>
     </filter>
   </svg>
-  
+
 
 <div data-controller="scroll text-to-speech">
 
@@ -66,27 +66,25 @@
         </div>
       </div>
       <div class="w-full h-full mb-4 relative" style="background-image: url('<%= cl_image_path @post.photo.key, width: 300, height: 300, crop: :fill %>'); background-size: cover; background-position: center; filter: url(#duotone);">
-        
+
       </div>
-     
+
     </div>
 
     <!-- Colonne de droite défilante -->
-    <div class="w-full xl:w-2/3 overflow-y-auto p-sm xl:p-0 xl:pr-sm">
-      <div class="flex justify-between font-mono text-sm pt-sm uppercase">
-        <div>
-          <p>Publié le</p>
-          <p><%= @post.created_at.strftime("%d.%m.%Y") %></p>
+    <!-- Boucle sur les chapitres du post -->
+    <% if @post.chapters.any? %>
+      <% @post.chapters.each_with_index do |chapter, index| %>
+        <div class="mt-lg">
+          <h2 class="text-2xl font-bold mt-lg">
+            Chapitre <%= index + 1 %> : <%= chapter.title %>
+          </h2>
+          <div class="mt-md">
+            <%= simple_format(chapter.body) %>
+          </div>
         </div>
-        <div>
-          <p>Lecture moyenne</p>
-          <p class="text-right"><%= @post.calculate_reading_time %></p>
-        </div>
-      </div>
-      <div class="tw-content text-xl pt-0 xl:pt-[50vh]" data-scroll-target="content" data-text-to-speech-target="content">
-        <%= simple_format(@post.body) %>
-      </div>
-    </div>
+      <% end %>
+    <% end %>
   </div>
 </div>
 
