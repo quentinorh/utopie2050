@@ -18,11 +18,27 @@
     </div>
   </div>
 
-  <!-- Contenu -->
+  <!-- Chapitres -->
   <div class="mt-sm">
-    <label for="body" class="tw-form-label">Texte</label>
+    <h3>Chapitres</h3>
+    <div id="chapters">
+      <%= form.fields_for :chapters do |chapter_form| %>
+        <div class="chapter-fields">
+          <label>Titre du chapitre</label>
+          <%= chapter_form.text_field :title, class: "tw-form-input" %>
+
+          <label>Contenu du chapitre</label>
+          <%= chapter_form.text_area :body, class: "tw-form-input" %>
+
+          <%= chapter_form.hidden_field :position %>
+          <%= chapter_form.check_box :_destroy %>
+          <%= chapter_form.label :_destroy, "Supprimer ce chapitre" %>
+        </div>
+      <% end %>
+    </div>
+
     <div class="mt-xs">
-      <%= form.text_area :body, class: "tw-form-input" %>
+      <%= button_tag "Ajouter un chapitre", type: :button, id: "add-chapter-button", class: "tw-btn-primary" %>
     </div>
   </div>
 
@@ -84,3 +100,24 @@
   </div>
 </div>
 <% end %>
+
+<template id="chapter-template">
+  <div class="chapter-fields">
+    <label>Titre du chapitre</label>
+    <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
+
+    <label>Contenu du chapitre</label>
+    <textarea name="post[chapters_attributes][][body]" class="tw-form-input"></textarea>
+
+    <input type="hidden" name="post[chapters_attributes][][position]" value="<%= @post.chapters.size + 1 %>">
+    <input type="checkbox" name="post[chapters_attributes][][_destroy]" class="tw-form-checkbox">
+    <label>Supprimer ce chapitre</label>
+  </div>
+</template>
+
+<script>
+  document.getElementById('add-chapter-button').addEventListener('click', function() {
+    const template = document.getElementById('chapter-template').content.cloneNode(true);
+    document.getElementById('chapters').appendChild(template);
+  });
+</script>

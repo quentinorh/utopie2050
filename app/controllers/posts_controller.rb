@@ -72,6 +72,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :photo, :unsplash_image_url, :color, :draft, :image_rights)
+    params.require(:post).permit(:title, :body, :photo, :unsplash_image_url, :image_rights, :color, :draft,
+      chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 end
