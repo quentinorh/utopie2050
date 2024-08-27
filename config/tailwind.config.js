@@ -5,7 +5,7 @@ const navbarHeight = {
 };
 
 const spacings = {
-  'none': '20px',
+  'none': '0px',
   'xs': '10px',
   'sm': '20px',
   'base': '50px',
