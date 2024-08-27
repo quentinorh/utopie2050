@@ -13,7 +13,7 @@ class Post < ApplicationRecord
   
   def calculate_reading_time
     words_per_minute = 238
-    word_count = body.split.size
+    word_count = body.to_s.split.size
     reading_time_seconds = (word_count.to_f / words_per_minute * 60).round
     minutes = reading_time_seconds / 60
     seconds = reading_time_seconds % 60
@@ -22,14 +22,12 @@ class Post < ApplicationRecord
 
   def calculate_spoken_time
     words_per_minute = 150
-    word_count = body.split.size
+    word_count = body.to_s.split.size
     reading_time_seconds = (word_count.to_f / words_per_minute * 60).round
     minutes = reading_time_seconds / 60
     seconds = reading_time_seconds % 60
     "#{minutes} min #{seconds.to_s.rjust(2, '0')}"
   end
-
-  
 
   private
 

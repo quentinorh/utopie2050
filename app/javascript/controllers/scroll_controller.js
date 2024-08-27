@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus";
 import Splitting from "splitting";
 import gsap from "gsap";
-//import ScrollTrigger from "gsap/ScrollTrigger";
+// import ScrollTrigger from "gsap/ScrollTrigger";
 
 //gsap.registerPlugin(ScrollTrigger);
 

@@ -23,6 +23,32 @@ module ApplicationHelper
     "rgba(#{r}, #{g}, #{b}, #{alpha})"
   end
 
+  def hsl_to_rgb(h, s, l)
+    s /= 100.0
+    l /= 100.0
+  
+    c = (1 - (2 * l - 1).abs) * s
+    x = c * (1 - ((h / 60.0) % 2 - 1).abs)
+    m = l - c / 2
+  
+    r, g, b = case h
+    when 0..60
+      [c, x, 0]
+    when 60..120
+      [x, c, 0]
+    when 120..180
+      [0, c, x]
+    when 180..240
+      [0, x, c]
+    when 240..300
+      [x, 0, c]
+    when 300..360
+      [c, 0, x]
+    end
+  
+    [(r + m) * 255, (g + m) * 255, (b + m) * 255].map(&:round)
+  end
+
   def hsv_to_rgb(h, s, v)
     i = (h * 6).to_i
     f = h * 6 - i
