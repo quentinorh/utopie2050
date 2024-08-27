@@ -10,7 +10,7 @@ export default class extends Controller {
   static targets = ["content", "scrollPercentage", "title", "postImage"];
 
   connect() {
-    this.contentTarget.style.opacity = 0;
+    this.contentTarget.style.opacity = 1;
     
     // Animation pour l'image du post
     gsap.fromTo(this.postImageTarget, 
