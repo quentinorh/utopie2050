@@ -2,9 +2,9 @@
 import { Controller } from "@hotwired/stimulus";
 import Splitting from "splitting";
 import gsap from "gsap";
-// import ScrollTrigger from "gsap/ScrollTrigger";
+import scrollTrigger from "gsap/scrollTrigger";
 
-//gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(scrollTrigger);
 
 export default class extends Controller {
   static targets = ["content", "scrollPercentage"];
@@ -14,15 +14,29 @@ export default class extends Controller {
     Splitting({ target: this.contentTarget, by: 'lines' });
     window.addEventListener("scroll", this.updateScrollPercentage.bind(this));
 
-    // ScrollTrigger.create({
-    //   trigger: element,
-    //   start: "top bottom",
-    //   end: "bottom top",
-    //   scrub:true,
-    //   //markers:true,
-    //   animation: textrev,
-    //   toggleActions: "play none none none",
-    // });
+    const lines = this.contentTarget.querySelectorAll('.word');
+    
+    lines.forEach((line) => {
+      gsap.fromTo(line, 
+        { opacity: 0,
+          skewY: 10, 
+          ease: "power4.out",
+          stagger: {
+            amount: 0.4
+          },
+         },
+        {
+          opacity: 1,
+          scrollTrigger: {
+            trigger: line,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.2,
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    });
   }
 
   disconnect() {
