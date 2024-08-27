@@ -1,3 +1,5 @@
+
+
 <%= form_with(model: @post, local: true, html: { multipart: true }) do |form| %>
   <% if @post.errors.any? %>
     <div id="error_explanation">
@@ -98,7 +100,6 @@
       <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full" %>
     <% end %>
   </div>
-</div>
 <% end %>
 
 <template id="chapter-template">
