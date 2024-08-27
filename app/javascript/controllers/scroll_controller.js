@@ -1,7 +1,10 @@
 // app/javascript/controllers/scroll_controller.js
 import { Controller } from "@hotwired/stimulus";
-import Splitting from 'splitting';
+import Splitting from "splitting";
+import gsap from "gsap";
 //import ScrollTrigger from "gsap/ScrollTrigger";
+
+//gsap.registerPlugin(ScrollTrigger);
 
 export default class extends Controller {
   static targets = ["content", "scrollPercentage"];
