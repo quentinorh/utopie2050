@@ -29,8 +29,6 @@ class Post < ApplicationRecord
     "#{minutes} min #{seconds.to_s.rjust(2, '0')}"
   end
 
-
-
   private
 
   def image_presence
