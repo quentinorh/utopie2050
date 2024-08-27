@@ -1,0 +1,44 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["chapters"]
+
+  addChapter(event) {
+    event.preventDefault();
+
+    // Crée un nouvel élément div pour contenir le chapitre
+    const newChapter = document.createElement("div");
+    newChapter.classList.add("chapter-fields");
+
+    // Générer l'HTML pour le nouveau chapitre
+    newChapter.innerHTML = `
+      <label>Titre du chapitre</label>
+      <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
+
+      <label>Contenu du chapitre</label>
+      <textarea name="post[chapters_attributes][][body]" class="tw-form-input"></textarea>
+
+      <input type="hidden" name="post[chapters_attributes][][position]" value="">
+      <input type="hidden" name="post[chapters_attributes][][_destroy]" value="false">
+
+      <a href="#" class="tw-btn-secondary" data-action="click->chapter#removeChapter">Supprimer ce chapitre</a>
+    `;
+
+    // Ajouter le nouveau chapitre à la section des chapitres
+    this.chaptersTarget.appendChild(newChapter);
+  }
+
+  removeChapter(event) {
+    event.preventDefault();
+    const chapter = event.currentTarget.closest(".chapter-fields");
+
+    // Si le champ caché _destroy existe, définissez-le à true pour marquer pour suppression
+    const destroyInput = chapter.querySelector("input[name*='_destroy']");
+    if (destroyInput) {
+      destroyInput.value = "1";
+      chapter.style.display = "none"; // Cache le chapitre visuellement
+    } else {
+      chapter.remove(); // Si ce n'est pas encore sauvegardé, on l'enlève du DOM
+    }
+  }
+}
