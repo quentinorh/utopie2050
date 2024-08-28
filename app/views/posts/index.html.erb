@@ -1,16 +1,17 @@
 <div class="flex">
   <div class="w-4/5"> 
-    <h1 class="text-display px-sm">Tous les futurs</h1>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-sm flex-grow p-sm">      
+    <h1 class="text-display px-sm pt-sm">Tous les futurs<sup class="ml-sm text-l font-mono" data-controller="randomize-letter-animation">[<%= @posts.count %>]</sup></h1>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-xs gap-y-xl flex-grow p-sm" data-controller="staggered-animation">      
       <% @posts.each do |post| %>
-        <%= link_to post, class: "text-xl transition-colors", data: { 
+        <%= link_to post, class: "text-xl transition-colors group opacity-0" , data: { 
+          staggered_animation_target: "element",
           action: "mouseover->animation#postsGallery", 
           image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '', 
           post_color: post.color 
         } do %>
-          <div class="relative w-full aspect-video mb-2 overflow-hidden">
+          <div class="relative w-full aspect-video mb-xs overflow-hidden">
             <% if post.photo.attached? %>
-              <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full" %>
+              <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
             <% else %>
               <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                 <span class="text-gray-400">No image</span>
@@ -21,7 +22,7 @@
             <span><%= post.user.username %></span>
             <span><%= post.created_at.strftime("%B %d, %Y") %></span>
           </div>
-          <span><%= post.title %></span>
+          <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
         <% end %>
       <% end %>
       <!-- Repeat for more posts -->

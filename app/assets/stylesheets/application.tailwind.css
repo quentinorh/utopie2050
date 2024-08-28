@@ -41,7 +41,7 @@
   .tw-overtitre {
     @apply text-sm
   }
-
+  
   .word {
     @apply overflow-hidden inline-block
   }
