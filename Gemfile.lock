@@ -118,6 +118,8 @@ GEM
       railties (>= 6.1)
     erubi (1.13.0)
     execjs (2.9.1)
+    faker (3.4.2)
+      i18n (>= 1.8.11, < 2)
     faraday (2.10.1)
       faraday-net_http (>= 2.0, < 3.2)
       logger
@@ -323,6 +325,7 @@ DEPENDENCIES
   debug
   devise
   dotenv-rails
+  faker
   font-awesome-sass (~> 6.1)
   importmap-rails (~> 1.2.3)
   inline_svg
