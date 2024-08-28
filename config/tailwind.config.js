@@ -9,7 +9,8 @@ const spacings = {
   'xs': '10px',
   'sm': '20px',
   'base': '50px',
-  'xl': '100px'
+  'xl': '100px',
+  '2xl': '200px'
 };
 
 module.exports = {
