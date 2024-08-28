@@ -6,8 +6,8 @@
       <div data-action="mousemove->hero-animation#handleMouseMove"></div>
     </div>
     <div class="flex gap-sm mt-sm" data-hero-animation-target="buttons">
-      <%= link_to "Voir les futurs", posts_path, class: "tw-btn-primary" %>
-      <%= link_to "Créer un futur", new_post_path, class: "tw-btn-secondary" %>
+      <%= link_to "Lire un futur", posts_path, class: "tw-btn-primary", data: { controller: "randomize-letter-animation" } %>
+      <%= link_to "Écrire un futur", new_post_path, class: "tw-btn-secondary",data: { controller: "randomize-letter-animation" } %>
     </div>
     <div class="absolute bottom-[5vh] flex flex-col items-center">
       <span class="text-white text-sm font-mono uppercase">Explorer</span>
