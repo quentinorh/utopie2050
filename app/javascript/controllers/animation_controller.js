@@ -1,8 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 import gsap from 'gsap';
+import Splitting from "splitting";
 
 export default class extends Controller {
-  static targets = ['postsGalleryImage', 'postsGalleryWrapper'];
+  static targets = ['postsGalleryImage', 'postsGalleryWrapper', 'revealText'];
+
+  connect() {
+    Splitting({ target: this.revealTextTarget, by: 'lines' });
+  }
 
   postsGallery(event) {
     const imagePath = event.currentTarget.dataset.imagePath;
@@ -34,5 +39,10 @@ export default class extends Controller {
       this.postsGalleryImageTarget.src = newImage.src;
       this.postsGalleryWrapperTarget.removeChild(newImage);
     });
+  }
+
+  revealText(event) {
+    const text = event.currentTarget;
+    gsap.to(text, { opacity: 1, duration: 1, ease: "power2.out" });
   }
 }
