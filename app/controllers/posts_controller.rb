@@ -6,7 +6,7 @@ class PostsController < ApplicationController
   protect_from_forgery except: :search_unsplash
 
   def index
-    @posts = Post.where(draft: false)
+    @posts = Post.all
   end
 
   def show
