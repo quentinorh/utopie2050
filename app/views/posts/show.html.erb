@@ -19,9 +19,9 @@
                                          0.33 0.33 0.33 0 0
                                          0    0    0    1 0" result="grayImage"/>
     <feComponentTransfer>
-      <feFuncR type="linear" slope="1" intercept="<%= rgb_values[0] / 255.0 %>"/>
-      <feFuncG type="linear" slope="1" intercept="<%= rgb_values[1] / 255.0 %>"/>
-      <feFuncB type="linear" slope="1" intercept="<%= rgb_values[2] / 255.0 %>"/>
+      <feFuncR type="linear" slope="1" intercept="0.1 0.1"/>
+      <feFuncG type="linear" slope="1" intercept="0.1 0.1"/>
+      <feFuncB type="linear" slope="1" intercept="0.1 0.1"/>
     </feComponentTransfer>
   </filter>
 </svg>
@@ -62,8 +62,7 @@
       </div>
 
       <div class="w-full h-full mb-4 relative origin-left" data-scroll-target="postImage">
-        <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('<%= cl_image_path @post.photo.key, crop: :fill %>'); background-size: cover; background-position: center; filter: url(#duotone);">
-        </div>
+        <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('<%= @post.photo.attached? ? cl_image_path(@post.photo.key, crop: :fill) : '' %>'); background-size: cover; background-position: center; filter: url(#duotone);">        </div>
       </div>
     </div>
 
