@@ -1,6 +1,6 @@
 <!-- Hero -->
 <div class="h-100 w-full aspect-video flex items-center justify-center relative" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
-  
+
   <div class="flex flex-col z-10 items-center">
     <h1 class="text-gray-900 text-display text-white">Manifeste</h1>
   </div>
@@ -31,7 +31,7 @@
 
   <div class="w-full flex flex-col">
     <% @posts.each do |post| %>
-    
+
     <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { action: "mouseover->animation#postsGallery", image_path: cl_image_path(post.photo.key), post_color: post.color } do %>
       <span><%= post.title %></span>
     <% end %>
@@ -49,7 +49,7 @@
     end
     color_matrix = hue_to_feColorMatrix(hue)
   %>
-  
+
   <%= link_to post, class: "card-link col-sm-5 col-lg-3 mb-4 d-flex" do %>
     <div class="book-cover" style="background-color: <%= post.color || 'transparent' %>; filter: brightness(0.8) contrast(1.5);">
       <div class="author-name"><%= post.user.username %></div>
@@ -65,7 +65,7 @@
     </div>
   <% end %>
   <div class="d-flex align-items-center" >
-    <p class="post-body"><%= truncate(post.body, length: 300) %></p>
+    <p class="post-body"><%= truncate(post.chapters.first.body, length: 300) %></p>
   </div>
 <% end %>
 
