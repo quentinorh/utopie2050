@@ -1,11 +1,11 @@
 <!-- Hero -->
-<div class="h-100 w-full aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
+<div data-controller="hero-animation" class="h-100 w-full aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
   <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display text-white text-center">Écrire et lire des futures désirables</h1>
-    <div data-controller="hero-animation">
-      <div data-hero-animation-target="trail" data-action="mousemove->hero-animation#handleMouseMove"></div>
+    <h1 class="text-gray-900 text-display text-white text-center" data-hero-animation-target="title">Écrire et lire des futures désirables</h1>
+    <div>
+      <div data-action="mousemove->hero-animation#handleMouseMove"></div>
     </div>
-    <div class="flex gap-sm mt-sm">
+    <div class="flex gap-sm mt-sm" data-hero-animation-target="buttons">
       <%= link_to "Voir les futurs", posts_path, class: "tw-btn-primary" %>
       <%= link_to "Créer un futur", new_post_path, class: "tw-btn-secondary" %>
     </div>
@@ -19,8 +19,8 @@
 </div>
 
 
-<div class="p-xl my-base text-center" data-controller="animation">
-  <p class="text-xl" data-animation-target="revealText">
+<div class="p-xl my-base text-center">
+  <p class="text-xl">
      Le solarpunk est un mouvement qui imagine un avenir radieux où l'humanité vit en harmonie avec la nature. Il célèbre l'innovation durable, l'énergie propre et la justice sociale. Dans ce futur, nos villes sont des jardins luxuriants, nos technologies sont vertes, et nos communautés sont résilientes et inclusives. Le solarpunk nous invite à rêver grand et à agir maintenant pour créer un monde meilleur, où l'optimisme et l'action collective transforment notre planète en un paradis écologique pour tous.
   </o>
 </div>

@@ -2,50 +2,54 @@ import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 
 export default class extends Controller {
-  static targets = ["trail"]
+  static targets = ['title', 'buttons']
 
   connect() {
-    this.trailElements = []
-    this.trailSize = 5
-    this.createTrail()
-    this.element.addEventListener("mousemove", this.handleMouseMove.bind(this))
-    
+    this.titleAnimation()
+    this.buttonsAnimation()
   }
 
-  createTrail() {
-    for (let i = 0; i < this.trailSize; i++) {
-      const img = document.createElement("img")
-      img.src = "https://picsum.photos/200/300" // Replace with your image path
-      img.classList.add("absolute", "pointer-events-none", "w-8", "h-8")
-      img.style.opacity = 0
-      this.element.appendChild(img)
-      this.trailElements.push(img)
-    }
-  }
+  titleAnimation() {
+    const text = this.titleTarget.textContent
+    const words = text.split(/(\s+)/)
 
-  handleMouseMove(event) {
-    console.log("hello")
-    const { clientX, clientY } = event
-    const rect = this.element.getBoundingClientRect()
-    const x = clientX - rect.left
-    const y = clientY - rect.top
+    this.titleTarget.innerHTML = ''
 
-    gsap.to(this.trailElements, {
-      duration: 0.5,
-      x: x,
-      y: y,
-      opacity: (i) => 1 - i * 0.2,
-      scale: (i) => 1 - i * 0.1,
-      stagger: {
-        each: 0.02,
-        from: "start",
-      },
-      overwrite: "auto",
+    words.forEach((word, index) => {
+      if (word.trim() === '') {
+        // If it's a space, add it directly to maintain spacing
+         this.titleTarget.appendChild(document.createTextNode(word))
+      } else {
+        const wordSpan = document.createElement('span')
+        wordSpan.style.display = 'inline-block'
+        wordSpan.style.overflow = 'hidden'
+        
+        const innerSpan = document.createElement('span')
+        innerSpan.textContent = word
+        innerSpan.style.display = 'inline-block'
+        
+        wordSpan.appendChild(innerSpan)
+         this.titleTarget.appendChild(wordSpan)
+
+        gsap.from(innerSpan, {
+          y: '100%',
+          duration: 0.5,
+          ease: "power2.out",
+          delay: index * 0.05
+        })
+      }
     })
   }
 
-  disconnect() {
-    this.element.removeEventListener("mousemove", this.handleMouseMove)
+  buttonsAnimation() {
+    console.log(this.buttonsTarget)
+    const buttons = this.buttonsTarget
+    gsap.from(buttons.children, {
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.out",
+      stagger: 0.1,
+      delay: 0.5
+    });
   }
 }
-

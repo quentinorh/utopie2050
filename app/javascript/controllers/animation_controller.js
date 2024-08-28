@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import Splitting from "splitting";
 
 export default class extends Controller {
-  static targets = ['postsGalleryImage', 'postsGalleryWrapper', 'revealText'];
+  static targets = ['postsGalleryImage', 'postsGalleryWrapper'];
 
   connect() {
     Splitting({ target: this.revealTextTarget, by: 'lines' });
