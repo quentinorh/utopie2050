@@ -1,72 +1,51 @@
-<!-- Hero -->
-<div class="h-100 w-full aspect-video flex items-center justify-center relative" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
-  
-  <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display text-white">Manifeste</h1>
-  </div>
-</div>
-
-
-<div class="p-sm my-base">
-  <p class="text-xl w-2/3">
-    Lena avait grandi dans une époque où les forêts disparaissaient à vue d'œil et les animaux étaient chassés de leurs habitats. Elle se souvenait des documentaires terrifiants sur le déclin des abeilles et la montée des mers. Mais grâce à une prise de conscience globale et des innovations technologiques, la tendance s'était inversée. Désormais, les abeilles bourdonnaient dans chaque quartier, et les toits des immeubles étaient des refuges pour une multitude d’espèces.
-  </o>
-</div>
-
-
-<div class="text-xxxl text-uppercase">
-  <span> Les derniers futurs </span>
-</div>
-
-<svg style="visibility:hidden;" width="0" height="0">
-  <filter id="duotone" color-interpolation-filters="sRGB">
-    <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
-  </filter>
-</svg>
-
-<div class="w-full p-base bg-gray-100 grid grid-cols-2 gap-base" data-controller="animation">
-  <div class="w-full h-[70vh] overflow-hidden relative brightness-75 contrast-150" data-animation-target="postsGalleryWrapper">
-    <img src="https://picsum.photos/200/300" class="h-[10vh] absolute" data-animation-target="postsGalleryImage">
-  </div>
-
-  <div class="w-full flex flex-col">
-    <% @posts.each do |post| %>
-    
-    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { action: "mouseover->animation#postsGallery", image_path: cl_image_path(post.photo.key), post_color: post.color } do %>
-      <span><%= post.title %></span>
-    <% end %>
-  <% end %>
-  </div>
-</div>
-
-<% @posts.each do |post| %>
-  <%
-    if post.color
-      match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
-      hue = match[1].to_i
-    else
-      hue = 0
-    end
-    color_matrix = hue_to_feColorMatrix(hue)
-  %>
-  
-  <%= link_to post, class: "card-link col-sm-5 col-lg-3 mb-4 d-flex" do %>
-    <div class="book-cover" style="background-color: <%= post.color || 'transparent' %>; filter: brightness(0.8) contrast(1.5);">
-      <div class="author-name"><%= post.user.username %></div>
-      <div class="title"><%= post.title %></div>
-      <% if post.photo.present? %>
-        <svg style="visibility:hidden;" width="0" height="0">
-          <filter id="duotone-<%= post.id %>" color-interpolation-filters="sRGB">
-            <feColorMatrix type="matrix" values="<%= color_matrix %>"></feColorMatrix>
-          </filter>
-        </svg>
-        <div class="image-container" style="background-image: url(<%= cl_image_path post.photo.key %>); filter: url(#duotone-<%= post.id %>);"></div>
+<div class="flex">
+  <div class="w-4/5"> 
+    <h1 class="text-display px-sm">Tous les futurs</h1>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-sm flex-grow p-sm">      
+      <% @posts.each do |post| %>
+        <%= link_to post, class: "text-xl transition-colors", data: { 
+          action: "mouseover->animation#postsGallery", 
+          image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '', 
+          post_color: post.color 
+        } do %>
+          <div class="relative w-full aspect-video mb-2 overflow-hidden">
+            <% if post.photo.attached? %>
+              <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full" %>
+            <% else %>
+              <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-400">No image</span>
+              </div>
+            <% end %>
+          </div>
+          <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
+            <span><%= post.user.username %></span>
+            <span><%= post.created_at.strftime("%B %d, %Y") %></span>
+          </div>
+          <span><%= post.title %></span>
+        <% end %>
       <% end %>
+      <!-- Repeat for more posts -->
     </div>
-  <% end %>
-  <div class="d-flex align-items-center" >
-    <p class="post-body"><%= truncate(post.body, length: 300) %></p>
   </div>
-<% end %>
-
-<%= render 'shared/footer' %>
+  <!-- Sticky Filter Column -->
+  <div class="w-1/5 sticky lg:top-[theme('top.navbar-height')] h-screen bg-gray-100 p-4">
+      <h2 class="text-lg font-bold">Filtrer</h2>
+      <div class="mt-4">
+          <h3 class="font-semibold">Categories</h3>
+          <ul>
+              <li><input type="checkbox" /> Fiction</li>
+              <li><input type="checkbox" /> Essays</li>
+              <li><input type="checkbox" /> Projects</li>
+              <li><input type="checkbox" /> Design</li>
+          </ul>
+      </div>
+      <div class="mt-4">
+          <h3 class="font-semibold">Keywords</h3>
+          <ul>
+              <li><input type="checkbox" /> Science Fiction</li>
+              <li><input type="checkbox" /> Cities</li>
+              <li><input type="checkbox" /> Politics</li>
+          </ul>
+      </div>
+  </div>
+</div>

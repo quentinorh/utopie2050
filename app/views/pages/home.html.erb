@@ -1,2 +1,58 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<!-- Hero -->
+<div class="h-100 w-full aspect-video flex items-center justify-center relative" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
+  
+  <div class="flex flex-col z-10 items-center">
+    <h1 class="text-gray-900 text-display text-white">Manifeste</h1>
+  </div>
+</div>
+
+
+<div class="p-sm my-base">
+  <p class="text-xl w-2/3">
+    Lena avait grandi dans une époque où les forêts disparaissaient à vue d'œil et les animaux étaient chassés de leurs habitats. Elle se souvenait des documentaires terrifiants sur le déclin des abeilles et la montée des mers. Mais grâce à une prise de conscience globale et des innovations technologiques, la tendance s'était inversée. Désormais, les abeilles bourdonnaient dans chaque quartier, et les toits des immeubles étaient des refuges pour une multitude d’espèces.
+  </o>
+</div>
+
+
+<div class="text-xxxl text-uppercase">
+  <span> Les derniers futurs </span>
+</div>
+
+<svg style="visibility:hidden;" width="0" height="0">
+  <filter id="duotone" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
+  </filter>
+</svg>
+
+<div class="w-full p-base bg-gray-100 grid grid-cols-2 gap-base" data-controller="animation">
+  <div class="w-full h-[70vh] overflow-hidden relative brightness-75 contrast-150" data-animation-target="postsGalleryWrapper">
+    <img src="https://picsum.photos/200/300" class="h-[10vh] absolute" data-animation-target="postsGalleryImage">
+  </div>
+
+  <div class="w-full flex flex-col">
+   <% @posts.each do |post| %>
+    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { 
+      action: "mouseover->animation#postsGallery", 
+      image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '', 
+      post_color: post.color 
+    } do %>
+      <span><%= post.title %></span>
+    <% end %>
+  <% end %>
+  </div>
+</div>
+
+<% @posts.each do |post| %>
+  <%
+    if post.color
+      match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
+      hue = match[1].to_i
+    else
+      hue = 0
+    end
+    color_matrix = hue_to_feColorMatrix(hue)
+  %>
+  
+<% end %>
+
+<%= render 'shared/footer' %>
