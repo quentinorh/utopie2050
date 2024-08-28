@@ -7,6 +7,7 @@
         <% @posts.each do |post| %>
           <%= link_to post, class: "text-xl transition-colors group opacity-0" , data: { 
             staggered_animation_target: "element",
+            stagger_count: 12,
             action: "mouseover->animation#postsGallery", 
             image_path: post.unsplash_image_url.present? ? post.unsplash_image_url : (post.photo.attached? ? cl_image_path(post.photo.key) : ''), 
             post_color: post.color 

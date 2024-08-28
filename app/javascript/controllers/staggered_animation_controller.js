@@ -1,18 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap";
+import scrollTrigger from "gsap/scrollTrigger";
 
 export default class extends Controller {
 
   static targets = ["element"]
 
   connect() {
-    console.log(this.elementTargets)
+    const staggerCount = parseInt(this.elementTarget.dataset.staggerCount);
+    const initialItemsToAnimate = this.elementTargets.slice(0, Math.min(staggerCount, 25));
+    const remainingItemsToAnimate = this.elementTargets.slice(Math.min(staggerCount, 25));
 
-    // Create a timeline for the staggered animation
+    
     const tl = gsap.timeline();
 
-    // Add each element to the timeline with a staggered effect
-    tl.fromTo(this.elementTargets, 
+    tl.fromTo(initialItemsToAnimate, 
       { opacity: 0 },
       { 
         opacity: 1, 
