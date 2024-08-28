@@ -62,6 +62,16 @@ module.exports = {
         'xxxl': '7.5rem',    
         'display': '5rem',      
       },
+      animation: {
+        'slide-down': 'slide-down 3s cubic-bezier(.9,.17,.12,.89) infinite',
+      },
+      keyframes: {
+        'slide-down': {
+          '0%': { transform: 'translateY(-100%)' },
+          '50%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
+      },
     },
   },
   plugins: [

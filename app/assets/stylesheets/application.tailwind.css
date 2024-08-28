@@ -9,7 +9,7 @@
   }
   
   .tw-btn-secondary{
-    @apply rounded-md bg-transparent px-3.5 py-2.5 border border-gray-100 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+    @apply rounded-md bg-transparent px-3.5 py-2.5  text-sm uppercase font-mono border border-indigo-500 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
   }
 
   .tw-btn-danger {
@@ -57,5 +57,10 @@
   /* Gallery animation */ 
   .tw-gallery-image {
     @apply absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out
+  }
+
+  /* Animations */
+  .tw-animation-slide-down {
+    @apply animate-[slide-down_1s_ease-out]
   }
 }

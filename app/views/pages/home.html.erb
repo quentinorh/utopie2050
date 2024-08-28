@@ -1,8 +1,20 @@
 <!-- Hero -->
 <div class="h-100 w-full aspect-video flex items-center justify-center relative" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
-  
   <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display text-white">Manifeste</h1>
+    <h1 class="text-gray-900 text-display text-white">Écrire et lire des futures désirables</h1>
+    <div data-controller="hero-animation">
+      <div data-hero-animation-target="trail" data-action="mousemove->hero-animation#handleMouseMove"></div>
+    </div>
+    <div class="flex gap-sm mt-sm">
+      <%= link_to "Voir les futurs", posts_path, class: "tw-btn-primary" %>
+      <%= link_to "Créer un futur", new_post_path, class: "tw-btn-secondary" %>
+    </div>
+    <div class="absolute bottom-[5vh] flex flex-col items-center">
+      <span class="text-white text-sm font-mono uppercase">Explorer</span>
+      <div class="h-[30px] w-[1px] overflow-hidden bg-white bg-opacity-30 mt-sm">
+        <div class="h-[80px] w-[1px] bg-white animate-slide-down"></div>
+      </div>
+    </div>
   </div>
 </div>
 
