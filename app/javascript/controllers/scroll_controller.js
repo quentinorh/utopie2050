@@ -13,14 +13,21 @@ export default class extends Controller {
     this.contentTarget.style.opacity = 1;
     
     // Animation pour l'image du post
-    gsap.fromTo(this.postImageTarget, 
-      { scaleX: 0 },
-      { 
-        scaleX: 1, 
-        duration: 1.5,
-        ease: "power4.out"
-      }
-    );
+    const tl = gsap.timeline();
+    const container = this.postImageTarget.parentElement;
+    const image = this.postImageTarget;
+
+    tl.set(container, { autoAlpha: 1 });
+    tl.from(container, {
+      x: -100,
+      duration: 1.5,
+      ease: "power4.out"
+    });
+    tl.from(image, {
+      x: -200,
+      duration: .9,
+      ease: "power4.out"
+    }, "-=1.5");
 
     // Split the title
     Splitting({ target: this.titleTarget, by: 'lines' });
