@@ -24,10 +24,12 @@
           </svg>
         </button>
       </div>
-      <div class="flex flex-shrink-0 items-center">
+      <div class="flex flex-shrink-0 items-center gap-xs">
         <%= link_to root_path, class: "navbar-brand" do %>
           <h1>Utopia 2050</h1>
         <% end %>
+        <span>|</span>
+        <%= link_to "Tous les futurs", posts_path, class: "text-sm font-mono" %>
       </div>
       <div class="hidden md:ml-6 md:space-x-8">
         <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->

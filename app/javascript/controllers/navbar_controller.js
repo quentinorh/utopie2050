@@ -10,3 +10,4 @@ export default class extends Controller {
     this.closeMenuTarget.classList.toggle('hidden')
   } 
 }
+
