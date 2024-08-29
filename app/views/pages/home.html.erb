@@ -19,9 +19,13 @@
 </div>
 
 
-<div class="p-xl my-base text-center">
-  <p class="text-xl">
-     Le solarpunk est un mouvement qui imagine un avenir radieux où l'humanité vit en harmonie avec la nature. Il célèbre l'innovation durable, l'énergie propre et la justice sociale. Dans ce futur, nos villes sont des jardins luxuriants, nos technologies sont vertes, et nos communautés sont résilientes et inclusives. Le solarpunk nous invite à rêver grand et à agir maintenant pour créer un monde meilleur, où l'optimisme et l'action collective transforment notre planète en un paradis écologique pour tous.
+<div class="p-xl mt-xl mb-2xl text-center">
+  <p class="text-xl xl:text-xxlish text-balance" data-controller="text-reveal">
+     Le solarpunk est un mouvement qui imagine un avenir radieux où l'humanité vit en harmonie avec la nature. <br><br>
+
+      Il célèbre l'innovation durable, l'énergie propre et la justice sociale.<br><br>
+
+      Le solarpunk nous invite à rêver grand et à agir maintenant pour créer un monde meilleur
   </o>
 </div>
 
@@ -41,7 +45,7 @@
     <img src="https://picsum.photos/200/300" class="h-[10vh] absolute" data-animation-target="postsGalleryImage">
   </div>
 
-  <div class="w-full flex flex-col">
+  <div class="w-full flex flex-col gap-sm">
    <% @posts.each do |post| %>
     <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { 
       action: "mouseover->animation#postsGallery", 

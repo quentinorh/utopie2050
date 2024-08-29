@@ -42,7 +42,6 @@ export default class extends Controller {
   }
 
   buttonsAnimation() {
-    console.log(this.buttonsTarget)
     const buttons = this.buttonsTarget
     gsap.from(buttons.children, {
       opacity: 0,
