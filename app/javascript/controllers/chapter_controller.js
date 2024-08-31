@@ -8,14 +8,14 @@ export default class extends Controller {
 
     // Crée un nouvel élément div pour contenir le chapitre
     const newChapter = document.createElement("div");
-    newChapter.classList.add("chapter-fields");
+    newChapter.classList.add("chapter-fields", "mt-sm");
 
     // Générer l'HTML pour le nouveau chapitre
     newChapter.innerHTML = `
-      <label>Titre du chapitre</label>
+      <label class="tw-form-label">Titre du chapitre</label>
       <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
 
-      <label>Contenu du chapitre</label>
+      <label class="tw-form-label">Contenu du chapitre</label>
       <textarea name="post[chapters_attributes][][body]" class="tw-form-input"></textarea>
 
       <input type="hidden" name="post[chapters_attributes][][position]" value="">
