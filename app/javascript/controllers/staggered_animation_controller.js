@@ -7,14 +7,11 @@ export default class extends Controller {
   static targets = ["element"]
 
   connect() {
-    const staggerCount = parseInt(this.elementTarget.dataset.staggerCount);
-    const initialItemsToAnimate = this.elementTargets.slice(0, Math.min(staggerCount, 25));
-    const remainingItemsToAnimate = this.elementTargets.slice(Math.min(staggerCount, 25));
-
+    const allItemsToAnimate = this.elementTargets;
     
     const tl = gsap.timeline();
 
-    tl.fromTo(initialItemsToAnimate, 
+    tl.fromTo(allItemsToAnimate, 
       { opacity: 0 },
       { 
         opacity: 1, 

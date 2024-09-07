@@ -14,21 +14,22 @@
     <!-- Titre -->
     <div>
       <label for="title" class="tw-form-label">Titre</label>
-      <div class="mt-xs">
-        <%= form.text_field :title, class: "tw-form-input" %>
-      </div>
+      <%= form.text_field :title, class: "tw-form-input" %>
     </div>
 
     <!-- Chapitres -->
     <div class="mt-sm">
-      <h3>Chapitres</h3>
+      <div class="flex items-center justify-between">
+        <span class="text-l">Chapitres</span>
+        <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
+      </div>
       <div id="chapters" data-chapter-target="chapters">
         <%= form.fields_for :chapters do |chapter_form| %>
-          <div class="chapter-fields" data-chapter-target="chapter">
-            <label>Titre du chapitre</label>
+          <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
+            <label class="tw-form-label">Titre du chapitre</label>
             <%= chapter_form.text_field :title, class: "tw-form-input" %>
 
-            <label>Contenu du chapitre</label>
+            <label class="tw-form-label">Contenu du chapitre</label>
             <%= chapter_form.text_area :body, class: "tw-form-input" %>
 
             <%= chapter_form.hidden_field :position %>
@@ -38,16 +39,12 @@
           </div>
         <% end %>
       </div>
-
-      <div class="mt-xs">
-        <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-primary", data: { action: "click->chapter#addChapter" } %>
-      </div>
     </div>
 
     <!-- Image -->
     <div class="mt-sm">
-      <label for="body" class="tw-form-label">Illustration</label>
-      <ul class="nav nav-tabs" id="imageTab" role="tablist">
+      <label for="body" class="tw-form-label hidden">Illustration</label>
+      <ul class="nav nav-tabs hidden" id="imageTab" role="tablist">
         <li class="flex gap-2" role="presentation">
           <a class="tw-btn-secondary"> Charger une image </a>
           <a class="tw-btn-secondary"> Unsplash </a>
@@ -60,7 +57,7 @@
           <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>
         </div>
       </div>
-      <div class="flex gap-2 mt-xs">
+      <div class="flex gap-2 mt-xs hidden">
         <%= text_field_tag :query, nil, placeholder: "Recherche Unsplash", class: "form-control", data: { unsplash_target: "query" } %>
         <%= button_tag "Chercher", data: { action: "click->unsplash#search" }, type: :button, class: "tw-btn-primary" %>
       </div>
@@ -70,9 +67,9 @@
 
     <!-- Color Picker -->
     <div class="mt-sm">
-      <label for="body" class="tw-form-label">Couleur</label>
+      <label for="body" class="tw-form-label">Sélectionner une couleur</label>
       <div class="mt-xs flex items-center gap-2" data-controller="color-picker">
-        <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label" %>
+        <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label hidden" %>
         <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
         <% hue = color_value.match(/hsl\((\d+),/)[1] rescue 0 %>
         <div class="color-slider-wrapper">
@@ -85,7 +82,7 @@
 
     <!-- Draft -->
     <div class="mt-sm">
-      <label for="body" class="tw-form-label">Enregistrer en tant que brouillon ?</label>
+      <label for="body" class="tw-form-label hidden">Enregistrer en tant que brouillon ?</label>
       <div class="mt-xs flex items-center gap-2">
         <%= form.check_box :draft, class: "tw-form-checkbox" %>
         <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
