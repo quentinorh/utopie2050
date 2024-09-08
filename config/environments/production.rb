@@ -2,8 +2,8 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
 
-  config.action_mailer.default_url_options = { host: 'https://sp2050.org', protocol: 'https' }
-  Rails.application.routes.default_url_options[:host] = 'https://sp2050.org'
+  config.action_mailer.default_url_options = { host: 'https://sp2050-2df13619a752.herokuapp.com/', protocol: 'https' }
+  Rails.application.routes.default_url_options[:host] = 'https://sp2050-2df13619a752.herokuapp.com/'
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
