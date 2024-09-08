@@ -20,13 +20,14 @@
 
 
 <div class="p-xl mt-xl mb-2xl text-center">
-  <p class="text-xl xl:text-xxlish text-balance" data-controller="text-reveal">
-     Le solarpunk est un mouvement qui imagine un avenir radieux où l'humanité vit en harmonie avec la nature. <br><br>
+  <p class="text-xl base:text-xxlish text-balance" data-controller="text-reveal">
+    Le solarpunk est un mouvement artistique et politique dérivé de sous-genres de science-fiction comme le steampunk et la climate fiction, et qui s'est constitué au début du XXIe siècle en opposition aux dystopies du courant cyberpunk.
+    <br></br>
+    Le solarpunk propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté, à la lumière des préoccupations des luttes intersectionnelles du début du XXIe siècle, non seulement au sujet de l'environnement, à l'égard du changement climatique et de la pollution, mais aussi des inégalités sociales et des intolérances et discriminations sociales.
+    <br></br>
+    Source : wikipedia.org/wiki/Solarpunk
+  </p>
 
-      Il célèbre l'innovation durable, l'énergie propre et la justice sociale.<br><br>
-
-      Le solarpunk nous invite à rêver grand et à agir maintenant pour créer un monde meilleur
-  </o>
 </div>
 
 
@@ -47,10 +48,10 @@
 
   <div class="w-full flex flex-col gap-sm">
    <% @posts.each do |post| %>
-    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: { 
-      action: "mouseover->animation#postsGallery", 
-      image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '', 
-      post_color: post.color 
+    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: {
+      action: "mouseover->animation#postsGallery",
+      image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
+      post_color: post.color
     } do %>
       <span><%= post.title %></span>
     <% end %>
@@ -68,7 +69,7 @@
     end
     color_matrix = hue_to_feColorMatrix(hue)
   %>
-  
+
 <% end %>
 
 <%= render 'shared/footer' %>
