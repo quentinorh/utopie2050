@@ -1,13 +1,17 @@
 <!-- Hero -->
 <div data-controller="hero-animation" class="h-100 w-full aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
   <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display text-white text-center" data-hero-animation-target="title">Écrire et lire des futures désirables</h1>
+    <h1 class="text-gray-900 text-display text-white text-center" >
+    Solarpunk 2050</h1>
+    <h1 class="text-gray-900 text-display text-white text-center">
+    <%# <h1 class="text-gray-900 text-display text-white text-center" data-hero-animation-target="title"> %>
+    Lire et écrire des futures désirables</h1>
     <div>
       <div data-action="mousemove->hero-animation#handleMouseMove"></div>
     </div>
     <div class="flex gap-sm mt-sm" data-hero-animation-target="buttons">
-      <%= link_to "Lire un futur", posts_path, class: "tw-btn-primary", data: { controller: "randomize-letter-animation" } %>
-      <%= link_to "Écrire un futur", new_post_path, class: "tw-btn-secondary",data: { controller: "randomize-letter-animation" } %>
+      <%= link_to "Lire le futur", posts_path, class: "tw-btn-primary", data: { controller: "randomize-letter-animation" } %>
+      <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary",data: { controller: "randomize-letter-animation" } %>
     </div>
     <div class="absolute bottom-[5vh] flex flex-col items-center">
       <span class="text-white text-sm font-mono uppercase">Explorer</span>

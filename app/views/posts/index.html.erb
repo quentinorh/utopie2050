@@ -1,16 +1,16 @@
 <div class="flex">
-  <div class="w-4/5"> 
+  <div class="w-4/5">
     <h1 class="text-display px-sm pt-sm">Tous les futurs<sup class="ml-sm text-l font-mono" data-controller="randomize-letter-animation">[<%= @posts.count %>]</sup></h1>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-xs gap-y-xl flex-grow p-sm" data-controller="staggered-animation">  
-      
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-xs gap-y-xl flex-grow p-sm" data-controller="staggered-animation">
+
       <% if @posts.any? %>
         <% @posts.each do |post| %>
-          <%= link_to post, class: "text-xl transition-colors group opacity-0" , data: { 
+          <%= link_to post, class: "text-xl transition-colors group opacity-100" , data: {
             staggered_animation_target: "element",
             stagger_count: 12,
-            action: "mouseover->animation#postsGallery", 
-            image_path: post.unsplash_image_url.present? ? post.unsplash_image_url : (post.photo.attached? ? cl_image_path(post.photo.key) : ''), 
-            post_color: post.color 
+            action: "mouseover->animation#postsGallery",
+            image_path: post.unsplash_image_url.present? ? post.unsplash_image_url : (post.photo.attached? ? cl_image_path(post.photo.key) : ''),
+            post_color: post.color
           } do %>
             <div class="relative w-full aspect-video mb-xs overflow-hidden">
               <% if post.unsplash_image_url.present? %>
