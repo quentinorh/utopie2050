@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   # Devise modules...
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
 
   # Validations
   validates :username, presence: true, uniqueness: true

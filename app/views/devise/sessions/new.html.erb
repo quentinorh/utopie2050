@@ -7,19 +7,16 @@
             <%= f.input :email,
                         required: false,
                         autofocus: true,
-                        input_html: { autocomplete: "email" },
-                        input_html: { class:'tw-form-input'},
+                        input_html: { autocomplete: "email", class:'tw-form-input' },
                         label_html: { class:"tw-form-label mt-sm"} %>
             <%= f.input :password,
                         required: false,
-                        input_html: { autocomplete: "current-password" },
-                        input_html: { class:'tw-form-input'},
+                        input_html: { autocomplete: "current-password", class:'tw-form-input' },
                         label_html: { class:"tw-form-label mt-sm"} %>
-            <%= f.input :remember_me, 
-            as: :boolean,
-            input_html: { class: 'tw-form-checkbox' },
-            label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
-
+            <%= f.input :remember_me,
+                        as: :boolean,
+                        input_html: { class: 'tw-form-checkbox' },
+                        label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
           </div>
 
           <div class="form-actions">
@@ -29,5 +26,3 @@
     </div>
   </div>
 </div>
-
-<%# <%= render "devise/shared/links" %>
