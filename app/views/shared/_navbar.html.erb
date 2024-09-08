@@ -26,7 +26,7 @@
       </div>
       <div class="flex flex-shrink-0 items-center gap-xs">
         <%= link_to root_path, class: "navbar-brand" do %>
-          <h1>Utopia 2050</h1>
+          <h1>SP2050</h1>
         <% end %>
         <span>|</span>
         <%= link_to "Tous les futurs", posts_path, class: "text-sm font-mono" %>
@@ -47,7 +47,7 @@
         <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary" %>
         <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary" %>
       <% end %>
-        
+
       <div class="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
         <!-- Profile dropdown -->
         <% if user_signed_in? %>
@@ -116,4 +116,3 @@
     </div>
   </div>
 </nav>
-
