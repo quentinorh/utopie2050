@@ -1,9 +1,9 @@
 import "@hotwired/turbo-rails"
-import "controllers"
+import "./controllers"
 import Lenis from '@studio-freight/lenis';
 
 const lenis = new Lenis({
-  lerp: 0.1, 
+  lerp: 0.1,
   wheelMultiplier: 1
 })
 
