@@ -1,6 +1,6 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
-const navbarHeight = { 
+const navbarHeight = {
   'navbar-height': '60px',
 };
 
@@ -24,13 +24,14 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Apfel', ...defaultTheme.fontFamily.sans],
+        Opendylexic: ['Opendylexic'],
         mono: ['Roboto Mono', 'monospace'],
       },
       colors: {
-        primary: '#1D4ED8',    
-        secondary: '#F59E0B',  
-        accent: '#10B981',     
-        neutral: '#F3F4F6',   
+        primary: '#1D4ED8',
+        secondary: '#F59E0B',
+        accent: '#10B981',
+        neutral: '#F3F4F6',
         black: {
           100: '#EFEFEF',
           500: '#989898',
@@ -38,7 +39,7 @@ module.exports = {
         },
       },
       margin: {
-        ...spacings      
+        ...spacings
       },
       padding: {
         ...spacings
@@ -53,16 +54,17 @@ module.exports = {
         ...navbarHeight
       },
       fontSize: {
-        'xxs': 'xxx',  
-        'xs': 'xx',   
-        'sm': '0.75rem',     
-        'base': 'xx',    
-        'l': '1.1875rem',      
-        'xl': '2.1875rem', 
-        'xxlish': '3.5rem',   
-        'xxl': '4rem',      
-        'xxxl': '7.5rem',    
-        'display': '5rem',      
+        'xxs': 'xxx',
+        'xs': 'xx',
+        'sm': '0.75rem',
+        'base': 'xx',
+        'l': '1.1875rem',
+        '2l': '1.5rem',
+        'xl': '2.1875rem',
+        'xxlish': '3.5rem',
+        'xxl': '4rem',
+        'xxxl': '7.5rem',
+        'display': '5rem',
       },
       animation: {
         'slide-down': 'slide-down 3s cubic-bezier(.9,.17,.12,.89) infinite',

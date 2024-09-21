@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
 // To use a font file (.woff) uncomment following lines
 @font-face {
   font-family: "Apfel";
@@ -5,13 +7,18 @@
   src: font-url('ApfelGrotezk-Regular.woff2') format('woff2');
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
-
-html {
-  font-family: "Apfel", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.2;
+@font-face {
+  font-family: "Opendylexic";
+  font-weight: regular;
+  src: font-url('OpenDyslexic-Regular.woff') format('woff');
 }
+
+// html {
+//   font-family: "Apfel", sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   line-height: 1.2;
+// }
+
 
 h1 {
   line-height: 100%;
