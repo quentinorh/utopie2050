@@ -1,0 +1,50 @@
+<div id="settings-panel" data-settings-target="panel" class="hidden absolute left-0 right-0 w-full p-4 bg-white shadow-lg z-50" style="top: var(--navbar-height);">
+  <div class="flex justify-between">
+
+    <!-- Taille du texte -->
+    <div class="flex items-center space-x-2">
+      <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-sm" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="small">A</button>
+      <button id="text-size-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-base" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="medium">A</button>
+      <button id="text-size-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-l" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="large">A</button>
+      <button id="text-size-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-2l" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="xlarge">A</button>
+    </div>
+
+    <!-- Interlignes -->
+    <div class="flex items-center space-x-2">
+      <button id="line-height-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="small">
+        <span class="block w-5 h-1 bg-gray-700 mb-1"></span>
+        <span class="block w-5 h-1 bg-gray-700 mb-1"></span>
+        <span class="block w-4 h-1 bg-gray-700 mb-1"></span>
+        <span class="block w-4 h-1 bg-gray-700 mb-1"></span>
+        <span class="block w-4 h-1 bg-gray-700"></span>
+      </button>
+      <button id="line-height-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="medium">
+        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
+        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
+        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
+        <span class="block w-4 h-1 bg-gray-700"></span>
+      </button>
+      <button id="line-height-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="large">
+        <span class="block w-4 h-1 bg-gray-700 mb-3"></span>
+        <span class="block w-4 h-1 bg-gray-700 mb-3"></span>
+        <span class="block w-4 h-1 bg-gray-700"></span>
+      </button>
+      <button id="line-height-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="xlarge">
+        <span class="block w-4 h-1 bg-gray-700 mb-4"></span>
+        <span class="block w-4 h-1 bg-gray-700"></span>
+      </button>
+    </div>
+
+    <!-- Typographie -->
+    <div class="flex items-center space-x-2">
+      <button id="font-sans" class="border-2 hover:border-primary focus:outline-none px-2 py-1 font-sans" data-action="click->settings#changeFont" data-settings-target="font" data-value="sans">Apfel</button>
+      <button id="font-dyslexic" class="border-2 hover:border-primary focus:outline-none px-2 py-1 font-opendyslexic" data-action="click->settings#changeFont" data-settings-target="font" data-value="Opendylexic">Opendyslexic</button>
+    </div>
+
+    <!-- Mode -->
+    <div class="flex items-center space-x-2">
+      <button id="light-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-white text-black-900" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="light">Light mode</button>
+      <button id="dark-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-black-900 text-white" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="dark">Dark mode</button>
+    </div>
+  </div>
+</div>
