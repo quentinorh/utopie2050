@@ -13,8 +13,14 @@
 
     <!-- Titre -->
     <div>
-      <label for="title" class="tw-form-label">Titre</label>
+      <label for="title" class="mt-8 text-l tw-form-label">Titre</label>
       <%= form.text_field :title, class: "tw-form-input" %>
+    </div>
+
+    <!-- Texte -->
+    <div>
+      <label for="body" class="mt-8 text-l tw-form-label">Texte</label>
+      <%= form.text_field :body, class: "tw-form-input" %>
     </div>
 
     <!-- Chapitres -->
@@ -29,7 +35,7 @@
             <label class="tw-form-label">Titre du chapitre</label>
             <%= chapter_form.text_field :title, class: "tw-form-input" %>
 
-            <label class="tw-form-label">Contenu du chapitre</label>
+            <label class="tw-form-label">Texte du chapitre</label>
             <%= chapter_form.text_area :body, class: "tw-form-input" %>
 
             <%= chapter_form.hidden_field :position %>
@@ -43,7 +49,7 @@
 
     <!-- Image -->
     <div class="mt-sm">
-      <label for="body" class="tw-form-label hidden">Illustration</label>
+      <label for="body" class="mt-8 text-l tw-form-label">Illustration</label>
       <ul class="nav nav-tabs hidden" id="imageTab" role="tablist">
         <li class="flex gap-2" role="presentation">
           <a class="tw-btn-secondary"> Charger une image </a>
@@ -67,21 +73,27 @@
 
     <!-- Color Picker -->
     <div class="mt-sm">
-      <label for="body" class="tw-form-label">Sélectionner une couleur</label>
+      <label for="body" class="mt-8 text-l tw-form-label">Sélectionner une couleur</label>
       <div class="mt-xs flex items-center gap-2" data-controller="color-picker">
         <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label hidden" %>
         <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
         <% hue = color_value.match(/hsl\((\d+),/)[1] rescue 0 %>
-        <div class="color-slider-wrapper">
-          <input type="range" min="0" max="360" value="<%= hue %>" class="form-range" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
-          <div class="color-bar"></div>
+
+        <div class="color-slider-wrapper relative w-full">
+          <div class="color-bar absolute top-0 left-0 right-0 h-2 z-0"></div> <!-- Color bar with lower z-index -->
+          <input type="range" min="0" max="360" value="<%= hue %>" class="relative z-10 form-range w-full" id="colorSlider" data-action="input->color-picker#updateColor" data-color-picker-target="colorSlider">
         </div>
+
         <%= form.hidden_field :color, id: "colorInput", value: "#{color_value}", data: { color_picker_target: "colorInput" } %>
       </div>
     </div>
 
+
+
+
     <!-- Draft -->
     <div class="mt-sm">
+      <label for="body" class="mt-8 text-l tw-form-label">Brouillon ?</label>
       <label for="body" class="tw-form-label hidden">Enregistrer en tant que brouillon ?</label>
       <div class="mt-xs flex items-center gap-2">
         <%= form.check_box :draft, class: "tw-form-checkbox" %>

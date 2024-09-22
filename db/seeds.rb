@@ -10,6 +10,9 @@ user = User.create!(
   username: "Quentin Orhant"
 )
 
+# Bypass Devise email confirmation
+user.update!(confirmed_at: Time.current)
+
 # Create posts with chapters
 posts = [
   {
@@ -44,7 +47,8 @@ posts.each do |post_data|
     user_id: user.id,
     unsplash_image_url: post_data[:unsplash_image_url],
     image_rights: post_data[:image_rights],
-    color: post_data[:color]
+    color: post_data[:color],
+    body: Faker::Lorem.paragraphs(number: 5).join("\n\n")  # Adding a random body using Faker
   )
 
   # Optionally, create chapters for each post
@@ -61,7 +65,8 @@ end
     user_id: user.id,
     unsplash_image_url: Faker::LoremFlickr.image(size: "300x300", search_terms: ['future', 'technology']),
     image_rights: false,
-    color: "hsl(#{rand(360)}, 100%, 50%)"
+    color: "hsl(#{rand(360)}, 100%, 50%)",
+    body: Faker::Lorem.paragraphs(number: 5).join("\n\n")  # Adding a random body using Faker
   )
 
   # Generate 5-10 chapters for each post

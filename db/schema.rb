@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_08_060029) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_22_101538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_08_060029) do
     t.boolean "image_rights"
     t.string "color"
     t.boolean "draft"
+    t.text "body"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 

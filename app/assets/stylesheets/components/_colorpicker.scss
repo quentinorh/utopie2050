@@ -48,7 +48,8 @@
   background: var(--slider-thumb-color, gray); /* Couleur du point, par défaut gris */
   cursor: pointer; /* Curseur pour pointer */
   border-radius: 50%; /* Arrondir le point */
-  transform: translateY(2px); /* Ajuster le point avec la piste */
+  transform: translateY(9px); /* Ajuster le point avec la piste */
+  border: none;
   position: relative;
   z-index: 2;
 }

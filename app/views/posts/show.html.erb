@@ -1,16 +1,16 @@
 <%
   # Extract color values from @post.color
   match = @post.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/)
-  
+
   if match
     hue = match[1].to_i
     saturation = match[2].to_i
     lightness = match[3].to_i
-    
+
     # Convert HSL to RGB
     rgb_values = hsl_to_rgb(hue, saturation, lightness)
     r, g, b = rgb_values
-    
+
     # Normalize RGB values to 0-1 range for SVG filter
     r_normalized = (r / 255.0).round(2)
     g_normalized = (g / 255.0).round(2)
@@ -55,7 +55,7 @@
   </nav>
 
   <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl min-h-screen relative">
-    
+
     <!-- Colonne de gauche fixe -->
     <div class="w-full lg:w-1/3 lg:sticky h-[100vw] aspect-square lg:top-[theme('top.navbar-height')] max-h-screen flex flex-col items-center justify-center z-0 ">
       <div class="absolute top-0 left-0 z-[99]">
@@ -72,15 +72,15 @@
       </div>
 
       <div class="w-full h-full mb-4 origin-left overflow-hidden" data-scroll-target="postImage">
-        <%= image_tag(@post.unsplash_image_url.present? ? @post.unsplash_image_url : (@post.photo.attached? ? cl_image_path(@post.photo.key, crop: :fill) : ''), 
-                      class: "w-full h-full object-cover origin-center", 
+        <%= image_tag(@post.unsplash_image_url.present? ? @post.unsplash_image_url : (@post.photo.attached? ? cl_image_path(@post.photo.key, crop: :fill) : ''),
+                      class: "w-full h-full object-cover origin-center",
                       style: "filter: url(#duotone)") %>
       </div>
     </div>
 
     <!-- Colonne de droite défilante -->
     <!-- Boucle sur les chapitres du post -->
-    
+
     <div class="w-full lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
       <div class="flex flex-col" data-scroll-target="content">
         <!-- Intro and data -->
@@ -94,6 +94,11 @@
             <p class="text-right"><%= @post.calculate_reading_time %></p>
           </div>
         </div>
+        <div class="mt-lg">
+          <%= simple_format(@post.body) %>
+        </div>
+
+
         <% if @post.chapters.any? %>
           <div class="tw-content text-l pt-0 lg:pt-[50vh] transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content"">
             <% @post.chapters.each_with_index do |chapter, index| %>

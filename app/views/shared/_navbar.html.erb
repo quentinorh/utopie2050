@@ -38,11 +38,11 @@
         <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary" %>
       <% end %>
       <!-- Settings panel button -->
-      <button id="settings-button" class="icon-settings ml-2" data-action="click->settings#toggle">⚙️</button>
-      <div class="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-        <!-- Profile dropdown -->
+      <button id="settings-button" class="flex ml-4 gap-xs items-center" data-action="click->settings#toggle"><%= inline_svg_tag('settings.svg') %></button>
+      <!-- Profile dropdown -->
+      <div class="ml-4 md:flex md:flex-shrink-0 md:items-center">
         <% if user_signed_in? %>
-          <div class="relative ml-3">
+          <div class="relative">
             <div>
               <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
                 <span class="text-white" data-navbar-target="username">
@@ -60,7 +60,7 @@
                 From: "transform opacity-100 scale-100"
                 To: "transform opacity-0 scale-95"
             -->
-            <div class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
+            <div class="hidden absolute right-0 z-20 mt-6 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
               <%= link_to "Mes futurs", user_posts_path(current_user.id), class: "tw-nav-link" %>
               <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
               <%= link_to "Se déconnecter", destroy_user_session_path, data: { turbo_method: :delete }, class: "tw-nav-link" %>
@@ -71,7 +71,7 @@
     </div>
   </div>
   <!-- Mobile menu, show/hide based on menu state. -->
-  <div class="md:hidden" id="mobile-menu">
+  <%# <div class="md:hidden" id="mobile-menu">
     <div class="space-y-1 pb-3 pt-2">
       <!-- Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
       <a href="#" class="block border-l-4 border-indigo-500 bg-indigo-50 py-2 pl-3 pr-4 text-base font-medium text-indigo-700 sm:pl-5 sm:pr-6">Dashboard</a>
@@ -98,7 +98,7 @@
         <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6">Settings</a>
         <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6">Sign out</a>
       </div>
-    </div>
+    </div> %>
   </div>
 
   <!-- Settings panel -->
