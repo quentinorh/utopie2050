@@ -30,7 +30,7 @@ export default class extends Controller {
   changeFont(event) {
     const font = event.currentTarget.dataset.value
     this.setActiveButton('font', font)
-    document.documentElement.style.fontFamily = font === 'sans' ? 'sans-serif' : 'Opendylexic'
+    document.documentElement.style.fontFamily = font === 'sans' ? 'Apfel' : 'Opendylexic'
     this.saveSetting('font-family', font)
   }
 
@@ -96,7 +96,7 @@ export default class extends Controller {
 
     document.documentElement.style.fontSize = this.getFontSize(textSize)
     document.documentElement.style.lineHeight = this.getLineHeight(lineHeight)
-    document.documentElement.style.fontFamily = font === 'sans' ? 'sans-serif' : 'Opendylexic'
+    document.documentElement.style.fontFamily = font === 'sans' ? 'Apfel' : 'Opendylexic'
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }
 
