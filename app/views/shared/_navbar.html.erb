@@ -38,7 +38,7 @@
         <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary" %>
       <% end %>
       <!-- Settings panel button -->
-      <button id="settings-button" class="flex ml-4 gap-xs items-center" data-action="click->settings#toggle"><%= inline_svg_tag('settings.svg') %></button>
+      <button id="settings-button" class="flex ml-4 gap-xs items-center" data-action="click->settings#toggle"><%= inline_svg "settings.svg" %></button>
       <!-- Profile dropdown -->
       <div class="ml-4 md:flex md:flex-shrink-0 md:items-center">
         <% if user_signed_in? %>
