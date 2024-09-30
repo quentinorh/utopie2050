@@ -7,7 +7,8 @@ Chapter.destroy_all
 user = User.create!(
   email: "quentin.orhant@gmook.com",
   password: "azerty",
-  username: "Quentin Orhant"
+  username: "Quentin Orhant",
+  age: 62
 )
 
 # Bypass Devise email confirmation
