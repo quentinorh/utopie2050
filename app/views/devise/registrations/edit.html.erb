@@ -17,6 +17,11 @@
                         input_html: { class:'tw-form-input'},
                         label_html: { class:"tw-form-label mt-sm"}
             %>
+            <%= f.input :age, 
+                        required: true,
+                        input_html: { class:'tw-form-input'},
+                        label_html: { class:"tw-form-label mt-sm"}
+            %>
 
             <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
               <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
