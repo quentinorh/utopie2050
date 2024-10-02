@@ -68,30 +68,30 @@
     <!-- Colonne de droite défilante -->
     <!-- Boucle sur les chapitres du post -->
 
-    <div class="adjustable w-full lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
+    <div class="lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
       <div class="flex flex-col" data-scroll-target="content">
         <!-- Intro and data -->
-        <div class="flex justify-between font-mono text-sm pt-sm uppercase">
+        <div class="flex justify-between font-mono text-sm py-sm uppercase">
           <div>
             <p>Publié le</p>
             <p data-controller="randomize-letter-animation"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
           </div>
           <div>
-            <p>Lecture moyenne</p>
+            <p>Temps de lecture</p>
             <p class="text-right"><%= @post.calculate_reading_time %></p>
           </div>
         </div>
-        <div class="mt-lg">
+        <div class="mt-lg adjustable w-full">
           <%= simple_format(@post.body) %>
         </div>
         <% if @post.chapters.any? %>
-          <div class="tw-content pt-0 mt-md transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content"">
+          <div class="adjustable w-full  pt-0 mt-md transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content">
             <% @post.chapters.each_with_index do |chapter, index| %>
               <div class="mt-lg">
-                <h2 class="text-2xl mt-6">
+                <h2 class="text-2xl mt-4">
                   Chapitre <%= index + 1 %> : <%= chapter.title %>
                 </h2>
-                <div class="mt-xs">
+                <div class="mt-0">
                   <%= simple_format(chapter.body) %>
                 </div>
               </div>
