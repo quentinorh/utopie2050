@@ -67,9 +67,9 @@ export default class extends Controller {
 
   getFontSize(size) {
     return {
-      small: '10px',
-      medium: '12px',
-      large: '14px',
+      small: '12px',
+      medium: '14px',
+      large: '16px',
       xlarge: '18px'
     }[size]
   }
