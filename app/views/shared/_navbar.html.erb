@@ -1,4 +1,4 @@
-<nav class="bg-white border-b border-gray-100 sticky top-0 z-[99] h-navbar-height flex items-center" data-controller="navbar settings">
+<nav class="bg-white border-b border-gray-100 sticky top-0 z-[99] h-navbar-height flex items-center" data-controller="navbar">
   <div class="flex justify-between w-full px-sm">
     <div class="flex">
       <div class="-ml-2 mr-2 flex items-center md:hidden">
@@ -37,8 +37,6 @@
         <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary" %>
         <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary" %>
       <% end %>
-      <!-- Settings panel button -->
-      <button id="settings-button" class="flex ml-4 gap-xs items-center" data-action="click->settings#toggle"><%= inline_svg_tag('settings.svg') %></button>
       <!-- Profile dropdown -->
       <div class="ml-4 md:flex md:flex-shrink-0 md:items-center">
         <% if user_signed_in? %>
@@ -102,5 +100,6 @@
   </div> %>
 
   <!-- Settings panel -->
-  <%= render 'shared/settingspanel' %>
+  
+  <%# <%= render 'shared/settingspanel' %>
 </nav>

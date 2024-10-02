@@ -1,0 +1,21 @@
+<nav class="bg-white fixed bottom-0 w-full z-[99] border-t border-gray-100 font-mono text-sm uppercase leading-[100%]">
+    <div class="p-sm">
+      <div class="flex justify-between">
+        <div class="flex gap-xs">
+          <button data-action="click->text-to-speech#speak" class="flex gap-xs items-center"><span>  <%= inline_svg_tag('play.svg') %></span>Lecture audio</button>
+          <span data-action="click->text-to-speech#stop" class="hidden">Stop la description audio</span>
+          <span>|</span>
+          <span><%= @post.calculate_spoken_time %></span>
+        </div>
+        <div class="flex gap-sm">
+          <span class="tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
+          <span class="text-gray-500"><span data-scroll-target="scrollPercentage">00</span>%</span>
+        </div>
+        <div class="flex gap-sm">
+        <!-- Settings panel button -->
+            <button id="settings-button" class="flex ml-4 gap-xs items-center" data-action="click->settings#toggle"><%= inline_svg_tag('settings.svg') %></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
