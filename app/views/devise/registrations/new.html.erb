@@ -1,25 +1,12 @@
 <div class="bg-gray-100 min-h-screen">
   <div class="pt-16 flex flex-col items-center w-full">   
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      
       <div id="registration-steps">
         <div class="step" id="step-intro">
           <h3 class="text-xl uppercase text-center">Introduction</h3>
           <p class="text-sm text-center uppercase font-mono">Bienvenue sur SP-2050, un espace dédié aux imaginaires et futurs désirables. Ici, chaque voix (?) compte et chaque vision du monde peut inspirer de nouvelles manières de voir le monde de demain.</p>
           <p class="text-sm text-center uppercase font-mono">Avant de commencer, pour mieux nous connaitre, nous allons discuter avec le toi du futur …</p>
-          <button type="button" onclick="nextStep('step-intro', 'step-age')" class="tw-btn-primary w-full mt-sm">Commencer</button>
-        </div>
-
-        <div class="step" id="step-age" style="display: none;">
-          <h3 class="text-xl uppercase text-center">Quel âge auras-tu en 2050 ?</h3>
-          <%= f.input :age,
-                      required: true,
-                      input_html: { class: 'tw-form-input' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
-          <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-intro')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" onclick="nextStep('step-age', 'step-username')" class="tw-btn-primary w-full mt-sm">Suivant</button>
-          </div>
+          <button type="button" onclick="nextStep('step-intro', 'step-username')" class="tw-btn-primary w-full mt-sm">Commencer</button>
         </div>
 
         <div class="step" id="step-username" style="display: none;">
@@ -29,13 +16,25 @@
                       input_html: { class: 'tw-form-input' },
                       label_html: { class: "tw-form-label mt-sm" } %>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-age')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" onclick="nextStep('step-username', 'step-email-password')" class="tw-btn-primary w-full mt-sm">Suivant</button>
+            <button type="button" onclick="previousStep('step-intro')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" onclick="nextStep('step-username', 'step-age')" class="tw-btn-primary w-full mt-sm">Suivant</button>
+          </div>
+        </div>
+
+        <div class="step" id="step-age" style="display: none;">
+          <h3 class="text-xl uppercase text-center">Quel âge auras-tu en 2050 ?</h3>
+          <%= f.input :age,
+                      required: true,
+                      input_html: { class: 'tw-form-input' },
+                      label_html: { class: "tw-form-label mt-sm" } %>
+          <div class="flex justify-between">
+            <button type="button" onclick="previousStep('step-username')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" onclick="nextStep('step-age', 'step-email-password')" class="tw-btn-primary w-full mt-sm">Suivant</button>
           </div>
         </div>
 
         <div class="step" id="step-email-password" style="display: none;">
-          <h3 class="text-xl uppercase text-center">Ton email ?</h3>
+          <h3 class="text-xl uppercase text-center">Quel est ton adresse email ?</h3>
           <%= f.input :email,
                       required: true,
                       autofocus: true,
@@ -47,12 +46,13 @@
                       input_html: { autocomplete: "new-password", class: 'tw-form-input' },
                       label_html: { class: "tw-form-label mt-sm" } %>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-username')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" onclick="previousStep('step-age')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
             <button type="button" onclick="nextStep('step-email-password', 'step-terms')" class="tw-btn-primary w-full mt-sm">Suivant</button>
           </div>
         </div>
 
         <div class="step" id="step-terms" style="display: none;">
+          <h3 class="text-xl uppercase text-center">Conditions d'utilisation</h3>
           <h3 class="text-2xl uppercase text-left">Futurs désirables</h3>
           <p class="text-sm text-left font-mono">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous.tes. Acceptes-tu de respecter cette ligne directrice en partageant uniquement des futurs positifs et constructifs ?</p>
           <h3 class="text-2xl mt-6 uppercase text-left">Contenus respectueux</h3>
@@ -61,8 +61,9 @@
           <p class="text-sm text-left font-mono">Chaque création est unique et précieuse. Veuilles à ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits nécessaires. Acceptes tu de respecter les droits d'auteur.ice ?</p>
           <div class="flex justify-between">
             <button type="button" onclick="previousStep('step-email-password')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <%= f.button :submit, "Je m'inscrire", class: "tw-btn-primary w-full mt-sm" %>
+            <%= f.button :submit, "Je m'inscris", class: "tw-btn-primary w-full mt-sm" %>
           </div>
+          <p class="text-sm text-center font-mono">En cliquant sur le bouton 'Je m'inscris', tu confirmes avoir pris connaissance et accepté les conditions d'utilisation</p>
         </div>
       </div>
     <% end %>

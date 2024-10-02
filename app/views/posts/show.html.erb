@@ -36,23 +36,10 @@
   </filter>
 </svg>
 
-<div data-controller="scroll text-to-speech">
-  <nav class="bg-white fixed bottom-0 w-full z-[99] border-t border-gray-100 font-mono text-sm uppercase leading-[100%]">
-    <div class="p-sm">
-      <div class="flex justify-between">
-        <div class="flex gap-xs">
-          <button data-action="click->text-to-speech#speak" class="flex gap-xs items-center"><span>  <%= inline_svg_tag('play.svg') %></span>Lecture audio</button>
-          <span data-action="click->text-to-speech#stop" class="hidden">Stop la description audio</span>
-          <span>|</span>
-          <span><%= @post.calculate_spoken_time %></span>
-        </div>
-        <div class="flex gap-sm">
-          <span class="tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
-          <span class="text-gray-500"><span data-scroll-target="scrollPercentage">00</span>%</span>
-        </div>
-      </div>
-    </div>
-  </nav>
+<div data-controller="scroll text-to-speech settings">
+  
+  <%= render 'shared/texttospeech' %>
+  <%= render 'shared/settingspanel' %>
 
   <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl min-h-screen relative">
 
@@ -81,7 +68,7 @@
     <!-- Colonne de droite défilante -->
     <!-- Boucle sur les chapitres du post -->
 
-    <div class="w-full lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
+    <div class="adjustable w-full lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
       <div class="flex flex-col" data-scroll-target="content">
         <!-- Intro and data -->
         <div class="flex justify-between font-mono text-sm pt-sm uppercase">
@@ -97,16 +84,14 @@
         <div class="mt-lg">
           <%= simple_format(@post.body) %>
         </div>
-
-
         <% if @post.chapters.any? %>
-          <div class="tw-content text-l pt-0 lg:pt-[50vh] transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content"">
+          <div class="tw-content pt-0 mt-md transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content"">
             <% @post.chapters.each_with_index do |chapter, index| %>
               <div class="mt-lg">
-                <h2 class="text-2xl mt-lg">
+                <h2 class="text-2xl mt-6">
                   Chapitre <%= index + 1 %> : <%= chapter.title %>
                 </h2>
-                <div class="mt-md">
+                <div class="mt-xs">
                   <%= simple_format(chapter.body) %>
                 </div>
               </div>

@@ -16,28 +16,30 @@ export default class extends Controller {
   changeTextSize(event) {
     const size = event.currentTarget.dataset.value
     this.setActiveButton('textSize', size)
-    document.documentElement.style.fontSize = this.getFontSize(size)
+    this.applyStyleToAdjustable('fontSize', this.getFontSize(size))
     this.saveSetting('text-size', size)
   }
 
   changeLineHeight(event) {
     const height = event.currentTarget.dataset.value
     this.setActiveButton('lineHeight', height)
-    document.documentElement.style.lineHeight = this.getLineHeight(height)
+    this.applyStyleToAdjustable('lineHeight', this.getLineHeight(height))
     this.saveSetting('line-height', height)
   }
 
   changeFont(event) {
     const font = event.currentTarget.dataset.value
     this.setActiveButton('font', font)
-    document.documentElement.style.fontFamily = font === 'sans' ? 'Apfel' : 'Opendylexic'
+    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Opendylexic')
     this.saveSetting('font-family', font)
   }
 
   changeTheme(event) {
     const theme = event.currentTarget.dataset.value
     this.setActiveButton('theme', theme)
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.querySelectorAll('.adjustable').forEach(el => {
+      el.classList.toggle('dark', theme === 'dark')
+    })
     this.saveSetting('theme', theme)
   }
 
@@ -57,12 +59,18 @@ export default class extends Controller {
     }
   }
 
+  applyStyleToAdjustable(property, value) {
+    document.querySelectorAll('.adjustable').forEach(el => {
+      el.style[property] = value
+    })
+  }
+
   getFontSize(size) {
     return {
-      small: '14px',
-      medium: '16px',
-      large: '18px',
-      xlarge: '20px'
+      small: '12px',
+      medium: '14px',
+      large: '16px',
+      xlarge: '18px'
     }[size]
   }
 
@@ -94,10 +102,12 @@ export default class extends Controller {
     this.setActiveButton('font', font)
     this.setActiveButton('theme', theme)
 
-    document.documentElement.style.fontSize = this.getFontSize(textSize)
-    document.documentElement.style.lineHeight = this.getLineHeight(lineHeight)
-    document.documentElement.style.fontFamily = font === 'sans' ? 'Apfel' : 'Opendylexic'
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    this.applyStyleToAdjustable('fontSize', this.getFontSize(textSize))
+    this.applyStyleToAdjustable('lineHeight', this.getLineHeight(lineHeight))
+    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Opendylexic')
+    document.querySelectorAll('.adjustable').forEach(el => {
+      el.classList.toggle('dark', theme === 'dark')
+    })
   }
 
   getCookie(name) {

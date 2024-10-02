@@ -10,6 +10,7 @@ class PostsController < ApplicationController
   end
 
   def show
+    @show_settings_panel = true
   end
 
   def new
