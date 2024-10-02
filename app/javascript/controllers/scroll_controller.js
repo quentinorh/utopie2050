@@ -33,8 +33,6 @@ export default class extends Controller {
     Splitting({ target: this.titleTarget, by: 'lines' });
     this.titleTarget.style.opacity = 1;
 
-
-
     // Animation pour le titre
     const titleWords = this.titleTarget.querySelectorAll('.word');
 

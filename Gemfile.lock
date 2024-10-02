@@ -132,6 +132,7 @@ GEM
     ffi (1.17.0)
     font-awesome-sass (6.5.2)
       sassc (~> 2.0)
+    foreman (0.88.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
     httparty (0.22.0)
@@ -326,6 +327,7 @@ DEPENDENCIES
   dotenv-rails
   faker
   font-awesome-sass (~> 6.1)
+  foreman
   importmap-rails (~> 1.2.3)
   inline_svg
   jbuilder
