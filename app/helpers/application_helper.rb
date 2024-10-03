@@ -14,15 +14,6 @@ module ApplicationHelper
 
   private
 
-  def hsl_to_rgba(hsl_color, alpha = 0.1)
-    match = hsl_color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
-    hue, saturation, lightness = match[1].to_i, match[2].to_i, match[3].to_i
-
-    rgb = hsv_to_rgb(hue / 360.0, saturation / 100.0, lightness / 100.0)
-    r, g, b = rgb.map { |c| (c * 255).to_i }
-    "rgba(#{r}, #{g}, #{b}, #{alpha})"
-  end
-
   def hsl_to_rgb(h, s, l)
     s /= 100.0
     l /= 100.0

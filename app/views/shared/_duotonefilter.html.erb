@@ -1,0 +1,39 @@
+<%
+  # Extract color values from @post.color
+  match = @post.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/)
+
+  if match
+    hue = match[1].to_i
+    saturation = match[2].to_i
+    lightness = match[3].to_i
+
+    # Convert HSL to RGB
+    rgb_values = hsl_to_rgb(hue, saturation, lightness)
+    r, g, b = rgb_values
+
+    # Normalize RGB values to 0-1 range for SVG filter
+    r_normalized = (r / 255.0).round(2)
+    g_normalized = (g / 255.0).round(2)
+    b_normalized = (b / 255.0).round(2)
+  else
+    # Default values if color format is invalid or not found
+    r_normalized, g_normalized, b_normalized = 0, 0, 0
+  end
+%>
+
+<!-- Duotone filter -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="position: absolute; width: 0; height: 0;">
+  <defs>
+    <filter id="duotone">
+      <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0
+                                           0.33 0.33 0.33 0 0
+                                           0.33 0.33 0.33 0 0
+                                           0    0    0    1 0" result="grayImage"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1" intercept="<%= r_normalized %>"/>
+        <feFuncG type="linear" slope="1" intercept="<%= g_normalized %>"/>
+        <feFuncB type="linear" slope="1" intercept="<%= b_normalized %>"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+</svg>
