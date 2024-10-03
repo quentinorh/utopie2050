@@ -6,8 +6,8 @@ class Post < ApplicationRecord
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
   validates :title, presence: true
-  validates :body, presence: true
   validate :image_presence
+  validates :image_rights, acceptance: { accept: true, message: "doit être coché pour publier" }
 
   scope :published, -> { where(draft: false) }
   scope :drafts, -> { where(draft: true) }
