@@ -15,8 +15,8 @@ export default class extends Controller {
       <label class="tw-form-label">Titre du chapitre</label>
       <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
 
-      <label class="tw-form-label">Contenu du chapitre</label>
-      <textarea name="post[chapters_attributes][][body]" class="tw-form-input"></textarea>
+      <label class="tw-form-label">Texte du chapitre</label>
+      <textarea name="post[chapters_attributes][][body]" class="tw-form-input", rows="5"></textarea>
 
       <input type="hidden" name="post[chapters_attributes][][position]" value="">
       <input type="hidden" name="post[chapters_attributes][][_destroy]" value="false">
