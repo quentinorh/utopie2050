@@ -1,24 +1,26 @@
 <%
-  # Extract color values from @post.color
-  match = @post.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/)
+    # Extract color values from @post.color
+    if @post.color.present?
+        match = @post.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/)
+        if match
+            hue = match[1].to_i
+            saturation = match[2].to_i
+            lightness = match[3].to_i
 
-  if match
-    hue = match[1].to_i
-    saturation = match[2].to_i
-    lightness = match[3].to_i
+            # Convert HSL to RGB
+            rgb_values = hsl_to_rgb(hue, saturation, lightness)
+            r, g, b = rgb_values
 
-    # Convert HSL to RGB
-    rgb_values = hsl_to_rgb(hue, saturation, lightness)
-    r, g, b = rgb_values
-
-    # Normalize RGB values to 0-1 range for SVG filter
-    r_normalized = (r / 255.0).round(2)
-    g_normalized = (g / 255.0).round(2)
-    b_normalized = (b / 255.0).round(2)
-  else
-    # Default values if color format is invalid or not found
-    r_normalized, g_normalized, b_normalized = 0, 0, 0
-  end
+            # Normalize RGB values to 0-1 range for SVG filter
+            r_normalized = (r / 255.0).round(2)
+            g_normalized = (g / 255.0).round(2)
+            b_normalized = (b / 255.0).round(2)
+        end
+    else
+        # Default values if color format is invalid or not found
+        hue = 0
+        r_normalized, g_normalized, b_normalized = 0, 0, 0
+    end
 %>
 
 <!-- Duotone filter -->
