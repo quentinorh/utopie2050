@@ -1,57 +1,60 @@
-<div class="bg-gray-100 min-h-screen">
+<div class="bg-gray-100 min-h-screen" data-controller="signup">
   <div class="pt-16 flex flex-col items-center w-full">   
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
       <div id="registration-steps">
-        <div class="step" id="step-intro">
+        <div class="step" id="step-intro" data-signup-target="step">
           <h3 class="text-xl uppercase text-center">Introduction</h3>
           <p class="text-sm text-center uppercase font-mono">Bienvenue sur SP-2050, un espace dédié aux imaginaires et futurs désirables. Ici, chaque voix (?) compte et chaque vision du monde peut inspirer de nouvelles manières de voir le monde de demain.</p>
           <p class="text-sm text-center uppercase font-mono">Avant de commencer, pour mieux nous connaitre, nous allons discuter avec le toi du futur …</p>
-          <button type="button" onclick="nextStep('step-intro', 'step-username')" class="tw-btn-primary w-full mt-sm">Commencer</button>
+          <button type="button" data-action="click->signup#nextStep" data-next-step="step-username" class="tw-btn-primary w-full mt-sm">Commencer</button>
         </div>
 
-        <div class="step" id="step-username" style="display: none;">
+        <div class="step" id="step-username" style="display: none;" data-signup-target="step">
           <h3 class="text-xl uppercase text-center">En 2050, par quel nom aimerais-tu être appelé ?</h3>
           <%= f.input :username,
                       required: true,
-                      input_html: { class: 'tw-form-input' },
+                      input_html: { class: 'tw-form-input', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' },
                       label_html: { class: "tw-form-label mt-sm" } %>
+          <div class="text-red-500 text-sm" data-signup-target="usernameError"></div>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-intro')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" onclick="nextStep('step-username', 'step-age')" class="tw-btn-primary w-full mt-sm">Suivant</button>
+            <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" data-action="click->signup#nextStep" data-next-step="step-age" class="tw-btn-primary w-full mt-sm" data-signup-target="nextStepUsernameButton" disabled>Suivant</button>
           </div>
         </div>
 
-        <div class="step" id="step-age" style="display: none;">
+        <div class="step" id="step-age" style="display: none;" data-signup-target="step">
           <h3 class="text-xl uppercase text-center">Quel âge auras-tu en 2050 ?</h3>
           <%= f.input :age,
                       required: true,
                       input_html: { class: 'tw-form-input' },
                       label_html: { class: "tw-form-label mt-sm" } %>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-username')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" onclick="nextStep('step-age', 'step-email-password')" class="tw-btn-primary w-full mt-sm">Suivant</button>
+            <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="tw-btn-primary w-full mt-sm">Suivant</button>
           </div>
         </div>
 
-        <div class="step" id="step-email-password" style="display: none;">
+        <div class="step" id="step-email-password" style="display: none;" data-signup-target="step">
           <h3 class="text-xl uppercase text-center">Quel est ton adresse email ?</h3>
           <%= f.input :email,
                       required: true,
                       autofocus: true,
-                      input_html: { autocomplete: "email", class: 'tw-form-input' },
+                      input_html: { autocomplete: "email", class: 'tw-form-input', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' },
                       label_html: { class: "tw-form-label mt-sm" } %>
+          <div class="text-red-500 text-sm" data-signup-target="emailError"></div>
           <h3 class="text-xl uppercase text-center">Ton mot de passe ?</h3>
           <%= f.input :password,
                       required: true,
                       input_html: { autocomplete: "new-password", class: 'tw-form-input' },
                       label_html: { class: "tw-form-label mt-sm" } %>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-age')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" onclick="nextStep('step-email-password', 'step-terms')" class="tw-btn-primary w-full mt-sm">Suivant</button>
+            <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="tw-btn-primary w-full mt-sm" data-signup-target="nextStepEmailButton" disabled>Suivant</button>
           </div>
         </div>
 
-        <div class="step" id="step-terms" style="display: none;">
+
+        <div class="step" id="step-terms" style="display: none;" data-signup-target="step">
           <h3 class="text-xl uppercase text-center">Conditions d'utilisation</h3>
           <h3 class="text-2xl uppercase text-left">Futurs désirables</h3>
           <p class="text-sm text-left font-mono">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous.tes. Acceptes-tu de respecter cette ligne directrice en partageant uniquement des futurs positifs et constructifs ?</p>
@@ -60,7 +63,7 @@
           <h3 class="text-2xl mt-6 uppercase text-left">Droit d’auteur.ice</h3>
           <p class="text-sm text-left font-mono">Chaque création est unique et précieuse. Veuilles à ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits nécessaires. Acceptes tu de respecter les droits d'auteur.ice ?</p>
           <div class="flex justify-between">
-            <button type="button" onclick="previousStep('step-email-password')" class="tw-btn-secondary w-full mt-sm">Précédent</button>
+            <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="tw-btn-secondary w-full mt-sm">Précédent</button>
             <%= f.button :submit, "Je m'inscris", class: "tw-btn-primary w-full mt-sm" %>
           </div>
           <p class="text-sm text-center font-mono">En cliquant sur le bouton 'Je m'inscris', tu confirmes avoir pris connaissance et accepté les conditions d'utilisation</p>
@@ -68,58 +71,5 @@
       </div>
     <% end %>
   </div>
-  <div id="flash-messages" class="w-full mb-4"></div>
+  <div id="flash-messages" class="w-full mb-4" data-signup-target="flashMessages"></div>
 </div>
-
-<script>
-function nextStep(currentStepId, nextStepId) {
-  const currentStep = document.getElementById(currentStepId);
-  const inputs = currentStep.querySelectorAll('input');
-  let isValid = true;
-  let errorMessages = [];
-
-  inputs.forEach(input => {
-    if (input.required && !input.value.trim()) {
-      isValid = false;
-      input.classList.add('border-red-500');
-      // Utiliser le label ou le placeholder comme nom de champ, en nettoyant le texte
-      let fieldName = input.labels[0]?.textContent || input.placeholder || input.name.replace(/user\[|\]/g, '');
-      fieldName = fieldName.replace(/\s*\*\s*$/, '').trim(); // Supprimer l'astérisque et les espaces à la fin
-      errorMessages.push(`Le champ "${fieldName}" est obligatoire.`);
-    } else {
-      input.classList.remove('border-red-500');
-    }
-  });
-
-  if (isValid) {
-    document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
-    document.getElementById(nextStepId).style.display = 'block';
-  } else {
-    showFlash('error', errorMessages.join('<br>'));
-  }
-}
-
-function showFlash(type, message) {
-  const flashDiv = document.getElementById('flash-messages');
-  const alertClass = type === 'error' ? 'bg-red-100 border-red-400 text-red-700' : 'bg-green-100 border-green-400 text-green-700';
-  
-  flashDiv.innerHTML = `
-    <div class="border px-4 py-3 rounded relative ${alertClass}" role="alert">
-      <span class="block sm:inline">${message}</span>
-    </div>
-  `;
-
-  // Faire défiler jusqu'au message flash
-  flashDiv.scrollIntoView({ behavior: 'smooth' });
-
-  // Effacer le message après 5 secondes
-  setTimeout(() => {
-    flashDiv.innerHTML = '';
-  }, 5000);
-}
-
-function previousStep(stepId) {
-  document.querySelectorAll('.step').forEach(step => step.style.display = 'none');
-  document.getElementById(stepId).style.display = 'block';
-}
-</script>
