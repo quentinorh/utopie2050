@@ -24,7 +24,7 @@
       </div>
 
       <div class="w-full h-full mb-4 origin-left overflow-hidden" data-scroll-target="postImage">
-        <%= image_tag(@post.unsplash_image_url.present? ? @post.unsplash_image_url : (@post.photo.attached? ? cl_image_path(@post.photo.key, crop: :fill) : ''),
+        <%= image_tag(cl_image_path(@post.photo.key, crop: :fill),
                       class: "w-full h-full object-cover origin-center",
                       style: "filter: url(#duotone)") %>
       </div>

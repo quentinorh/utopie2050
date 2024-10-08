@@ -9,13 +9,11 @@
             staggered_animation_target: "element",
             stagger_count: 12,
             action: "mouseover->animation#postsGallery",
-            image_path: post.unsplash_image_url.present? ? post.unsplash_image_url : (post.photo.attached? ? cl_image_path(post.photo.key) : ''),
+            image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
             post_color: post.color
           } do %>
             <div class="relative w-full aspect-video mb-xs overflow-hidden">
-              <% if post.unsplash_image_url.present? %>
-                <%= image_tag post.unsplash_image_url, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
-              <% elsif post.photo.attached? %>
+              <% if post.photo.attached? %>
                 <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
               <% else %>
                 <div class="w-full h-full bg-gray-200 flex items-center justify-center">

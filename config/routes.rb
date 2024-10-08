@@ -5,9 +5,6 @@ Rails.application.routes.draw do
     member do
       delete :remove_photo
     end
-    collection do
-      get :search_unsplash
-    end
   end
 
   devise_scope :user do
