@@ -9,7 +9,7 @@
             staggered_animation_target: "element",
             stagger_count: 12,
             action: "mouseover->animation#postsGallery",
-            image_path: cl_image_path(post.photo.key),
+            image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
             post_color: post.color
           } do %>
             <div class="relative w-full aspect-video mb-xs overflow-hidden">

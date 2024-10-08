@@ -1,6 +1,16 @@
 require 'faker'
 require 'open-uri'
+require 'cloudinary'
 require 'ruby/openai'
+require 'dotenv/load'
+require 'uri'
+require 'erb'
+
+# Afficher l'URL Cloudinary pour vérifier le chargement
+puts "CLOUDINARY_URL: #{ENV['CLOUDINARY_URL']}"
+
+# Configurer Cloudinary à partir de l'URL
+Cloudinary.config_from_url(ENV['CLOUDINARY_URL'])
 
 # Configure Faker to use French locale
 Faker::Config.locale = 'fr'
@@ -30,11 +40,30 @@ def generer_paragraphe_openai(client, prompt, retries = 3)
     end
   end
 
-  # Retourner le texte généré ou un texte par défaut en cas d'échec
   response ? response['choices'].first['message']['content'].strip : "Contenu généré par défaut suite à une erreur."
 end
 
-# Méthode pour générer un article avec un thème spécifique
+# Méthode pour générer un titre basé sur le contenu du chapitre avec OpenAI
+def generer_titre_chapitre(client, contenu)
+  prompt = "Génère un titre court et captivant en français pour le chapitre suivant : '#{contenu}'. Le titre doit refléter le contenu de manière concise."
+  titre = generer_paragraphe_openai(client, prompt)
+  titre.gsub(/(^["']|["']$)/, '').strip # Supprimer les guillemets en début et fin de chaîne
+end
+
+# Méthode pour nettoyer les répétitions de titres ou mentions indésirables dans le contenu
+def nettoyer_contenu(contenu, titre)
+  # Supprimer les occurrences du titre et des mots comme "Titre :" ou "Contenu :"
+  contenu.gsub(/#{Regexp.escape(titre)}/i, '').gsub(/(Titre\s*:\s*|Contenu\s*:\s*)/i, '').strip
+end
+
+# Méthode pour générer un mot-clé en anglais pour la recherche d'image
+def generer_mot_cle_openai(client, titre)
+  prompt = "Provide a single keyword in English that best represents the following article title: '#{titre}'"
+  keyword = generer_paragraphe_openai(client, prompt)
+  keyword.downcase.strip.gsub(/[^0-9a-z ]/i, '') # Nettoyer le mot-clé généré
+end
+
+# Méthode pour générer un article avec des images différentes et en lien avec le titre
 def generer_article(client, user, theme)
   puts "Génération du contenu en français pour l'utilisateur #{user.username}..."
 
@@ -43,44 +72,83 @@ def generer_article(client, user, theme)
   titre_article = generer_paragraphe_openai(client, titre_prompt)
 
   # Générer le corps de l'article
-  article_prompt = "Génère un article en français sur le thème suivant : '#{theme}', en détaillant les aspects positifs, les innovations, et la manière dont la société a évolué pour atteindre ce futur désirable."
+  article_prompt = "Écris un article détaillé en français sur le thème suivant : '#{theme}', sans inclure le titre ni de mention de l'introduction."
   body_text = Array.new(5) { generer_paragraphe_openai(client, article_prompt) }.join("\n\n")
 
-  # Récupérer une image aléatoire liée au thème
-  unsplash_url = nil
-  begin
-    unsplash_url = Faker::LoremFlickr.image(size: "600x400", search_terms: ['nature', 'future', 'city', 'technology'])
-    file = URI.open(unsplash_url)
-  rescue OpenURI::HTTPError => e
-    puts "Erreur lors de la récupération de l'image : #{e.message}"
-  end
+  # Générer un mot-clé en anglais pour la recherche d'image
+  mot_cle = generer_mot_cle_openai(client, titre_article)
+  puts "Mot-clé généré pour la recherche d'image : #{mot_cle}"
 
-  # Créer l'article
-  post = Post.create!(
+  # Séparer les mots-clés avec des virgules et encoder l'URL correctement
+  encoded_keywords = ERB::Util.url_encode(mot_cle.split.join(',')) # Remplace les espaces par des virgules et encode l'URI
+  puts "Mots-clés encodés pour l'URL : #{encoded_keywords}"
+
+  # Récupérer une image liée aux mots-clés encodés
+  unsplash_url = Faker::LoremFlickr.image(size: "600x400", search_terms: encoded_keywords.split(','))
+  file = URI.open(unsplash_url)
+
+  # Créer le post avec le drapeau `skip_photo_validation` à true
+  post = Post.new(
     title: titre_article,
     user_id: user.id,
-    unsplash_image_url: unsplash_url,
     image_rights: true,
     color: "hsl(#{rand(360)}, 100%, 50%)",
-    body: body_text
+    body: body_text,
+    skip_photo_validation: true  # Ignore la validation de la photo
   )
 
-  puts "Article créé pour l'utilisateur #{user.username} : #{post.title}"
+  post.save!(validate: false) # Sauvegarde sans validation initiale
 
-  # Générer des chapitres cohérents avec le contenu de l'article
-  rand(2..5).times do |i|
-    chapter_prompt = "Génère un paragraphe en français pour un chapitre d'un article sur le thème '#{theme}', basé sur l'article suivant : '#{body_text.split("\n\n").sample}'."
-    chapter_body = Array.new(3) { generer_paragraphe_openai(client, chapter_prompt) }.join("\n\n")
-    Chapter.create!(
-      title: "Chapitre #{i + 1} - #{Faker::Lorem.sentence(word_count: 3, supplemental: true)}",
-      body: chapter_body,
-      post_id: post.id,
-      position: i + 1
-    )
-  end
+  # Attacher l'image
+  post.photo.attach(io: file, filename: "image_#{post.id}.jpg")
+
+  # Réactive la validation en supprimant le drapeau, puis valide à nouveau
+  post.skip_photo_validation = false
+  post.save! # Sauvegarde avec validation cette fois-ci
+
+  # Générer une date de création aléatoire (par exemple dans les 365 derniers jours)
+  random_created_at = rand(1..365).days.ago
+  post.update_columns(created_at: random_created_at, updated_at: random_created_at)
+
+  # Générer des chapitres de manière aléatoire
+  generer_chapitres_aleatoires(client, post, titre_article) if [true, false].sample  # 50% de chances d'avoir des chapitres
+
+  puts "Article créé pour l'utilisateur #{user.username} : #{titre_article}, Date de création : #{random_created_at}"
 end
 
-# Clear existing data
+# Méthode pour générer des chapitres aléatoires pour un post
+def generer_chapitres_aleatoires(client, post, titre_article)
+  # Choisir un nombre aléatoire de chapitres (entre 1 et 5)
+  nb_chapitres = rand(1..5)
+
+  puts "Génération de #{nb_chapitres} chapitres pour l'article '#{post.title}'..."
+
+  nb_chapitres.times do |i|
+    # Générer le contenu du chapitre sans mention de titre
+    chapitre_prompt = "Écris le contenu d'un chapitre de l'article intitulé '#{post.title}' sans mentionner le titre de l'article."
+    chapitre_contenu = generer_paragraphe_openai(client, chapitre_prompt)
+
+    # Nettoyer le contenu pour supprimer les mentions indésirables
+    chapitre_contenu_propre = nettoyer_contenu(chapitre_contenu, titre_article)
+
+    # Générer un titre basé sur le contenu du chapitre
+    titre_chapitre = generer_titre_chapitre(client, chapitre_contenu_propre)
+
+    # Créer le chapitre avec un contenu généré et un titre sans guillemets
+    Chapter.create!(
+      title: titre_chapitre,
+      body: chapitre_contenu_propre,
+      post: post,
+      position: i + 1
+    )
+
+    puts "Chapitre #{i + 1} créé : #{titre_chapitre}"
+  end
+
+  puts "Chapitres générés avec succès pour l'article '#{post.title}'."
+end
+
+# Supprimer les données existantes et générer de nouvelles
 User.destroy_all
 Post.destroy_all
 Chapter.destroy_all
