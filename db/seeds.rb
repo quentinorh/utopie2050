@@ -2,7 +2,7 @@ require 'faker'
 require 'open-uri'
 require 'cloudinary'
 require 'ruby/openai'
-require 'dotenv/load'
+# require 'dotenv/load'
 require 'uri'
 require 'erb'
 
