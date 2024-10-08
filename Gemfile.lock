@@ -117,6 +117,7 @@ GEM
       dotenv (= 3.1.2)
       railties (>= 6.1)
     erubi (1.13.0)
+    event_stream_parser (1.0.0)
     execjs (2.9.1)
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
@@ -250,6 +251,10 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     rexml (3.3.7)
+    ruby-openai (7.1.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -333,6 +338,7 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.8, >= 7.0.8.4)
+  ruby-openai
   sassc-rails
   seed_dump
   selenium-webdriver
