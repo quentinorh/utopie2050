@@ -28,12 +28,6 @@
           <!-- Illustration -->
           <div class="mt-sm">
             <label for="body" class="mt-8 text-l tw-form-label">Illustration</label>
-            <ul class="nav nav-tabs hidden" id="imageTab" role="tablist">
-              <li class="flex gap-2" role="presentation">
-                <a class="tw-btn-secondary"> Charger une image </a>
-                <a class="tw-btn-secondary"> Unsplash </a>
-              </li>
-            </ul>
             <div class="mt-xs">
               <%= form.file_field :photo, class: "tw-form-input shadow-none border-none ring-0 focus:ring-0", data: { action: "change->preview#updateImage" } %>
               <div class="flex items-center gap-2 mt-xs">
@@ -41,12 +35,6 @@
                 <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>
               </div>
             </div>
-            <div class="flex gap-2 mt-xs hidden">
-              <%= text_field_tag :query, nil, placeholder: "Recherche Unsplash", class: "form-control", data: { unsplash_target: "query" } %>
-              <%= button_tag "Chercher", data: { action: "click->unsplash#search" }, type: :button, class: "tw-btn-primary" %>
-            </div>
-            <div data-unsplash-target="results" class="mt-3"></div>
-            <%= form.hidden_field :unsplash_image_url, data: { unsplash_target: "hidden" } %>
           </div>
           <!-- Color Picker -->
           <div class="mt-sm">

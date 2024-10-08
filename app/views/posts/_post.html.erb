@@ -2,8 +2,6 @@
 <p><%= @post.body %></p>
 <% if @post.photo.url.present? %>
   <%= image_tag @post.photo.url %>
-<% elsif @post.unsplash_image_url.present? %>
-  <%= image_tag @post.unsplash_image_url %>
 <% end %>
 <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %> |
 <%= link_to 'Back', posts_path, class: "btn btn-primary" %>

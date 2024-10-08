@@ -3,7 +3,6 @@ require 'open-uri'
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_post, only: [:show, :edit, :update, :destroy, :remove_photo]
-  protect_from_forgery except: :search_unsplash
 
   def index
     @posts = Post.all
@@ -19,9 +18,6 @@ class PostsController < ApplicationController
 
   def create
     @post = current_user.posts.build(post_params)
-    if @post.unsplash_image_url.present?
-      download_unsplash_image(@post.unsplash_image_url)
-    end
 
     if @post.save
       redirect_to @post, notice: 'Post was successfully created.'
@@ -54,26 +50,14 @@ class PostsController < ApplicationController
     @posts = @user.posts
   end
 
-  def search_unsplash
-    @photos = Unsplash::Photo.search(params[:query])
-    respond_to do |format|
-      format.js
-    end
-  end
-
   private
 
   def set_post
     @post = Post.find(params[:id])
   end
 
-  def download_unsplash_image(url)
-    downloaded_image = URI.open(url)
-    @post.photo.attach(io: downloaded_image, filename: "unsplash_image_#{Time.now.to_i}.jpg", content_type: 'image/jpeg')
-  end
-
   def post_params
-    params.require(:post).permit(:title, :photo, :unsplash_image_url, :image_rights, :body, :color, :draft,
+    params.require(:post).permit(:title, :photo, :image_rights, :body, :color, :draft,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 end

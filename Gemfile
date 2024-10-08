@@ -6,7 +6,6 @@ ruby "3.1.2"
 gem 'cloudinary'
 gem 'activestorage-cloudinary-service'
 gem 'jquery-rails'
-gem 'unsplash', '~> 2.0'
 gem 'seed_dump'
 gem 'ruby-openai'
 
