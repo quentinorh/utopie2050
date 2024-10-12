@@ -45,6 +45,10 @@
             <p>Temps de lecture</p>
             <p class="text-right"><%= @post.calculate_reading_time %></p>
           </div>
+          <div>
+            <p>Thèmes</p>
+            <p><%= @post.themes.pluck(:name).join(', ') %></p>
+          </div>
         </div>
         <div class="mt-lg adjustable w-full">
           <%= simple_format(@post.body) %>
