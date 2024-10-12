@@ -102,16 +102,18 @@ def generer_article(client, user, theme)
   # Attacher l'image
   post.photo.attach(io: file, filename: "image_#{post.id}.jpg")
 
-  # Réactive la validation en supprimant le drapeau, puis valide à nouveau
-  post.skip_photo_validation = false
-  post.save! # Sauvegarde avec validation cette fois-ci
-
   # Générer une date de création aléatoire (par exemple dans les 365 derniers jours)
   random_created_at = rand(1..365).days.ago
   post.update_columns(created_at: random_created_at, updated_at: random_created_at)
 
   # Générer des chapitres de manière aléatoire
   generer_chapitres_aleatoires(client, post, titre_article) if [true, false].sample  # 50% de chances d'avoir des chapitres
+
+  # Réactive la validation en supprimant le drapeau, puis valide à nouveau
+  post.skip_photo_validation = false
+  post.save! # Sauvegarde avec validation cette fois-ci
+
+  puts "Themes: #{post.themes.pluck(:name).join(', ')}"
 
   puts "Article créé pour l'utilisateur #{user.username} : #{titre_article}, Date de création : #{random_created_at}"
 end
@@ -165,7 +167,7 @@ quentin_user.skip_confirmation!
 quentin_user.save!
 
 # Create 9 additional random users
-users = 9.times.map do
+users = 4.times.map do
   user = User.create!(
     email: Faker::Internet.unique.email,
     password: "password",
@@ -180,7 +182,7 @@ end
 # Add the specific user to the users array
 users << quentin_user
 
-puts "10 utilisateurs créés"
+puts "5 utilisateurs créés"
 
 # Liste de thèmes autour des futurs désirables pour 2050
 themes = [
@@ -213,7 +215,7 @@ themes = [
 
 # Créer des articles pour chaque utilisateur en utilisant les thèmes disponibles
 users.each do |user|
-  10.times do
+  2.times do
     theme = themes.sample # Choisir un thème aléatoire pour chaque article
     generer_article(client, user, theme)
   end

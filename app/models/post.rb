@@ -2,6 +2,8 @@ class Post < ApplicationRecord
   belongs_to :user
   has_one_attached :photo
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
+  has_many :post_themes, dependent: :destroy
+  has_many :themes, through: :post_themes
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
@@ -13,6 +15,8 @@ class Post < ApplicationRecord
 
   scope :published, -> { where(draft: false) }
   scope :drafts, -> { where(draft: true) }
+
+  after_save :generate_themes_from_openai
 
   def calculate_reading_time
     words_per_minute = 238
@@ -33,6 +37,22 @@ class Post < ApplicationRecord
   end
 
   private
+
+  def generate_themes_from_openai
+    content = "#{title}\n#{body}\n" + chapters.map(&:body).join("\n")
+    existing_themes = Theme.pluck(:name).join(", ")
+
+    # Utilise le service OpenAI pour générer les thématiques à partir du contenu tronqué
+    generated_themes = OpenAiService.new.generate_themes(content, existing_themes)
+    update_themes(generated_themes)
+  end
+
+  def update_themes(generated_themes)
+    generated_themes.each do |theme_name|
+      theme = Theme.find_or_create_by(name: theme_name)
+      post_themes.find_or_create_by(theme: theme)
+    end
+  end
 
   def image_presence
     if photo.blank?
