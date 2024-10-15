@@ -1,5 +1,5 @@
 <!-- Hero -->
-<div data-controller="hero-animation" class="h-100 w-full aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
+<div data-controller="hero-animation" class="min-h-[calc(100vh - 60px)] w-full lg:aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
   <div class="flex flex-col z-10 items-center">
     <h1 class="text-gray-900 text-display text-white text-center" >
     Solarpunk 2050</h1>
@@ -23,55 +23,64 @@
 </div>
 
 
-<div class="p-xl mt-xl mb-2xl text-center">
+<div class="p-xl mt-xl mb-l text-center">
   <p class="text-xl base:text-xxlish text-balance" data-controller="text-reveal">
     Le solarpunk propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté [...] à l'égard du changement climatique et de la pollution, mais aussi des inégalités, des intolérances et discriminations sociales.
   </p>
-  <p class="text-xl base:text-xxlish text-balance" data-controller="text-reveal">
+  <p class="mt-base text-l text-primary base:text-xxlish text-balance" data-controller="text-reveal">
     Source : wikipedia.org/wiki/Solarpunk
   </p>
 </div>
 
-
-<div class="text-xxl uppercase text-right">
-  <span> Les derniers futurs </span>
-</div>
-
-<svg style="visibility:hidden;" width="0" height="0">
-  <filter id="duotone" color-interpolation-filters="sRGB">
-    <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
-  </filter>
-</svg>
-
-<div class="w-full p-base bg-gray-100 grid grid-cols-2 gap-base" data-controller="animation">
-  <div class="w-full h-[70vh] overflow-hidden relative brightness-75 contrast-150" data-animation-target="postsGalleryWrapper">
-    <img src="https://picsum.photos/200/300" class="h-[10vh] absolute" data-animation-target="postsGalleryImage">
+<div class="bg-black-100 py-xl">
+  <div class="text-xxl uppercase text-center">
+    <span> Les derniers futurs </span>
   </div>
 
-  <div class="w-full flex flex-col gap-sm">
-   <% @posts.each do |post| %>
-    <%= link_to post, class: "text-xl opacity-50 hover:opacity-100 transition-colors", data: {
-      action: "mouseover->animation#postsGallery",
-      image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
-      post_color: post.color
-    } do %>
-      <span><%= post.title %></span>
+  <svg style="visibility:hidden;" width="0" height="0">
+    <filter id="duotone" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
+    </filter>
+  </svg>
+  <div class="grid grid-cols-4 gap-xs p-xs">
+    <% @posts.last(4).each do |post| %>
+      <%= link_to post, class: "text-xl transition-colors group opacity-100", data: {
+        staggered_animation_target: "element",
+        stagger_count: 12,
+        action: "mouseover->animation#postsGallery",
+        image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
+        post_color: post.color,
+        turbo: false, turbo_stream: false
+      } do %>
+        <div class="aspect-[9/14] w-full relative mb-xs overflow-hidden">
+          <% if post.photo.attached? %>
+            <%= cl_image_tag post.photo.key, class: "object-cover group-hover:scale-110 transition-all duration-500" %>
+          <% else %>
+            <div class="h-full bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400">No image</span>
+            </div>
+          <% end %>
+        </div>
+        <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
+          <span><%= post.user.username %></span>
+          <span><%= post.created_at.strftime("%B %d, %Y") %></span>
+        </div>
+        <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
+      <% end %>
     <% end %>
-  <% end %>
+    </div>
   </div>
-</div>
 
-<% @posts.each do |post| %>
-  <%
-    if post.color
-      match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
-      hue = match[1].to_i
-    else
-      hue = 0
-    end
-    color_matrix = hue_to_feColorMatrix(hue)
-  %>
-
-<% end %>
+  <% @posts.each do |post| %>
+    <%
+      if post.color
+        match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
+        hue = match[1].to_i
+      else
+        hue = 0
+      end
+      color_matrix = hue_to_feColorMatrix(hue)
+    %>
+  <% end %>
 
 <%= render 'shared/footer' %>
