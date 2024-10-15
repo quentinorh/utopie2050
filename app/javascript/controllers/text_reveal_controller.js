@@ -25,6 +25,7 @@ export default class extends Controller {
         stagger: 0.1,
         scrollTrigger: {
           trigger: this.element, 
+          scrub: true,
           start: 'top 80%', 
           end: 'bottom 20%', 
           toggleActions: 'play none none none', 
