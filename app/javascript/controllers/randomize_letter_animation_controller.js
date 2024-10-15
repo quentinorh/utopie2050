@@ -3,11 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = []
+  static values = { text: String }
 
   connect() {
-    const originalText = this.element.textContent;
+    const originalText = this.textValue;
     const animationDuration = 1000; // 1 second
-    const refreshInterval = 60; 
+    const refreshInterval = 60;
     const totalIterations = animationDuration / refreshInterval;
     let currentIteration = 0;
 

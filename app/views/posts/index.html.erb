@@ -1,58 +1,22 @@
 <div class="flex">
-  <div class="w-4/5">
-    <h1 class="text-display px-sm pt-sm">Tous les futurs<sup class="ml-sm text-l font-mono" data-controller="randomize-letter-animation">[<%= @posts.count %>]</sup></h1>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-xs gap-y-xl flex-grow p-sm" data-controller="staggered-animation">
+  <%= turbo_frame_tag :posts, class: "w-4/5" do %>
+    <%= render "posts", posts: @posts %>
+  <% end %>
 
-      <% if @posts.any? %>
-        <% @posts.each do |post| %>
-          <%= link_to post, class: "text-xl transition-colors group opacity-100" , data: {
-            staggered_animation_target: "element",
-            stagger_count: 12,
-            action: "mouseover->animation#postsGallery",
-            image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
-            post_color: post.color
-          } do %>
-            <div class="relative w-full aspect-video mb-xs overflow-hidden">
-              <% if post.photo.attached? %>
-                <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
-              <% else %>
-                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <span class="text-gray-400">No image</span>
-                </div>
-              <% end %>
-            </div>
-            <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
-              <span><%= post.user.username %></span>
-              <span><%= post.created_at.strftime("%B %d, %Y") %></span>
-            </div>
-            <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
-          <% end %>
-        <% end %>
-      <% else %>
-        <p class="col-span-4 text-center text-gray-500">Aucun post n'a été trouvé.</p>
-      <% end %>
-    </div>
-  </div>
   <!-- Sticky Filter Column -->
   <div class="w-1/5 sticky lg:top-[theme('top.navbar-height')] h-screen bg-gray-100 p-4">
-      <h2 class="text-lg font-bold">Filtrer</h2>
-      <div class="mt-4">
-          <h3 class="font-semibold">Categories</h3>
-          <ul>
-              <li><input type="checkbox" /> Fiction</li>
-              <li><input type="checkbox" /> Essays</li>
-              <li><input type="checkbox" /> Projects</li>
-              <li><input type="checkbox" /> Design</li>
-          </ul>
-      </div>
-      <div class="mt-4">
-          <h3 class="font-semibold">Keywords</h3>
-          <ul>
-              <li><input type="checkbox" /> Science Fiction</li>
-              <li><input type="checkbox" /> Cities</li>
-              <li><input type="checkbox" /> Politics</li>
-          </ul>
-      </div>
+    <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
+      <%= text_field_tag :by_query,
+          params[:by_query],
+          class: "form-control",
+          placeholder: "Rechercher...",
+          data: { action: "input->search#submit" }
+      %>
+      <%= select_tag :by_author,
+          options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
+          prompt: "Par auteur",
+          data: { action: "change->search#submit" }  %>
+    <% end %>
   </div>
 </div>
 

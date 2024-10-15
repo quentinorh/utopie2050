@@ -1,0 +1,10 @@
+<h1 class="text-display px-sm pt-sm">Tous les futurs<sup class="ml-sm text-l font-mono" data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= posts.count %>">[<%= posts.count %>]</sup></h1>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-xs gap-y-xl flex-grow p-sm" data-controller="staggered-animation">
+  <% if posts.any? %>
+    <% posts.each do |post| %>
+      <%= render "post", post: post %>
+    <% end %>
+  <% else %>
+    <p class="col-span-4 text-center text-gray-500">Aucun post n'a été trouvé.</p>
+  <% end %>
+</div>

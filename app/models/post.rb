@@ -15,8 +15,20 @@ class Post < ApplicationRecord
 
   scope :published, -> { where(draft: false) }
   scope :drafts, -> { where(draft: true) }
+  scope :by_author, ->(user_id) { where(user_id: user_id) }
+  scope :by_query, ->(query) { global_search(query) }
 
   after_save :generate_themes_from_openai
+
+  include PgSearch::Model
+  pg_search_scope :global_search,
+    against: [ :title, :body ],
+    associated_against: {
+      user: [ :username ]
+    },
+    using: {
+      tsearch: { prefix: true }
+    }
 
   def calculate_reading_time
     words_per_minute = 238
