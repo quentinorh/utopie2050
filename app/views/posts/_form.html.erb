@@ -1,7 +1,7 @@
 <!-- Duotone filter -->
 <%= render 'shared/duotonefilter' %>
 
-<div data-controller="chapter preview">
+<div data-controller="chapter preview" data-preview-username-value="<%= current_user.username %>" class="w-full">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col" }) do |form| %>
     
     <!-- Affichage des erreurs -->
@@ -15,119 +15,139 @@
         </ul>
       </div>
     <% end %>
-    <!-- Section du haut -->
-    <div class="flex flex-col md:flex-row gap-8">
+    <div class="grid grid-cols-2 gap-sm">
+
       <!-- Colonne de gauche -->
-      <div class="text-xl flex flex-col items-center w-full md:w-1/3">
-        <div class="bg-white p-sm rounded-lg w-full">
-          <!-- Titre -->
-          <div>
-            <label for="title" class="mt-8 text-l tw-form-label">Titre</label>
-            <%= form.text_field :title, class: "tw-form-input", data: { action: "input->preview#updateTitle" } %>
-          </div>
-          <!-- Illustration -->
-          <div class="mt-sm">
-            <label for="body" class="mt-8 text-l tw-form-label">Illustration</label>
-            <div class="mt-xs">
-              <%= form.file_field :photo, class: "tw-form-input shadow-none border-none ring-0 focus:ring-0", data: { action: "change->preview#updateImage" } %>
-              <div class="flex items-center gap-2 mt-xs">
-                <%= form.check_box :image_rights, class: "tw-form-checkbox" %>
-                <%= form.label :image_rights, "Je certifie avoir les droits sur cette image", class: "tw-form-label" %>
+      <div class="p-sm rounded-lg bg-white shadow w-full">
+        
+        <!-- Pattern Generator -->
+        <div class="mt-sm relative">
+          <label for="body" class="mt-8 text-l tw-form-label">Motif de couverture</label>
+         
+          <div class="mt-xs"> 
+            <!-- Controls -->
+            <div class="mt-4 text-l">
+              <div>
+                <label for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
+                <input type="range" id="columns" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="columns">
               </div>
-            </div>
-          </div>
-          <!-- Color Picker -->
-          <div class="mt-sm">
-            <label for="body" class="mt-8 text-l tw-form-label">Couleur</label>
-            <div class="mt-xs flex items-center gap-2" data-controller="color-picker">
-              <%= form.label :color, "Sélectionner une couleur", class: "tw-form-label hidden" %>
-              <% color_value = @post.color || "hsl(0, 100%, 100%)" %>
-              <% hue = color_value.match(/hsl\((\d+),/)[1] rescue 0 %>
-
-              <div class="color-slider-wrapper relative w-full">
-                <div class="color-bar absolute top-0 left-0 right-0 h-2 z-0"></div> <!-- Color bar with lower z-index -->
-                <input type="range" min="0" max="360" value="<%= hue %>" class="relative z-10 form-range w-full" id="colorSlider" data-action="input->color-picker#updateColor input->preview#updateColor" data-color-picker-target="colorSlider">
+              <div>
+                <label for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
+                <input type="range" id="rows" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="rows">
               </div>
+              <div>
+                <label for="hue">Couleur: </label>
+                <input type="color" id="hue" value="#ff0000" data-action="input->preview#updatePattern" data-preview-target="hue">
+              </div>
+              <div>
+                <label for="filled-squares">Carrés pleins: <span data-preview-target="filledValue">1</span></label>
+                <input type="range" id="filled-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="filledSquares">
+              </div>
+              <div>
+                <label for="white-squares">Carrés blancs: <span data-preview-target="whiteValue">1</span></label>
+                <input type="range" id="white-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="whiteSquares">
+              </div>
+              <div>
+                <label for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
+                <input type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
+              </div>
+              <div class="mt-2">
+                <button class="shape-button active" data-shape="square" data-action="click->preview#changeShape">Carré</button>
+                <button class="shape-button" data-shape="ellipse" data-action="click->preview#changeShape">Ellipse</button>
+                <button class="shape-button" data-shape="triangle" data-action="click->preview#changeShape">Triangle</button>
+                <button class="shape-button" data-shape="losange" data-action="click->preview#changeShape">Losange</button>
+              </div>
+              <div class="mt-2">
+                <input type="checkbox" id="complementary-bg" name="complementary-bg" data-action="change->preview#updatePattern" data-preview-target="complementaryBg">
+                <label for="complementary-bg">Fond complémentaire</label>
+              </div>
+              <button class="tw-btn-secondary mt-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
+              <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
 
-              <%= form.hidden_field :color, id: "colorInput", value: "#{color_value}", data: { color_picker_target: "colorInput" } %>
-            </div>
-          </div>
-          <!-- Aperçu de la couverture -->
-          <label for="body" class="mt-8 text-l tw-form-label">Aperçu</label>
-          <div class="mt-2 border p-4 rounded-lg shadow-md relative w-full aspect-[3/4] max-h-80 overflow-hidden" data-preview-target="cover">
-            <div class="w-full h-full flex flex-col items-center justify-center relative">
-              <div class="absolute top-0 left-0 z-[99]">
-                <span class="text-2l text-black-900" data-preview-target="title" data-color-attribute="<%= @post.color %>"></span>
-                <div class="relative">
-                  <span class="text-l text-black-900" data-preview-target="author"><%= @post.user.username %></span>
+              <!-- Pattern Container -->
+              <div class="relative w-[250px] border-2 border-gray-200 mt-4">
+                <div class="absolute bottom-0 top-0 flex flex-col">
+                <div class=" h-fit text-2l z-99" data-preview-target="titleWrapper">
                 </div>
+                  <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
+                    <%= current_user.username %>
+                  </div>
+                </div>
+                <div id="pattern-container" data-preview-target="patternContainer" class="w-[250px] aspect-[9/14] overflow-hidden"></div>
+            </div>
+            <!-- Add this button near the other controls -->
+            <button class="tw-btn-secondary mt-2" data-action="click->preview#exportSVG">Exporter SVG</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      
+      <!-- Colonne de droite -->
+      <div class="p-sm rounded-lg bg-white shadow w-full">
+        <h2 class="text-center">Écrire un nouveau futur</h2>
+        <!-- Titre -->
+        <label for="title" class="mt-8 text-l tw-form-label">Titre</label>
+
+        <!-- Contenu -->
+        <%= form.text_field :title, class: "tw-form-input", data: { action: "input->preview#updateTitle", preview_target: "title" } %>
+
+        <!-- Chapitres -->
+        <div class="text-xl flex flex-col items-center w-full">
+          <div class="bg-white rounded-lg w-full">
+            <!-- Texte -->
+            <div>
+              <label for="body" class="mt-8 text-l tw-form-label">Texte</label>
+              <%= form.text_area :body, class: "tw-form-input", rows: 10 %>
+            </div>
+            <!-- Chapitres -->
+            <div class="mt-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-l">Chapitres</span>
+                <%= button_tag "Ajouter", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
               </div>
-              <div class="w-full h-full absolute inset-0" data-preview-target="image">
-                <% if @post.photo.attached? %>
-                  <%= image_tag @post.photo, class: "w-full h-full object-cover", style: "filter: url(#duotone)" %>
-                <% else %>
-                  <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span class="text-gray-500">Image de couverture</span>
+              <div id="chapters" data-chapter-target="chapters">
+                <%= form.fields_for :chapters do |chapter_form| %>
+                  <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
+                    <label class="tw-form-label">Titre du chapitre</label>
+                    <%= chapter_form.text_field :title, class: "tw-form-input" %>
+
+                    <label class="tw-form-label">Texte du chapitre</label>
+                    <%= chapter_form.text_area :body, class: "tw-form-input", rows: 5 %>
+
+                    <%= chapter_form.hidden_field :position %>
+                    <%= chapter_form.hidden_field :_destroy %> <!-- Ajout d'un champ caché pour _destroy -->
+
+                    <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary", data: { action: "click->chapter#removeChapter" } %>
                   </div>
                 <% end %>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Colonne de droite -->
-      <div class="text-xl flex flex-col items-center w-full md:w-2/3">
-        <div class="bg-white p-sm rounded-lg w-full">
-          <!-- Texte -->
-          <div>
-            <label for="body" class="mt-8 text-l tw-form-label">Texte</label>
-            <%= form.text_area :body, class: "tw-form-input", rows: 10 %>
+
+        <!-- Draft -->
+        <div class="mt-sm">
+          <label for="body" class="mt-8 text-l tw-form-label">Brouillon ?</label>
+          <div class="mt-xs flex items-center gap-2">
+            <%= form.check_box :draft, class: "tw-form-checkbox" %>
+            <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
           </div>
-          <!-- Chapitres -->
-          <div class="mt-sm">
-            <div class="flex items-center justify-between">
-              <span class="text-l">Chapitres</span>
-              <%= button_tag "Ajouter", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
-            </div>
-            <div id="chapters" data-chapter-target="chapters">
-              <%= form.fields_for :chapters do |chapter_form| %>
-                <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
-                  <label class="tw-form-label">Titre du chapitre</label>
-                  <%= chapter_form.text_field :title, class: "tw-form-input" %>
+        </div>
 
-                  <label class="tw-form-label">Texte du chapitre</label>
-                  <%= chapter_form.text_area :body, class: "tw-form-input", rows: 5 %>
-
-                  <%= chapter_form.hidden_field :position %>
-                  <%= chapter_form.hidden_field :_destroy %> <!-- Ajout d'un champ caché pour _destroy -->
-
-                  <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary", data: { action: "click->chapter#removeChapter" } %>
-                </div>
-              <% end %>
-            </div>
-          </div>
+        <!-- CTA -->
+        <div class="mt-sm">
+          <% if @post.new_record? %>
+            <%= form.submit "Créer le futur", class: "tw-btn-primary w-full" %>
+          <% else %>
+            <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full" %>
+          <% end %>
         </div>
       </div>
     </div>
-    <!-- Section du bas -->
-    <div class="mt-8">
-      <!-- Draft -->
-      <div class="mt-sm">
-        <label for="body" class="mt-8 text-l tw-form-label">Brouillon ?</label>
-        <div class="mt-xs flex items-center gap-2">
-          <%= form.check_box :draft, class: "tw-form-checkbox" %>
-          <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
-        </div>
-      </div>
-
-      <!-- CTA -->
-      <div class="mt-sm">
-        <% if @post.new_record? %>
-          <%= form.submit "Créer le futur", class: "tw-btn-primary w-full" %>
-        <% else %>
-          <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full" %>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
+  </div>
 </div>
+<% end %>
+
+
+
