@@ -5,36 +5,18 @@
 
   <!-- Sticky Filter Column -->
   <div class="w-1/5 sticky lg:top-[theme('top.navbar-height')] h-screen bg-gray-100 p-4">
-      <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
-        <%= text_field_tag :by_query,
-            params[:by_query],
-            class: "form-control",
-            placeholder: "Rechercher...",
-            data: { action: "input->search#submit" }
-        %>
-        <%= select_tag :by_author,
-            options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
-            prompt: "Par auteur",
-            data: { action: "change->search#submit" }  %>
-      <% end %>
-      <h2 class="text-lg font-bold">Filtrer</h2>
-      <div class="mt-4">
-          <h3 class="font-semibold">Categories</h3>
-          <ul>
-              <li><input type="checkbox" /> Fiction</li>
-              <li><input type="checkbox" /> Essays</li>
-              <li><input type="checkbox" /> Projects</li>
-              <li><input type="checkbox" /> Design</li>
-          </ul>
-      </div>
-      <div class="mt-4">
-          <h3 class="font-semibold">Keywords</h3>
-          <ul>
-              <li><input type="checkbox" /> Science Fiction</li>
-              <li><input type="checkbox" /> Cities</li>
-              <li><input type="checkbox" /> Politics</li>
-          </ul>
-      </div>
+    <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
+      <%= text_field_tag :by_query,
+          params[:by_query],
+          class: "form-control",
+          placeholder: "Rechercher...",
+          data: { action: "input->search#submit" }
+      %>
+      <%= select_tag :by_author,
+          options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
+          prompt: "Par auteur",
+          data: { action: "change->search#submit" }  %>
+    <% end %>
   </div>
 </div>
 

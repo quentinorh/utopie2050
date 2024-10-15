@@ -2,7 +2,7 @@
 <%= render 'shared/duotonefilter' %>
 
 <div data-controller="scroll text-to-speech settings">
-  
+
   <%= render 'shared/texttospeech' %>
   <%= render 'shared/settingspanel' %>
 
@@ -39,7 +39,7 @@
         <div class="flex justify-between font-mono text-sm py-sm uppercase">
           <div>
             <p>Publié le</p>
-            <p data-controller="randomize-letter-animation"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
+            <p data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
           </div>
           <div>
             <p>Temps de lecture</p>
