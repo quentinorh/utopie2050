@@ -4,8 +4,16 @@ class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_post, only: [:show, :edit, :update, :destroy, :remove_photo]
 
+  has_scope :by_author
+  has_scope :by_query
+
   def index
-    @posts = Post.all
+    @posts = apply_scopes(Post).all
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render turbo_stream: turbo_stream.update('posts', partial: 'posts', locals: { posts: @posts }) }
+    end
   end
 
   def show

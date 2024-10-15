@@ -1,7 +1,23 @@
-<h1><%= @post.title %></h1>
-<p><%= @post.body %></p>
-<% if @post.photo.url.present? %>
-  <%= image_tag @post.photo.url %>
+<%= link_to post, class: "text-xl transition-colors group opacity-100" , data: {
+    staggered_animation_target: "element",
+    stagger_count: 12,
+    action: "mouseover->animation#postsGallery",
+    image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
+    post_color: post.color,
+    turbo: false, turbo_stream: false
+  } do %>
+  <div class="relative w-full aspect-video mb-xs overflow-hidden">
+    <% if post.photo.attached? %>
+      <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
+    <% else %>
+      <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+        <span class="text-gray-400">No image</span>
+      </div>
+    <% end %>
+  </div>
+  <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
+    <span><%= post.user.username %></span>
+    <span><%= post.created_at.strftime("%B %d, %Y") %></span>
+  </div>
+  <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
 <% end %>
-<%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %> |
-<%= link_to 'Back', posts_path, class: "btn btn-primary" %>
