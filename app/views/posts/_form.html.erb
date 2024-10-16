@@ -62,7 +62,8 @@
                 <label for="complementary-bg">Fond complémentaire</label>
               </div>
               <button class="tw-btn-secondary mt-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
-              <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
+              <!--<%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %> -->
+              <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
 
               <!-- Pattern Container -->
               <div class="relative w-[250px] border-2 border-gray-200 mt-4">

@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = [
     "patternContainer", "columns", "rows", "hue", "filledSquares", "whiteSquares",
     "padding", "complementaryBg", "columnValue", "rowValue", "filledValue",
-    "whiteValue", "paddingValue", "patternSettings", "titleWrapper", "userName"
+    "whiteValue", "paddingValue", "patternSettings", "titleWrapper", "userName", "cover"
   ]
 
   static values = {
@@ -132,7 +132,6 @@ export default class extends Controller {
         const x = col * cellWidth
         const y = row * cellHeight
 
-        // Ensure paddingX and paddingY are 0 when paddingPercentage is 0
         const paddingX = paddingPercentage === 0 ? 0 : cellWidth * (paddingPercentage / 100) / 2
         const paddingY = paddingPercentage === 0 ? 0 : cellHeight * (paddingPercentage / 100) / 2
 
@@ -150,6 +149,9 @@ export default class extends Controller {
     this.patternContainerTarget.innerHTML = svg
     this.updatePatternSettings()
     this.splitAndWrapText(this.titleWrapperTarget.textContent) // Re-split text after updating pattern
+
+    // Mettre à jour le champ caché 'cover' avec le contenu SVG
+    this.coverTarget.value = svg; // Ajout de cette ligne
   }
 
   getComplementaryColor(hslColor) {

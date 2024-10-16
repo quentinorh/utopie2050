@@ -2,16 +2,16 @@
     staggered_animation_target: "element",
     stagger_count: 12,
     action: "mouseover->animation#postsGallery",
-    image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
     post_color: post.color,
     turbo: false, turbo_stream: false
   } do %>
   <div class="relative w-full aspect-video mb-xs overflow-hidden">
-    <% if post.photo.attached? %>
-      <%= cl_image_tag post.photo.key, class: "object-cover w-full h-full group-hover:scale-110 transition-all duration-500" %>
+    <% if post.cover.present? %>
+      <div class="cover-svg">
+        <%= post.cover.html_safe %> <!-- Affiche le SVG stocké dans l'attribut cover -->
+      </div>
     <% else %>
-      <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-        <span class="text-gray-400">No image</span>
+      <div class="cover-image">
       </div>
     <% end %>
   </div>

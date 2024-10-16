@@ -1,14 +1,14 @@
 class Post < ApplicationRecord
   belongs_to :user
-  has_one_attached :photo
+  # has_one_attached :photo
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
   has_many :post_themes, dependent: :destroy
   has_many :themes, through: :post_themes
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
-  validates :title, presence: true
-  validates :image_rights, acceptance: { accept: true, message: "doit être coché pour publier" }
+  # validates :title, presence: true
+  # validates :image_rights, acceptance: { accept: true, message: "doit être coché pour publier" }
 
   attr_accessor :skip_photo_validation
   validates :photo, presence: true, unless: -> { skip_photo_validation }
