@@ -94,13 +94,14 @@ def generer_article(client, user, theme)
     image_rights: true,
     color: "hsl(#{rand(360)}, 100%, 50%)",
     body: body_text,
-    skip_photo_validation: true  # Ignore la validation de la photo
+    skip_photo_validation: true
   )
 
-  post.save!(validate: false) # Sauvegarde sans validation initiale
-
-  # Attacher l'image
-  post.photo.attach(io: file, filename: "image_#{post.id}.jpg")
+  if post.save(validate: false)
+    post.photo.attach(io: file, filename: "image_#{post.id}.jpg")
+  else
+    puts "Failed to create post: #{post.errors.full_messages.join(', ')}"
+  end
 
   # Générer une date de création aléatoire (par exemple dans les 365 derniers jours)
   random_created_at = rand(1..365).days.ago
@@ -167,7 +168,7 @@ quentin_user.skip_confirmation!
 quentin_user.save!
 
 # Create 9 additional random users
-users = 4.times.map do
+users = 1.times.map do
   user = User.create!(
     email: Faker::Internet.unique.email,
     password: "password",
@@ -215,7 +216,7 @@ themes = [
 
 # Créer des articles pour chaque utilisateur en utilisant les thèmes disponibles
 users.each do |user|
-  2.times do
+  1.times do
     theme = themes.sample # Choisir un thème aléatoire pour chaque article
     generer_article(client, user, theme)
   end

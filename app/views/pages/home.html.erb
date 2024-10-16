@@ -48,18 +48,11 @@
         staggered_animation_target: "element",
         stagger_count: 12,
         action: "mouseover->animation#postsGallery",
-        image_path: post.photo.attached? ? cl_image_path(post.photo.key) : '',
         post_color: post.color,
         turbo: false, turbo_stream: false
       } do %>
         <div class="aspect-[9/14] w-full relative mb-xs overflow-hidden">
-          <% if post.photo.attached? %>
-            <%= cl_image_tag post.photo.key, class: "object-cover group-hover:scale-110 transition-all duration-500" %>
-          <% else %>
-            <div class="h-full bg-gray-200 flex items-center justify-center">
-              <span class="text-gray-400">No image</span>
-            </div>
-          <% end %>
+         
         </div>
         <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
           <span><%= post.user.username %></span>
