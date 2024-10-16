@@ -27,7 +27,7 @@
   }
 
   .tw-form-label {
-    @apply block text-sm font-medium leading-6 text-gray-900
+    @apply text-left block text-sm font-medium leading-6 text-gray-900
   }
 
   .tw-form-input {

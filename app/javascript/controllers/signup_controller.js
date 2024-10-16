@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { gsap } from "gsap"
 
 export default class extends Controller {
   static targets = ["step", "flashMessages", "username", "email", "usernameError", "emailError", "nextStepUsernameButton", "nextStepEmailButton"];
@@ -48,18 +49,34 @@ export default class extends Controller {
     });
 
     if (isValid) {
-      this.stepTargets.forEach(step => step.style.display = 'none');
-      document.getElementById(nextStepId).style.display = 'block';
+      this.fadeTransition(currentStepId, nextStepId);
     } else {
       this.showFlash('error', errorMessages.join('<br>'));
     }
   }
 
   previousStep(event) {
-    const stepId = event.currentTarget.dataset.stepId; // Récupérer l'ID de l'étape à partir de l'événement
-    const stepElement = document.getElementById(stepId);
-    this.stepTargets.forEach(step => step.style.display = 'none');
-    stepElement.style.display = 'block';
+    const currentStepId = this.stepTargets.find(step => step.style.display !== 'none').id;
+    const previousStepId = event.currentTarget.dataset.stepId;
+    this.fadeTransition(currentStepId, previousStepId);
+  }
+
+  fadeTransition(currentStepId, nextStepId) {
+    const currentStep = document.getElementById(currentStepId);
+    const nextStep = document.getElementById(nextStepId);
+
+    gsap.to(currentStep, {
+      opacity: 0,
+      duration: 0.3,
+      onComplete: () => {
+        currentStep.style.display = 'none';
+        nextStep.style.display = 'block';
+        gsap.fromTo(nextStep, 
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3 }
+        );
+      }
+    });
   }
 
   showFlash(type, message) {
