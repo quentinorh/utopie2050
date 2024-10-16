@@ -29,6 +29,7 @@ class PostsController < ApplicationController
     if @post.save
       redirect_to @post, notice: 'Post was successfully created.'
     else
+      Rails.logger.debug @post.errors.full_messages
       render :new
     end
   end
@@ -64,7 +65,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:cover, :title, :photo, :image_rights, :body, :color, :draft,
+    params.require(:post).permit(:cover, :pattern_settings, :title, :photo, :image_rights, :body, :color, :draft,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 end

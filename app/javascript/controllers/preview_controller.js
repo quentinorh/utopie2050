@@ -12,6 +12,9 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log('Preview controller connected');
+    console.log('Columns target:', this.columnsTarget);
+    console.log('Pattern Settings target:', this.patternSettingsTarget);
     this.currentShape = 'square'
     this.randomizeParameters()
     this.userNameTarget.textContent = this.usernameValue
@@ -33,6 +36,9 @@ export default class extends Controller {
 
     // Set up color picker to only change hue
     this.hueTarget.addEventListener('input', this.updateHue.bind(this))
+    this.element.addEventListener('submit', (event) => {
+      this.updatePattern(); // Met à jour le champ cover avant de soumettre le formulaire
+    });
   }
 
   updateHue(event) {
@@ -151,6 +157,7 @@ export default class extends Controller {
     this.splitAndWrapText(this.titleWrapperTarget.textContent) // Re-split text after updating pattern
 
     // Mettre à jour le champ caché 'cover' avec le contenu SVG
+    console.log(svg)
     this.coverTarget.value = svg; // Ajout de cette ligne
   }
 
@@ -358,6 +365,8 @@ export default class extends Controller {
   }
 
   exportSVG() {
+    this.coverTarget.value = svgString;
+
     const width = this.patternContainerTarget.clientWidth;
     const height = this.patternContainerTarget.clientHeight;
     

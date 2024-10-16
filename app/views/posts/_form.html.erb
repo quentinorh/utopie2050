@@ -16,7 +16,6 @@
       </div>
     <% end %>
     <div class="grid grid-cols-2 gap-sm">
-
       <!-- Colonne de gauche -->
       <div class="p-sm rounded-lg bg-white shadow w-full">
         
@@ -29,7 +28,7 @@
             <div class="mt-4 text-l">
               <div>
                 <label for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
-                <input type="range" id="columns" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="columns">
+                <input type="range" id="columns" min="1" max="100" value="1" data-preview-target="columns" data-action="input->preview#updatePattern">
               </div>
               <div>
                 <label for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
@@ -62,26 +61,27 @@
                 <label for="complementary-bg">Fond complémentaire</label>
               </div>
               <button class="tw-btn-secondary mt-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
-              <!--<%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %> -->
+              <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
               <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
 
               <!-- Pattern Container -->
               <div class="relative w-[250px] border-2 border-gray-200 mt-4">
                 <div class="absolute bottom-0 top-0 flex flex-col">
-                <div class=" h-fit text-2l z-99" data-preview-target="titleWrapper">
-                </div>
+                  <div class=" h-fit text-2l z-99" data-preview-target="titleWrapper">
+                  </div>
                   <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
                     <%= current_user.username %>
                   </div>
                 </div>
-                <div id="pattern-container" data-preview-target="patternContainer" class="w-[250px] aspect-[9/14] overflow-hidden"></div>
+                <div id="pattern-container" data-preview-target="patternContainer" class="w-[250px] aspect-[9/14] overflow-hidden">
+                </div>
+              </div>
+              <!-- Add this button near the other controls -->
+              <button class="tw-btn-secondary mt-2" data-action="click->preview#exportSVG">Exporter SVG</button>
             </div>
-            <!-- Add this button near the other controls -->
-            <button class="tw-btn-secondary mt-2" data-action="click->preview#exportSVG">Exporter SVG</button>
           </div>
         </div>
       </div>
-    </div>
       
       
       <!-- Colonne de droite -->
