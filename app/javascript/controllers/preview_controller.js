@@ -190,7 +190,7 @@ export default class extends Controller {
       </svg>
     `
 
-    this.updateColors()
+    // this.updateColors()
     this.patternContainerTarget.innerHTML = svg
     this.updatePatternSettings()
     
