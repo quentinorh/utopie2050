@@ -1,8 +1,11 @@
-<!-- Duotone filter -->
-<%= render 'shared/duotonefilter' %>
-
-<div data-controller="preview scroll text-to-speech settings">
-
+<div data-controller="cover scroll text-to-speech settings" 
+     data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
+     data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
+  
+  <input type="hidden" data-cover-target="title" value="<%= @post.title %>">
+  <input type="hidden" data-scroll-target="title" value="<%= @post.title %>">
+  <input type="hidden" data-cover-target="patternSettings" value="<%= @post.pattern_settings %>">
+  
   <%= render 'shared/texttospeech' %>
   <%= render 'shared/settingspanel' %>
 
@@ -13,10 +16,11 @@
       <div class="absolute top-0 left-0 z-[99]">
         <div class="relative w-[250px] border-2 border-gray-200 mt-4">
           <div class="absolute bottom-0 top-0 flex flex-col">
-            <div class=" h-fit text-2l z-99" data-preview-target="titleWrapper">
+            <div class="h-fit text-2l z-99" data-cover-target="titleWrapper">
+              <%= @post.title %>
             </div>
-            <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
-              <%= current_user.username %>
+            <div class="text-sm z-99 w-fit" data-cover-target="userName">
+              <%= @post.user.username %>
             </div>
           </div>
           <div class="cover-svg">

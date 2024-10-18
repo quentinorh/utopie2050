@@ -2,7 +2,6 @@ require 'faker'
 require 'open-uri'
 require 'cloudinary'
 require 'ruby/openai'
-# require 'dotenv/load'
 require 'uri'
 require 'erb'
 
@@ -56,14 +55,73 @@ def nettoyer_contenu(contenu, titre)
   contenu.gsub(/#{Regexp.escape(titre)}/i, '').gsub(/(Titre\s*:\s*|Contenu\s*:\s*)/i, '').strip
 end
 
-# Méthode pour générer un mot-clé en anglais pour la recherche d'image
-def generer_mot_cle_openai(client, titre)
-  prompt = "Provide a single keyword in English that best represents the following article title: '#{titre}'"
-  keyword = generer_paragraphe_openai(client, prompt)
-  keyword.downcase.strip.gsub(/[^0-9a-z ]/i, '') # Nettoyer le mot-clé généré
+# Méthode pour générer des paramètres de couverture aléatoires
+def generer_parametres_couverture
+  {
+    columns: rand(1..50),
+    rows: rand(1..50),
+    hue: rand(0..360),
+    filledSquares: rand(1..100),
+    whiteSquares: rand(1..100),
+    padding: rand(0..50),
+    shape: ['square', 'ellipse', 'triangle', 'losange'].sample,
+    complementaryBg: [true, false].sample
+  }
 end
 
-# Méthode pour générer un article avec des images différentes et en lien avec le titre
+# Méthode pour générer un SVG à partir des paramètres de couverture
+def generer_svg_couverture(params)
+  width = 250
+  height = 350
+  columns = params[:columns]
+  rows = params[:rows]
+  hue = params[:hue]
+  filled_squares = params[:filledSquares]
+  white_squares = params[:whiteSquares]
+  padding = params[:padding]
+  shape = params[:shape]
+  complementary_bg = params[:complementaryBg]
+
+  fill_color = "hsl(#{hue}, 80%, 70%)"
+  complementary_color = "hsl(#{(hue + 180) % 360}, 80%, 70%)"
+
+  pattern_cycle = filled_squares + white_squares
+  svg_content = ""
+
+  if complementary_bg
+    svg_content += "<rect x='0' y='0' width='#{width}' height='#{height}' fill='#{complementary_color}' />"
+  end
+
+  (0...rows).each do |row|
+    (0...columns).each do |col|
+      cell_index = row * columns + col
+      pattern_index = cell_index % pattern_cycle
+      is_filled = pattern_index < filled_squares
+      cell_width = width / columns
+      cell_height = height / rows
+      x = col * cell_width
+      y = row * cell_height
+
+      padding_x = padding == 0 ? 0 : cell_width * (padding / 100.0) / 2
+      padding_y = padding == 0 ? 0 : cell_height * (padding / 100.0) / 2
+
+      svg_content += case shape
+                     when 'square'
+                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x}' height='#{cell_height - 2 * padding_y}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                     when 'ellipse'
+                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2}' ry='#{(cell_height - 2 * padding_y) / 2}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                     when 'triangle'
+                       "<polygon points='#{x + padding_x},#{y + cell_height - padding_y} #{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height - padding_y}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                     when 'losange'
+                       "<polygon points='#{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y} #{x + padding_x},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                     end
+    end
+  end
+
+  "<svg width='#{width}' height='#{height}' xmlns='http://www.w3.org/2000/svg'>#{svg_content}</svg>"
+end
+
+# Méthode pour générer un article avec une couverture aléatoire
 def generer_article(client, user, theme)
   puts "Génération du contenu en français pour l'utilisateur #{user.username}..."
 
@@ -75,32 +133,28 @@ def generer_article(client, user, theme)
   article_prompt = "Écris un article détaillé en français sur le thème suivant : '#{theme}', sans inclure le titre ni de mention de l'introduction."
   body_text = Array.new(5) { generer_paragraphe_openai(client, article_prompt) }.join("\n\n")
 
-  # Générer un mot-clé en anglais pour la recherche d'image
-  mot_cle = generer_mot_cle_openai(client, titre_article)
-  puts "Mot-clé généré pour la recherche d'image : #{mot_cle}"
+  # Générer des paramètres de couverture aléatoires
+  cover_params = generer_parametres_couverture
+  puts "Paramètres de couverture générés : #{cover_params}"
 
-  # Séparer les mots-clés avec des virgules et encoder l'URL correctement
-  encoded_keywords = ERB::Util.url_encode(mot_cle.split.join(',')) # Remplace les espaces par des virgules et encode l'URI
-  puts "Mots-clés encodés pour l'URL : #{encoded_keywords}"
+  # Générer le SVG de la couverture
+  svg_cover = generer_svg_couverture(cover_params)
 
-  # Récupérer une image liée aux mots-clés encodés
-  unsplash_url = Faker::LoremFlickr.image(size: "600x400", search_terms: encoded_keywords.split(','))
-  file = URI.open(unsplash_url)
-
-  # Créer le post avec le drapeau `skip_photo_validation` à true
+  # Créer le post avec les paramètres de couverture
   post = Post.new(
     title: titre_article,
     user_id: user.id,
     image_rights: true,
-    color: "hsl(#{rand(360)}, 100%, 50%)",
+    color: "hsl(#{cover_params[:hue]}, 100%, 50%)",
     body: body_text,
-    skip_photo_validation: true
+    pattern_settings: cover_params.to_json,
+    cover: svg_cover
   )
 
-  if post.save(validate: false)
-    post.photo.attach(io: file, filename: "image_#{post.id}.jpg")
+  if post.save
+    puts "Post créé avec succès : #{post.title}"
   else
-    puts "Failed to create post: #{post.errors.full_messages.join(', ')}"
+    puts "Échec de la création du post : #{post.errors.full_messages.join(', ')}"
   end
 
   # Générer une date de création aléatoire (par exemple dans les 365 derniers jours)
@@ -109,12 +163,6 @@ def generer_article(client, user, theme)
 
   # Générer des chapitres de manière aléatoire
   generer_chapitres_aleatoires(client, post, titre_article) if [true, false].sample  # 50% de chances d'avoir des chapitres
-
-  # Réactive la validation en supprimant le drapeau, puis valide à nouveau
-  post.skip_photo_validation = false
-  post.save! # Sauvegarde avec validation cette fois-ci
-
-  puts "Themes: #{post.themes.pluck(:name).join(', ')}"
 
   puts "Article créé pour l'utilisateur #{user.username} : #{titre_article}, Date de création : #{random_created_at}"
 end
@@ -167,8 +215,8 @@ quentin_user = User.create!(
 quentin_user.skip_confirmation!
 quentin_user.save!
 
-# Create 9 additional random users
-users = 1.times.map do
+# Create 2 additional random users
+users = 2.times.map do
   user = User.create!(
     email: Faker::Internet.unique.email,
     password: "password",
@@ -216,7 +264,7 @@ themes = [
 
 # Créer des articles pour chaque utilisateur en utilisant les thèmes disponibles
 users.each do |user|
-  1.times do
+  2.times do
     theme = themes.sample # Choisir un thème aléatoire pour chaque article
     generer_article(client, user, theme)
   end

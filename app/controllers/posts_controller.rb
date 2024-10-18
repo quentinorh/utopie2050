@@ -35,6 +35,8 @@ class PostsController < ApplicationController
   end
 
   def edit
+    @post = Post.find(params[:id])
+    @pattern_settings = JSON.parse(@post.pattern_settings || '{}')
   end
 
   def update

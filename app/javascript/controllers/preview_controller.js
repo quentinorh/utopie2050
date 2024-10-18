@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = [
     "patternContainer", "columns", "rows", "hue", "filledSquares", "whiteSquares",
     "padding", "complementaryBg", "columnValue", "rowValue", "filledValue",
-    "whiteValue", "paddingValue", "patternSettings", "titleWrapper", "userName", "cover"
+    "whiteValue", "paddingValue", "title", "patternSettings", "titleWrapper", "userName", "cover"
   ]
 
   static values = {
@@ -12,54 +12,90 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log('Preview controller connected');
-    console.log('Columns target:', this.columnsTarget);
-    console.log('Pattern Settings target:', this.patternSettingsTarget);
-    this.currentShape = 'square'
-    this.randomizeParameters()
-    this.userNameTarget.textContent = this.usernameValue
-    
-    // Update this line to include the classes and initial styling
-    const fillColor = this.getHslColor(this.hueTarget.value)
-    const textColor = this.getContrastColor(fillColor)
-    this.titleWrapperTarget.innerHTML = `<span class="p-xs inline-block" style="background-color: ${fillColor}; color: ${textColor};">Futur titre</span>`
-    
-    this.updateColors()
+  // console.log('Preview controller connected');
+  // console.log('Columns target:', this.columnsTarget);
+  // console.log('Pattern Settings target:', this.patternSettingsTarget);
+  this.currentShape = 'square';
 
-    // Set max values for columns and rows
-    this.columnsTarget.max = 50
-    this.rowsTarget.max = 50
+  // Vérifier si des paramètres de motif existent
+  if (this.patternSettingsTarget.value) {
+    const settings = JSON.parse(this.patternSettingsTarget.value);
 
-    // Set step and max for padding
-    this.paddingTarget.step = 10
-    this.paddingTarget.max = 50
+    // Appliquer les valeurs des paramètres aux cibles
+    this.columnsTarget.value = settings.columns || 1;
+    this.rowsTarget.value = settings.rows || 1;
+    this.hueTarget.value = settings.hue || '#ff0000';
+    this.filledSquaresTarget.value = settings.filledSquares || 1;
+    this.whiteSquaresTarget.value = settings.whiteSquares || 1;
+    this.paddingTarget.value = settings.padding || 0;
+    this.complementaryBgTarget.checked = settings.complementaryBg || false;
+    this.currentShape = settings.shape || 'square';
 
-    // Set up color picker to only change hue
-    this.hueTarget.addEventListener('input', this.updateHue.bind(this))
-    this.element.addEventListener('submit', (event) => {
-      this.updatePattern(); // Met à jour le champ cover avant de soumettre le formulaire
+    // Mettre à jour les boutons de forme
+    this.element.querySelectorAll('.shape-button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.shape === this.currentShape);
     });
+
+    // Mettre à jour le motif avec les paramètres chargés
+    this.updatePattern();
+  } else {
+    // Si aucun paramètre n'est présent, générer des paramètres aléatoires par défaut
+    this.randomizeParameters();
   }
 
+  this.userNameTarget.textContent = this.usernameValue;
+
+  // Forcer l'initialisation du titre
+  this.initializeTitle();
+
+  this.updateColors();
+
+  // Set max values for columns and rows
+  this.columnsTarget.max = 50;
+  this.rowsTarget.max = 50;
+
+  // Set step and max for padding
+  this.paddingTarget.step = 10;
+  this.paddingTarget.max = 50;
+
+  // Set up color picker to only change hue
+  this.hueTarget.addEventListener('input', this.updateHue.bind(this));
+  this.element.addEventListener('submit', (event) => {
+    this.updatePattern(); // Met à jour le champ cover avant de soumettre le formulaire
+  });
+
+  // Initialiser le slider de couleur
+  const initialHue = this.getHueFromHex(this.hueTarget.value)
+  this.hueTarget.value = initialHue
+  this.hueTarget.style.background = `linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%))`
+}
+
+
   updateHue(event) {
-    const hue = this.getHueFromHex(event.target.value)
+    const hue = parseInt(event.target.value)
     const newColor = `hsl(${hue}, 80%, 70%)`
-    event.target.value = this.hslToHex(hue, 80, 70)
+    this.hueTarget.value = hue
+    this.hueTarget.style.background = `linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%))`
     this.updatePattern()
+    this.updateColors() // Ajoutez cette ligne pour mettre à jour les couleurs du titre
   }
 
   getHslColor(hexColor) {
-    const hue = this.getHueFromHex(hexColor)
+    const hue = parseInt(this.hueTarget.value)
     return `hsl(${hue}, 80%, 70%)`
   }
 
   updateTitle(e) {
-    const title = e.currentTarget.value || 'Futur titre' // Use placeholder if empty
-    this.splitAndWrapText(title)
-    this.updateColors()
+    const title = e.currentTarget.value || "Futur titre";
+    this.splitAndWrapText(title);
+    this.updateColors();
   }
 
   splitAndWrapText(text) {
+    if (!text || text.trim() === "") {
+      text = "Futur titre";
+    }
+    
     const words = text.split(/\s+/)
     let lines = []
     let currentLine = []
@@ -101,8 +137,10 @@ export default class extends Controller {
   }
 
   updatePattern() {
-    const width = this.patternContainerTarget.clientWidth
-    const height = this.patternContainerTarget.clientHeight
+    // const width = this.patternContainerTarget.clientWidth
+    // const height = this.patternContainerTarget.clientHeight
+    const width = 250
+    const height = 350
     const columns = Math.min(parseInt(this.columnsTarget.value), 50)
     const rows = Math.min(parseInt(this.rowsTarget.value), 50)
     const filledSquares = parseInt(this.filledSquaresTarget.value)
@@ -115,7 +153,8 @@ export default class extends Controller {
     this.whiteValueTarget.textContent = whiteSquares
     this.paddingValueTarget.textContent = paddingPercentage
 
-    const fillColor = this.getHslColor(this.hueTarget.value)
+    const hue = parseInt(this.hueTarget.value)
+    const fillColor = this.getHslColor()
     const complementaryColor = this.getComplementaryColor(fillColor)
     const triadicColor = this.getTriadicColor(fillColor)
 
@@ -154,16 +193,18 @@ export default class extends Controller {
     this.updateColors()
     this.patternContainerTarget.innerHTML = svg
     this.updatePatternSettings()
-    this.splitAndWrapText(this.titleWrapperTarget.textContent) // Re-split text after updating pattern
+    
+    // Réinitialiser le titre après la mise à jour du motif
+    this.initializeTitle();
 
     // Mettre à jour le champ caché 'cover' avec le contenu SVG
-    console.log(svg)
+    //console.log(svg)
     this.coverTarget.value = svg; // Ajout de cette ligne
   }
 
   getComplementaryColor(hslColor) {
     const hue = parseInt(hslColor.match(/hsl\((\d+),/)[1])
-    return `hsl(${(hue + 180) % 360}, 80%, 70%)`
+    return `hsl(${(hue - 120) % 360}, 80%, 70%)`
   }
 
   getTriadicColor(hslColor) {
@@ -269,8 +310,9 @@ export default class extends Controller {
     this.filledSquaresTarget.value = Math.floor(Math.random() * 100) + 1
     this.whiteSquaresTarget.value = Math.floor(Math.random() * 100) + 1
     this.paddingTarget.value = Math.floor(Math.random() * 6) * 10 // 0 to 50 in steps of 10
-    const hue = Math.floor(Math.random() * 360)
-    this.hueTarget.value = this.hslToHex(hue, 80, 70)
+    
+    // Modifier cette ligne pour changer directement la valeur du slider de teinte
+    this.hueTarget.value = Math.floor(Math.random() * 360)
     
     const shapes = ['square', 'ellipse', 'triangle', 'losange']
     this.currentShape = shapes[Math.floor(Math.random() * shapes.length)]
@@ -281,6 +323,7 @@ export default class extends Controller {
     this.complementaryBgTarget.checked = Math.random() < 0.5
 
     this.updatePattern()
+    this.updateHue({ target: this.hueTarget }) // Ajoutez cette ligne pour mettre à jour le dégradé du slider
   }
 
   updatePatternSettings() {
@@ -300,7 +343,8 @@ export default class extends Controller {
   }
 
   updateColors() {
-    const fillColor = this.getHslColor(this.hueTarget.value)
+    const hue = parseInt(this.hueTarget.value)
+    const fillColor = this.getHslColor()
     const textColor = this.getContrastColor(fillColor)
 
     // Update each span in the titleWrapper
@@ -367,8 +411,11 @@ export default class extends Controller {
   exportSVG() {
     this.coverTarget.value = svgString;
 
-    const width = this.patternContainerTarget.clientWidth;
-    const height = this.patternContainerTarget.clientHeight;
+    // const width = this.patternContainerTarget.clientWidth;
+    // const height = this.patternContainerTarget.clientHeight;
+
+    const width = 250;
+    const height = 350;
     
     // Get the pattern SVG
     const patternSVG = this.patternContainerTarget.innerHTML;
@@ -395,5 +442,11 @@ export default class extends Controller {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  initializeTitle() {
+    const currentTitle = this.titleTarget.value || "Futur titre";
+    this.splitAndWrapText(currentTitle);
+    this.updateColors();
   }
 }
