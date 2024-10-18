@@ -2,22 +2,26 @@
     staggered_animation_target: "element",
     stagger_count: 12,
     action: "mouseover->animation#postsGallery",
-    post_color: post.color,
     turbo: false, turbo_stream: false
   } do %>
-  <div class="relative w-full aspect-video mb-xs overflow-hidden">
-    <% if post.cover.present? %>
-      <div class="cover-svg">
-        <%= post.cover.html_safe %> <!-- Affiche le SVG stocké dans l'attribut cover -->
+  <div class="w-[250px]" data-controller="cover">
+
+    <input type="hidden" data-cover-target="title" value="<%= post.title %>">
+    <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
+    <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
+
+    <div class="relative aspect-[9/14] overflow-hidden">
+      <div class="absolute inset-0 flex flex-col justify-between">
+        <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
+          <%= post.title %>
+        </div>
+        <div class="text-sm z-10 w-fit" data-cover-target="userName">
+          <%= post.user.username %>
+        </div>
       </div>
-    <% else %>
-      <div class="cover-image">
+      <div class="cover-svg absolute inset-0 w-full h-full">
+        <%= post.cover.html_safe %>
       </div>
-    <% end %>
+    </div>
   </div>
-  <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
-    <span><%= post.user.username %></span>
-    <span><%= post.created_at.strftime("%B %d, %Y") %></span>
-  </div>
-  <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
 <% end %>

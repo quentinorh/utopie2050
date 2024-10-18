@@ -4,6 +4,7 @@ class Post < ApplicationRecord
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
   has_many :post_themes, dependent: :destroy
   has_many :themes, through: :post_themes
+  before_save :update_color_from_pattern_settings
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
@@ -49,6 +50,13 @@ class Post < ApplicationRecord
   end
 
   private
+
+  def update_color_from_pattern_settings
+    if pattern_settings.present?
+      settings = JSON.parse(pattern_settings)
+      self.color = "hsl(#{settings['hue']}, 100%, 50%)" if settings['hue'].present?
+    end
+  end
 
   def generate_themes_from_openai
     content = "#{title}\n#{body}\n" + chapters.map(&:body).join("\n")
