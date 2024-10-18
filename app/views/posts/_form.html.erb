@@ -1,4 +1,7 @@
-<div data-controller="chapter preview" data-preview-username-value="<%= current_user.username %>" class="w-full">
+<div data-controller="chapter preview" 
+     data-preview-username-value="<%= current_user.username %>" 
+     data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
+     class="w-full">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col" }) do |form| %>
     
     <!-- Affichage des erreurs -->
@@ -17,10 +20,9 @@
       <div class="p-sm rounded-lg bg-white shadow w-full">
         <div class="flex flex-col sm:flex-row gap-sm">
           <!-- Aperçu -->
-          <div class="w-full sm:w-1/2">
-            <label for="body" class="mt-8 text-l tw-form-label">Aperçu de la couverture</label>
+          <div class="w-[250px] flex-shrink-0">
             <!-- Pattern Container -->
-            <div class="relative w-full border-2 border-gray-200 mt-4">
+            <div class="relative w-[250px] h-[350px]">
               <div class="absolute bottom-0 top-0 flex flex-col">
                 <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
                 </div>
@@ -28,13 +30,16 @@
                   <%= current_user.username %>
                 </div>
               </div>
-              <div id="pattern-container" data-preview-target="patternContainer" class="w-full aspect-[9/14] overflow-hidden">
+              <div id="pattern-container" data-preview-target="patternContainer" class="w-full h-full overflow-hidden">
               </div>
             </div>
           </div>
-          <!-- Paramètres -->
-          <div class="w-full sm:w-1/2">
-            <label for="body" class="mt-8 text-l tw-form-label">Paramètres de la couverture</label>
+          <!-- Paramètres de la couverture-->
+          <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-center">
+              <label for="body" class="text-l tw-form-label">Paramètres de la couverture</label>
+              <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
+            </div>
             <div class="mt-xs"> 
               <!-- Controls -->
               <div class="mt-4 text-l">
@@ -70,17 +75,21 @@
                   <label class="text-sm font-mono" for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
                   <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
                 </div>
-                <div class="mt-2">
-                  <button type="button" class="shape-button active" data-shape="square" data-action="click->preview#changeShape">Carré</button>
-                  <button type="button" class="shape-button" data-shape="ellipse" data-action="click->preview#changeShape">Ellipse</button>
-                  <button type="button" class="shape-button" data-shape="triangle" data-action="click->preview#changeShape">Triangle</button>
-                  <button type="button" class="shape-button" data-shape="losange" data-action="click->preview#changeShape">Losange</button>
+                <label class="text-sm font-mono" for="padding">Forme: </label>
+                <div class="mt-2 flex justify-between">
+                  <button type="button" class="shape-button active p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="square" data-action="click->preview#changeShape" aria-label="Carré">
+                    <%= inline_svg_tag('carre.svg', class: 'w-8 h-8', aria: true) %>
+                  </button>
+                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="ellipse" data-action="click->preview#changeShape" aria-label="Cercle">
+                    <%= inline_svg_tag('cercle.svg', class: 'w-8 h-8') %>
+                  </button>
+                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="triangle" data-action="click->preview#changeShape" aria-label="Triangle">
+                    <%= inline_svg_tag('triangle.svg', class: 'w-8 h-8') %>
+                  </button>
+                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="losange" data-action="click->preview#changeShape" aria-label="Losange">
+                    <%= inline_svg_tag('losange.svg', class: 'w-8 h-8') %>
+                  </button>
                 </div>
-                <div class="mt-2">
-                  <input type="checkbox" id="complementary-bg" name="complementary-bg" data-action="change->preview#updatePattern" data-preview-target="complementaryBg">
-                  <label for="complementary-bg">Fond complémentaire</label>
-                </div>
-                <button type="button" class="tw-btn-secondary mt-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
                 <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
                 <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
               </div>
@@ -88,11 +97,10 @@
           </div>
         </div>
       </div>
-      
       <!-- Colonne de droite (contenu) -->
       <div class="p-sm rounded-lg bg-white shadow w-full">
         <!-- Titre -->
-        <label for="title" class="mt-8 text-l tw-form-label">Titre</label>
+        <label for="title" class="text-l tw-form-label">Titre</label>
         <div class="relative">
           <%= form.text_field :title, class: "tw-form-input", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->preview#updateTitle", preview_target: "title" } %>
           <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>

@@ -64,8 +64,8 @@ def generer_parametres_couverture
     filledSquares: rand(1..100),
     whiteSquares: rand(1..100),
     padding: rand(0..50),
-    shape: ['square', 'ellipse', 'triangle', 'losange'].sample,
-    complementaryBg: [true, false].sample
+    shape: ['square', 'ellipse', 'triangle', 'losange'].sample
+    # Supprimez la ligne 'complementaryBg' car elle est maintenant toujours activée
   }
 end
 
@@ -80,7 +80,6 @@ def generer_svg_couverture(params)
   white_squares = params[:whiteSquares]
   padding = params[:padding]
   shape = params[:shape]
-  complementary_bg = params[:complementaryBg]
 
   fill_color = "hsl(#{hue}, 80%, 70%)"
   complementary_color = "hsl(#{(hue + 180) % 360}, 80%, 70%)"
@@ -88,9 +87,8 @@ def generer_svg_couverture(params)
   pattern_cycle = filled_squares + white_squares
   svg_content = ""
 
-  if complementary_bg
-    svg_content += "<rect x='0' y='0' width='#{width}' height='#{height}' fill='#{complementary_color}' />"
-  end
+  # Toujours ajouter le fond complémentaire
+  svg_content += "<rect x='0' y='0' width='#{width}' height='#{height}' fill='#{complementary_color}' />"
 
   (0...rows).each do |row|
     (0...columns).each do |col|
@@ -107,13 +105,13 @@ def generer_svg_couverture(params)
 
       svg_content += case shape
                      when 'square'
-                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x}' height='#{cell_height - 2 * padding_y}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x}' height='#{cell_height - 2 * padding_y}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'ellipse'
-                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2}' ry='#{(cell_height - 2 * padding_y) / 2}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2}' ry='#{(cell_height - 2 * padding_y) / 2}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'triangle'
-                       "<polygon points='#{x + padding_x},#{y + cell_height - padding_y} #{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height - padding_y}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                       "<polygon points='#{x + padding_x},#{y + cell_height - padding_y} #{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height - padding_y}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'losange'
-                       "<polygon points='#{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y} #{x + padding_x},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : complementary_color}' />"
+                       "<polygon points='#{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y} #{x + padding_x},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : "none"}' />"
                      end
     end
   end

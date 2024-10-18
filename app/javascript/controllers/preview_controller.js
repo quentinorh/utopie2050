@@ -3,12 +3,13 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "patternContainer", "columns", "rows", "hue", "filledSquares", "whiteSquares",
-    "padding", "complementaryBg", "columnValue", "rowValue", "filledValue",
+    "padding", "columnValue", "rowValue", "filledValue",
     "whiteValue", "paddingValue", "title", "patternSettings", "titleWrapper", "userName", "cover"
   ]
 
   static values = {
-    username: String
+    username: String,
+    initialHue: Number
   }
 
   connect() {
@@ -17,6 +18,11 @@ export default class extends Controller {
   // console.log('Pattern Settings target:', this.patternSettingsTarget);
   this.currentShape = 'square';
 
+  // Initialiser currentShape avec une valeur par défaut si non définie
+  if (!this.currentShape) {
+    this.currentShape = 'square'; // ou toute autre forme par défaut
+  }
+
   // Vérifier si des paramètres de motif existent
   if (this.patternSettingsTarget.value) {
     const settings = JSON.parse(this.patternSettingsTarget.value);
@@ -24,17 +30,15 @@ export default class extends Controller {
     // Appliquer les valeurs des paramètres aux cibles
     this.columnsTarget.value = settings.columns || 1;
     this.rowsTarget.value = settings.rows || 1;
-    this.hueTarget.value = settings.hue || '#ff0000';
+    this.hueTarget.value = settings.hue || this.getRandomHue(); // Utiliser la valeur sauvegardée ou une valeur aléatoire
     this.filledSquaresTarget.value = settings.filledSquares || 1;
     this.whiteSquaresTarget.value = settings.whiteSquares || 1;
     this.paddingTarget.value = settings.padding || 0;
-    this.complementaryBgTarget.checked = settings.complementaryBg || false;
-    this.currentShape = settings.shape || 'square';
+    this.useComplementaryBg = true;
+    this.currentShape = settings.shape || this.currentShape;
 
     // Mettre à jour les boutons de forme
-    this.element.querySelectorAll('.shape-button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.shape === this.currentShape);
-    });
+    this.updateShapeButtons();
 
     // Mettre à jour le motif avec les paramètres chargés
     this.updatePattern();
@@ -64,10 +68,13 @@ export default class extends Controller {
     this.updatePattern(); // Met à jour le champ cover avant de soumettre le formulaire
   });
 
-  // Initialiser le slider de couleur
-  const initialHue = this.getHueFromHex(this.hueTarget.value)
-  this.hueTarget.value = initialHue
-  this.hueTarget.style.background = `linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%))`
+  // Initialiser le slider de couleur avec la valeur actuelle de hue
+  const initialHue = parseInt(this.hueTarget.value);
+  this.hueTarget.value = initialHue;
+  this.hueTarget.style.background = `linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%))`;
+
+  // Mettre à jour le motif avec la nouvelle valeur de hue
+  this.updatePattern();
 }
 
 
@@ -137,8 +144,6 @@ export default class extends Controller {
   }
 
   updatePattern() {
-    // const width = this.patternContainerTarget.clientWidth
-    // const height = this.patternContainerTarget.clientHeight
     const width = 250
     const height = 350
     const columns = Math.min(parseInt(this.columnsTarget.value), 50)
@@ -163,9 +168,8 @@ export default class extends Controller {
     const patternCycle = filledSquares + whiteSquares
     let svgContent = ''
 
-    if (this.complementaryBgTarget.checked) {
-      svgContent += `<rect x="0" y="0" width="${width}" height="${height}" fill="${complementaryColor}" />`
-    }
+    // Ajoutez toujours le fond complémentaire
+    svgContent += `<rect x="0" y="0" width="${width}" height="${height}" fill="${complementaryColor}" />`
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < columns; col++) {
@@ -190,7 +194,7 @@ export default class extends Controller {
       </svg>
     `
 
-    // this.updateColors()
+    this.updateColors()
     this.patternContainerTarget.innerHTML = svg
     this.updatePatternSettings()
     
@@ -298,10 +302,28 @@ export default class extends Controller {
   }
 
   changeShape(event) {
-    this.element.querySelectorAll('.shape-button').forEach(btn => btn.classList.remove('active'))
-    event.target.classList.add('active')
-    this.currentShape = event.target.dataset.shape
-    this.updatePattern()
+    // Empêcher la propagation de l'événement
+    event.preventDefault();
+    
+    // Trouver le bouton cliqué (peut être le SVG à l'intérieur du bouton)
+    const button = event.target.closest('.shape-button');
+    
+    if (!button) return;
+
+    // Retirer la classe 'active' de tous les boutons
+    this.element.querySelectorAll('.shape-button').forEach(btn => {
+      btn.classList.remove('active');
+      btn.classList.remove('bg-gray-200'); // Supprime la classe de fond gris
+    });
+    
+    // Ajouter les classes 'active' et 'bg-gray-200' au bouton cliqué
+    button.classList.add('active', 'bg-gray-200');
+    
+    // Mettre à jour la forme actuelle
+    this.currentShape = button.dataset.shape;
+    
+    // Mettre à jour le motif
+    this.updatePattern();
   }
 
   randomizeParameters() {
@@ -311,19 +333,15 @@ export default class extends Controller {
     this.whiteSquaresTarget.value = Math.floor(Math.random() * 100) + 1
     this.paddingTarget.value = Math.floor(Math.random() * 6) * 10 // 0 to 50 in steps of 10
     
-    // Modifier cette ligne pour changer directement la valeur du slider de teinte
-    this.hueTarget.value = Math.floor(Math.random() * 360)
+    this.hueTarget.value = this.getRandomHue();
     
     const shapes = ['square', 'ellipse', 'triangle', 'losange']
     this.currentShape = shapes[Math.floor(Math.random() * shapes.length)]
-    this.element.querySelectorAll('.shape-button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.shape === this.currentShape)
-    })
+    
+    // Mettre à jour les boutons de forme après avoir choisi une forme aléatoire
+    this.updateShapeButtons();
 
-    this.complementaryBgTarget.checked = Math.random() < 0.5
-
-    this.updatePattern()
-    this.updateHue({ target: this.hueTarget }) // Ajoutez cette ligne pour mettre à jour le dégradé du slider
+    this.updatePattern();
   }
 
   updatePatternSettings() {
@@ -334,10 +352,7 @@ export default class extends Controller {
       filledSquares: this.filledSquaresTarget.value,
       whiteSquares: this.whiteSquaresTarget.value,
       padding: this.paddingTarget.value,
-      shape: this.currentShape,
-      complementaryBg: this.complementaryBgTarget.checked,
-      // Remove this line
-      // nonFilled: document.querySelector('input[name="non-filled"]:checked').value
+      shape: this.currentShape
     }
     this.patternSettingsTarget.value = JSON.stringify(settings)
   }
@@ -448,5 +463,36 @@ export default class extends Controller {
     const currentTitle = this.titleTarget.value || "Futur titre";
     this.splitAndWrapText(currentTitle);
     this.updateColors();
+  }
+
+  validateForm(event) {
+    // Vérifiez si le titre est vide
+    if (!this.titleTarget.value.trim()) {
+      event.preventDefault(); // Empêche la soumission du formulaire
+      this.titleTarget.classList.add('border-red-500'); // Ajoute une bordure rouge
+      this.element.querySelector('[data-preview-target="titleError"]').classList.remove('hidden'); // Affiche le message d'erreur
+    } else {
+      this.titleTarget.classList.remove('border-red-500');
+      this.element.querySelector('[data-preview-target="titleError"]').classList.add('hidden');
+    }
+
+    // Assurez-vous que le champ cover est rempli avec le SVG actuel
+    this.coverTarget.value = this.patternContainerTarget.innerHTML;
+  }
+
+  // Ajouter cette nouvelle méthode pour générer une valeur de teinte aléatoire
+  getRandomHue() {
+    return Math.floor(Math.random() * 360);
+  }
+
+  // Nouvelle méthode pour mettre à jour les boutons de forme
+  updateShapeButtons() {
+    this.element.querySelectorAll('.shape-button').forEach(btn => {
+      if (btn.dataset.shape === this.currentShape) {
+        btn.classList.add('active', 'bg-gray-200');
+      } else {
+        btn.classList.remove('active', 'bg-gray-200');
+      }
+    });
   }
 }
