@@ -33,47 +33,14 @@
 </div>
 
 <div class="bg-black-100 py-xl">
-  <div class="text-xxl uppercase text-center">
-    <span> Les derniers futurs </span>
+  <div class="text-xxl uppercase text-center mb-8">
+    <span>Les derniers futurs</span>
   </div>
-
-  <svg style="visibility:hidden;" width="0" height="0">
-    <filter id="duotone" color-interpolation-filters="sRGB">
-      <feColorMatrix type="matrix" values="<%= hue_to_feColorMatrix(0) %>"></feColorMatrix>
-    </filter>
-  </svg>
-  <div class="grid grid-cols-4 gap-xs p-xs">
-    <% @posts.last(4).each do |post| %>
-      <%= link_to post, class: "text-xl transition-colors group opacity-100", data: {
-        staggered_animation_target: "element",
-        stagger_count: 12,
-        action: "mouseover->animation#postsGallery",
-        post_color: post.color,
-        turbo: false, turbo_stream: false
-      } do %>
-        <div class="aspect-[9/14] w-full relative mb-xs overflow-hidden">
-         
-        </div>
-        <div class="flex justify-between text-sm font-mono uppercase text-gray-600">
-          <span><%= post.user.username %></span>
-          <span><%= post.created_at.strftime("%B %d, %Y") %></span>
-        </div>
-        <span class="leading-[120%] inline-block mt-xs"><%= post.title %></span>
-      <% end %>
-    <% end %>
+  <div class="mx-4 sm:mx-6 md:mx-8 lg:mx-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-center items-center">
+      <%= render partial: "posts/post", collection: @posts.last(4) %>
     </div>
   </div>
-
-  <% @posts.each do |post| %>
-    <%
-      if post.color
-        match = post.color.match(/hsl\((\d+), (\d+)%, (\d+)%\)/)
-        hue = match[1].to_i
-      else
-        hue = 0
-      end
-      color_matrix = hue_to_feColorMatrix(hue)
-    %>
-  <% end %>
+</div>
 
 <%= render 'shared/footer' %>

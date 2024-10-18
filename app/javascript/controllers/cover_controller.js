@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "title", "titleWrapper", "userName", "patternSettings"
+    "title", "titleWrapper", "userName", "patternSettings", "postColor"
   ]
 
   static values = {
@@ -18,8 +18,14 @@ export default class extends Controller {
   }
 
   initializeHue() {
-    if (this.hasPatternSettingsValue) {
-      this.hueValue = this.patternSettingsValue.hue;
+    if (this.hasPatternSettingsTarget) {
+      const settings = JSON.parse(this.patternSettingsTarget.value);
+      this.hueValue = parseInt(settings.hue);
+    } else if (this.hasPostColorTarget) {
+      const hslMatch = this.postColorTarget.value.match(/hsl\((\d+),/);
+      if (hslMatch) {
+        this.hueValue = parseInt(hslMatch[1]);
+      }
     }
   }
 

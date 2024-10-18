@@ -3,35 +3,33 @@
 
     <!-- Taille du texte -->
     <div class="flex items-center space-x-2">
-      <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-sm" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="small">A</button>
-      <button id="text-size-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-base" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="medium">A</button>
-      <button id="text-size-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-l" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="large">A</button>
-      <button id="text-size-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-2 py-1 text-2l" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="xlarge">A</button>
+      <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="small">
+        <span class="text-sm">A</span>
+      </button>
+      <button id="text-size-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="medium">
+        <span class="text-base">A</span>
+      </button>
+      <button id="text-size-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="large">
+        <span class="text-lg">A</span>
+      </button>
+      <button id="text-size-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="xlarge">
+        <span class="text-xl">A</span>
+      </button>
     </div>
 
     <!-- Interlignes -->
     <div class="flex items-center space-x-2">
-      <button id="line-height-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="small">
-        <span class="block w-5 h-1 bg-gray-700 mb-1"></span>
-        <span class="block w-5 h-1 bg-gray-700 mb-1"></span>
-        <span class="block w-4 h-1 bg-gray-700 mb-1"></span>
-        <span class="block w-4 h-1 bg-gray-700 mb-1"></span>
-        <span class="block w-4 h-1 bg-gray-700"></span>
+      <button id="line-height-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="small">
+        <%= inline_svg_tag('lineh-1.svg') %>
       </button>
-      <button id="line-height-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="medium">
-        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
-        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
-        <span class="block w-4 h-1 bg-gray-700 mb-2"></span>
-        <span class="block w-4 h-1 bg-gray-700"></span>
+      <button id="line-height-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="medium">
+        <%= inline_svg_tag('lineh-2.svg') %>
       </button>
-      <button id="line-height-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="large">
-        <span class="block w-4 h-1 bg-gray-700 mb-3"></span>
-        <span class="block w-4 h-1 bg-gray-700 mb-3"></span>
-        <span class="block w-4 h-1 bg-gray-700"></span>
+      <button id="line-height-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="large">
+        <%= inline_svg_tag('lineh-3.svg') %>
       </button>
-      <button id="line-height-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="xlarge">
-        <span class="block w-4 h-1 bg-gray-700 mb-4"></span>
-        <span class="block w-4 h-1 bg-gray-700"></span>
+      <button id="line-height-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="xlarge">
+        <%= inline_svg_tag('lineh-4.svg') %>
       </button>
     </div>
 

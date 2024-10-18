@@ -14,7 +14,7 @@
     <!-- Colonne de gauche fixe -->
     <div class="w-full lg:w-1/3 lg:sticky h-[100vw] aspect-square lg:top-[theme('top.navbar-height')] max-h-screen flex flex-col items-center justify-center z-0 ">
       <div class="absolute top-0 left-0 z-[99]">
-        <div class="relative w-[250px] border-2 border-gray-200 mt-4">
+        <div class="relative w-[250px] mt-4">
           <div class="absolute bottom-0 top-0 flex flex-col">
             <div class="h-fit text-2l z-99" data-cover-target="titleWrapper">
               <%= @post.title %>
@@ -54,10 +54,6 @@
           <div>
             <p>Temps de lecture</p>
             <p class="text-right"><%= @post.calculate_reading_time %></p>
-          </div>
-          <div>
-            <p>Thèmes</p>
-            <p><%= @post.themes.pluck(:name).join(', ') %></p>
           </div>
         </div>
         <div class="mt-lg adjustable w-full">
