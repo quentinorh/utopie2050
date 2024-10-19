@@ -1,6 +1,4 @@
-<div id="settings-panel" data-settings-target="panel" class="hidden fixed left-0 right-0 w-full px-4 bg-white z-50 transition-transform duration-900 ease-in-out transform translate-y-full overflow-y-auto z-[99]" style="bottom: 100px;">
-  <div class="flex justify-between">
-
+<div id="settings-panel" data-settings-target="panel" class="flex justify-between items-center hidden fixed left-0 right-0 w-full px-4 bg-white z-50  bottom-0 w-full border-b border-t border-gray-100 transition-transform duration-900 ease-in-out transform translate-y-full overflow-y-auto z-[99]" style="bottom: 110px; height: 54px">
     <!-- Taille du texte -->
     <div class="flex items-center space-x-2">
       <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="small">
@@ -44,5 +42,4 @@
       <button id="light-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-white text-black-900" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="light">Clair</button>
       <button id="dark-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-black-900 text-white" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="dark">Sombre</button>
     </div>
-  </div>
 </div>

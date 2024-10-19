@@ -9,12 +9,12 @@
   <%= render 'shared/texttospeech' %>
   <%= render 'shared/settingspanel' %>
 
-  <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl min-h-screen relative">
+  <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl relative">
 
     <!-- Colonne de gauche fixe -->
     <div class="w-full lg:w-1/3 lg:sticky h-[100vw] aspect-square lg:top-[theme('top.navbar-height')] max-h-screen flex flex-col items-center justify-center z-0 ">
       <div class="absolute top-0 left-0 z-[99]">
-        <div class="relative w-[250px] mt-4">
+        <div class="relative w-[250px]">
           <div class="absolute bottom-0 top-0 flex flex-col">
             <div class="h-fit text-2l z-99" data-cover-target="titleWrapper">
               <%= @post.title %>
@@ -23,20 +23,10 @@
               <%= @post.user.username %>
             </div>
           </div>
-          <div class="cover-svg">
-            <%= @post.cover.html_safe %> <!-- Affiche le SVG stocké dans l'attribut cover -->
+          <div class="cover-svg" data-scroll-target="postImage">
+            <%= @post.cover.html_safe %>
           </div>
-        </div>
-        <div class="flex gap-2 p-sm">
-          <% if user_signed_in? && current_user == @post.user %>
-            <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-            <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="w-full h-full mb-4 origin-left overflow-hidden" data-scroll-target="postImage">
-       
+        </div>    
       </div>
     </div>
 
@@ -45,6 +35,14 @@
 
     <div class="lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
       <div class="flex flex-col" data-scroll-target="content">
+      
+      <div class="flex gap-2 p-sm">
+          <% if user_signed_in? && current_user == @post.user %>
+            <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+            <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+          <% end %>
+        </div>
+
         <!-- Intro and data -->
         <div class="flex justify-between font-mono text-sm py-sm uppercase">
           <div>

@@ -1,0 +1,4 @@
+.svg-full-height {
+    height: calc(100vh - 110px);
+    display: block; /* Pour éviter les espaces blancs autour du SVG */
+  }
