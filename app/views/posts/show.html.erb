@@ -1,4 +1,4 @@
-<div data-controller="cover scroll text-to-speech settings" 
+<div data-controller="cover scroll text-to-speech settings svg-animation" 
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
   
@@ -10,24 +10,20 @@
   <%= render 'shared/settingspanel' %>
 
   <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl relative">
-
     <!-- Colonne de gauche fixe -->
-    <div class="w-full lg:w-1/3 lg:sticky h-[100vw] aspect-square lg:top-[theme('top.navbar-height')] max-h-screen flex flex-col items-center justify-center z-0 ">
-      <div class="absolute top-0 left-0 z-[99]">
-        <div class="relative w-[250px]">
-          <div class="absolute bottom-0 top-0 flex flex-col">
-            <div class="h-fit text-2l z-99" data-cover-target="titleWrapper">
-              <%= @post.title %>
-            </div>
-            <div class="text-sm z-99 w-fit" data-cover-target="userName">
-              <%= @post.user.username %>
-            </div>
-          </div>
-          <div class="cover-svg" data-scroll-target="postImage">
-            <%= @post.cover.html_safe %>
-          </div>
-        </div>    
+    <div class="">
+      <!-- <div class="cover-svg" data-scroll-target="postImage"> -->
+      <div class="cover-svg opacity-0">
+        <%= @post.cover.html_safe %>
       </div>
+      <div class="absolute top-0 left-0">
+        <div class="h-fit text-2l z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
+          <%= @post.title %>
+        </div>
+        <div class="text-sm z-99 w-fit opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
+          <%= @post.user.username %>
+        </div>
+      </div>    
     </div>
 
     <!-- Colonne de droite défilante -->
