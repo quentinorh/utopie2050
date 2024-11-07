@@ -10,6 +10,8 @@ class User < ApplicationRecord
 
   # Associations
   has_many :posts, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
+  has_many :bookmarked_posts, through: :bookmarks, source: :post
 
   # Ajouter un callback pour s'assurer que le pseudo est toujours présent
   before_validation :set_default_username, on: :create

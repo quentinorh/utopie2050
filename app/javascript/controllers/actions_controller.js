@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = [ "settingsPanel", "actionsPanel", "sharePanel", "textSize", "lineHeight", "font", "theme" ]
 
   toggleSettings() {
-    this.settingsPanelTarget.classList.toggle('hidden')
+    this.settingsPanelTarget.classList.toggle('active')
     if (!this.settingsPanelTarget.classList.contains('hidden')) {
       this.actionsPanelTarget.classList.add('hidden')
     }
@@ -17,13 +17,15 @@ export default class extends Controller {
   toggleActions() {
     this.actionsPanelTarget.classList.toggle('hidden')
     if (!this.actionsPanelTarget.classList.contains('hidden')) {
-      this.settingsPanelTarget.classList.add('hidden')
+      this.settingsPanelTarget.classList.remove('active')
     }
   }
 
   connect() {
     this.loadSettings()
     console.log("Hello Settings")
+
+    this.settingsPanelTarget.classList.toggle('hidden')
 
     // Fermer le actionsPanel si la fenêtre est supérieure à 1024px
     window.addEventListener('resize', this.handleResize.bind(this))
@@ -57,13 +59,16 @@ export default class extends Controller {
     this.saveSetting('font-family', font)
   }
 
-  changeTheme(event) {
+  changePostTheme(event) {
     const theme = event.currentTarget.dataset.value
     this.setActiveButton('theme', theme)
-    document.querySelectorAll('.adjustable').forEach(el => {
+    
+    // Modifier le body et les éléments .show-content
+    document.body.classList.toggle('dark', theme === 'dark')
+    document.querySelectorAll('.show-content').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
     })
-    this.saveSetting('theme', theme)
+    this.saveSetting('post-theme', theme)
   }
 
   setActiveButton(group, value) {
@@ -118,7 +123,7 @@ export default class extends Controller {
     const textSize = this.getCookie('text-size') || 'medium'
     const lineHeight = this.getCookie('line-height') || 'medium'
     const font = this.getCookie('font-family') || 'sans'
-    const theme = this.getCookie('theme') || 'light'
+    const theme = this.getCookie('post-theme') || 'light'
 
     this.setActiveButton('textSize', textSize)
     this.setActiveButton('lineHeight', lineHeight)
@@ -128,7 +133,10 @@ export default class extends Controller {
     this.applyStyleToAdjustable('fontSize', this.getFontSize(textSize))
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(lineHeight))
     this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Opendylexic')
-    document.querySelectorAll('.adjustable').forEach(el => {
+    
+    // Appliquer le thème au body et aux éléments .show-content
+    document.body.classList.toggle('dark', theme === 'dark')
+    document.querySelectorAll('.show-content').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
     })
   }

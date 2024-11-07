@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     member do
       delete :remove_photo
     end
+    resource :bookmark, only: [:create, :destroy, :show]
   end
 
   devise_scope :user do

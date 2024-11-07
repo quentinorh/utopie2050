@@ -6,16 +6,16 @@
   <input type="hidden" data-scroll-target="title" value="<%= @post.title %>">
   <input type="hidden" data-cover-target="patternSettings" value="<%= @post.pattern_settings %>">
   
-  <%= render 'shared/bottomnavbar' %>
   <%= render 'shared/settingspanel' %>
+  <%= render 'shared/bottomnavbar' %>
   <%= render 'shared/actionspanel' %>
   <%= render 'shared/sharepanel' %>
 
-  <div class="flex flex-col lg:flex-row mx-auto">
+  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800">
     <!-- Colonne de gauche fixe -->
     <div data-controller="margin"
          data-margin-target="element" 
-         class="lg:mb-0 mb-xl bg-gray-100 relative lg:fixed w-[calc((100vh-120px)*(250/350))] flex justify-center lg:mr-0 mr-auto">
+         class="lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 relative lg:fixed w-[calc((100vh-120px)*(250/350))] flex justify-center lg:mr-0 mr-auto">
       <div class="h-full">
         <div class="cover-svg opacity-0">
           <%= @post.cover.html_safe %>
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Colonne de droite déroulante -->
-    <div class="lg:px-xl px-sm mb-2xl flex-1 overflow-y-auto lg:ml-[calc((100vh-120px)*(250/350))]">
+    <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 h-full lg:px-xl px-sm pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100vh-120px)*(250/350))]">
       <% if user_signed_in? && current_user == @post.user %>
         <div class="flex gap-2 p-sm">
           <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
@@ -50,7 +50,7 @@
           <p class="text-right"><%= @post.calculate_reading_time %></p>
         </div>
       </div>
-      <div>
+      <div class="post-body">
         <div class="mt-lg adjustable text-justify w-full">
           <%= simple_format(@post.body) %>
         </div>
@@ -68,8 +68,7 @@
             <% end %>
           </div>
         <% end %>
+      </div>
     </div>
   </div>
 </div>
-
-

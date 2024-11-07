@@ -7,6 +7,11 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <% if user_signed_in? %>
+      <meta name="user-logged-in" content="true">
+    <% else %>
+      <meta name="user-logged-in" content="false">
+    <% end %>
   </head>
 
   <body>
