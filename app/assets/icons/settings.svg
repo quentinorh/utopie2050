@@ -1,7 +1,7 @@
 <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 10 10" style="enable-background:new 0 0 10 10;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill-rule:evenodd;clip-rule:evenodd;}
+	.st0{fill-rule:evenodd;clip-rule:evenodd; fill: currentColor;}
 </style>
 <path class="st0" d="M4.1,0h1.8v1.1C6.3,1.2,6.7,1.4,7,1.6l0.8-0.8l1.3,1.3L8.3,2.9c0.2,0.4,0.4,0.7,0.5,1.2h1.1v1.8H8.8
 	C8.7,6.3,8.5,6.7,8.3,7l0.8,0.8L7.8,9.1L7,8.3C6.7,8.5,6.3,8.7,5.9,8.8v1.1H4.1V8.8C3.6,8.7,3.2,8.5,2.9,8.3L2.1,9.1L0.8,7.8L1.6,7

@@ -15,10 +15,10 @@
         </ul>
       </div>
     <% end %>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-sm">
       <!-- Colonne de gauche (paramètres et aperçu) -->
       <div class="p-sm rounded-lg bg-white shadow w-full">
-        <div class="flex flex-col sm:flex-row gap-sm">
+        <div class="flex gap-sm flex-nowrap">
           <!-- Aperçu -->
           <div class="w-[250px] flex-shrink-0">
             <!-- Pattern Container -->
@@ -37,7 +37,7 @@
           <!-- Paramètres de la couverture-->
           <div class="flex-grow min-w-0">
             <div class="flex justify-between items-center">
-              <label for="body" class="text-l tw-form-label">Paramètres de la couverture</label>
+              <label for="body" class="text-l tw-form-label">Couverture</label>
               <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
             </div>
             <div class="mt-xs"> 

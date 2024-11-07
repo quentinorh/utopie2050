@@ -1,4 +1,4 @@
-<div data-controller="cover scroll text-to-speech settings" 
+<div data-controller="cover scroll text-to-speech actions svg-animation relative" 
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
   
@@ -6,90 +6,70 @@
   <input type="hidden" data-scroll-target="title" value="<%= @post.title %>">
   <input type="hidden" data-cover-target="patternSettings" value="<%= @post.pattern_settings %>">
   
-  <%= render 'shared/texttospeech' %>
+  <%= render 'shared/bottomnavbar' %>
   <%= render 'shared/settingspanel' %>
+  <%= render 'shared/actionspanel' %>
+  <%= render 'shared/sharepanel' %>
 
-  <div class="flex flex-col lg:flex-row gap-sm lg:gap-xl min-h-screen relative">
-
+  <div class="flex flex-col lg:flex-row mx-auto">
     <!-- Colonne de gauche fixe -->
-    <div class="w-full lg:w-1/3 lg:sticky h-[100vw] aspect-square lg:top-[theme('top.navbar-height')] max-h-screen flex flex-col items-center justify-center z-0 ">
-      <div class="absolute top-0 left-0 z-[99]">
-        <div class="relative w-[250px] mt-4">
-          <div class="absolute bottom-0 top-0 flex flex-col">
-            <div class="h-fit text-2l z-99" data-cover-target="titleWrapper">
-              <%= @post.title %>
-            </div>
-            <div class="text-sm z-99 w-fit" data-cover-target="userName">
-              <%= @post.user.username %>
-            </div>
-          </div>
-          <div class="cover-svg">
-            <%= @post.cover.html_safe %> <!-- Affiche le SVG stocké dans l'attribut cover -->
-          </div>
+    <div data-controller="margin"
+         data-margin-target="element" 
+         class="lg:mb-0 mb-xl bg-gray-100 relative lg:fixed w-[calc((100vh-120px)*(250/350))] flex justify-center lg:mr-0 mr-auto">
+      <div class="h-full">
+        <div class="cover-svg opacity-0">
+          <%= @post.cover.html_safe %>
         </div>
-        <div class="flex gap-2 p-sm">
-          <% if user_signed_in? && current_user == @post.user %>
-            <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-            <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="w-full h-full mb-4 origin-left overflow-hidden" data-scroll-target="postImage">
-       
+        <div class="absolute top-0 left-0">
+          <div class="h-fit text-2l z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
+            <%= @post.title %>
+          </div>
+          <div class="text-sm z-99 w-fit opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
+            <%= @post.user.username %>
+          </div>
+        </div>    
       </div>
     </div>
 
-    <!-- Colonne de droite défilante -->
-    <!-- Boucle sur les chapitres du post -->
-
-    <div class="lg:w-2/3 overflow-y-auto p-sm lg:p-0 lg:pr-sm">
-      <div class="flex flex-col" data-scroll-target="content">
-        <!-- Intro and data -->
-        <div class="flex justify-between font-mono text-sm py-sm uppercase">
-          <div>
-            <p>Publié le</p>
-            <p data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
-          </div>
-          <div>
-            <p>Temps de lecture</p>
-            <p class="text-right"><%= @post.calculate_reading_time %></p>
-          </div>
+    <!-- Colonne de droite déroulante -->
+    <div class="lg:px-xl px-sm mb-2xl flex-1 overflow-y-auto lg:ml-[calc((100vh-120px)*(250/350))]">
+      <% if user_signed_in? && current_user == @post.user %>
+        <div class="flex gap-2 p-sm">
+          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
+          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
+        </div>  
+      <% end %>
+      <!-- Intro and data -->
+      <div class="flex justify-between font-mono text-sm py-sm uppercase">
+        <div>
+          <p>Publié le</p>
+          <p data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
         </div>
-        <div class="mt-lg adjustable w-full">
+        <div>
+          <p>Temps de lecture</p>
+          <p class="text-right"><%= @post.calculate_reading_time %></p>
+        </div>
+      </div>
+      <div>
+        <div class="mt-lg adjustable text-justify w-full">
           <%= simple_format(@post.body) %>
         </div>
         <% if @post.chapters.any? %>
-          <div class="adjustable w-full  pt-0 mt-md transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content">
+          <div class="adjustable w-full  pt-0 mt lg transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content">
             <% @post.chapters.each_with_index do |chapter, index| %>
               <div class="mt-lg">
                 <h2 class="text-2xl mt-4">
                   Chapitre <%= index + 1 %> : <%= chapter.title %>
                 </h2>
-                <div class="mt-0">
+                <div class="mt-0 text-justify">
                   <%= simple_format(chapter.body) %>
                 </div>
               </div>
             <% end %>
           </div>
         <% end %>
-      </div>
     </div>
   </div>
 </div>
 
-<!-- Previous / Next -->
-<div class="bg-black-900 w-full flex h-full text-white p-xl hidden">
-  <div class="aspect-square h-full w-full flex flex-col gap-sm">
-    <span>Titre précédent</span>
-    <h2 class="text-display"> Équilibre instable </h2>
-    <span>Quentin Ornant | 21.12.2024 | 8 min</span>
-  </div>
-  <div class="aspect-square h-full w-full flex justify-end flex-col gap-sm">
-    <span>Titre suivant</span>
-    <h2 class="text-display"> Équilibre instable </h2>
-    <span>Quentin Ornant | 21.12.2024 | 8 min</span>
-  </div>
-</div>
 
-<%= render 'shared/footer' %>

@@ -189,7 +189,7 @@ export default class extends Controller {
     }
 
     const svg = `
-      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" shape-rendering="auto">
+      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet" class="svg-content svg-full-height">
         ${svgContent}
       </svg>
     `

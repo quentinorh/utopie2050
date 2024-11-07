@@ -1,0 +1,44 @@
+<nav class="fixed bg-white bottom-0 z-[99] w-full h-navbar-height border-t border-gray-200 font-mono text-sm uppercase">
+  <!-- Contenu pour les écrans plus petits -->
+  <div class="flex flex-1 items-center relative h-full lg:hidden">
+    <div class="absolute left-0 flex gap-sm px-sm items-center">
+      <button id="actions-button" class="flex items-center px-lg" data-action="click->actions#toggleActions">
+        <i class="fa-solid fa-bars text-lg text-gray-500 hover:text-gray-700" ></i>
+      </button>
+    </div>
+    <div class="flex-1 flex justify-center items-center">
+      <span class="tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
+      <span class="ml-sm text-gray-500"><span data-scroll-target="scrollPercentage">00</span>%</span>
+    </div>
+    <div class="absolute right-0 flex gap-sm items-center">
+      <button id="actions-button" class="flex items-center px-sm text-gray-500 hover:text-gray-700" data-action="click->actions#toggleSettings">
+        <i class="fa-solid fa-sliders text-lg text-gray-500 hover:text-gray-700" title="Signaler un contenu indésirable"></i>
+      </button>
+    </div>
+  </div>
+  <!-- Contenu pour les écrans plus grands -->
+  <div class="hidden lg:flex lg:flex-row mx-auto  h-full">
+    <div class="flex bg-gray-200 w-[calc((100vh-120px)*(250/350))] justify-center items-center gap-xs">
+      <button class="text-gray-500 hover:text-gray-700 uppercase" data-action="click->actions#toggleShare">Partager</button><span class="pb-[0.15em] text-gray-500">|</span>
+      <a href="#" class="text-gray-500 hover:text-gray-700" title="Ajouter aux favoris">Ajouter aux favoris</a><span class="pb-[0.15em] text-gray-500">|</span>
+      <a href="#" class="text-gray-500 hover:text-gray-700" title="Signaler un contenu indésirable">Signaler</a>
+    </div>
+    <div class="flex flex-1 items-center relative">
+      <div class="absolute left-0 flex gap-sm items-center">
+        <button class="flex items-center px-sm text-gray-500 hover:text-gray-700" data-action="click->actions#toggleActions">
+          <i class="far fa-bookmark text-lg  text-gray-500 hover:text-gray-700" title="Ajouter un marque page"></i>
+        </button>
+      </div>
+      <div class="flex-1 flex justify-center items-center">
+        <span class="tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
+        <span class="ml-sm text-gray-500"><span data-scroll-target="scrollPercentage">00</span>%</span>
+      </div>
+      <div class="absolute right-0 flex gap-sm items-center">
+        <button id="actions-button" class="flex items-center px-sm text-gray-500 hover:text-gray-700" data-action="click->actions#toggleSettings">
+          <i class="fa-solid fa-sliders text-lg text-gray-500 hover:text-gray-700" title="Signaler un contenu indésirable"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
