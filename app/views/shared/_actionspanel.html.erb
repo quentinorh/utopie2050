@@ -1,21 +1,35 @@
 <div data-actions-target="actionsPanel"
-     class="hidden fixed flex flex-col bg-gray-200 justify-evenly items-center z-50 bottom-0 w-full border-b border-t border-gray-200 z-[99]  h-[calc(100vh-120px)] "
+     class="hidden fixed flex flex-col bg-gray-200 dark:bg-gray-800 justify-evenly items-center z-50 bottom-0 w-full border-b border-t border-gray-200 dark:border-gray-600 z-[99]  h-[calc(100vh-120px)] "
      style="bottom: 60px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 hover:text-gray-700">
-    <i class="fa-solid fa-bookmark mb-sm text-lg"></i>
-    <p>Marque page</p>
-  </div>
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 hover:text-gray-700"
+  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
        data-action="click->actions#toggleShare">
     <i class="fa-solid fa-share mb-sm text-lg"></i>
     <p>Partager</p>
   </div>
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 hover:text-gray-700">
-    <i class="fa-solid fa-heart mb-sm text-lg"></i>
-    <p>Ajouter aux favoris</p>
-  </div>
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 hover:text-gray-700">
+  <% if user_signed_in? %>
+    <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
+      <i class="fa-solid fa-star mb-sm text-lg"></i>
+      <p>Ajouter aux favoris</p>
+    </div>
+    <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
+      <i class="fa-solid fa-bookmark mb-sm text-lg"></i>
+      <p>Marque page</p>
+    </div>
+  <% end %>
+  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
     <i class="fa-solid fa-flag mb-sm text-lg"></i>
     <p>Signaler</p>
   </div>
+  <% if user_signed_in? && current_user == @post.user %>
+    <%= link_to edit_post_path(@post), class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" do %>
+      <i class="fa-solid fa-pen-to-square mb-sm text-lg"></i>
+      <p>Editer</p>
+    <% end %>
+    <%= link_to post_path(@post), data: { turbo_method: :delete }, class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" do %>
+      <i class="fa-solid fa-trash mb-sm text-lg"></i>
+      <p>Supprimer</p>
+    <% end %>
+  <% end %>
 </div>
+
+

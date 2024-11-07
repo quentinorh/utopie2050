@@ -15,6 +15,7 @@ const spacings = {
 };
 
 module.exports = {
+  darkMode: 'selector',
   content: [
     './public/*.html',
     './app/helpers/**/*.rb',
