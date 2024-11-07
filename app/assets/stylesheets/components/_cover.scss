@@ -1,4 +1,13 @@
 .svg-full-height {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 119px);
     display: block; /* Pour éviter les espaces blancs autour du SVG */
   }
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: middle;
+  overflow: hidden;
+}

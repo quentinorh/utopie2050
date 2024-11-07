@@ -13,8 +13,9 @@
           <h3 class="text-xl uppercase text-center">En 2050, par quel nom aimerais-tu être appelé ?</h3>
           <%= f.input :username,
                       required: true,
-                      input_html: { class: 'tw-form-input', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      label: false,
+                      wrapper_html: { class: 'mt-sm' },
+                      input_html: { class: 'tw-form-input', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
           <div class="text-red-500 text-sm" data-signup-target="usernameError"></div>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="tw-btn-secondary w-full mt-sm">Précédent</button>
@@ -26,8 +27,10 @@
           <h3 class="text-xl uppercase text-center">Quel âge auras-tu en 2050 ?</h3>
           <%= f.input :age,
                       required: true,
-                      input_html: { class: 'tw-form-input' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      label: false,
+                      wrapper_html: { class: 'mt-sm' },
+                      input_html: { class: 'tw-form-input' } %>
+          <div class="text-red-500 text-sm" data-signup-target="ageError"></div>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="tw-btn-secondary w-full mt-sm">Précédent</button>
             <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="tw-btn-primary w-full mt-sm">Suivant</button>
@@ -39,14 +42,22 @@
           <%= f.input :email,
                       required: true,
                       autofocus: true,
-                      input_html: { autocomplete: "email", class: 'tw-form-input', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      label: false,
+                      wrapper_html: { class: 'mt-sm' },
+                      input_html: { autocomplete: "email", class: 'tw-form-input', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
           <div class="text-red-500 text-sm" data-signup-target="emailError"></div>
           <h3 class="mt-base text-xl uppercase text-center">Ton mot de passe ?</h3>
           <%= f.input :password,
                       required: true,
-                      input_html: { autocomplete: "new-password", class: 'tw-form-input' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      label: false,
+                      wrapper_html: { class: 'mt-sm' },
+                      input_html: { 
+                        autocomplete: "new-password", 
+                        class: 'tw-form-input',
+                        'data-signup-target': 'password',
+                        'data-action': 'input->signup#checkPassword'
+                      } %>
+          <div class="text-red-500 text-sm" data-signup-target="passwordError"></div>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="tw-btn-secondary w-full mt-sm">Précédent</button>
             <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="tw-btn-primary w-full mt-sm" data-signup-target="nextStepEmailButton" disabled>Suivant</button>

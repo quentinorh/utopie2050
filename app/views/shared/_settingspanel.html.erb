@@ -1,45 +1,44 @@
-<div id="settings-panel" data-settings-target="panel" class="flex flex-wrap justify-between items-center hidden fixed left-0 right-0 w-full px-4 bg-white z-50 bottom-0 w-full border-b border-t border-gray-100 transition-transform duration-900 ease-in-out transform translate-y-full overflow-y-auto z-[99]" style="bottom: 110px; height: 54px">
-    <!-- Taille du texte -->
-    <div class="flex items-center space-x-2 w-full sm:w-1/2 lg:w-1/4">
-      <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="small">
-        <span class="text-sm">A</span>
-      </button>
-      <button id="text-size-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="medium">
-        <span class="text-base">A</span>
-      </button>
-      <button id="text-size-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="large">
-        <span class="text-lg">A</span>
-      </button>
-      <button id="text-size-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-8 h-8 flex items-center justify-center" data-action="click->settings#changeTextSize" data-settings-target="textSize" data-value="xlarge">
-        <span class="text-xl">A</span>
-      </button>
-    </div>
-
-    <!-- Interlignes -->
-    <div class="flex items-center space-x-2 w-full sm:w-1/2 lg:w-1/4">
-      <button id="line-height-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="small">
-        <%= inline_svg_tag('lineh-1.svg') %>
-      </button>
-      <button id="line-height-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="medium">
-        <%= inline_svg_tag('lineh-2.svg') %>
-      </button>
-      <button id="line-height-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="large">
-        <%= inline_svg_tag('lineh-3.svg') %>
-      </button>
-      <button id="line-height-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none px-1 py-1 w-8 h-8" data-action="click->settings#changeLineHeight" data-settings-target="lineHeight" data-value="xlarge">
-        <%= inline_svg_tag('lineh-4.svg') %>
-      </button>
-    </div>
-
-    <!-- Typographie -->
-    <div class="flex items-center space-x-2 w-full sm:w-1/2 lg:w-1/4">
-      <button id="font-sans" class="border-2 hover:border-primary focus:outline-none px-2 py-1 font-sans" data-action="click->settings#changeFont" data-settings-target="font" data-value="sans">Apfel</button>
-      <button id="font-dyslexic" class="border-2 hover:border-primary focus:outline-none px-2 py-1 font-opendyslexic" data-action="click->settings#changeFont" data-settings-target="font" data-value="Opendylexic">Opendyslexic</button>
-    </div>
-
-    <!-- Mode -->
-    <div class="flex items-center space-x-2 w-full sm:w-1/2 lg:w-1/4">
-      <button id="light-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-white text-black-900" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="light">Clair</button>
-      <button id="dark-mode" class="border-2 hover:border-primary focus:outline-none px-2 py-1 bg-black-900 text-white" data-action="click->settings#changeTheme" data-settings-target="theme" data-value="dark">Sombre</button>
-    </div>
+<div data-actions-target="settingsPanel"
+     class="hidden fixed flex bg-gray-200 justify-evenly items-center lg:w-[calc(100vw-((100vh-120px)*(250/350)))] lg:ml-[calc((100vh-120px)*(250/350))] z-50 bottom-0 w-full border-b border-t border-gray-200 z-[99] h-navbar-height"
+     style="bottom: 60px;">
+  <div class="flex space-x-1">
+    <button id="text-size-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-7 h-7  flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="small">
+      <span style="font-size: 0.6rem;">A</span>
+    </button>
+    <button id="text-size-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="medium">
+      <span style="font-size: 0.8rem;">A</span>
+    </button>
+    <button id="text-size-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="large">
+      <span style="font-size: 1rem;">A</span>
+    </button>
+    <button id="text-size-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="xlarge">
+      <span style="font-size: 1.2rem;">A</span>
+    </button>
+  </div>
+  <div class="flex space-x-1">
+    <button id="line-height-small" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="small">
+      <%= inline_svg_tag('lineh-1.svg') %>
+    </button>
+    <button id="line-height-medium" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="medium">
+      <%= inline_svg_tag('lineh-2.svg') %>
+    </button>
+    <button id="line-height-large" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="large">
+      <%= inline_svg_tag('lineh-3.svg') %>
+    </button>
+    <button id="line-height-xlarge" class="border-2 text-gray-700 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="xlarge">
+      <%= inline_svg_tag('lineh-4.svg') %>
+    </button>
+  </div>
+  <div class="flex space-x-1">
+    <button id="font-sans" class="h-7 border-2 hover:border-primary focus:outline-none px-2 py-1 font-sans" data-action="click->actions#changeFont" data-actions-target="font" data-value="sans" style="font-size: 0.8rem;">Apfel</button>
+    <button id="font-dyslexic" class="h-7 border-2 hover:border-primary focus:outline-none px-2 py-1 font-opendyslexic" data-action="click->actions#changeFont" data-actions-target="font" data-value="Opendylexic" style="font-size: 0.8rem;">Dyslexic</button>
+  </div>
+  <div class="flex space-x-1">
+    <button id="light-mode" class="h-7 w-8 border-2 hover:border-primary focus:outline-none px-2 bg-white flex items-center justify-center text-gray-500 hover:text-gray-700" data-action="click->actions#changeTheme" data-actions-target="theme" data-value="light" style="font-size: 0.8rem;">
+      <i class="fa-solid fa-sun text-sm"></i>
+    </button>
+    <button id="dark-mode" class="h-7 w-8 border-2 hover:border-primary focus:outline-none px-2 bg-black-900 flex items-center justify-center text-gray-300 hover:text-gray-100" data-action="click->actions#changeTheme" data-actions-target="theme" data-value="dark" style="font-size: 0.8rem;">
+      <i class="fa-solid fa-moon text-x"></i>
+    </button>
+  </div>
 </div>

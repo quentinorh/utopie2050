@@ -11,6 +11,8 @@ export default class extends Controller {
 
   connect() {
     this.contentTarget.style.opacity = 1;
+
+    console.log("scroll controller connected");
     
     // Animation pour l'image du post
     const tl = gsap.timeline();

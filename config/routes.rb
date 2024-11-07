@@ -17,6 +17,6 @@ Rails.application.routes.draw do
   end
 
   get 'user_posts/:user_id', to: 'posts#user_posts', as: 'user_posts'
-  
+
   root to: "pages#home"
 end

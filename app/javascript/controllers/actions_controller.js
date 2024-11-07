@@ -1,16 +1,39 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "panel", "textSize", "lineHeight", "font", "theme" ]
+  static targets = [ "settingsPanel", "actionsPanel", "sharePanel", "textSize", "lineHeight", "font", "theme" ]
 
-  toggle() {
-    this.panelTarget.classList.toggle('hidden')
-    console.log("Hello Settings")
+  toggleSettings() {
+    this.settingsPanelTarget.classList.toggle('hidden')
+    if (!this.settingsPanelTarget.classList.contains('hidden')) {
+      this.actionsPanelTarget.classList.add('hidden')
+    }
+  }
+
+  toggleShare(){
+    this.sharePanelTarget.classList.toggle('hidden')
+  }
+
+  toggleActions() {
+    this.actionsPanelTarget.classList.toggle('hidden')
+    if (!this.actionsPanelTarget.classList.contains('hidden')) {
+      this.settingsPanelTarget.classList.add('hidden')
+    }
   }
 
   connect() {
-    // Charger les paramètres depuis le cookie ou les valeurs par défaut
     this.loadSettings()
+    console.log("Hello Settings")
+
+    // Fermer le actionsPanel si la fenêtre est supérieure à 1024px
+    window.addEventListener('resize', this.handleResize.bind(this))
+    this.handleResize() // Appel initial pour vérifier la taille au chargement
+  }
+
+  handleResize() {
+    if (window.innerWidth > 1024) {
+      this.actionsPanelTarget.classList.add('hidden')
+    }
   }
 
   changeTextSize(event) {

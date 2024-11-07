@@ -56,9 +56,9 @@ export default class extends Controller {
     // Animer le premier élément en même temps que la dernière colonne
     tl.to(firstElement, {
       opacity: 1,
-      duration: 0, // Même durée que la dernière colonne
+      duration: maxDuration, // Utiliser la même durée que les colonnes pour une apparition progressive
       ease: "power4.inOut"
-    }, maxDuration); // Commence en même temps que les colonnes
+    }, 0); // Commence en même temps que les colonnes
 
     // Animer le titre en glissant de gauche à droite
     tl.fromTo(this.titleTarget, {

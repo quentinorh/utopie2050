@@ -2,56 +2,63 @@ import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 
 export default class extends Controller {
-  static targets = ["step", "flashMessages", "username", "email", "usernameError", "emailError", "nextStepUsernameButton", "nextStepEmailButton"];
+  static targets = ["step", "flashMessages", "username", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton"];
 
   connect() {
     this.usernameUnique = false
     this.emailUnique = false
-    // Ajouter un écouteur d'événement pour détecter la touche "Entrée"
+    this.passwordValid = false
     document.addEventListener('keydown', this.handleKeydown.bind(this))
   }
 
   disconnect() {
-    // Supprimer l'écouteur d'événement lors de la déconnexion du contrôleur
     document.removeEventListener('keydown', this.handleKeydown.bind(this))
   }
 
   handleKeydown(event) {
     if (event.key === "Enter") {
-      event.preventDefault(); // Empêche le comportement par défaut de soumission du formulaire
+      event.preventDefault();
       const currentStep = this.stepTargets.find(step => step.style.display !== 'none');
       const nextButton = currentStep.querySelector('[data-action="click->signup#nextStep"]');
       
       if (nextButton) {
-        nextButton.click(); // Simule un clic sur le bouton "Suivant" de l'étape actuelle
+        nextButton.click();
       }
     }
   }
 
   nextStep(event) {
-    const nextStepId = event.currentTarget.dataset.nextStep; // Récupérer l'ID de l'étape suivante
-    const currentStepId = this.stepTargets.find(step => step.style.display !== 'none').id; // Trouver l'étape actuelle
+    const nextStepId = event.currentTarget.dataset.nextStep;
+    const currentStepId = this.stepTargets.find(step => step.style.display !== 'none').id;
     const currentStep = document.getElementById(currentStepId);
     const inputs = currentStep.querySelectorAll('input');
     let isValid = true;
-    let errorMessages = [];
 
     inputs.forEach(input => {
       if (input.required && !input.value.trim()) {
         isValid = false;
         input.classList.add('border-red-500');
-        let fieldName = input.labels[0]?.textContent || input.placeholder || input.name.replace(/user\\[|\\]/g, '');
-        fieldName = fieldName.replace(/\\s*\\*\\s*$/, '').trim();
-        errorMessages.push(`Le champ "${fieldName}" est obligatoire.`);
+        
+        const fieldName = input.name.replace('user[', '').replace(']', '');
+        const errorTarget = this[`${fieldName}ErrorTarget`];
+        
+        if (errorTarget) {
+          errorTarget.innerText = `Le champ "${fieldName}" est obligatoire.`;
+        }
       } else {
         input.classList.remove('border-red-500');
+        
+        const fieldName = input.name.replace('user[', '').replace(']', '');
+        const errorTarget = this[`${fieldName}ErrorTarget`];
+        
+        if (errorTarget) {
+          errorTarget.innerText = '';
+        }
       }
     });
 
     if (isValid) {
       this.fadeTransition(currentStepId, nextStepId);
-    } else {
-      this.showFlash('error', errorMessages.join('<br>'));
     }
   }
 
@@ -120,25 +127,47 @@ export default class extends Controller {
 
   checkEmail() {
     const email = this.emailTarget.value.trim().toLowerCase()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-    if (email.length > 0) {
-      fetch(`/users/check_email?email=${email}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.exists) {
-            this.emailErrorTarget.innerText = "Cette adresse email est déjà utilisée."
-            this.emailUnique = false
-          } else {
-            this.emailErrorTarget.innerText = ""
-            this.emailUnique = true
-          }
-          this.toggleNextStepEmailButton()
-        })
-    } else {
+    if (email.length === 0) {
       this.emailErrorTarget.innerText = "L'email ne peut pas être vide."
       this.emailUnique = false
       this.toggleNextStepEmailButton()
+      return
     }
+
+    if (!emailRegex.test(email)) {
+      this.emailErrorTarget.innerText = "Veuillez entrer une adresse email valide."
+      this.emailUnique = false
+      this.toggleNextStepEmailButton()
+      return
+    }
+
+    fetch(`/users/check_email?email=${email}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.exists) {
+          this.emailErrorTarget.innerText = "Cette adresse email est déjà utilisée."
+          this.emailUnique = false
+        } else {
+          this.emailErrorTarget.innerText = ""
+          this.emailUnique = true
+        }
+        this.toggleNextStepEmailButton()
+      })
+  }
+
+  checkPassword() {
+    const password = this.passwordTarget.value.trim()
+    
+    if (password.length < 6) {
+      this.passwordErrorTarget.innerText = "Le mot de passe doit contenir au moins 6 caractères."
+      this.passwordValid = false
+    } else {
+      this.passwordErrorTarget.innerText = ""
+      this.passwordValid = true
+    }
+    this.toggleNextStepEmailButton()
   }
 
   toggleNextStepUsernameButton() {
@@ -150,7 +179,7 @@ export default class extends Controller {
   }
 
   toggleNextStepEmailButton() {
-    if (this.emailUnique) {
+    if (this.emailUnique && this.passwordValid) {
       this.nextStepEmailButtonTarget.removeAttribute("disabled")
     } else {
       this.nextStepEmailButtonTarget.setAttribute("disabled", "true")
