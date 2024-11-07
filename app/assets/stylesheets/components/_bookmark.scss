@@ -1,12 +1,12 @@
 .bookmark-icon {
     position: absolute;
-    left: -108px; /* Ajustez cette valeur selon vos besoins */
+    left: -78px; /* Ajustez cette valeur selon vos besoins */
     display: inline-block;
   }
 
 // Ajoutez cette requête média pour les écrans de moins de 1024px
 @media (max-width: 1024px) {
   .bookmark-icon {
-    left: -27px;
+    left: -17px;
   }
 }

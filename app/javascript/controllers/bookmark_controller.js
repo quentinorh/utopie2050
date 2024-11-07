@@ -60,6 +60,14 @@ export default class extends Controller {
     const positionInfo = this.getCurrentPosition();
     if (positionInfo) {
       const { element, position } = positionInfo;
+
+      // Si la position est 0, supprimez le marque-page
+      if (position === 0) {
+        await this.removeBookmark();
+        console.log("Bookmark removed because position is 0");
+        return;
+      }
+
       const text = element.textContent;
       const beforeText = text.slice(0, position);
       const afterText = text.slice(position);
@@ -74,6 +82,38 @@ export default class extends Controller {
 
       // Envoyer la position au serveur
       await this.saveBookmark(positionInfo.totalPosition);
+    } else {
+      // Si aucune position n'est trouvée, supprimez le marque-page
+      await this.removeBookmark();
+      console.log("Bookmark removed because no position found");
+    }
+  }
+
+  async removeBookmark() {
+    const postId = this.element.dataset.postId;
+    if (this.isUserLoggedIn()) {
+      try {
+        const response = await fetch(`/posts/${postId}/bookmark`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+          console.log('Bookmark removed successfully');
+        } else {
+          console.error('Failed to remove bookmark');
+        }
+      } catch (error) {
+        console.error('Error removing bookmark:', error);
+      }
+    } else {
+      // Supprimer le marque-page du cookie
+      document.cookie = `bookmark_${postId}=; path=/; max-age=0`;
+      console.log('Bookmark removed from cookie');
     }
   }
 
