@@ -1,4 +1,4 @@
-<div data-controller="cover scroll text-to-speech actions svg-animation relative" 
+<div data-controller="cover text-to-speech actions svg-animation relative" 
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
   
@@ -11,7 +11,10 @@
   <%= render 'shared/actionspanel' %>
   <%= render 'shared/sharepanel' %>
 
-  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800">
+  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800"
+       data-controller="scroll"
+       data-scroll-target="element"
+       data-scroll-percentage-target="percentage" >
     <!-- Colonne de gauche fixe -->
     <div data-controller="margin"
          data-margin-target="element" 
