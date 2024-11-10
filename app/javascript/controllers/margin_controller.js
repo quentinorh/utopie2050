@@ -42,6 +42,7 @@ export default class extends Controller {
     }
 
     element.style.marginLeft = `${targetMarginValue}px`;
+    element.style.marginRight = `${targetMarginValue}px`;
 
     // Mettez à jour la largeur précédente
     this.previousWidth = width;
