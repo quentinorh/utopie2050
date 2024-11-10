@@ -24,7 +24,7 @@ export default class extends Controller {
     if (this.previousWidth >= lgBreakpoint && width < lgBreakpoint) {
       element.classList.add('transition-margin');
       if (width < lgBreakpoint) {
-        targetMarginValue = (window.innerWidth - (window.innerHeight - 120) * (250 / 350)) / 2;
+        targetMarginValue = Math.max(0, (window.innerWidth - (window.innerHeight - 120) * (250 / 350)) / 2);
       }
     }
 
@@ -36,7 +36,7 @@ export default class extends Controller {
     }
 
     if (width < lgBreakpoint) {
-        targetMarginValue = (window.innerWidth - (window.innerHeight - 120) * (250 / 350)) / 2;
+        targetMarginValue = Math.max(0, (window.innerWidth - (window.innerHeight - 120) * (250 / 350)) / 2);
     } else {
         targetMarginValue = 0;
     }
