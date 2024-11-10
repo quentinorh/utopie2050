@@ -1,7 +1,7 @@
-<div class="bg-gray-100 min-h-screen p-sm md:p-2xl" data-controller="signup">
-  <div class="pt-16 flex flex-col items-center w-full">   
+<div class="flex flex-col items-center justify-center w-full" style="min-height: calc(100vh - 60px);" data-controller="signup">
+  <div class="flex flex-col items-center w-full md:w-[600px]">   
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <div id="registration-steps" class="p-none md:p-base text-center">
+      <div id="registration-steps" class="p-none p-sm md:p-base text-center">
         <div class="step" id="step-intro" data-signup-target="step">
           <h3 class="text-xl uppercase text-center mb-sm">Introduction</h3>
           <p class="text-base text-center uppercase font-mono">Avant de commencer, pour mieux nous connaitre, nous allons discuter avec le toi du futur …</p>

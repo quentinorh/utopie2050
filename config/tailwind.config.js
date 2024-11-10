@@ -30,7 +30,7 @@ module.exports = {
         mono: ['Roboto Mono', 'monospace'],
       },
       colors: {
-        primary: '#1D4ED8',
+        primary: '#4f46e5',
         secondary: '#F59E0B',
         accent: '#10B981',
         neutral: '#F3F4F6',

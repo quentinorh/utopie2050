@@ -1,4 +1,4 @@
-<nav class="bg-white dark:bg-gray-800 border-b dark:text-gray-100 border-gray-200 dark:border-gray-600 sticky top-0 z-[99] h-navbar-height flex items-center" data-controller="navbar fullscreen">
+<nav class="bg-white dark:bg-gray-800 border-b dark:text-gray-100 border-gray-200 dark:border-gray-600 sticky top-0 z-[99] h-navbar-height flex w-full items-center" data-controller="navbar fullscreen">
   <div class="flex justify-between w-full px-sm">
     <div class="flex">
       <div class="flex flex-shrink-0 items-center gap-xs">
@@ -11,11 +11,23 @@
     </div>
     <div class="flex items-center">
       <% if user_signed_in? %>
-        <%= link_to 'Nouveau futur', new_post_path, class: "tw-btn-primary" %>
+        <%= link_to 'Nouveau futur', new_post_path, class: "tw-btn-primary p-2 text-sm" %>
       <% else %>
-        <div class="flex gap-2">
-        <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary" %>
-        <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary mr-2" %>
+        <div class="flex max-sm:hidden gap-2 gap-1">
+          <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary p-2 text-sm" %>
+          <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary p-2 mr-2 text-sm" %>
+        </div>
+        <div class="relative">
+          <div class="flex sm:hidden sm:gap-2 gap-1 pr-2">
+            <div class=" tw-btn-secondary border-2 rounded-full h-8 w-8 p-2 text-sm" data-action="click->navbar#toogleSignin" %>
+            <i class="fa fa-user ml-[0.1em]"></i>
+            </div>
+          </div>
+          <div class="hidden absolute right-[-33px] text-center z-20 mt-6 w-40 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuSignin">
+            <%= link_to "Se connecter", new_user_session_path, class: "tw-nav-link uppercase" %>
+            <%= link_to "Créer un compte", new_user_registration_path, class: "tw-nav-link uppercase" %>
+          </div>
+        </div>
       <% end %>
       <!-- Profile dropdown -->
       <% if user_signed_in? %>
@@ -23,19 +35,19 @@
           <div class="relative">
             <div>
               <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-                <span class="text-white" data-navbar-target="username">
+                <span class="text-white mt-[0.1em]" data-navbar-target="username">
                   <%= current_user.username[0].upcase %></span>
-                <span class="hidden" data-navbar-target="closeMenu"><i class="text-white fa fa-close"></i></span>
+                <span class="hidden" data-navbar-target="closeMenu"><i class="text-white fa fa-close mt-[0.3em] ml-[0.1em]"></i></span>
               </div>
             </div>
-            <div class="hidden absolute right-0 z-20 mt-6 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
-              <%= link_to "Mes futurs", user_posts_path(current_user.id), class: "tw-nav-link" %>
-              <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
-              <%= link_to "Se déconnecter", destroy_user_session_path, data: { turbo_method: :delete }, class: "tw-nav-link" %>
+            <div class="hidden absolute right-[-40px] text-center z-20 mt-6 w-40 origin-top-right text-sm rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
+              <%= link_to "Mes futurs", user_posts_path(current_user.id), class: "tw-nav-link uppercase" %>
+              <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link uppercase" %>
+              <%= link_to "Se déconnecter", destroy_user_session_path, data: { turbo_method: :delete }, class: "tw-nav-link uppercase" %>
             </div>
           </div>
-        <% end %>
-      </div>
+        </div>
+      <% end %>
       <!-- Add fullscreen button before other elements -->
       <button type="button" 
               class="pl-2 text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700 focus:outline-none flex items-center justify-center"
