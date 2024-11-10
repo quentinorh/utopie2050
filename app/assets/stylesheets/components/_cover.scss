@@ -11,3 +11,13 @@
   vertical-align: middle;
   overflow: hidden;
 }
+
+@media (max-width: 1024px) and (max-aspect-ratio: 250/(350+60)) {
+  .svg-full-height {
+    height: auto;
+    width: 100vw;
+  }
+  .cover.svg {
+    width: 100vw;
+  }
+}

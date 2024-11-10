@@ -11,26 +11,24 @@
   <%= render 'shared/actionspanel' %>
   <%= render 'shared/sharepanel' %>
 
-  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800"
+  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800 bg-gray-100"
        data-controller="scroll"
        data-scroll-target="element"
        data-scroll-percentage-target="percentage" >
     <!-- Colonne de gauche fixe -->
     <div data-controller="margin"
          data-margin-target="element" 
-         class="lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 relative lg:fixed w-[calc((100vh-120px)*(250/350))] flex justify-center lg:mr-0 mr-auto">
-      <div class="h-full">
-        <div class="cover-svg opacity-0">
+         class="relative lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 lg:fixed w-[calc((100vh-120px)*(250/350))] flex justify-center lg:mr-0 mr-auto">
+        <div class="relative cover-svg opacity-0">
           <%= @post.cover.html_safe %>
-        </div>
-        <div class="absolute top-0 left-0">
-          <div class="h-fit text-2l z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
-            <%= @post.title %>
-          </div>
-          <div class="text-sm z-99 w-fit opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
-            <%= @post.user.username %>
-          </div>
-        </div>    
+          <div class="absolute top-0 left-0">
+            <div class="h-fit text-2l z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
+              <%= @post.title %>
+            </div>
+            <div class="text-sm z-99 w-fit opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
+              <%= @post.user.username %>
+            </div>
+          </div> 
       </div>
     </div>
 
