@@ -1,7 +1,12 @@
 .svg-full-height {
-    height: calc(100vh - 119px);
-    display: block; /* Pour éviter les espaces blancs autour du SVG */
-  }
+  height: calc(100vh - 119px);
+  display: block;
+}
+
+.preview-svg {
+  height: 350px;
+  display: block;
+}
 
 .svg-container {
   display: inline-block;
@@ -12,12 +17,10 @@
   overflow: hidden;
 }
 
-@media (max-width: 1024px) and (max-aspect-ratio: 250/(350+60)) {
+
+@media (max-width: 1024px) and (max-aspect-ratio: 250/410) {
   .svg-full-height {
     height: auto;
-    width: 100vw;
-  }
-  .cover.svg {
     width: 100vw;
   }
 }

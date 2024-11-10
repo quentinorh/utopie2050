@@ -35,9 +35,12 @@
           <div class="relative">
             <div>
               <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-                <span class="text-white mt-[0.1em]" data-navbar-target="username">
-                  <%= current_user.username[0].upcase %></span>
-                <span class="hidden" data-navbar-target="closeMenu"><i class="text-white fa fa-close mt-[0.3em] ml-[0.1em]"></i></span>
+                <span class="text-white" data-navbar-target="username">
+                  <%= current_user.username[0].upcase %>
+                </span>
+                <span class="hidden" data-navbar-target="closeMenu">
+                  <i class="text-white fa fa-close"></i>
+                </span>
               </div>
             </div>
             <div class="hidden absolute right-[-40px] text-center z-20 mt-6 w-40 origin-top-right text-sm rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">

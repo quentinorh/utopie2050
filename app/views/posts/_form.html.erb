@@ -18,22 +18,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-sm">
       <!-- Colonne de gauche (paramètres et aperçu) -->
       <div class="p-sm rounded-lg bg-white shadow w-full">
-        <div class="flex gap-sm flex-nowrap">
-          <!-- Aperçu -->
-          <div class="w-[250px] flex-shrink-0">
-            <!-- Pattern Container -->
-            <div class="relative w-[250px] h-[350px]">
-              <div class="absolute bottom-0 top-0 flex flex-col">
-                <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
-                </div>
-                <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
-                  <%= current_user.username %>
-                </div>
-              </div>
-              <div id="pattern-container" data-preview-target="patternContainer" class="w-full h-full overflow-hidden">
-              </div>
-            </div>
-          </div>
+        <div class="flex gap-sm sm:flex-nowrap flex-wrap">
           <!-- Paramètres de la couverture-->
           <div class="flex-grow min-w-0">
             <div class="flex justify-between items-center">
@@ -92,6 +77,21 @@
                 </div>
                 <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
                 <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
+              </div>
+            </div>
+          </div>
+          <!-- Aperçu -->
+          <div class="w-full flex items-center justify-center">
+            <!-- Pattern Container -->
+            <div class="relative w-[250px] h-[350px] svg-container">
+              <div class="absolute bottom-0 top-0">
+                <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
+                </div>
+                <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
+                  <%= current_user.username %>
+                </div>
+              </div>
+              <div id="pattern-container" data-preview-target="patternContainer" class="preview-svg">
               </div>
             </div>
           </div>

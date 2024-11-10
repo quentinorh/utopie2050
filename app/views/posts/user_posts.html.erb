@@ -1,46 +1,43 @@
-<div class="px-xs lg:px-base my-base">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold leading-6 text-gray-900">Les futurs de <%= @user.username %></h1>
-      <p class="mt-sm text-sm text-gray-700">A list of all the users in your account including their name, title, email and role.</p>
-    </div>
-  </div>
-  <div class="mt-8 flow-root">
-    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full py-2 align-middle px-xs lg:px-base">
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden">Email</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden">Role</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @posts.each do |post| %>
-                <tr class="bg-white hover:bg-gray-100">
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"><%= link_to post.title, post %></td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= post.created_at %></td>
-
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <% if post.draft %>
-                      Brouillon 
-                    <% end %></td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <div class="flex gap-sm justify-end">
-                      <%= link_to 'Edit', edit_post_path(post), class: "tw-btn-secondary" %>
-                      <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger" %>
-                    </div>
-                  </td>
+<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100vh - 60px);" data-controller="signup">
+  <div class="flex flex-col items-center w-full md:w-[700px] p-sm"> 
+    <div class="bg-white p-sm rounded-lg shadow">
+      <div class="sm:flex">
+        <div class="sm:flex-auto">
+          <h1 class="text-xl pt-sm text-center font-semibold leading-6 text-gray-900">Mes futurs</h1>
+        </div>
+      </div>
+      <div class="mt-8 flow-root">
+        <div class="inline-block min-w-full py-2 align-middle px-xs">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Titre</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date de création</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <% @posts.each do |post| %>
+                  <tr class="bg-white hover:bg-gray-100">
+                    <td class="whitespace-normal break-words py-4 pl-3 pr-3 text-sm font-medium text-gray-900"><%= link_to post.title, post %></td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= post.created_at.strftime("%d/%m/%Y") %></td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <% if post.draft %>
+                        Brouillon 
+                      <% end %></td>
+                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                      <div class="flex gap-sm justify-end">
+                        <%= link_to 'Edit', edit_post_path(post), class: "tw-btn-secondary uppercase" %>
+                        <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase" %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
