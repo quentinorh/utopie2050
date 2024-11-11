@@ -27,7 +27,7 @@ export default class extends Controller {
           trigger: this.element, 
           scrub: true,
           start: 'top 80%', 
-          end: 'bottom 0%', 
+          end: 'bottom 20%', 
           toggleActions: 'play none none none', 
         }
       })
