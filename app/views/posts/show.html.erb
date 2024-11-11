@@ -53,7 +53,7 @@
           <p class="text-right"><%= @post.calculate_reading_time %></p>
         </div>
       </div>
-      <div class="post-body">
+      <div class="post-body" data-controller="text-reveal">
         <div class="mt-lg adjustable w-full">
           <%= simple_format(@post.body) %>
         </div>
