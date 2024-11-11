@@ -3,6 +3,7 @@ class Post < ApplicationRecord
   has_one_attached :photo
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
   has_many :post_themes, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
   has_many :themes, through: :post_themes
   before_save :update_color_from_pattern_settings
 

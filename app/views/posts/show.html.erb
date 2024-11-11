@@ -20,7 +20,9 @@
          data-margin-target="element" 
          class="relative lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 lg:fixed flex justify-center lg:mr-0 mr-auto">
         <div class="relative cover-svg opacity-0">
-          <%= @post.cover.html_safe %>
+          <div class="svg-full-height" data-controller="coversize">
+            <%= @post.cover.html_safe %>
+          </div>
           <div class="absolute top-0 left-0">
             <div class="h-fit text-2l z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
               <%= @post.title %>

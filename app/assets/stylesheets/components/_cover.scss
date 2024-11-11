@@ -1,20 +1,7 @@
 .svg-full-height {
   height: calc(100vh - 119px);
+  width: calc(((100vh - 119px))*250/350);
   display: block;
-}
-
-.preview-svg {
-  height: 350px;
-  display: block;
-}
-
-.svg-container {
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  padding-bottom: 100%;
-  vertical-align: middle;
-  overflow: hidden;
 }
 
 

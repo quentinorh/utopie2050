@@ -1,7 +1,14 @@
+
+
+
 <div class="flex flex-col lg:flex-row">
-  <%= turbo_frame_tag :posts, class: "w-full lg:w-3/4 xl:w-4/5" do %>
-    <div class="grid grid-cols-1 pl-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <%= render partial: "post", collection: @posts %>
+
+
+  <%= turbo_frame_tag :posts, class: "lg:w-3/4 xl:w-4/5" do %>
+    <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+
+        <%= render partial: "post", collection: @posts %>
+
     </div>
   <% end %>
 

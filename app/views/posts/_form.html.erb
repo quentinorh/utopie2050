@@ -15,90 +15,92 @@
         </ul>
       </div>
     <% end %>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-sm">
+    <div class="grid grid-cols-1  xl:grid-cols-7 gap-sm">
       <!-- Colonne de gauche (paramètres et aperçu) -->
-      <div class="p-sm rounded-lg bg-white shadow w-full">
-        <div class="flex gap-sm sm:flex-nowrap flex-wrap">
-          <!-- Paramètres de la couverture-->
-          <div class="flex-grow min-w-0">
-            <div class="flex justify-between items-center">
-              <label for="body" class="text-l tw-form-label">Couverture</label>
-              <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
-            </div>
-            <div class="mt-xs"> 
-              <!-- Controls -->
-              <div class="mt-4 text-l">
-                <div>
-                  <label class="text-sm font-mono" for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
-                  <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="columns" min="1" max="50" value="1" data-preview-target="columns" data-action="input->preview#updatePattern">
+      <div class="xl:col-span-3">
+        <div class="p-sm rounded-lg bg-white shadow w-full">
+          <div class="flex gap-sm sm:flex-nowrap flex-wrap">
+            <!-- Paramètres de la couverture-->
+            <div class="flex-grow min-w-0">
+              <div class="flex justify-between items-center">
+                <label for="body" class="text-l tw-form-label">Couverture</label>
+                <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
+              </div>
+              <div class="mt-xs"> 
+                <!-- Controls -->
+                <div class="mt-4 text-l">
+                  <div>
+                    <label class="text-sm font-mono" for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="columns" min="1" max="50" value="1" data-preview-target="columns" data-action="input->preview#updatePattern">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="rows" min="1" max="50" value="1" data-action="input->preview#updatePattern" data-preview-target="rows">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="hue">Couleur: </label>
+                    <input class="h-2 w-full cursor-pointer appearance-none rounded-full" 
+                          type="range" 
+                          id="hue" 
+                          min="0" 
+                          max="360" 
+                          value="0" 
+                          data-action="input->preview#updateHue" 
+                          data-preview-target="hue" 
+                          style="background: linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%));">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="filled-squares">Carrés pleins: <span data-preview-target="filledValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="filled-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="filledSquares">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="white-squares">Carrés blancs: <span data-preview-target="whiteValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="white-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="whiteSquares">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
+                  </div>
+                  <label class="text-sm font-mono" for="padding">Forme: </label>
+                  <div class="mt-2 flex justify-between">
+                    <button type="button" class="shape-button active p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="square" data-action="click->preview#changeShape" aria-label="Carré">
+                      <%= inline_svg_tag('carre.svg', class: 'w-8 h-8', aria: true) %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="ellipse" data-action="click->preview#changeShape" aria-label="Cercle">
+                      <%= inline_svg_tag('cercle.svg', class: 'w-8 h-8') %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="triangle" data-action="click->preview#changeShape" aria-label="Triangle">
+                      <%= inline_svg_tag('triangle.svg', class: 'w-8 h-8') %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="losange" data-action="click->preview#changeShape" aria-label="Losange">
+                      <%= inline_svg_tag('losange.svg', class: 'w-8 h-8') %>
+                    </button>
+                  </div>
+                  <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
+                  <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
                 </div>
-                <div>
-                  <label class="text-sm font-mono" for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
-                  <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="rows" min="1" max="50" value="1" data-action="input->preview#updatePattern" data-preview-target="rows">
-                </div>
-                <div>
-                  <label class="text-sm font-mono" for="hue">Couleur: </label>
-                  <input class="h-2 w-full cursor-pointer appearance-none rounded-full" 
-                         type="range" 
-                         id="hue" 
-                         min="0" 
-                         max="360" 
-                         value="0" 
-                         data-action="input->preview#updateHue" 
-                         data-preview-target="hue" 
-                         style="background: linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%));">
-                </div>
-                <div>
-                  <label class="text-sm font-mono" for="filled-squares">Carrés pleins: <span data-preview-target="filledValue">1</span></label>
-                  <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="filled-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="filledSquares">
-                </div>
-                <div>
-                  <label class="text-sm font-mono" for="white-squares">Carrés blancs: <span data-preview-target="whiteValue">1</span></label>
-                  <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="white-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="whiteSquares">
-                </div>
-                <div>
-                  <label class="text-sm font-mono" for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
-                  <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
-                </div>
-                <label class="text-sm font-mono" for="padding">Forme: </label>
-                <div class="mt-2 flex justify-between">
-                  <button type="button" class="shape-button active p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="square" data-action="click->preview#changeShape" aria-label="Carré">
-                    <%= inline_svg_tag('carre.svg', class: 'w-8 h-8', aria: true) %>
-                  </button>
-                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="ellipse" data-action="click->preview#changeShape" aria-label="Cercle">
-                    <%= inline_svg_tag('cercle.svg', class: 'w-8 h-8') %>
-                  </button>
-                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="triangle" data-action="click->preview#changeShape" aria-label="Triangle">
-                    <%= inline_svg_tag('triangle.svg', class: 'w-8 h-8') %>
-                  </button>
-                  <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="losange" data-action="click->preview#changeShape" aria-label="Losange">
-                    <%= inline_svg_tag('losange.svg', class: 'w-8 h-8') %>
-                  </button>
-                </div>
-                <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
-                <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
               </div>
             </div>
-          </div>
-          <!-- Aperçu -->
-          <div class="w-full flex items-center justify-center">
-            <!-- Pattern Container -->
-            <div class="relative w-[250px] h-[350px] svg-container">
-              <div class="absolute bottom-0 top-0">
-                <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
+            <!-- Aperçu -->
+            <div class="flex flex-col items-center justify-center max-sm:w-full">
+              <!-- Pattern Container -->
+              <div class="relative h-[384px] w-[calc(384px*250/350)]">
+                <div class="absolute bottom-0 top-0">
+                  <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
+                  </div>
+                  <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
+                    <%= current_user.username %>
+                  </div>
                 </div>
-                <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
-                  <%= current_user.username %>
+                <div id="pattern-container" data-preview-target="patternContainer" data-controller="coversize" class="h-[384px] w-[calc(384px*250/350)]">
                 </div>
-              </div>
-              <div id="pattern-container" data-preview-target="patternContainer" class="preview-svg">
               </div>
             </div>
           </div>
         </div>
       </div>
       <!-- Colonne de droite (contenu) -->
-      <div class="p-sm rounded-lg bg-white shadow w-full">
+      <div class="p-sm rounded-lg bg-white shadow w-full xl:col-span-4">
         <!-- Titre -->
         <label for="title" class="text-l tw-form-label">Titre</label>
         <div class="relative">
