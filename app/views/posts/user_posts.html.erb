@@ -8,7 +8,7 @@
       </div>
       <div class="mt-8 flow-root">
         <div class="inline-block min-w-full py-2 align-middle px-xs">
-          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5">
             <table class="min-w-full divide-y divide-gray-300">
               <thead class="bg-gray-50">
                 <tr>
@@ -28,7 +28,7 @@
                         Brouillon 
                       <% end %></td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <div class="flex gap-sm justify-end">
+                      <div class="flex flex-col gap-2 items-center">
                         <%= link_to 'Edit', edit_post_path(post), class: "tw-btn-secondary uppercase" %>
                         <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase" %>
                       </div>
