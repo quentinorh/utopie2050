@@ -44,44 +44,18 @@ export default class extends Controller {
       text = "Futur titre";
     }
     
-    const words = text.split(/\s+/)
-    let lines = []
-    let currentLine = []
-
-    words.forEach(word => {
-      const testLine = [...currentLine, word].join(' ')
-      const testWidth = this.getTextWidth(testLine)
-
-      if (testWidth > this.titleWrapperTarget.offsetWidth) {
-        if (currentLine.length > 0) {
-          lines.push(currentLine.join(' '))
-          currentLine = [word]
-        } else {
-          lines.push(word)
-          currentLine = []
-        }
-      } else {
-        currentLine.push(word)
-      }
-    })
-
-    if (currentLine.length > 0) {
-      lines.push(currentLine.join(' '))
-    }
-
     const fillColor = this.getHslColor()
     const textColor = this.getContrastColor(fillColor)
 
-    this.titleWrapperTarget.innerHTML = lines.map(line => 
-      `<span class="p-xs inline-block" style="background-color: ${fillColor}; color: ${textColor}; word-break:break-word;">${line}</span>`
-    ).join('<br>')
+    this.titleWrapperTarget.innerHTML = 
+      `<span class="p-xs inline-block" style="background-color: ${fillColor}; color: ${textColor}; word-break:break-word;">${text}</span>`
   }
 
   styleUserName(userName) {
     const fillColor = this.getHslColor()
     const textColor = this.getContrastColor(fillColor)
 
-    this.userNameTarget.innerHTML = `<span class="p-xs inline-block" style="background-color: ${fillColor}; color: ${textColor};">${userName}</span>`
+    this.userNameTarget.innerHTML = `<span class="p-xs mt-[-2px] inline-block" style="background-color: ${fillColor}; color: ${textColor};">${userName}</span>`
   }
 
   getTextWidth(text) {
