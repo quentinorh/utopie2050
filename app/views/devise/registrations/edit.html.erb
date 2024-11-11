@@ -1,5 +1,5 @@
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100vh - 60px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[600px]"> 
+  <div class="flex flex-col p-sm items-center w-full md:w-[600px]"> 
     <div class="bg-white p-sm rounded-lg shadow">
       <h2 class="text-center text-xl">Editer mon profil</h2>
         <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
@@ -56,11 +56,11 @@
           </div>
 
           <div class="form-actions">
-            <%= f.button :submit, "Mettre à jour", class:"tw-btn-primary w-full" %>
+            <%= f.button :submit, "Mettre à jour", class:"tw-btn-primary w-full mt-sm" %>
           </div>
         <% end %>
 
-        <div class="text-sm mt-sm text-center"><%= button_to "Supprimer le compte", registration_path(resource_name), data: { confirm: "Es-tu sûr?", turbo_confirm: "Es-tu sûr?" }, method: :delete, class:"tw-btn-danger" %></div>
+        <div class="text-sm mt-sm text-center"><%= button_to "Supprimer le compte", registration_path(resource_name), data: { confirm: "Es-tu sûr?", turbo_confirm: "Es-tu sûr?" }, method: :delete, class:"tw-btn-danger uppercase" %></div>
     </div>
   </div>
 </div>
