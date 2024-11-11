@@ -1,10 +1,9 @@
 <!-- Hero -->
 <div data-controller="hero-animation" class="min-h-[calc(100vh - 60px)] w-full lg:aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
   <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-display text-white text-center" >
+    <h1 class="text-gray-900 text-xxl md:text-display mb-4 text-white text-center" >
     Solarpunk 2050</h1>
-    <h1 class="text-gray-900 text-display text-white text-center">
-    <h1 class="text-gray-900 text-display text-white text-center" data-hero-animation-target="title">
+    <h1 class="text-gray-900 text-xxl md:text-display text-white text-center" data-hero-animation-target="title">
     Lire et écrire des futurs désirables</h1>
     <div>
       <div data-action="mousemove->hero-animation#handleMouseMove"></div>
@@ -13,7 +12,7 @@
       <%= link_to "Lire le futur", posts_path, class: "tw-btn-primary", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire le futur" } %>
       <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary",data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur" } %>
     </div>
-    <div class="absolute bottom-[5vh] flex flex-col items-center">
+    <div class="absolute bottom-[10px] flex flex-col items-center">
       <span class="text-white text-sm font-mono uppercase">Explorer</span>
       <div class="h-[30px] w-[1px] overflow-hidden bg-white bg-opacity-30 mt-sm">
         <div class="h-[80px] w-[1px] bg-white animate-slide-down"></div>
@@ -23,17 +22,19 @@
 </div>
 
 
-<div class="p-xl mt-xl mb-l text-center">
-  <p class="text-xl base:text-xxlish text-balance" data-controller="text-reveal">
-    Le solarpunk propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté [...] à l'égard du changement climatique et de la pollution, mais aussi des inégalités, des intolérances et discriminations sociales.
-  </p>
-  <p class="mt-base text-l text-primary base:text-xxlish text-balance" data-controller="text-reveal">
-    Source : wikipedia.org/wiki/Solarpunk
-  </p>
+<div class="px-[5px] sm:px-[20px] md:px-2xl h-[100vh] text-center">
+  <div class="flex flex-col justify-center items-center h-full">
+    <p class="text-2xl md:text-xl base:text-xxlish text-balance" data-controller="text-reveal">
+      Le solarpunk propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté [...] à l'égard du changement climatique et de la pollution, mais aussi des inégalités, des intolérances et discriminations sociales.
+    </p>
+    <p class="mt-base text-l md:text-2xl text-primary base:text-xxlish text-balance" data-controller="text-reveal">
+      Source : wikipedia.org/wiki/Solarpunk
+    </p>
+  </div>
 </div>
 
 <div class="bg-black-100 py-xl">
-  <div class="text-xxl uppercase text-center mb-8">
+  <div class="text-xxlish md:text-xxl uppercase text-center mb-8">
     <span>Les derniers futurs</span>
   </div>
   <div class="mx-4 sm:mx-6 md:mx-8 lg:mx-10">
