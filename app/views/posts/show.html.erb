@@ -36,12 +36,6 @@
 
     <!-- Colonne de droite déroulante -->
     <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 h-full lg:px-xl px-sm pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100vh-120px)*(250/350))]">
-      <% if user_signed_in? && current_user == @post.user %>
-        <div class="flex gap-2 p-sm">
-          <%= link_to 'Edit', edit_post_path(@post), class: "btn btn-secondary" %>
-          <%= link_to 'Delete', post_path(@post), data: { turbo_method: :delete }, class: "btn btn-danger" %>
-        </div>  
-      <% end %>
       <!-- Intro and data -->
       <div class="flex justify-between font-mono text-sm py-sm uppercase">
         <div>

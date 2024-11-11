@@ -5,9 +5,7 @@ export default class extends Controller {
 
   toggleSettings() {
     this.settingsPanelTarget.classList.toggle('active')
-    if (!this.settingsPanelTarget.classList.contains('hidden')) {
-      this.actionsPanelTarget.classList.add('hidden')
-    }
+
   }
 
   toggleShare(){
@@ -15,10 +13,8 @@ export default class extends Controller {
   }
 
   toggleActions() {
-    this.actionsPanelTarget.classList.toggle('hidden')
-    if (!this.actionsPanelTarget.classList.contains('hidden')) {
-      this.settingsPanelTarget.classList.remove('active')
-    }
+    this.actionsPanelTarget.classList.toggle('active')
+
   }
 
   connect() {
@@ -26,6 +22,7 @@ export default class extends Controller {
     console.log("Hello Settings")
 
     this.settingsPanelTarget.classList.toggle('hidden')
+    this.actionsPanelTarget.classList.toggle('hidden')
 
     // Fermer le actionsPanel si la fenêtre est supérieure à 1024px
     window.addEventListener('resize', this.handleResize.bind(this))
@@ -34,7 +31,7 @@ export default class extends Controller {
 
   handleResize() {
     if (window.innerWidth > 1024) {
-      this.actionsPanelTarget.classList.add('hidden')
+      this.actionsPanelTarget.classList.remove('active')
     }
   }
 

@@ -19,9 +19,9 @@
   <!-- Contenu pour les écrans plus grands -->
   <div class="hidden lg:flex lg:flex-row mx-auto  h-full">
     <div class="flex bg-gray-200 dark:bg-gray-700 w-[calc((100vh-120px)*(250/350))] px-4 justify-center items-center gap-xs">
-      <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700 uppercase" data-action="click->actions#toggleShare">Partager</button><span class="pb-[0.15em] text-gray-500">|</span>
-      <a href="#" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700 uppercase text-center" title="Ajouter aux favoris">Ajouter aux favoris</a><span class="pb-[0.15em] text-gray-500">|</span>
-      <a href="#" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700 uppercase" title="Signaler un contenu indésirable">Signaler</a>
+      <button id="actions-button" class="flex items-center px-lg" data-action="click->actions#toggleActions">
+        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" ></i>
+      </button>
     </div>
     <div class="flex flex-1 items-center relative">
       <div class="absolute left-0 flex gap-sm items-center">
