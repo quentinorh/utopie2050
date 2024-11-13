@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["container"]
 
   connect() {
-    this.containerTarget.style.height = 'calc(100vh - 45px)'
+    this.containerTarget.style.height = 'calc(100dvh - 45px)'
     this.containerTarget.style.overflow = 'hidden'
     this.createPatternRows()
     this.lastWidth = window.innerWidth
