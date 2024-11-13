@@ -68,7 +68,7 @@ export default class extends Controller {
       const afterText = text.slice(position);
 
       // Créez un élément span avec une icône de marque-page
-      const bookmarkIcon = '<span class="bookmark-icon"><i class="fa-solid fa-circle text-sm"></i></span>';
+      const bookmarkIcon = '<span class="bookmark-icon"><i class="fa-solid fa-circle text-sm text-gray-500"></i></span>';
 
       // Insérez l'icône de marque-page à gauche de la ligne
       element.innerHTML = beforeText + bookmarkIcon + afterText;
@@ -180,7 +180,7 @@ export default class extends Controller {
         const afterText = text.slice(positionInElement);
 
         // Créez un élément span avec une icône de marque-page
-        const bookmarkIcon = '<span class="bookmark-icon"><i class="fa-solid fa-circle text-sm"></i></span>';
+        const bookmarkIcon = '<span class="bookmark-icon"><i class="fa-solid fa-circle text-sm text-gray-500"></i></span>';
 
         // Insérez l'icône de marque-page à gauche de la ligne
         el.innerHTML = beforeText + bookmarkIcon + afterText;
