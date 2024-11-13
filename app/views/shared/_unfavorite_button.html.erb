@@ -1,0 +1,8 @@
+<%= turbo_frame_tag "favorite_button" do %>
+  <%= button_to favorite_post_path(post),
+      method: :post, 
+      class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" do %>
+    <i class="fa-regular fa-star mb-2 text-lg"></i>
+    <p>Ajouter aux favoris</p>
+  <% end %>
+<% end %>

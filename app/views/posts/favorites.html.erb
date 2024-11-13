@@ -1,0 +1,9 @@
+<h2>Mes favoris</h2>
+
+<div class="flex flex-col lg:flex-row">
+  <%= turbo_frame_tag :favorite_posts, class: "lg:w-3/4 xl:w-4/5" do %>
+    <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+      <%= render partial: "post", collection: @favorite_posts %>
+    </div>
+  <% end %>
+</div> 

@@ -1,20 +1,53 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "settingsPanel", "actionsPanel", "sharePanel", "textSize", "lineHeight", "font", "theme" ]
+  static targets = [ "settingsPanel",
+                     "actionsPanel",
+                     "sharePanel",
+                     "addBookmarkPanel",
+                     "editPanel",
+                     "deletePanel",
+                     "reportPanel",
+                     "textSize",
+                     "lineHeight",
+                     "font",
+                     "theme" ]
 
   toggleSettings() {
     this.settingsPanelTarget.classList.toggle('active')
-
   }
 
   toggleShare(){
-    this.sharePanelTarget.classList.toggle('hidden')
+    this.sharePanelTarget.classList.toggle('active')
+  }
+
+  toggleAddBookmark() {
+    console.log("toggleAddBookmark")
+    this.addBookmarkPanelTarget.classList.toggle('active')
+    setTimeout(() => {
+      this.addBookmarkPanelTarget.classList.remove('active')
+    }, 1500)
+  }
+
+  toggleEdit() {
+    this.editPanelTarget.classList.toggle('active')
+  }
+
+  toggleDelete() {
+    this.deletePanelTarget.classList.toggle('active')
+  }
+
+  toggleReport() {
+    this.reportPanelTarget.classList.toggle('active')
   }
 
   toggleActions() {
     this.actionsPanelTarget.classList.toggle('active')
-
+    this.sharePanelTarget.classList.remove('active')
+    this.addBookmarkPanelTarget.classList.remove('active')
+    this.editPanelTarget.classList.remove('active')
+    this.deletePanelTarget.classList.remove('active')
+    this.reportPanelTarget.classList.remove('active')
   }
 
   connect() {
@@ -23,16 +56,11 @@ export default class extends Controller {
 
     this.settingsPanelTarget.classList.toggle('hidden')
     this.actionsPanelTarget.classList.toggle('hidden')
-
-    // Fermer le actionsPanel si la fenêtre est supérieure à 1024px
-    window.addEventListener('resize', this.handleResize.bind(this))
-    this.handleResize() // Appel initial pour vérifier la taille au chargement
-  }
-
-  handleResize() {
-    if (window.innerWidth > 1024) {
-      this.actionsPanelTarget.classList.remove('active')
-    }
+    this.sharePanelTarget.classList.toggle('hidden')
+    this.addBookmarkPanelTarget.classList.toggle('hidden')
+    this.editPanelTarget.classList.toggle('hidden')
+    this.deletePanelTarget.classList.toggle('hidden')
+    this.reportPanelTarget.classList.toggle('hidden')
   }
 
   changeTextSize(event) {
@@ -142,5 +170,23 @@ export default class extends Controller {
     const value = `; ${document.cookie}`
     const parts = value.split(`; ${name}=`)
     if (parts.length === 2) return parts.pop().split(';').shift()
+  }
+
+  closeActions() {
+    this.actionsPanelTarget.classList.remove('active')
+  }
+
+  copyUrl(event) {
+    const url = window.location.href.replace('http://', 'https://');
+    const button = event.currentTarget;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      const originalIcon = button.innerHTML;
+      button.innerHTML = '<i class="fa-solid fa-check"></i>';
+      
+      setTimeout(() => {
+        button.innerHTML = originalIcon;
+      }, 2000);
+    });
   }
 }
