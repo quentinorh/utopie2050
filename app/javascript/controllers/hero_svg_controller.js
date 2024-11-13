@@ -7,6 +7,7 @@ export default class extends Controller {
     this.containerTarget.style.height = 'calc(100vh - 45px)'
     this.containerTarget.style.overflow = 'hidden'
     this.createPatternRows()
+    this.lastWidth = window.innerWidth
     window.addEventListener('resize', () => this.handleResize())
   }
 
@@ -174,8 +175,12 @@ export default class extends Controller {
   }
 
   handleResize() {
-    // Recréer tous les motifs lors du redimensionnement de la fenêtre
-    this.createPatternRows()
+    // Ne recharger que si la largeur change
+    const currentWidth = window.innerWidth
+    if (currentWidth !== this.lastWidth) {
+      this.lastWidth = currentWidth
+      this.createPatternRows()
+    }
   }
 
   disconnect() {
