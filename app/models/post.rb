@@ -5,6 +5,8 @@ class Post < ApplicationRecord
   has_many :post_themes, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
   has_many :themes, through: :post_themes
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_by, through: :favorites, source: :user
   before_save :update_color_from_pattern_settings
 
   accepts_nested_attributes_for :chapters, allow_destroy: true

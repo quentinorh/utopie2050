@@ -50,7 +50,8 @@ class PostsController < ApplicationController
   def destroy
     @post.destroy
     respond_to do |format|
-      format.html { redirect_to posts_url, notice: 'Post was successfully destroyed.' }
+      format.html { redirect_to deleted_posts_path }
+      format.turbo_stream { redirect_to deleted_posts_path }
       format.json { head :no_content }
     end
   end
@@ -58,6 +59,43 @@ class PostsController < ApplicationController
   def user_posts
     @user = User.find(params[:user_id])
     @posts = @user.posts
+  end
+
+  def favorite
+    @post = Post.find(params[:id])
+    current_user.favorites.create(post: @post)
+    
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("favorite_button", 
+        partial: "shared/favorite_button", 
+        locals: { post: @post }) }
+      format.html { redirect_to @post }
+    end
+  end
+
+  def unfavorite
+    @post = Post.find(params[:id])
+    current_user.favorites.where(post: @post).destroy_all
+    
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("favorite_button", 
+        partial: "shared/unfavorite_button", 
+        locals: { post: @post }) }
+      format.html { redirect_to @post }
+    end
+  end
+
+  def favorites
+    @favorite_posts = Post.joins(:favorites)
+                         .where(favorites: { user_id: current_user.id })
+                         .includes(:user)
+    
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render turbo_stream: turbo_stream.update('favorite_posts', 
+        partial: 'posts', 
+        locals: { posts: @favorite_posts }) }
+    end
   end
 
   private

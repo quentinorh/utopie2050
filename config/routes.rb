@@ -2,8 +2,15 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: 'users/registrations' }
   
   resources :posts do
+    collection do
+      get :favorites
+      get :deleted
+    end
+    
     member do
       delete :remove_photo
+      post 'favorite'
+      delete 'unfavorite'
     end
     resource :bookmark, only: [:create, :destroy, :show]
   end

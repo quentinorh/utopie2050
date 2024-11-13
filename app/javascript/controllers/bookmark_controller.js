@@ -4,15 +4,12 @@ export default class extends Controller {
   static targets = ["button"]
   
   connect() {
-    console.log("Bookmark controller connected")
     this.loadBookmark()
   }
   
   async toggle() {
     const postId = this.element.dataset.postId;
     const currentPosition = this.getCurrentPosition();
-    console.log("Post ID:", postId);
-    console.log("Current position:", currentPosition);
     this.insertBookmark(); // Appel de la méthode ici
   }
   
@@ -45,7 +42,6 @@ export default class extends Controller {
 
       return null;
     } catch (error) {
-      console.error("Erreur lors du calcul de la position:", error);
       return null;
     }
   }
@@ -64,7 +60,6 @@ export default class extends Controller {
       // Si la position est 0, supprimez le marque-page
       if (position === 0) {
         await this.removeBookmark();
-        console.log("Bookmark removed because position is 0");
         return;
       }
 
@@ -78,14 +73,12 @@ export default class extends Controller {
       // Insérez l'icône de marque-page à gauche de la ligne
       element.innerHTML = beforeText + bookmarkIcon + afterText;
       element.style.position = 'relative'; // Assurez-vous que l'élément parent a une position relative
-      console.log("Bookmark icon inserted at position:", position, "in element:", element.innerHTML);
 
       // Envoyer la position au serveur
       await this.saveBookmark(positionInfo.totalPosition);
     } else {
       // Si aucune position n'est trouvée, supprimez le marque-page
       await this.removeBookmark();
-      console.log("Bookmark removed because no position found");
     }
   }
 
@@ -113,7 +106,6 @@ export default class extends Controller {
     } else {
       // Supprimer le marque-page du cookie
       document.cookie = `bookmark_${postId}=; path=/; max-age=0`;
-      console.log('Bookmark removed from cookie');
     }
   }
 
@@ -142,12 +134,10 @@ export default class extends Controller {
     } else {
       // Stocker le marque-page dans un cookie
       document.cookie = `bookmark_${postId}=${characterPosition}; path=/; max-age=31536000`; // 1 an
-      console.log('Bookmark saved in cookie');
     }
   }
 
   async loadBookmark() {
-    console.log("Loading bookmark")
     const postId = this.element.dataset.postId;
     if (this.isUserLoggedIn()) {
       try {
@@ -162,8 +152,6 @@ export default class extends Controller {
         const data = await response.json();
         if (data.status === 'success' && data.bookmark) {
           this.displayBookmark(data.bookmark.character_position);
-        } else {
-          console.log('No bookmark found');
         }
       } catch (error) {
         console.error('Error loading bookmark:', error);
@@ -174,9 +162,6 @@ export default class extends Controller {
       if (cookieValue) {
         const characterPosition = cookieValue.split('=')[1];
         this.displayBookmark(characterPosition);
-        console.log('Bookmark loaded from cookie');
-      } else {
-        console.log('No bookmark found in cookie');
       }
     }
   }
@@ -200,7 +185,6 @@ export default class extends Controller {
         // Insérez l'icône de marque-page à gauche de la ligne
         el.innerHTML = beforeText + bookmarkIcon + afterText;
         el.style.position = 'relative'; // Assurez-vous que l'élément parent a une position relative
-        console.log("Bookmark icon displayed at position:", positionInElement, "in element:", el.innerHTML);
 
         // Faire défiler la page jusqu'à l'élément contenant le marque-page
         const rect = el.getBoundingClientRect();
