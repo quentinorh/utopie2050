@@ -1,19 +1,15 @@
-<div data-controller="cover text-to-speech actions svg-animation relative" 
+<div data-controller="scroll cover text-to-speech actions svg-animation relative" 
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
   
   <input type="hidden" data-cover-target="title" value="<%= @post.title %>">
-  <input type="hidden" data-scroll-target="title" value="<%= @post.title %>">
   <input type="hidden" data-cover-target="patternSettings" value="<%= @post.pattern_settings %>">
   
   <%= render 'shared/settingspanel' %>
   <%= render 'shared/bottomnavbar' %>
   <%= render 'shared/actionspanel' %>
 
-  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800 bg-gray-100"
-       data-controller="scroll"
-       data-scroll-target="element"
-       data-scroll-percentage-target="percentage" >
+  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800 bg-gray-100">
     <!-- Colonne de gauche fixe -->
     <div data-controller="margin"
          data-margin-target="element" 
@@ -46,7 +42,7 @@
           <p class="text-right"><%= @post.calculate_reading_time %></p>
         </div>
       </div>
-      <div class="post-body">
+      <div class="post-body" data-scroll-target="content">
         <div class="mt-lg adjustable w-full">
           <%= simple_format(@post.body) %>
         </div>

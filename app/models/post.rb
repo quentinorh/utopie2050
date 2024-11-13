@@ -35,8 +35,8 @@ class Post < ApplicationRecord
     }
 
   def calculate_reading_time
-    words_per_minute = 238
-    total_word_count = chapters.sum { |chapter| chapter.body.split.size }
+    words_per_minute = 180
+    total_word_count = (body.present? ? body.split.size : 0) + chapters.sum { |chapter| chapter.body.split.size }
     reading_time_seconds = (total_word_count.to_f / words_per_minute * 60).round
     minutes = reading_time_seconds / 60
     seconds = reading_time_seconds % 60
@@ -45,7 +45,7 @@ class Post < ApplicationRecord
 
   def calculate_spoken_time
     words_per_minute = 150
-    total_word_count = chapters.sum { |chapter| chapter.body.split.size }
+    total_word_count = (body.present? ? body.split.size : 0) + chapters.sum { |chapter| chapter.body.split.size }
     reading_time_seconds = (total_word_count.to_f / words_per_minute * 60).round
     minutes = reading_time_seconds / 60
     seconds = reading_time_seconds % 60
