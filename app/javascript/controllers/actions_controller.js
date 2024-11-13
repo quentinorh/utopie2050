@@ -14,6 +14,9 @@ export default class extends Controller {
                      "theme" ]
 
   toggleSettings() {
+    if (window.innerWidth < 1024) {
+      this.actionsPanelTarget.classList.remove('active')
+    }
     this.settingsPanelTarget.classList.toggle('active')
   }
 
