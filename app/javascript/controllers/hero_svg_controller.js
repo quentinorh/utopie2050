@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["container"]
 
   connect() {
-    this.containerTarget.style.height = 'calc(100vh - 60px)'
+    this.containerTarget.style.height = 'calc(100vh - 45px)'
     this.containerTarget.style.overflow = 'hidden'
     this.createPatternRows()
     window.addEventListener('resize', () => this.handleResize())
@@ -13,8 +13,7 @@ export default class extends Controller {
   createPatternRows() {
     this.containerTarget.innerHTML = '' // Nettoyer le conteneur
     
-    // Générer un nombre aléatoire de lignes entre 20 et 30
-    const numberOfRows = Math.floor(Math.random() * 11) + 20
+    const numberOfRows = Math.floor(Math.random() * 5) + 10
     
     // Générer des hauteurs aléatoires pour chaque ligne
     const randomHeights = Array(numberOfRows).fill(0).map(() => 
@@ -29,17 +28,23 @@ export default class extends Controller {
       const adjustedHeight = randomHeight * scaleFactor
       
       const rowWrapper = document.createElement('div')
-      rowWrapper.style.position = 'relative'
-      rowWrapper.style.height = `${adjustedHeight}px`
-      rowWrapper.style.overflow = 'hidden'
+      Object.assign(rowWrapper.style, { 
+        position: 'relative', 
+        height: `${adjustedHeight}px`, 
+        overflow: 'hidden',
+        marginBottom: '-1px'
+      })
 
       // Créer un conteneur pour l'animation
       const slider = document.createElement('div')
-      slider.style.display = 'flex'
-      slider.style.position = 'absolute'
-      slider.style.height = '100%'
-      slider.style.left = '0'
-      slider.style.gap = '-1px'
+      Object.assign(slider.style, { 
+        display: 'flex', 
+        position: 'absolute', 
+        height: '100%', 
+        left: '0', 
+        gap: '0',
+        fontSize: '0'
+      })
       
       // Générer le motif de base
       const basePattern = this.createPattern(this.generateRandomParams(), adjustedHeight)
@@ -54,7 +59,7 @@ export default class extends Controller {
       }
 
       // Configurer l'animation
-      const duration = Math.random() * 20 + 10 // Entre 10 et 30 secondes
+      const duration = Math.random() * 60 + 20 // Entre 10 et 30 secondes
       const direction = Math.random() < 0.5 ? 'normal' : 'reverse'
       
       slider.style.animation = `slidePattern ${duration}s linear infinite ${direction}`
@@ -83,7 +88,7 @@ export default class extends Controller {
 
   generateRandomParams() {
     return {
-      columns: Math.floor(Math.random() * 50)+1,
+      columns: Math.floor(Math.random() * 70)+1,
       rows: 1,
       padding: Math.floor(Math.random() * 10) * 5,
       hue: Math.floor(Math.random() * 360),
