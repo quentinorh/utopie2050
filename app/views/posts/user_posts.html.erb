@@ -1,5 +1,5 @@
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[700px] p-sm"> 
+  <div class="flex flex-col items-center w-full md:w-[700px] p-0 sm:p-sm"> 
     <div class="bg-white p-sm rounded-lg shadow">
       <div class="sm:flex">
         <div class="sm:flex-auto">
@@ -7,10 +7,10 @@
         </div>
       </div>
       <div class="mt-8 flow-root">
-        <div class="inline-block min-w-full py-2 align-middle px-xs">
+        <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
           <div class="">
             <% if @posts.any? %>
-              <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <% @posts.each do |post| %>
                   <div class="w-[240px] h-auto justify-center justify-self-center mx-auto text-xl transition-colors group bg-white opacity-100 overflow-hidden">
                     <%= link_to post, class: "block" do %>
@@ -33,7 +33,7 @@
                           </div>
                           <div class="absolute bottom-12 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
                             <%= link_to 'Editer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
-                            <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block" %>
+                            <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block border border-red-500" %>
                           </div>
                         </div>
                       </div>
