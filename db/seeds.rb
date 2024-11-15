@@ -90,13 +90,16 @@ def generer_svg_couverture(params)
   # Toujours ajouter le fond complémentaire
   svg_content += "<rect x='0' y='0' width='#{width}' height='#{height}' fill='#{complementary_color}' />"
 
+  # Ajout de la variable overlap comme dans le preview_controller.js
+  overlap = 0.5
+
   (0...rows).each do |row|
     (0...columns).each do |col|
       cell_index = row * columns + col
       pattern_index = cell_index % pattern_cycle
       is_filled = pattern_index < filled_squares
-      cell_width = width / columns
-      cell_height = height / rows
+      cell_width = width.to_f / columns
+      cell_height = height.to_f / rows
       x = col * cell_width
       y = row * cell_height
 
@@ -105,13 +108,13 @@ def generer_svg_couverture(params)
 
       svg_content += case shape
                      when 'square'
-                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x}' height='#{cell_height - 2 * padding_y}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x + overlap}' height='#{cell_height - 2 * padding_y + overlap}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'ellipse'
-                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2}' ry='#{(cell_height - 2 * padding_y) / 2}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2 + overlap / 2}' ry='#{(cell_height - 2 * padding_y) / 2 + overlap / 2}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'triangle'
-                       "<polygon points='#{x + padding_x},#{y + cell_height - padding_y} #{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height - padding_y}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<polygon points='#{x + padding_x - overlap},#{y + cell_height - padding_y + overlap} #{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height - padding_y + overlap}' fill='#{is_filled ? fill_color : "none"}' />"
                      when 'losange'
-                       "<polygon points='#{x + cell_width / 2},#{y + padding_y} #{x + cell_width - padding_x},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y} #{x + padding_x},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<polygon points='#{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y + overlap} #{x + padding_x - overlap},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : "none"}' />"
                      end
     end
   end
@@ -208,7 +211,8 @@ quentin_user = User.create!(
   email: "quentin.orhant@mailo.fr",
   password: "azertyuiop",
   username: "Quentin Orhant",
-  age: 62
+  age: 62,
+  role: "admin"
 )
 # Bypass Devise email confirmation
 quentin_user.skip_confirmation!

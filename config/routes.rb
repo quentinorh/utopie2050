@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       delete 'unfavorite'
     end
     resource :bookmark, only: [:create, :destroy, :show]
+    resources :reports, only: [:new, :create]
   end
 
   devise_scope :user do
@@ -27,4 +28,10 @@ Rails.application.routes.draw do
   get 'user_posts/:user_id', to: 'posts#user_posts', as: 'user_posts'
 
   root to: "pages#home"
+
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
+    resources :users
+    resources :reports, only: [:destroy]
+  end
 end
