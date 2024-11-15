@@ -201,7 +201,7 @@ def generer_chapitres_aleatoires(client, post, titre_article)
   puts "Chapitres générés avec succès pour l'article '#{post.title}'."
 end
 
-# Supprimer les données existantes et générer de nouvelles
+Report.destroy_all
 User.destroy_all
 Bookmark.destroy_all
 Post.destroy_all
