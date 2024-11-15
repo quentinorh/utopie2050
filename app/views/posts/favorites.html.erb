@@ -9,10 +9,15 @@
       <div class="mt-8 flow-root">
         <div class="inline-block min-w-full py-2 align-middle px-xs">
           <div class="">
-            <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2
-             gap-4">
-              <%= render partial: "post", collection: @favorite_posts %>
-            </div>
+            <% if @favorite_posts.any? %>
+              <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <%= render partial: "post", collection: @favorite_posts %>
+              </div>
+            <% else %>
+              <div class="text-center text-gray-500">
+                <p>Tu n'as pas encore de favoris.</p>
+              </div>
+            <% end %>
           </div>
         </div>
       </div>
