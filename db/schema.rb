@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_11_13_103027) do
+ActiveRecord::Schema[7.0].define(version: 2024_11_15_112317) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_13_103027) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "reports", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "user_id"
+    t.text "comment", null: false
+    t.string "status", default: "pending"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_reports_on_post_id"
+    t.index ["user_id"], name: "index_reports_on_user_id"
+  end
+
   create_table "themes", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -118,6 +129,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_13_103027) do
     t.datetime "confirmation_sent_at", precision: nil
     t.string "unconfirmed_email"
     t.integer "age"
+    t.string "role"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -134,4 +146,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_13_103027) do
   add_foreign_key "post_themes", "posts"
   add_foreign_key "post_themes", "themes"
   add_foreign_key "posts", "users"
+  add_foreign_key "reports", "posts"
+  add_foreign_key "reports", "users"
 end

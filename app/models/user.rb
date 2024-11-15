@@ -20,6 +20,11 @@ class User < ApplicationRecord
 
   scope :has_posts, -> { joins(:posts).distinct }
 
+  # Définir la méthode admin? comme publique
+  def admin?
+    role == "admin"
+  end
+
   private
 
   def set_default_username

@@ -8,6 +8,7 @@ export default class extends Controller {
                      "editPanel",
                      "deletePanel",
                      "reportPanel",
+                     "reportConfirmationPanel",
                      "textSize",
                      "lineHeight",
                      "font",
@@ -44,6 +45,14 @@ export default class extends Controller {
     this.reportPanelTarget.classList.toggle('active')
   }
 
+  toggleReportConfirmation() {
+    this.reportPanelTarget.classList.remove('active')
+    this.reportConfirmationPanelTarget.classList.toggle('active')
+    setTimeout(() => {
+      this.reportConfirmationPanelTarget.classList.remove('active')
+    }, 1500)
+  }
+
   toggleActions() {
     this.actionsPanelTarget.classList.toggle('active')
     this.sharePanelTarget.classList.remove('active')
@@ -51,11 +60,14 @@ export default class extends Controller {
     this.editPanelTarget.classList.remove('active')
     this.deletePanelTarget.classList.remove('active')
     this.reportPanelTarget.classList.remove('active')
+    this.reportConfirmationPanelTarget.classList.remove('active')
   }
 
   connect() {
     this.loadSettings()
     console.log("Hello Settings")
+
+
 
     this.settingsPanelTarget.classList.toggle('hidden')
     this.actionsPanelTarget.classList.toggle('hidden')
@@ -64,6 +76,9 @@ export default class extends Controller {
     this.editPanelTarget.classList.toggle('hidden')
     this.deletePanelTarget.classList.toggle('hidden')
     this.reportPanelTarget.classList.toggle('hidden')
+    this.reportConfirmationPanelTarget.classList.toggle('hidden')
+
+    console.log("reportConfirmationPanel:", this.reportConfirmationPanelTarget)
   }
 
   changeTextSize(event) {
@@ -191,5 +206,21 @@ export default class extends Controller {
         button.innerHTML = originalIcon;
       }, 2000);
     });
+  }
+
+  handleReportSubmit(event) {
+    if (event.detail.success) {
+      // Réinitialise le formulaire
+      event.target.reset()
+      
+      // Ferme le panneau de rapport et affiche la confirmation
+      this.reportPanelTarget.classList.remove('active')
+      this.reportConfirmationPanelTarget.classList.add('active')
+      
+      // Ferme automatiquement après 3 secondes
+      setTimeout(() => {
+        this.reportConfirmationPanelTarget.classList.remove('active')
+      }, 3000)
+    }
   }
 }

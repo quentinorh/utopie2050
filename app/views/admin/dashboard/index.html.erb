@@ -1,0 +1,134 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Section Posts -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">
+      Articles (<%= @posts.size %>)
+    </h2>
+    
+    <div class="mb-6">
+      <%= form_with url: admin_dashboard_path, method: :get, class: "flex gap-4" do |f| %>
+        <div class="flex-1">
+          <%= f.text_field :search, 
+              placeholder: "Rechercher par titre...",
+              class: "w-full px-4 py-2 border rounded-md" %>
+        </div>
+        <%= f.submit "Rechercher", 
+            class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" %>
+      <% end %>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-2 py-3 text-left">Titre</th>
+            <th class="px-2 py-3 text-center">Auteur</th>
+            <th class="px-2 py-3 text-center">Date de création</th>
+            <th class="px-2 py-3 text-center">Signalements</th>
+            <th class="px-2 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @posts.each do |post| %>
+            <tr class="hover:bg-gray-50 <%= 'bg-red-50' if post.reports.any? %>">
+              <td class="px-2 py-4 max-w-xs truncate">
+                <%= link_to post.title, post_path(post) %>
+              </td>
+              <td class="px-2 py-4 text-center"><%= post.user.username %></td>
+              <td class="px-2 py-4 text-center"><%= post.created_at.strftime("%d/%m/%Y") %></td>
+              <td class="px-2 py-4 text-center">
+                <% if post.reports.any? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <%= post.reports.count %>
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-2 py-4 text-center">
+                <%= link_to "Éditer", edit_post_path(post), class: "text-yellow-600 hover:text-yellow-800" %><br>
+                <%= link_to "Supprimer", post_path(post), 
+                    data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr ?" },
+                    class: "text-red-600 hover:text-red-800" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section Utilisateurs -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">
+      Utilisateurs (<%= @users.size %>)
+    </h2>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-2 py-3 text-left">Nom d'utilisateur</th>
+            <th class="px-2 py-3 text-center">Email</th>
+            <th class="px-2 py-3 text-center">Date d'inscription</th>
+            <th class="px-2 py-3 text-center">Nombre d'articles</th>
+            <th class="px-2 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @users.each do |user| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-2 py-4"><%= user.username %></td>
+              <td class="px-2 py-4 text-center"><%= user.email %></td>
+              <td class="px-2 py-4 text-center"><%= user.created_at.strftime("%d/%m/%Y") %></td>
+              <td class="px-2 py-4 text-center"><%= user.posts.count %></td>
+              <td class="px-2 py-4 text-center space-x-2">
+                <%= link_to "Supprimer", admin_user_path(user), 
+                    data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?" },
+                    class: "text-red-600 hover:text-red-800" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section Signalements -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">
+      Signalements (<%= @reports.size %>)
+    </h2>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-2 py-3 text-left">Article</th>
+            <th class="px-2 py-3 text-center">Signalé par</th>
+            <th class="px-2 py-3 text-center">Commentaire</th>
+            <th class="px-2 py-3 text-center">Date</th>
+            <th class="hidden px-2 py-3 text-center">Statut</th>
+            <th class="px-2 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @reports.each do |report| %>
+            <tr id="<%= dom_id(report) %>" class="hover:bg-gray-50">
+              <td class="px-2 py-4 max-w-xs truncate">
+                <%= link_to report.post.title, post_path(report.post) %>
+              </td>
+              <td class="px-2 py-4 text-center"><%= report.user&.username || "Anonyme" %></td>
+              <td class="px-2 py-4 text-center"><%= report.comment %></td>
+              <td class="px-2 py-4 text-center"><%= report.created_at.strftime("%d/%m/%Y") %></td>
+              <td class="px-2 py-4 text-center">
+                <%= button_to "Supprimer", 
+                    admin_report_path(report),
+                    method: :delete,
+                    class: "text-red-600 hover:text-red-800" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 
