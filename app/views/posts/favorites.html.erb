@@ -1,9 +1,21 @@
-<h2>Mes favoris</h2>
-
-<div class="flex flex-col lg:flex-row">
-  <%= turbo_frame_tag :favorite_posts, class: "lg:w-3/4 xl:w-4/5" do %>
-    <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <%= render partial: "post", collection: @favorite_posts %>
+<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);" data-controller="signup">
+  <div class="flex flex-col items-center w-full md:w-[700px] p-sm"> 
+    <div class="bg-white p-sm rounded-lg shadow">
+      <div class="sm:flex">
+        <div class="sm:flex-auto">
+          <h1 class="text-xl pt-sm text-center font-semibold leading-6 text-gray-900">Mes favoris</h1>
+        </div>
+      </div>
+      <div class="mt-8 flow-root">
+        <div class="inline-block min-w-full py-2 align-middle px-xs">
+          <div class="">
+            <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2
+             gap-4">
+              <%= render partial: "post", collection: @favorite_posts %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  <% end %>
+  </div>
 </div> 

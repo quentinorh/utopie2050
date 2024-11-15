@@ -1,0 +1,12 @@
+ fr:
+  simple_form:
+    "yes": 'Oui'
+    "no": 'Non'
+    required:
+      text: 'requis'
+      mark: '*'
+      # Vous pouvez décommenter la ligne ci-dessous si vous devez remplacer tout le html requis.
+      # Lorsque vous utilisez html, text et mark ne seront pas utilisés.
+      # html: '<abbr title="requis">*</abbr>'
+    error_notification:
+      default_message: "Veuillez corriger les problèmes suivants"

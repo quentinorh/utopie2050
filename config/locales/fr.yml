@@ -1,0 +1,8 @@
+ fr:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            confirmation_token:
+              invalid: "Le jeton de confirmation est invalide"

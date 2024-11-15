@@ -2,7 +2,7 @@ require 'open-uri'
 
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :remove_photo]
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
 
   has_scope :by_author
@@ -18,8 +18,8 @@ class PostsController < ApplicationController
   end
 
   def show
+    @report = Report.new
     @show_settings_panel = true
-    @report = @post.reports.new
   end
 
   def new
@@ -43,7 +43,7 @@ class PostsController < ApplicationController
 
   def update
     if @post.update(post_params)
-      redirect_to @post, notice: 'Post was successfully updated.'
+      redirect_to @post, notice: 'Le futur a été mis à jour.'
     else
       render :edit
     end
@@ -104,6 +104,12 @@ class PostsController < ApplicationController
 
   def set_post
     @post = Post.find(params[:id])
+  end
+
+  def authorize_user!
+    unless current_user == @post.user || current_user.admin?
+      redirect_to root_path, alert: "Vous n'êtes pas autorisé à effectuer cette action."
+    end
   end
 
   def post_params
