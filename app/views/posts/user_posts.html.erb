@@ -8,35 +8,38 @@
       </div>
       <div class="mt-8 flow-root">
         <div class="inline-block min-w-full py-2 align-middle px-xs">
-          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5">
-            <table class="min-w-full divide-y divide-gray-300">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Titre</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date de création</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
-                <% @posts.each do |post| %>
-                  <tr class="bg-white hover:bg-gray-100">
-                    <td class="whitespace-normal break-words py-4 pl-3 pr-3 text-sm font-medium text-gray-900"><%= link_to post.title, post %></td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= post.created_at.strftime("%d/%m/%Y") %></td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <% if post.draft %>
-                        Brouillon 
-                      <% end %></td>
-                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <div class="flex flex-col gap-2 items-center">
-                        <%= link_to 'Edit', edit_post_path(post), class: "tw-btn-secondary uppercase" %>
-                        <%= link_to 'Delete', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase" %>
+          <div class="">
+            <div class="m-auto p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <% @posts.each do |post| %>
+                <div class="w-[240px] h-auto justify-center justify-self-center mx-auto text-xl transition-colors group bg-white opacity-100 overflow-hidden">
+                  <%= link_to post, class: "block" do %>
+                    <div class="w-[240px] h-[calc(240px*1.4)]" data-controller="cover coversize">
+                      <input type="hidden" data-cover-target="title" value="<%= post.title %>">
+                      <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
+                      <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
+                      <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
+                      <div class="relative aspect-[9/14] overflow-hidden">
+                        <div class="absolute inset-0 flex flex-col justify-start">
+                          <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
+                            <%= post.title %>
+                          </div>
+                          <div class="text-sm z-10 w-fit" data-cover-target="userName">
+                            <%= post.user.username %>
+                          </div>
+                        </div>
+                        <div class="cover-svg absolute inset-0 w-[240px] h-[calc(240px*1.4)]" data-controller="coversize">
+                          <%= post.cover.html_safe %>
+                        </div>
+                        <div class="absolute bottom-12 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
+                          <%= link_to 'Editer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
+                          <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block" %>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>

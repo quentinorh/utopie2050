@@ -110,12 +110,12 @@
 
         <!-- Texte -->
         <div>
-          <label for="body" class="mt-8 text-l tw-form-label">Texte</label>
+          <label for="body" class="mt-6 text-l tw-form-label">Texte</label>
           <%= form.text_area :body, class: "tw-form-input", rows: 10 %>
         </div>
 
         <!-- Chapitres -->
-        <div class="mt-sm">
+        <div class="mt-6">
           <div class="flex items-center justify-between">
             <span class="text-l">Chapitres</span>
             <%= button_tag "Ajouter", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
@@ -126,13 +126,13 @@
                 <label class="tw-form-label">Titre du chapitre</label>
                 <%= chapter_form.text_field :title, class: "tw-form-input" %>
 
-                <label class="tw-form-label">Texte du chapitre</label>
+                <label class="tw-form-label mt-2">Texte du chapitre</label>
                 <%= chapter_form.text_area :body, class: "tw-form-input", rows: 5 %>
 
                 <%= chapter_form.hidden_field :position %>
                 <%= chapter_form.hidden_field :_destroy %>
 
-                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary", data: { action: "click->chapter#removeChapter" } %>
+                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6", data: { action: "click->chapter#removeChapter" } %>
               </div>
             <% end %>
           </div>
@@ -140,7 +140,7 @@
 
         <!-- Draft -->
         <div class="mt-sm">
-          <label for="body" class="mt-8 text-l tw-form-label">Brouillon ?</label>
+          <label for="body" class="mt-6 text-l tw-form-label">Brouillon ?</label>
           <div class="mt-xs flex items-center gap-2">
             <%= form.check_box :draft, class: "tw-form-checkbox" %>
             <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
