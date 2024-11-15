@@ -11,9 +11,6 @@
                 <h1 class="text-gray-600 text-xl md:text-xxl lg:text-display text-center" data-hero-animation-target="title">
                     Lire et écrire des futurs désirables
                 </h1>
-                <div>
-                <div data-action="mousemove->hero-animation#handleMouseMove"></div>
-                </div>
                 <div class="flex gap-sm mt-sm justify-center" data-hero-animation-target="buttons">
                     <%= link_to "Lire les futurs", posts_path, class: "tw-btn-primary text-center max-sm:p-2", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs" } %>
                     <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary text-center max-sm:p-2", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur" } %>

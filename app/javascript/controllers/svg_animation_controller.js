@@ -36,12 +36,12 @@ export default class extends Controller {
     // Animer la classe parente pour la rendre visible
     tl.to(parent, {
       opacity: 1,
-      duration: 0 // Réduire la durée pour accélérer l'apparition
+      duration: 0.1 // Réduire la durée pour accélérer l'apparition
     });
 
     // Calculer la durée totale de l'animation
     const columnKeys = Object.keys(columns).sort((a, b) => a - b);
-    const maxDuration = 1; // Durée maximale pour la dernière colonne
+    const maxDuration = 2; // Durée maximale pour la dernière colonne
 
     // Animer toutes les colonnes en même temps avec des durées variables
     columnKeys.forEach((x, index) => {
@@ -60,22 +60,21 @@ export default class extends Controller {
       ease: "power4.inOut"
     }, 0); // Commence en même temps que les colonnes
 
-    // Animer le titre en glissant de gauche à droite
+    // Animer le titre et l'auteur en glissant de gauche à droite
     tl.fromTo(this.titleTarget, {
       x: '-100%' // Position initiale en dehors de l'écran
     }, {
       x: '0%', // Position finale
-      duration: maxDuration,
+      duration: 2,
       ease: "power4.out"
     }, 0); // Délai après la fin de l'animation du SVG
 
-    // Animer l'auteur en glissant de gauche à droite
     tl.fromTo(this.userNameTarget, {
       x: '-100%' // Position initiale en dehors de l'écran
     }, {
       x: '0%', // Position finale
-      duration: maxDuration,
+      duration: 2,
       ease: "power4.out"
-    }, 0); // Commence légèrement après le titre
+    }, 0); // Commence en même temps que le titre
   }
 }

@@ -63,7 +63,7 @@ def generer_parametres_couverture
     hue: rand(0..360),
     filledSquares: rand(1..100),
     whiteSquares: rand(1..100),
-    padding: rand(0..50),
+    padding: rand(0..5)*10,
     shape: ['square', 'ellipse', 'triangle', 'losange'].sample
     # Supprimez la ligne 'complementaryBg' car elle est maintenant toujours activée
   }
@@ -82,7 +82,9 @@ def generer_svg_couverture(params)
   shape = params[:shape]
 
   fill_color = "hsl(#{hue}, 80%, 70%)"
-  complementary_color = "hsl(#{(hue + 180) % 360}, 80%, 70%)"
+  complementary_color = "hsl(#{(hue - 120) % 360}, 80%, 70%)"
+  triadic_color = "hsl(#{(hue + 120) % 360}, 80%, 70%)"
+  non_filled_color = triadic_color
 
   pattern_cycle = filled_squares + white_squares
   svg_content = ""
@@ -90,7 +92,6 @@ def generer_svg_couverture(params)
   # Toujours ajouter le fond complémentaire
   svg_content += "<rect x='0' y='0' width='#{width}' height='#{height}' fill='#{complementary_color}' />"
 
-  # Ajout de la variable overlap comme dans le preview_controller.js
   overlap = 0.5
 
   (0...rows).each do |row|
@@ -108,13 +109,13 @@ def generer_svg_couverture(params)
 
       svg_content += case shape
                      when 'square'
-                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x + overlap}' height='#{cell_height - 2 * padding_y + overlap}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<rect x='#{x + padding_x}' y='#{y + padding_y}' width='#{cell_width - 2 * padding_x + overlap}' height='#{cell_height - 2 * padding_y + overlap}' fill='#{is_filled ? fill_color : non_filled_color}' />"
                      when 'ellipse'
-                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2 + overlap / 2}' ry='#{(cell_height - 2 * padding_y) / 2 + overlap / 2}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<ellipse cx='#{x + cell_width / 2}' cy='#{y + cell_height / 2}' rx='#{(cell_width - 2 * padding_x) / 2 + overlap / 2}' ry='#{(cell_height - 2 * padding_y) / 2 + overlap / 2}' fill='#{is_filled ? fill_color : non_filled_color}' />"
                      when 'triangle'
-                       "<polygon points='#{x + padding_x - overlap},#{y + cell_height - padding_y + overlap} #{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height - padding_y + overlap}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<polygon points='#{x + padding_x - overlap},#{y + cell_height - padding_y + overlap} #{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height - padding_y + overlap}' fill='#{is_filled ? fill_color : non_filled_color}' />"
                      when 'losange'
-                       "<polygon points='#{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y + overlap} #{x + padding_x - overlap},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : "none"}' />"
+                       "<polygon points='#{x + cell_width / 2},#{y + padding_y - overlap} #{x + cell_width - padding_x + overlap},#{y + cell_height / 2} #{x + cell_width / 2},#{y + cell_height - padding_y + overlap} #{x + padding_x - overlap},#{y + cell_height / 2}' fill='#{is_filled ? fill_color : non_filled_color}' />"
                      end
     end
   end
@@ -267,7 +268,7 @@ themes = [
 
 # Créer des articles pour chaque utilisateur en utilisant les thèmes disponibles
 users.each do |user|
-  2.times do
+  5.times do
     theme = themes.sample # Choisir un thème aléatoire pour chaque article
     generer_article(client, user, theme)
   end
