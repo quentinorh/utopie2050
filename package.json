@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "gsap": "^3.12.5",
-    "lenis": "^1.1.9"
+    "lenis": "^1.1.9",
+    "nouislider": "^15.8.1"
   }
 }

@@ -10,10 +10,6 @@ export default class extends Controller {
   static targets = ["content", "scrollPercentage"];
 
   connect() {
-    console.log("scroll controller connected");
-    console.log(this.contentTarget);
-    console.log(this.scrollPercentageTarget);
-
     this.updateScrollPercentage();
     window.addEventListener("scroll", this.updateScrollPercentage.bind(this));
   }

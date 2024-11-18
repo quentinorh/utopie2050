@@ -9,7 +9,7 @@ class Post < ApplicationRecord
   has_many :favorited_by, through: :favorites, source: :user
   has_many :reports, dependent: :destroy
   belongs_to :event_code, optional: true
-  before_save :update_color_from_pattern_settings
+  before_save :update_color_from_pattern_settings, :set_reading_time
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
@@ -23,6 +23,9 @@ class Post < ApplicationRecord
   scope :drafts, -> { where(draft: true) }
   scope :by_author, ->(user_id) { where(user_id: user_id) }
   scope :by_query, ->(query) { global_search(query) }
+  scope :by_reading_time_range, ->(min, max) {
+    where("reading_time >= ? AND reading_time <= ?", min, max)
+  }
 
   after_save :generate_themes_from_openai
 
@@ -92,5 +95,9 @@ class Post < ApplicationRecord
     if photo.blank?
       errors.add(:base, "You must upload an image")
     end
+  end
+
+  def set_reading_time
+    self.reading_time = calculate_reading_time.to_i
   end
 end

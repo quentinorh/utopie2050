@@ -95,11 +95,6 @@ export default class extends Controller {
         });
 
         const data = await response.json();
-        if (data.status === 'success') {
-          console.log('Bookmark removed successfully');
-        } else {
-          console.error('Failed to remove bookmark');
-        }
       } catch (error) {
         console.error('Error removing bookmark:', error);
       }
@@ -123,11 +118,6 @@ export default class extends Controller {
         });
 
         const data = await response.json();
-        if (data.status === 'success') {
-          console.log('Bookmark saved successfully');
-        } else {
-          console.error('Failed to save bookmark');
-        }
       } catch (error) {
         console.error('Error saving bookmark:', error);
       }

@@ -13,9 +13,6 @@ export default class extends Controller {
   }
 
   connect() {
-  // console.log('Preview controller connected');
-  // console.log('Columns target:', this.columnsTarget);
-  // console.log('Pattern Settings target:', this.patternSettingsTarget);
   this.currentShape = 'square';
 
   // Initialiser currentShape avec une valeur par défaut si non définie
@@ -175,8 +172,6 @@ export default class extends Controller {
     // Réinitialiser le titre après la mise à jour du motif
     this.initializeTitle();
 
-    // Mettre à jour le champ caché 'cover' avec le contenu SVG
-    //console.log(svg)
     this.coverTarget.value = svg; // Ajout de cette ligne
   }
 

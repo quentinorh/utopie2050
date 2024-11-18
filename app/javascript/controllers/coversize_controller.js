@@ -11,8 +11,6 @@ export default class extends Controller {
   updateSvgClass() {
     const width = this.element.offsetWidth;
     const height = this.element.offsetHeight;
-    console.log(width);
-    console.log(height);
 
     // Supprimer les anciennes classes
     this.svgTarget.classList.forEach(className => {

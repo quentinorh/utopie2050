@@ -4,15 +4,16 @@
     action: "mouseover->animation#postsGallery",
     turbo: false, turbo_stream: false
   } do %>
-  <div class="w-[240px]" data-controller="cover coversize">
+  <div data-reading-time="<%= post.calculate_reading_time.to_i %>"></div>
+  <div class="w-[240px]" data-controller="cover">
 
     <input type="hidden" data-cover-target="title" value="<%= post.title %>">
     <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
     <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
     <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
 
-    <div class="relative aspect-[9/14] overflow-hidden">
-      <div class="absolute inset-0 flex flex-col justify-start">
+    <div class="relative w-[240px] h-[calc(240px*1.4)] overflow-hidden">
+      <div class="absolute h-full inset-0 flex flex-col justify-start">
         <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
           <%= post.title %>
         </div>
