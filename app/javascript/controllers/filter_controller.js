@@ -20,7 +20,7 @@ export default class extends Controller {
     // Réduire la hauteur du panneau quand le clavier est visible
     this.panelTarget.style.maxHeight = '50dvh'
     // Ajuster la position du bouton
-    this.buttonTarget.style.transform = "translateY(calc(-100% - 138px))"
+    this.buttonTarget.style.transform = "translateY(-185px)"
   }
 
   handleInputBlur() {
@@ -28,7 +28,7 @@ export default class extends Controller {
     this.panelTarget.style.maxHeight = '80dvh'
     // Restaurer la position du bouton si le panneau est ouvert
     if (!this.panelTarget.classList.contains(this.hiddenClass)) {
-      this.buttonTarget.style.transform = "translateY(calc(-100% - 138px))"
+      this.buttonTarget.style.transform = "translateY(-185px)"
     }
   }
 
@@ -39,7 +39,7 @@ export default class extends Controller {
       this.panelTarget.classList.remove(this.hiddenClass)
       this.panelTarget.classList.add(this.visibleClass)
       this.iconTarget.style.transform = "rotate(180deg)"
-      this.buttonTarget.style.transform = "translateY(calc(-100% - 138px))"
+      this.buttonTarget.style.transform = "translateY(calc(-185px)"
     } else {
       this.panelTarget.classList.remove(this.visibleClass)
       this.panelTarget.classList.add(this.hiddenClass)
