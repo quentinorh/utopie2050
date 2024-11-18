@@ -22,7 +22,7 @@
 
     <!-- Panneau de filtrage -->
     <div data-filter-target="panel" 
-         class="w-full bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out translate-y-full lg:translate-y-0 lg:h-[calc(100vh-theme('top.navbar-height'))] lg:sticky lg:top-[theme('top.navbar-height')]">
+         class="w-full bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out translate-y-full lg:translate-y-0 lg:h-[calc(100dvh-theme('top.navbar-height'))] lg:sticky lg:top-[theme('top.navbar-height')]">
       <span class="hidden text-gray-900 text-l">Filtres</span>
       <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
         <div class="text-base">Mot-clé</div>
