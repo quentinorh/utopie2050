@@ -1,0 +1,4 @@
+<%= turbo_stream.replace "event_code_#{@event_code.id}" do %>
+  <%= render partial: "admin/event_codes/event_code", locals: { event_code: @event_code } %>
+<% end %>
+<%= turbo_stream.update "event_code_form", "" %>

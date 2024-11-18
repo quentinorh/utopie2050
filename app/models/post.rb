@@ -8,6 +8,7 @@ class Post < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorited_by, through: :favorites, source: :user
   has_many :reports, dependent: :destroy
+  belongs_to :event_code, optional: true
   before_save :update_color_from_pattern_settings
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
@@ -51,6 +52,15 @@ class Post < ApplicationRecord
     minutes = reading_time_seconds / 60
     seconds = reading_time_seconds % 60
     "#{minutes} min #{seconds.to_s.rjust(2, '0')}"
+  end
+
+  def event_code_details
+    return nil unless event_code
+    {
+      text: event_code.text,
+      link: event_code.link,
+      color: event_code.color
+    }
   end
 
   private

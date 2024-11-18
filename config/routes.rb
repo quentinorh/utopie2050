@@ -33,5 +33,6 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'dashboard#index'
     resources :users
     resources :reports, only: [:destroy]
+    resources :event_codes
   end
 end

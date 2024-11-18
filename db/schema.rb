@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_11_15_112317) do
+ActiveRecord::Schema[7.0].define(version: 2024_11_18_115417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,6 +63,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_15_112317) do
     t.index ["post_id"], name: "index_chapters_on_post_id"
   end
 
+  create_table "event_codes", force: :cascade do |t|
+    t.string "code"
+    t.string "text"
+    t.string "link"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "favorites", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "post_id", null: false
@@ -95,6 +104,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_15_112317) do
     t.string "keywords", default: [], array: true
     t.text "cover"
     t.string "pattern_settings"
+    t.bigint "event_code_id"
+    t.index ["event_code_id"], name: "index_posts_on_event_code_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -145,6 +156,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_15_112317) do
   add_foreign_key "favorites", "users"
   add_foreign_key "post_themes", "posts"
   add_foreign_key "post_themes", "themes"
+  add_foreign_key "posts", "event_codes"
   add_foreign_key "posts", "users"
   add_foreign_key "reports", "posts"
   add_foreign_key "reports", "users"

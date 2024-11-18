@@ -1,0 +1,4 @@
+<%= turbo_stream.remove dom_id(@event_code) %>
+<%= turbo_stream.update "event_codes_count" do %>
+  Codes événements (<%= EventCode.count %>)
+<% end %>
