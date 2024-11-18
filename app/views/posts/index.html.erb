@@ -32,7 +32,7 @@
             placeholder: "Rechercher...",
             data: { action: "input->search#submit" }
         %>
-        <div class="mt-4 text-base">Auteur.ice·s</div>
+        <div class="mt-4 text-base">Auteur·ice·s</div>
         <%= select_tag :by_author,
             options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
             prompt: "Sélectionner...",
