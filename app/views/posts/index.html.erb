@@ -5,47 +5,64 @@
     </div>
   <% end %>
 
-  <!-- Colonne de filtrage -->
-  <div class="lg:h-[calc(100vh-theme('top.navbar-height'))] fixed bottom-0 left-0 right-0 lg:static z-50 lg:sticky lg:top-[theme('top.navbar-height')] w-full lg:w-1/4 xl:w-1/5 bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none">
-    <span class="hidden text-gray-900 text-l">Filtres</span>
-    <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
-      <div class="text-base">Mot-clé</div>
-      <%= text_field_tag :by_query,
-          params[:by_query],
-          class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
-          placeholder: "Rechercher...",
-          data: { action: "input->search#submit" }
-      %>
-      <div class="mt-4 text-base">Auteur.ice·s</div>
-      <%= select_tag :by_author,
-          options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
-          prompt: "Sélectionner...",
-          class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
-          data: { action: "change->search#submit" }  %>
-      <div class="mt-4 flex gap-4 items-center">
-        <div class="w-full">
-          <label class="text-base">Temps de lecture (minutes)</label>
-          <div class="mt-2 px-2 flex flex-col gap-2">
-            <div id="reading-time-slider" 
-                 class="w-full relative h-2 bg-gray-200 rounded-lg tailwind-slider" 
-                 data-controller="slider"
-                 data-slider-max-value="<%= @max_reading_time %>"
-                 data-slider-min-value="0">
+  <!-- Colonne de filtrage avec son contrôleur -->
+  <div data-controller="filter" 
+       data-filter-visible-class="translate-y-0"
+       data-filter-hidden-class="translate-y-full"
+       class="fixed inset-x-0 bottom-0 lg:static lg:w-1/4 xl:w-1/5 z-20">
+    
+    <!-- Bouton Filtre modifié -->
+    <button data-action="click->filter#toggle" 
+            class="fixed bottom-4 right-4 z-50 lg:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-3 shadow-lg transition-transform duration-300 ease-in-out transform"
+            data-filter-target="button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300" data-filter-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      </svg>
+    </button>
+
+    <!-- Panneau de filtrage -->
+    <div data-filter-target="panel" 
+         class="w-full bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out translate-y-full lg:translate-y-0 lg:h-[calc(100vh-theme('top.navbar-height'))] lg:sticky lg:top-[theme('top.navbar-height')]">
+      <span class="hidden text-gray-900 text-l">Filtres</span>
+      <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
+        <div class="text-base">Mot-clé</div>
+        <%= text_field_tag :by_query,
+            params[:by_query],
+            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
+            placeholder: "Rechercher...",
+            data: { action: "input->search#submit" }
+        %>
+        <div class="mt-4 text-base">Auteur.ice·s</div>
+        <%= select_tag :by_author,
+            options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
+            prompt: "Sélectionner...",
+            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
+            data: { action: "change->search#submit" }  %>
+        <div class="mt-4 flex gap-4 items-center">
+          <div class="w-full">
+            <label class="text-base">Temps de lecture (minutes)</label>
+            <div class="mt-2 px-2 flex flex-col gap-2">
+              <div id="reading-time-slider" 
+                   class="w-full relative h-2 bg-gray-200 rounded-lg tailwind-slider" 
+                   data-controller="slider"
+                   data-slider-max-value="<%= @max_reading_time %>"
+                   data-slider-min-value="0">
+              </div>
+              <div class="flex justify-between text-sm">
+                <span id="min-time-value"><%= params[:min_reading_time] || 0 %></span>
+                <span id="max-time-value"><%= params[:max_reading_time] || @max_reading_time %></span>
+              </div>
+              <%= hidden_field_tag "by_reading_time_range[min]", 
+                  params.dig(:by_reading_time_range, :min) || 0,
+                  data: { action: "change->search#submit" } %>
+              <%= hidden_field_tag "by_reading_time_range[max]",
+                  params.dig(:by_reading_time_range, :max) || @max_reading_time,
+                  data: { action: "change->search#submit" } %>
             </div>
-            <div class="flex justify-between text-sm">
-              <span id="min-time-value"><%= params[:min_reading_time] || 0 %></span>
-              <span id="max-time-value"><%= params[:max_reading_time] || @max_reading_time %></span>
-            </div>
-            <%= hidden_field_tag "by_reading_time_range[min]", 
-                params.dig(:by_reading_time_range, :min) || 0,
-                data: { action: "change->search#submit" } %>
-            <%= hidden_field_tag "by_reading_time_range[max]",
-                params.dig(:by_reading_time_range, :max) || @max_reading_time,
-                data: { action: "change->search#submit" } %>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 </div>
 
