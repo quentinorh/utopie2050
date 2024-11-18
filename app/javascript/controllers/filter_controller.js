@@ -14,19 +14,31 @@ export default class extends Controller {
       input.addEventListener('focus', () => this.handleInputFocus())
       input.addEventListener('blur', () => this.handleInputBlur())
     })
+
+    // Ajouter un écouteur pour les changements de taille de la fenêtre
+    window.visualViewport.addEventListener('resize', this.handleViewportResize.bind(this))
+  }
+
+  handleViewportResize = () => {
+    if (this.isKeyboardVisible()) {
+      const keyboardHeight = window.innerHeight - window.visualViewport.height
+      const offset = Math.min(keyboardHeight + 50, 185) // 50px de marge minimum
+      this.panelTarget.style.maxHeight = `${window.visualViewport.height * 0.5}px`
+      this.buttonTarget.style.transform = `translateY(-${offset}px)`
+    }
+  }
+
+  isKeyboardVisible() {
+    return window.innerHeight - window.visualViewport.height > 100 // Seuil arbitraire
   }
 
   handleInputFocus() {
-    // Réduire la hauteur du panneau quand le clavier est visible
-    this.panelTarget.style.maxHeight = '50dvh'
-    // Ajuster la position du bouton
-    this.buttonTarget.style.transform = "translateY(-185px)"
+    // Attendre que le clavier soit complètement visible
+    setTimeout(() => this.handleViewportResize(), 100)
   }
 
   handleInputBlur() {
-    // Restaurer la hauteur normale
     this.panelTarget.style.maxHeight = '80dvh'
-    // Restaurer la position du bouton si le panneau est ouvert
     if (!this.panelTarget.classList.contains(this.hiddenClass)) {
       this.buttonTarget.style.transform = "translateY(-185px)"
     }
