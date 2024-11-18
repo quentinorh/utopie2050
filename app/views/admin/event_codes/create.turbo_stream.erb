@@ -1,0 +1,7 @@
+<%= turbo_stream.append "event_codes_tbody" do %>
+  <%= render partial: "admin/event_codes/event_code", locals: { event_code: @event_code } %>
+<% end %>
+<%= turbo_stream.update "event_code_form", "" %>
+<%= turbo_stream.update "event_codes_count" do %>
+  Codes événements (<%= EventCode.count %>)
+<% end %>

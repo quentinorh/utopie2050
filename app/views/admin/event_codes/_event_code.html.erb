@@ -1,0 +1,22 @@
+<tr id="event_code_<%= event_code.id %>" class="hover:bg-gray-50">
+  <td class="px-2 py-4"><%= event_code.code %></td>
+  <td class="px-2 py-4"><%= event_code.text %></td>
+  <td class="px-2 py-4"><%= event_code.link %></td>
+  <td class="px-2 py-4"><%= event_code.color %></td>
+  <td class="px-2 py-4 text-center">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+      <%= event_code.posts.count %>
+    </span>
+  </td>
+  <td class="px-2 py-4 text-center space-x-2">
+    <%= link_to 'Éditer', 
+        edit_admin_event_code_path(event_code), 
+        class: "text-yellow-600 hover:text-yellow-800",
+        data: { turbo_frame: "event_code_form" } %>
+    <%= button_to 'Supprimer', 
+        admin_event_code_path(event_code), 
+        method: :delete,
+        class: "text-red-600 hover:text-red-800",
+        form: { data: { turbo_confirm: 'Êtes-vous sûr ?' } } %>
+  </td>
+</tr>

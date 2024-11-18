@@ -27,11 +27,16 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = current_user.posts.build(post_params)
+    @post = current_user.posts.build(post_params.except(:event_code))
+    
+    if params[:post][:event_code].present?
+      event_code = EventCode.find_by(code: params[:post][:event_code])
+      @post.event_code = event_code if event_code
+    end
+    
     if @post.save
       redirect_to @post
     else
-      Rails.logger.debug @post.errors.full_messages
       render :new
     end
   end
@@ -42,8 +47,17 @@ class PostsController < ApplicationController
   end
 
   def update
-    if @post.update(post_params)
-      redirect_to @post, notice: 'Le futur a été mis à jour.'
+    @post = Post.find(params[:id])
+    
+    if params[:post][:event_code].present?
+      event_code = EventCode.find_by(code: params[:post][:event_code])
+      @post.event_code = event_code
+    else
+      @post.event_code = nil
+    end
+
+    if @post.update(post_params.except(:event_code))
+      redirect_to @post
     else
       render :edit
     end
@@ -113,7 +127,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:cover, :pattern_settings, :title, :photo, :image_rights, :body, :color, :draft,
+    params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 end
