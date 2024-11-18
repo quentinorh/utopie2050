@@ -14,10 +14,8 @@ class Post < ApplicationRecord
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
   validates :title, presence: true
-  # validates :image_rights, acceptance: { accept: true, message: "doit être coché pour publier" }
 
   attr_accessor :skip_photo_validation
-  # validates :photo, presence: true, unless: -> { skip_photo_validation }
 
   scope :published, -> { where(draft: false) }
   scope :drafts, -> { where(draft: true) }
@@ -27,13 +25,12 @@ class Post < ApplicationRecord
     where("reading_time >= ? AND reading_time <= ?", min, max)
   }
 
-  after_save :generate_themes_from_openai
-
   include PgSearch::Model
   pg_search_scope :global_search,
     against: [ :title, :body ],
     associated_against: {
-      user: [ :username ]
+      user: [ :username ],
+      chapters: [ :title, :body ]
     },
     using: {
       tsearch: { prefix: true }
@@ -72,28 +69,6 @@ class Post < ApplicationRecord
     if pattern_settings.present?
       settings = JSON.parse(pattern_settings)
       self.color = "hsl(#{settings['hue']}, 100%, 50%)" if settings['hue'].present?
-    end
-  end
-
-  def generate_themes_from_openai
-    content = "#{title}\n#{body}\n" + chapters.map(&:body).join("\n")
-    existing_themes = Theme.pluck(:name).join(", ")
-
-    # Utilise le service OpenAI pour générer les thématiques à partir du contenu tronqué
-    generated_themes = OpenAiService.new.generate_themes(content, existing_themes)
-    update_themes(generated_themes)
-  end
-
-  def update_themes(generated_themes)
-    generated_themes.each do |theme_name|
-      theme = Theme.find_or_create_by(name: theme_name)
-      post_themes.find_or_create_by(theme: theme)
-    end
-  end
-
-  def image_presence
-    if photo.blank?
-      errors.add(:base, "You must upload an image")
     end
   end
 
