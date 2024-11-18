@@ -17,7 +17,7 @@ export default class extends Controller {
       this.panelTarget.classList.remove(this.hiddenClass)
       this.panelTarget.classList.add(this.visibleClass)
       this.iconTarget.style.transform = "rotate(180deg)"
-      this.buttonTarget.style.transform = "translateY(calc(-100% - 136px))"
+      this.buttonTarget.style.transform = "translateY(calc(-100% - 138px))"
     } else {
       this.panelTarget.classList.remove(this.visibleClass)
       this.panelTarget.classList.add(this.hiddenClass)
