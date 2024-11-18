@@ -15,7 +15,6 @@ export default class extends Controller {
     Splitting({ target: this.element, by: 'words' })
 
     const words = this.element.querySelectorAll('.word')
-    console.log(words)
     gsap.fromTo(words, 
       { opacity: .2 },
       { 

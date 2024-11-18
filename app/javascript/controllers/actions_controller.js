@@ -26,7 +26,6 @@ export default class extends Controller {
   }
 
   toggleAddBookmark() {
-    console.log("toggleAddBookmark")
     this.addBookmarkPanelTarget.classList.toggle('active')
     setTimeout(() => {
       this.addBookmarkPanelTarget.classList.remove('active')
@@ -65,10 +64,6 @@ export default class extends Controller {
 
   connect() {
     this.loadSettings()
-    console.log("Hello Settings")
-
-
-
     this.settingsPanelTarget.classList.toggle('hidden')
     this.actionsPanelTarget.classList.toggle('hidden')
     this.sharePanelTarget.classList.toggle('hidden')
@@ -77,8 +72,6 @@ export default class extends Controller {
     this.deletePanelTarget.classList.toggle('hidden')
     this.reportPanelTarget.classList.toggle('hidden')
     this.reportConfirmationPanelTarget.classList.toggle('hidden')
-
-    console.log("reportConfirmationPanel:", this.reportConfirmationPanelTarget)
   }
 
   changeTextSize(event) {

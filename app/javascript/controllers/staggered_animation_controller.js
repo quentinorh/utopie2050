@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap";
-import scrollTrigger from "gsap/scrollTrigger";
 
 export default class extends Controller {
 

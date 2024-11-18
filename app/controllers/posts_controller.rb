@@ -7,10 +7,12 @@ class PostsController < ApplicationController
 
   has_scope :by_author
   has_scope :by_query
+  has_scope :by_reading_time_range, using: %i[min max], type: :hash
 
   def index
-    @posts = apply_scopes(Post).all
-
+    @max_reading_time = Post.maximum(:reading_time).to_i
+    @posts = apply_scopes(Post).order(created_at: :desc)
+    
     respond_to do |format|
       format.html
       format.turbo_stream { render turbo_stream: turbo_stream.update('posts', partial: 'posts', locals: { posts: @posts }) }

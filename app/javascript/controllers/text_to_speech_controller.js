@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["content"];
 
   speak() {
-    console.log("Speaking...");
     const content = this.contentTarget.value || this.contentTarget.textContent;
     const utterance = new SpeechSynthesisUtterance(content);
 
