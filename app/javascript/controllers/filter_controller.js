@@ -8,21 +8,6 @@ export default class extends Controller {
     if (window.innerWidth < 1024) {
       this.panelTarget.classList.add(this.hiddenClass)
     }
-
-    window.visualViewport?.addEventListener('resize', this.handleViewportChange.bind(this))
-  }
-
-  disconnect() {
-    window.visualViewport?.removeEventListener('resize', this.handleViewportChange.bind(this))
-  }
-
-  handleViewportChange() {
-    if (!this.panelTarget.classList.contains(this.hiddenClass)) {
-      const keyboardHeight = window.innerHeight - window.visualViewport.height
-      const baseTransform = -185
-      const offset = keyboardHeight > 0 ? keyboardHeight : 0
-      this.buttonTarget.style.transform = `translateY(${baseTransform - offset}px)`
-    }
   }
 
   toggle() {
@@ -32,13 +17,7 @@ export default class extends Controller {
       this.panelTarget.classList.remove(this.hiddenClass)
       this.panelTarget.classList.add(this.visibleClass)
       this.iconTarget.style.transform = "rotate(180deg)"
-      
-      const visualViewport = window.visualViewport
-      const keyboardHeight = window.innerHeight - visualViewport.height
-      const baseTransform = -185
-      const offset = keyboardHeight > 0 ? keyboardHeight : 0
-      
-      this.buttonTarget.style.transform = `translateY(${baseTransform - offset}px)`
+      this.buttonTarget.style.transform = "translateY(-185px)"
     } else {
       this.panelTarget.classList.remove(this.visibleClass)
       this.panelTarget.classList.add(this.hiddenClass)
