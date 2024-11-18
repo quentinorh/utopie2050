@@ -8,6 +8,21 @@ export default class extends Controller {
     if (window.innerWidth < 1024) {
       this.panelTarget.classList.add(this.hiddenClass)
     }
+
+    window.visualViewport?.addEventListener('resize', this.handleViewportChange.bind(this))
+  }
+
+  disconnect() {
+    window.visualViewport?.removeEventListener('resize', this.handleViewportChange.bind(this))
+  }
+
+  handleViewportChange() {
+    if (!this.panelTarget.classList.contains(this.hiddenClass)) {
+      const keyboardHeight = window.innerHeight - window.visualViewport.height
+      const baseTransform = -185
+      const offset = keyboardHeight > 0 ? keyboardHeight : 0
+      this.buttonTarget.style.transform = `translateY(${baseTransform - offset}px)`
+    }
   }
 
   toggle() {
