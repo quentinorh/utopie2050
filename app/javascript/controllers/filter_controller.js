@@ -8,6 +8,28 @@ export default class extends Controller {
     if (window.innerWidth < 1024) {
       this.panelTarget.classList.add(this.hiddenClass)
     }
+
+    // Écouter les événements de focus/blur des champs de saisie
+    this.panelTarget.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('focus', () => this.handleInputFocus())
+      input.addEventListener('blur', () => this.handleInputBlur())
+    })
+  }
+
+  handleInputFocus() {
+    // Réduire la hauteur du panneau quand le clavier est visible
+    this.panelTarget.style.maxHeight = '50vh'
+    // Ajuster la position du bouton
+    this.buttonTarget.style.transform = "translateY(calc(-50vh - 1rem))"
+  }
+
+  handleInputBlur() {
+    // Restaurer la hauteur normale
+    this.panelTarget.style.maxHeight = '80vh'
+    // Restaurer la position du bouton si le panneau est ouvert
+    if (!this.panelTarget.classList.contains(this.hiddenClass)) {
+      this.buttonTarget.style.transform = "translateY(calc(-100% - 138px))"
+    }
   }
 
   toggle() {
