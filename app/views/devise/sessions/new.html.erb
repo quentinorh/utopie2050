@@ -5,17 +5,20 @@
       <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="form-inputs">
           <%= f.input :email,
+                      label: "Adresse e-mail",
                       required: false,
                       autofocus: true,
                       input_html: { autocomplete: "email", class:'tw-form-input' },
                       label_html: { class:"tw-form-label mt-sm"} %>
           <%= f.input :password,
+                      label: "Mot de passe",
                       required: false,
                       input_html: { autocomplete: "current-password", class:'tw-form-input' },
                       label_html: { class:"tw-form-label mt-sm"} %>
           <%= f.input :remember_me,
+                      label: "Se souvenir de moi",
                       as: :boolean,
-                      input_html: { class: 'tw-form-checkbox' },
+                      input_html: { class: 'tw-form-checkbox mt-xs' },
                       label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
         </div>
 

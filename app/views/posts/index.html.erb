@@ -7,28 +7,29 @@
 
   <!-- Colonne de filtrage avec son contrôleur -->
   <div data-controller="filter" 
-       data-filter-visible-class="translate-y-0"
-       data-filter-hidden-class="translate-y-full"
-       class="fixed inset-x-0 bottom-0 lg:static lg:w-1/4 xl:w-1/5 z-20">
+       data-filter-visible-class="translate-y-[theme('top.navbar-height')]"
+       data-filter-hidden-class="-translate-y-full"
+       class="fixed inset-x-0 h-0 top-0 lg:static lg:w-1/4 xl:w-1/5 z-20">
     
     <!-- Bouton Filtre modifié -->
     <button data-action="click->filter#toggle" 
-            class="fixed bottom-4 right-4 z-50 lg:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-3 shadow-lg transition-transform duration-300 ease-in-out transform"
+            class="fixed top-[calc(theme('top.navbar-height')-2px)] right-[12px] lg:hidden bg-primary hover:bg-primary-dark text-white rounded-t-lg rounded-full p-[6px] shadow-lg transition-transform duration-300 ease-in-out transform"
             data-filter-target="button">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300" data-filter-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" data-filter-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path data-filter-target="filterPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        <path data-filter-target="closePath" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
 
     <!-- Panneau de filtrage -->
     <div data-filter-target="panel" 
-         class="w-full bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out translate-y-full lg:translate-y-0 lg:h-[calc(100dvh-theme('top.navbar-height'))] lg:sticky lg:top-[theme('top.navbar-height')]">
+         class="w-full z-50 bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out -translate-y-full lg:translate-y-0 lg:h-[calc(100dvh-theme('top.navbar-height'))] lg:fixed lg:w-[280px] lg:top-[theme('top.navbar-height')] lg:right-0">
       <span class="hidden text-gray-900 text-l">Filtres</span>
       <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
         <div class="text-base">Mot-clé</div>
         <%= text_field_tag :by_query,
             params[:by_query],
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
+            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
             placeholder: "Rechercher...",
             data: { action: "input->search#submit" }
         %>
@@ -36,7 +37,7 @@
         <%= select_tag :by_author,
             options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
             prompt: "Sélectionner...",
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm md:text-base",
+            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
             data: { action: "change->search#submit" }  %>
         <div class="mt-4 flex gap-4 items-center">
           <div class="w-full">

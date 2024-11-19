@@ -60,6 +60,9 @@ export default class extends Controller {
     this.deletePanelTarget.classList.remove('active')
     this.reportPanelTarget.classList.remove('active')
     this.reportConfirmationPanelTarget.classList.remove('active')
+    if (window.innerWidth < 1024) {
+      this.settingsPanelTarget.classList.remove('active')
+    }
   }
 
   connect() {
