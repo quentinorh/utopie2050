@@ -40,8 +40,18 @@
     <span>Les derniers futurs</span>
   </div>
   <div class="mx-4 sm:mx-6 md:mx-8 lg:mx-10">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-center items-center">
-     <%= render partial: "posts/post", collection: @posts.last(4) %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 justify-items-center items-center">
+      <% @posts.order(created_at: :desc).limit(10).each_with_index do |post, index| %>
+        <div class="
+          <%= 'hidden' if index >= 2 %>
+          <%= 'sm:block' if index >= 2 && index < 4 %>
+          <%= 'md:block' if index >= 4 && index < 6 %>
+          <%= 'lg:block' if index >= 6 && index < 8 %>
+          <%= 'xl:block' if index >= 8 %>
+        ">
+          <%= render "posts/post", post: post %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
