@@ -17,12 +17,21 @@ class Post < ApplicationRecord
 
   attr_accessor :skip_photo_validation
 
-  scope :published, -> { where(draft: false) }
+  scope :published, -> { where("draft IS NULL OR draft = ?", false) }
   scope :drafts, -> { where(draft: true) }
   scope :by_author, ->(user_id) { where(user_id: user_id) }
   scope :by_query, ->(query) { global_search(query) }
   scope :by_reading_time_range, ->(min, max) {
     where("reading_time >= ? AND reading_time <= ?", min, max)
+  }
+  scope :viewable_by, ->(user) {
+    if user&.admin?
+      all
+    elsif user
+      where('draft = false OR user_id = ?', user.id)
+    else
+      where(draft: false)
+    end
   }
 
   include PgSearch::Model
