@@ -1,15 +1,21 @@
 require 'aws-sdk-s3'
 
-SitemapGenerator::Sitemap.default_host = 'https://sp2050.org'
-
-# Utiliser un chemin temporaire pour stocker le sitemap localement avant de l'envoyer sur S3
+# Set the host name for URL creation
+SitemapGenerator::Sitemap.default_host = "https://sp2050.org"
 SitemapGenerator::Sitemap.public_path = 'tmp/'
-
-# Nom du fichier sitemap
 SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
+SitemapGenerator::Sitemap.compress = false
 
-# Nom du fichier sitemap
-SitemapGenerator::Sitemap.filename = "sitemap"
+SitemapGenerator::Sitemap.adapter = SitemapGenerator::S3Adapter.new(
+  aws_access_key_id: ENV["S3_ACCESS_KEY"],
+  aws_secret_access_key: ENV["S3_SECRET_KEY"],
+  fog_provider: 'AWS',
+  fog_directory: ENV["S3_BUCKET_NAME"],
+  fog_region: ENV["S3_REGION"]
+  )
+
+SitemapGenerator::Sitemap.sitemaps_host = "https://sp2050.io.s3.amazonaws.com"
+
 
 # Génération du sitemap
 SitemapGenerator::Sitemap.create do
@@ -30,19 +36,4 @@ SitemapGenerator::Sitemap.create do
         changefreq: 'weekly',
         priority: 0.8
   end
-end
-
-Aws.config.update(
-  region: ENV['AWS_REGION'],
-  credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
-)
-
-s3 = Aws::S3::Resource.new
-bucket = s3.bucket(ENV['AWS_BUCKET'])
-
-# Parcours des fichiers générés et upload sur S3
-SitemapGenerator::Sitemap.sitemaps.each do |file|
-  obj = bucket.object("sitemaps/#{File.basename(file.path)}")
-  obj.upload_file(file.path, acl: 'public-read')
-  puts "Uploaded #{file.path} to S3 as #{obj.public_url}"
 end
