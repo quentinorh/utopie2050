@@ -35,4 +35,6 @@ Rails.application.routes.draw do
     resources :reports, only: [:destroy]
     resources :event_codes
   end
+
+  get '/sitemap.xml', to: redirect('https://YOUR_BUCKET_NAME.s3.YOUR_REGION.amazonaws.com/sitemaps/sitemap.xml')
 end

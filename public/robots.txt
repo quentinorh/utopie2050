@@ -36,7 +36,7 @@ User-agent: ChatGPT-User
 Disallow: /
 
 # Localisation du sitemap
-Sitemap: https://sp2050.org.s3.eu-west-3.amazonaws.com/sitemap.xml.gz
+Sitemap: https://sp2050.s3.us-east-1.amazonaws.com/sitemaps/sitemap.xml
 
 # Taux de crawl recommandé
 Crawl-delay: 10
