@@ -14,7 +14,7 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::S3Adapter.new(
   fog_region: ENV["S3_REGION"]
   )
 
-SitemapGenerator::Sitemap.sitemaps_host = "https://sp2050.io.s3.amazonaws.com"
+SitemapGenerator::Sitemap.sitemaps_host = "https://sp2050.s3.amazonaws.com"
 
 
 # Génération du sitemap
