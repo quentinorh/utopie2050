@@ -47,13 +47,15 @@ Aws.config.update(
 s3 = Aws::S3::Resource.new
 bucket = s3.bucket(ENV['S3_BUCKET_NAME'])
 
-SitemapGenerator::Sitemap.sitemaps.each do |file|
-  # Téléchargement du fichier compressé
-  obj = bucket.object("sitemaps/#{File.basename(file.path)}")
-  
-  # Assurez-vous que le fichier .gz a le bon type MIME
-  content_type = 'application/x-gzip'
-  
-  obj.upload_file(file.path, acl: 'public-read', content_type: content_type)
-  puts "Uploaded #{file.path} to S3 as #{obj.public_url}"
+sitemap_file = File.join(SitemapGenerator::Sitemap.public_path, 
+                        SitemapGenerator::Sitemap.sitemaps_path, 
+                        'sitemap.xml.gz')
+
+if File.exist?(sitemap_file)
+  obj = bucket.object("sitemaps/sitemap.xml.gz")
+  obj.upload_file(sitemap_file, 
+                 acl: 'public-read', 
+                 content_type: 'application/x-gzip')
+                 
+  puts "Uploaded sitemap to S3: #{obj.public_url}"
 end
