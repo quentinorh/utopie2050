@@ -1,3 +1,9 @@
+<% content_for :title, "SP 2050 - Modifier ton profil" %>
+<% content_for :description, "Personnalise ton profil SP 2050. Mets à jour tes informations et préférences pour une meilleure expérience." %>
+
+<!-- Ajout des meta robots pour éviter l'indexation des pages personnelles -->
+<% content_for :meta_robots, "noindex, nofollow" %>
+
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);" data-controller="signup">
   <div class="flex flex-col p-sm items-center w-full md:w-[600px]"> 
     <div class="bg-white p-sm rounded-lg shadow">
@@ -31,7 +37,7 @@
             <% end %>
 
             <%= f.input :password,
-                        hint: "Laisse-le vide si tu ne souhaites pas le modifier.",
+                        hint: "Laisse ce champ vide si tu ne souhaites pas le modifier",
                         required: false,
                         input_html: { autocomplete: "new-password" },
                         input_html: { class:'tw-form-input'},
@@ -46,7 +52,7 @@
                         label_html: { class:"tw-form-label mt-sm"},
                         hint_html: { class: 'text-sm text-gray-400' } %>
             <%= f.input :current_password,
-                        hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications.",
+                        hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications",
                         required: true,
                         input_html: { autocomplete: "current-password" },
                         input_html: { class:'tw-form-input'},

@@ -1,3 +1,7 @@
+<% content_for :title, "SP 2050 - Édite le futur - #{@post.title}" %>
+<% content_for :description, "Édite et améliore ton récit sur SP 2050. Perfectionne ta contribution à notre collection d'histoires solarpunk." %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+
 <div class="bg-black-100">
   <div class="text-xl p-sm flex flex-col items-center w-full min-h-screen"> 
       <%= render 'form', post: @post %>

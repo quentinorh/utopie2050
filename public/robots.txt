@@ -1,1 +1,42 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Configuration des robots pour SP2050.org
+# Documentation: https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+# Pages publiques autorisées
+Allow: /
+Allow: /posts
+Allow: /posts/*
+
+# Pages privées et administratives
+Disallow: /admin/
+Disallow: /users/
+Disallow: /favorites
+Disallow: /bookmarks
+Disallow: /reports
+Disallow: /deleted
+
+# Pages avec paramètres de recherche et filtres
+Disallow: /posts?*query=
+Disallow: /posts?*filter=
+Disallow: /posts?*page=
+Disallow: /posts?*by_author=
+Disallow: /posts?*by_reading_time_range=
+
+# Pages d'authentification
+Disallow: /users/sign_in
+Disallow: /users/sign_up
+Disallow: /users/password/new
+Disallow: /users/confirmation/new
+
+# Crawlers spécifiques
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+# Localisation du sitemap
+Sitemap: https://sp2050.org.s3.eu-west-3.amazonaws.com/sitemap.xml.gz
+
+# Taux de crawl recommandé
+Crawl-delay: 10

@@ -1,29 +1,31 @@
-<%= link_to post, class: "w-[240px] h-[calc(240px*1.4)] justify-center justify-self-center mx-auto text-xl transition-colors group bg-white opacity-100 overflow-hidden" , data: {
-    staggered_animation_target: "element",
-    stagger_count: 12,
-    action: "mouseover->animation#postsGallery",
-    turbo: false, turbo_stream: false
-  } do %>
-  <div data-reading-time="<%= post.calculate_reading_time.to_i %>"></div>
-  <div class="w-[240px]" data-controller="cover">
+<% if !post.draft || current_user&.admin? || current_user == post.user %>
+  <%= link_to post, class: "w-[240px] h-[calc(240px*1.4)] justify-center justify-self-center mx-auto text-xl transition-colors group bg-white opacity-100 overflow-hidden" , data: {
+      staggered_animation_target: "element",
+      stagger_count: 12,
+      action: "mouseover->animation#postsGallery",
+      turbo: false, turbo_stream: false
+    } do %>
+    <div data-reading-time="<%= post.calculate_reading_time.to_i %>"></div>
+    <div class="w-[240px]" data-controller="cover">
 
-    <input type="hidden" data-cover-target="title" value="<%= post.title %>">
-    <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
-    <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
-    <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
+      <input type="hidden" data-cover-target="title" value="<%= post.title %>">
+      <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
+      <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
+      <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
 
-    <div class="relative w-[240px] h-[calc(240px*1.4)] overflow-hidden">
-      <div class="absolute h-full inset-0 flex flex-col justify-start">
-        <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
-          <%= post.title %>
+      <div class="relative w-[240px] h-[calc(240px*1.4)] overflow-hidden">
+        <div class="absolute h-full inset-0 flex flex-col justify-start">
+          <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
+            <%= post.title %>
+          </div>
+          <div class="text-sm z-10 w-fit" data-cover-target="userName">
+            <%= post.user.username %>
+          </div>
         </div>
-        <div class="text-sm z-10 w-fit" data-cover-target="userName">
-          <%= post.user.username %>
+        <div class="cover-svg absolute inset-0 w-[240px] h-[calc(240px*1.4)]" data-controller="coversize">
+          <%= post.cover.html_safe %>
         </div>
-      </div>
-      <div class="cover-svg absolute inset-0 w-[240px] h-[calc(240px*1.4)]" data-controller="coversize">
-        <%= post.cover.html_safe %>
       </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

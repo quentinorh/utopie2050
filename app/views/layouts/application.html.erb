@@ -1,7 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <title>SP 2050</title>
+    <title><%= content_for?(:title) ? yield(:title) : "SP 2050" %></title>
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Description par défaut de SP 2050' %>">
+    
+    <!-- Balises Open Graph pour les réseaux sociaux -->
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : 'SP 2050' %>">
+    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Description par défaut de SP 2050' %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    
+    <!-- Balises existantes -->
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render 'shared/ios_pwa_links' %>
@@ -16,6 +25,22 @@
       <meta name="user-logged-in" content="true">
     <% else %>
       <meta name="user-logged-in" content="false">
+    <% end %>
+    
+    <!-- Meta robots dynamique -->
+    <meta name="robots" content="<%= content_for?(:meta_robots) ? yield(:meta_robots) : 'index, follow' %>">
+    
+    <!-- Lien canonique dynamique -->
+    <%= yield(:canonical_url) if content_for?(:canonical_url) %>
+    
+    <!-- Meta tags pour le partage social -->
+    <meta property="og:site_name" content="SP 2050">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Meta tags spécifiques aux articles -->
+    <% if content_for?(:article_meta) %>
+      <%= yield(:article_meta) %>
     <% end %>
   </head>
 

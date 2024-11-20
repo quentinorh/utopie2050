@@ -1,3 +1,7 @@
+<% content_for :title, "SP 2050 - Les récits de #{@user.username}" %>
+<% content_for :description, "Découvrez tous les récits écrits par #{@user.username}. Une collection d'histoires solarpunk uniques et inspirantes." %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);" data-controller="signup">
   <div class="flex flex-col items-center w-full md:w-[700px] px-0 py-sm sm:px-sm"> 
     <div class="bg-white p-sm rounded-lg shadow">
@@ -35,6 +39,9 @@
                             <%= link_to 'Editer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
                             <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block border border-red-500" %>
                           </div>
+                          <% if post.draft == true %>
+                            <%= link_to 'Brouillon', edit_post_path(post), class: "absolute top-1 right-1 bg-primary rounded-full z-50 text-white px-2 py-1 text-sm font-mono" %>
+                          <% end %>
                         </div>
                       </div>
                     <% end %>

@@ -1,3 +1,6 @@
+<% content_for :title, "SP 2050 - Explorer les futurs désirables" %>
+<% content_for :description, "Découvre notre collection de récits solarpunk. Des histoires qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
+
 <div class="flex flex-col lg:flex-row">
   <%= turbo_frame_tag :posts, class: "lg:w-3/4 xl:w-4/5" do %>
     <div class="m-auto justify-center">
@@ -66,4 +69,19 @@
     </div>
   </div>
 </div>
+
+<!-- Pour la pagination -->
+<% if params[:page].present? && params[:page].to_i > 1 %>
+  <% content_for :meta_robots, "noindex, follow" %>
+<% end %>
+
+<!-- Pour les filtres -->
+<% if params[:by_query].present? || params[:by_author].present? || params[:by_reading_time_range].present? %>
+  <% content_for :meta_robots, "noindex, follow" %>
+<% end %>
+
+<!-- Lien canonique pour éviter le contenu dupliqué -->
+<% content_for :canonical_url do %>
+  <link rel="canonical" href="<%= posts_url %>" />
+<% end %>
 
