@@ -37,25 +37,3 @@ SitemapGenerator::Sitemap.create do
         priority: 0.8
   end
 end
-
-# Upload du fichier compressé sur S3
-Aws.config.update(
-  region: ENV['S3_REGION'],
-  credentials: Aws::Credentials.new(ENV['S3_ACCESS_KEY'], ENV['S3_SECRET_KEY'])
-)
-
-s3 = Aws::S3::Resource.new
-bucket = s3.bucket(ENV['S3_BUCKET_NAME'])
-
-sitemap_file = File.join(SitemapGenerator::Sitemap.public_path, 
-                        SitemapGenerator::Sitemap.sitemaps_path, 
-                        'sitemap.xml.gz')
-
-if File.exist?(sitemap_file)
-  obj = bucket.object("sitemaps/sitemap.xml.gz")
-  obj.upload_file(sitemap_file, 
-                 acl: 'public-read', 
-                 content_type: 'application/x-gzip')
-                 
-  puts "Uploaded sitemap to S3: #{obj.public_url}"
-end
