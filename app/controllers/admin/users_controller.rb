@@ -34,7 +34,7 @@ class Admin::UsersController < ApplicationController
 
   def authorize_admin
     unless current_user&.admin?
-      redirect_to root_path, alert: "Accès non autorisé"
+      redirect_to root_path
     end
   end
 end 
