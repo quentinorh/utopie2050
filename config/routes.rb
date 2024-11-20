@@ -36,5 +36,5 @@ Rails.application.routes.draw do
     resources :event_codes
   end
 
-  get '/sitemap.xml', to: redirect('https://YOUR_BUCKET_NAME.s3.YOUR_REGION.amazonaws.com/sitemaps/sitemap.xml')
+  get '/sitemap.xml', to: redirect('https://sp2050.s3.us-east-1.amazonaws.com/sitemaps/sitemap.xml.gz')
 end

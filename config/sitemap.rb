@@ -4,7 +4,7 @@ require 'aws-sdk-s3'
 SitemapGenerator::Sitemap.default_host = "https://sp2050.org"
 SitemapGenerator::Sitemap.public_path = 'tmp/'
 SitemapGenerator::Sitemap.sitemaps_path = 'sitemaps/'
-SitemapGenerator::Sitemap.compress = false
+SitemapGenerator::Sitemap.compress = true
 
 SitemapGenerator::Sitemap.adapter = SitemapGenerator::S3Adapter.new(
   aws_access_key_id: ENV["S3_ACCESS_KEY"],
@@ -36,4 +36,24 @@ SitemapGenerator::Sitemap.create do
         changefreq: 'weekly',
         priority: 0.8
   end
+end
+
+# Upload du fichier compressé sur S3
+Aws.config.update(
+  region: ENV['AWS_REGION'],
+  credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY'])
+)
+
+s3 = Aws::S3::Resource.new
+bucket = s3.bucket(ENV['AWS_BUCKET'])
+
+SitemapGenerator::Sitemap.sitemaps.each do |file|
+  # Téléchargement du fichier compressé
+  obj = bucket.object("sitemaps/#{File.basename(file.path)}")
+  
+  # Assurez-vous que le fichier .gz a le bon type MIME
+  content_type = 'application/x-gzip'
+  
+  obj.upload_file(file.path, acl: 'public-read', content_type: content_type)
+  puts "Uploaded #{file.path} to S3 as #{obj.public_url}"
 end
