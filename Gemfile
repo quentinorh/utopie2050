@@ -92,3 +92,8 @@ gem "tailwindcss-rails", "~> 2.6"
 gem 'sitemap_generator'
 gem 'fog-aws'
 gem 'aws-sdk-s3'
+
+group :production do
+  gem 'terser'
+  gem 'sassc-rails'
+end
