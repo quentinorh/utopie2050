@@ -16,9 +16,6 @@ SitemapGenerator::Sitemap.adapter = SitemapGenerator::S3Adapter.new(
 
 SitemapGenerator::Sitemap.sitemaps_host = "https://sp2050.s3.amazonaws.com"
 
-# Désactiver le ping automatique
-SitemapGenerator::Sitemap.ping_search_engines = false
-
 # Génération du sitemap
 SitemapGenerator::Sitemap.create do
   # Page d'accueil
