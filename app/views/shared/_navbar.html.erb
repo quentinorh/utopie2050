@@ -19,8 +19,10 @@
         </div>
         <div class="relative">
           <div class="flex sm:hidden sm:gap-2 gap-1 pr-2">
-            <div class=" tw-btn-secondary border-2 rounded-full h-8 w-8 p-2 text-sm" data-action="click->navbar#toogleSignin" %>
-            <i class="fa fa-user ml-[0.1em]"></i>
+            <div class="tw-btn-secondary border-2 rounded-full h-8 w-8 p-2 text-sm" 
+                 data-action="click->navbar#toogleSignin"
+                 aria-label="Menu de connexion">
+              <i class="fa fa-user ml-[0.1em]"></i>
             </div>
           </div>
           <div class="hidden absolute right-[-33px] text-center z-20 mt-6 w-40 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuSignin">
@@ -34,12 +36,12 @@
         <div class="ml-4 pr-2 md:flex md:flex-shrink-0 md:items-center">  
           <div class="relative">
             <div>
-              <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-                <span class="text-white" data-navbar-target="username">
+              <div class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
+                <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-[14px] font-medium" data-navbar-target="username">
                   <%= current_user.username[0].upcase %>
                 </span>
-                <span class="hidden" data-navbar-target="closeMenu">
-                  <i class="text-white fa fa-close"></i>
+                <span class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none" data-navbar-target="closeMenu">
+                  <i class="text-white fa fa-close text-[14px]"></i>
                 </span>
               </div>
             </div>
@@ -59,7 +61,8 @@
       <!-- Add fullscreen button before other elements -->
       <button type="button" 
               class="pl-2 text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700 focus:outline-none flex items-center justify-center"
-              data-action="click->fullscreen#toggle">
+              data-action="click->fullscreen#toggle"
+              aria-label="Basculer en mode plein écran">
         <span class="block flex items-center" data-fullscreen-target="enterIcon">
           <i class="fas fa-expand text-lg"></i>
         </span>

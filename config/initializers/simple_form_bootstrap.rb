@@ -32,7 +32,7 @@ SimpleForm.setup do |config|
   config.include_default_input_wrapper_class = false
 
   # CSS class to add for error notification helper.
-  config.error_notification_class = 'alert alert-danger'
+  config.error_notification_class = 'fixed bottom-4 right-4 z-[1000] p-4 mb-4 text-red-700 bg-red-100 rounded-lg'
 
   # Method used to tidy up errors. Specify any Rails Array method.
   # :first lists the first message for each field.

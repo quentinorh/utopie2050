@@ -4,27 +4,6 @@
 <!-- Ajoutez ceci juste avant votre div hero -->
 <%= render 'shared/hero_animation' %>
 
-<!-- Hero -->
-<div data-controller="hero-animation" class="hidden min-h-[calc(100dvh - 60px)] w-full lg:aspect-video flex items-center justify-center relative p-xl lg:p-2xl text-balance" style="background-image: url('<%= asset_path('homepage-image.png') %>')">
-  <div class="flex flex-col z-10 items-center">
-    <h1 class="text-gray-900 text-xxl md:text-display text-white text-center" data-hero-animation-target="title">
-    Lire et écrire des futurs désirables</h1>
-    <div>
-      <div data-action="mousemove->hero-animation#handleMouseMove"></div>
-    </div>
-    <div class="flex gap-sm mt-sm" data-hero-animation-target="buttons">
-      <%= link_to "Lire les futurs", posts_path, class: "tw-btn-primary text-center", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs" } %>
-      <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary text-center",data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur" } %>
-    </div>
-    <div class="absolute bottom-[10px] flex flex-col items-center">
-      <span class="text-white text-sm font-mono uppercase">Explorer</span>
-      <div class="h-[30px] w-[1px] overflow-hidden bg-white bg-opacity-30 mt-sm">
-        <div class="h-[80px] w-[1px] bg-white animate-slide-down"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="h-[100vh] flex items-center justify-center">
   <div class="text-center">
     <div class="flex flex-col md:px-xl lg:px-2xl justify-center items-center h-full">

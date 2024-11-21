@@ -9,7 +9,8 @@
         <%= request.original_url %>
       </div>
       <button data-action="click->actions#copyUrl" 
-              class="bg-primary text-white px-4 rounded-r-lg flex items-center transition-colors duration-200">
+              class="bg-primary text-white px-4 rounded-r-lg flex items-center transition-colors duration-200"
+              aria-label="Copier le lien">
         <i class="fa-solid fa-copy"></i>
       </button>
     </div>
@@ -69,7 +70,9 @@
   <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
     <p>Es-tu sûr de vouloir modifier ce futur ?</p>
     <div class="flex gap-4 mt-4">
-      <%= link_to edit_post_path(@post), class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700" do %>
+      <%= link_to edit_post_path(@post), 
+          class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700",
+          aria_label: "Confirmer la modification" do %>
         <i class="fa-solid fa-check mb-2 text-lg"></i>
         <p>Oui</p>
       <% end %>
@@ -96,13 +99,15 @@
       <%= button_to post_path(@post), 
           method: :delete,
           data: { turbo: true },
-          class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700" do %>
+          class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700",
+          aria_label: "Confirmer la suppression" do %>
         <i class="fa-solid fa-check mb-2 text-lg"></i>
         <p>Oui</p>
       <% end %>
       
       <button data-action="click->actions#toggleDelete" 
-              class="flex flex-col items-center font-mono text-sm uppercase text-lg text-red-500 hover:text-red-700">
+              class="flex flex-col items-center font-mono text-sm uppercase text-lg text-red-500 hover:text-red-700"
+              aria-label="Annuler la suppression">
         <i class="fa-solid fa-xmark mb-2 text-lg"></i>
         <p>Non</p>
       </button>

@@ -25,3 +25,30 @@
 .tailwind-slider .noUi-handle::after {
   display: none !important;
 } 
+
+/* Style pour le "thumb" (bouton du slider) */
+input[type="range"] {
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(209, 213, 219);
+    border: 2px solid rgb(156, 163, 175);
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgb(156, 163, 175);
+    border-radius: 50%;
+    background: rgb(209, 213, 219);
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
