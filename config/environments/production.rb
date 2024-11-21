@@ -37,8 +37,11 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
+  # Compress CSS using a preprocessor.
+  config.assets.css_compressor = nil
+
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  config.assets.compile = true
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -100,17 +103,4 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-
-
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
-
-  # Compress CSS using a preprocessor.
-  config.assets.css_compressor = :sass
-  config.assets.js_compressor = :terser
-
-  # Ajouter cette ligne pour activer la mise en cache des assets
-  config.public_file_server.headers = {
-    'Cache-Control' => "public, max-age=#{365.days.to_i}"
-  }
 end
