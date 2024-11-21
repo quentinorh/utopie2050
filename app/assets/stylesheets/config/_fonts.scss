@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
-
 // To use a font file (.woff) uncomment following lines
 @font-face {
   font-family: "Apfel";
@@ -11,6 +9,13 @@
   font-family: "Opendylexic";
   font-weight: regular;
   src: font-url('OpenDyslexic-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: font-url('RobotoMono-VariableFont_wght.ttf') format('truetype');
 }
 
 html {
