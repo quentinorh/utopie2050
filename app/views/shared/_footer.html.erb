@@ -17,7 +17,10 @@
         <p class="text-l sm:text-2xl md:text-xl">2024</p>
     </div>
     <div class="col-span-4 text-right flex justify-end items-center gap-2">
-        <%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/", target: "_blank", class: "flex items-center gap-2" do %>
+        <%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/", 
+            target: "_blank", 
+            class: "flex items-center gap-2",
+            "aria-label": "Licence Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International" do %>
             <%= inline_svg_tag('cc.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
             <%= inline_svg_tag('nc.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
             <%= inline_svg_tag('by.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>

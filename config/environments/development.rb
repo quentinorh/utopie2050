@@ -83,4 +83,7 @@ Rails.application.configure do
 
   config.assets.debug = true
 
+  config.force_ssl = false
+  config.assets.compile = true
+
 end

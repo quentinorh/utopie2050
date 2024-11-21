@@ -34,6 +34,7 @@
             params[:by_query],
             class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
             placeholder: "Rechercher...",
+            "aria-label": "Rechercher des articles",
             data: { action: "input->search#submit" }
         %>
         <div class="mt-4 text-base">Auteur·ice·s</div>
@@ -41,6 +42,7 @@
             options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
             prompt: "Sélectionner...",
             class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
+            "aria-label": "Filtrer par auteur",
             data: { action: "change->search#submit" }  %>
         <div class="mt-4 flex gap-4 items-center">
           <div class="w-full">

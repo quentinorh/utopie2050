@@ -2,8 +2,11 @@
   <!-- Contenu pour les écrans plus petits -->
   <div class="flex flex-1 items-center relative h-full lg:hidden">
     <div class="absolute left-0 flex gap-sm px-sm items-center">
-      <button id="actions-button" class="flex items-center px-lg" data-action="click->actions#toggleActions">
-        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" ></i>
+      <button id="actions-button" 
+              class="flex items-center px-lg" 
+              data-action="click->actions#toggleActions"
+              aria-label="Menu des actions">
+        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
       </button>
     </div>
     <div class="flex-1 flex justify-center items-center">
@@ -11,7 +14,10 @@
       <span class="text-gray-500"><span data-scroll-target="scrollPercentage">0</span>%</span>
     </div>
     <div class="absolute right-0 flex gap-sm items-center">
-      <button id="actions-button" class="flex items-center px-sm" data-action="click->actions#toggleSettings">
+      <button id="actions-button" 
+              class="flex items-center px-sm" 
+              data-action="click->actions#toggleSettings"
+              aria-label="Paramètres d'affichage">
         <i class="fa-solid fa-sliders text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
       </button>
     </div>
@@ -19,8 +25,11 @@
   <!-- Contenu pour les écrans plus grands -->
   <div class="hidden lg:flex lg:flex-row mx-auto  h-full">
     <div class="flex bg-gray-200 dark:bg-gray-700 w-[calc((100dvh-120px)*(250/350))] px-4 justify-center items-center gap-xs">
-      <button id="actions-button" class="flex items-center px-lg" data-action="click->actions#toggleActions">
-        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" ></i>
+      <button id="actions-button" 
+              class="flex items-center px-lg" 
+              data-action="click->actions#toggleActions"
+              aria-label="Menu des actions">
+        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
       </button>
     </div>
     <div class="flex flex-1 items-center relative">
@@ -29,7 +38,8 @@
                 data-controller="bookmark"
                 data-post-id="<%= @post.id %>"
                 data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
-                data-action="click->bookmark#toggle">
+                data-action="click->bookmark#toggle"
+                aria-label="Ajouter ou supprimer un marque-page">
           <i class="fa-solid fa-bookmark text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" 
              title="Ajouter un marque page"
              data-bookmark-target="button"></i>
@@ -40,7 +50,10 @@
         <span class="text-gray-500"><span data-scroll-target="scrollPercentage">0</span>%</span>
       </div>
       <div class="absolute right-0 flex gap-sm items-center">
-        <button id="actions-button" class="flex items-center px-sm" data-action="click->actions#toggleSettings">
+        <button id="actions-button" 
+                class="flex items-center px-sm" 
+                data-action="click->actions#toggleSettings"
+                aria-label="Paramètres d'affichage">
           <i class="fa-solid fa-sliders text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" title="Barre de réglage"></i>
         </button>
       </div>

@@ -2,7 +2,9 @@
      class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-800 justify-evenly items-center lg:w-[calc((100dvh-120px)*(250/350))] z-50 w-full h-[calc(100dvh-120px)]"
      style="bottom: 60px;">
   <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleShare">
+       data-action="click->actions#toggleShare"
+       role="button"
+       aria-label="Partager ce texte">
     <i class="fa-solid fa-share mb-2 text-lg"></i>
     <p>Partager</p>
   </div>
@@ -10,14 +12,16 @@
     <%= turbo_frame_tag "favorite_button" do %>
       <% if current_user.favorites.exists?(post: @post) %>
         <%= button_to unfavorite_post_path(@post),
-            method: :delete, 
+            method: :delete,
+            aria_label: "Retirer ce texte des favoris",
             class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" do %>
           <i class="fa-solid fa-star mb-2 text-lg"></i>
           <p>Retirer des favoris</p>
         <% end %>
       <% else %>
         <%= button_to favorite_post_path(@post),
-            method: :post, 
+            method: :post,
+            aria_label: "Ajouter ce texte aux favoris",
             class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" do %>
           <i class="fa-regular fa-star mb-2 text-lg"></i>
           <p>Ajouter aux favoris</p>
@@ -29,23 +33,31 @@
        data-controller="bookmark"
        data-post-id="<%= @post.id %>"
        data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
-       data-action="click->bookmark#toggle click->actions#toggleAddBookmark">
+       data-action="click->bookmark#toggle click->actions#toggleAddBookmark"
+       role="button"
+       aria-label="Marquer cette page">
     <i class="fa-solid fa-bookmark mb-2 text-lg"></i>
     <p>Marquer la page</p>
   </div>
   <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleReport">
+       data-action="click->actions#toggleReport"
+       role="button"
+       aria-label="Signaler ce texte">
     <i class="fa-solid fa-flag mb-2 text-lg"></i>
     <p>Signaler</p>
   </div>
   <% if user_signed_in? && current_user == @post.user %>
     <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleEdit">
+         data-action="click->actions#toggleEdit"
+         role="button"
+         aria-label="Modifier ce texte">
       <i class="fa-solid fa-pen-to-square mb-2 text-lg"></i>
       <p>Editer</p>
     </div>
     <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleDelete">
+         data-action="click->actions#toggleDelete"
+         role="button"
+         aria-label="Supprimer ce texte">
       <i class="fa-solid fa-trash mb-2 text-lg"></i>
     <p>Supprimer</p>
   </div>
