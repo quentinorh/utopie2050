@@ -68,7 +68,13 @@ class PostsController < ApplicationController
 
   def user_posts
     @user = User.find(params[:user_id])
-    @posts = @user.posts.viewable_by(current_user)
+    
+    unless current_user == @user || current_user&.admin?
+      redirect_to root_path, alert: "Vous n'avez pas accès à cette page."
+      return
+    end
+    
+    @posts = @user.posts.order(created_at: :desc)
   end
 
   def favorite
