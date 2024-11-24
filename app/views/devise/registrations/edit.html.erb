@@ -37,7 +37,13 @@
             %>
             <%= f.input :age, 
                         required: true,
-                        input_html: { 
+                        autocomplete: "off",
+                        input_html: {
+                          autocomplete: "off",
+                          "data-form-type": "other",
+                          "data-auto-fill": "false",
+                          "data-lpignore": "true",
+                          "data-1p-ignore": "true", 
                           class: 'tw-form-input',
                           value: resource.age
                         },
