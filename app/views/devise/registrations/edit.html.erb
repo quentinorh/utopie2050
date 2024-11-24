@@ -72,22 +72,23 @@
           </div>
 
           <div class="form-actions">
-            <%= f.button :submit, 
-                "Mettre à jour",
-                {
-                  class: "tw-btn-primary w-full mt-sm",
-                  autocomplete: "off",
-                  type: "submit",
-                  "aria-label": "Mettre à jour",
-                  "translate": "no",
-                  data: { 
-                    form_type: "other",
-                    disable_with: "Mettre à jour",
-                    auto_fill: "false"
-                  },
-                  style: "text-transform: none !important;"
-                }
-            %>
+            <button type="submit" 
+                    class="tw-btn-primary w-full mt-sm"
+                    autocomplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    data-auto-fill="false"
+                    translate="no"
+                    style="text-transform: none !important;">
+              <span data-form-type="other" 
+                    data-lpignore="true" 
+                    data-1p-ignore="true"
+                    translate="no"
+                    style="pointer-events: none;">
+                Mettre à jour
+              </span>
+            </button>
           </div>
         <% end %>
 
