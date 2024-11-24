@@ -15,6 +15,7 @@
             <%= f.input :username, 
                         required: true, 
                         autofocus: true,
+                        autocomplete: "off",
                         input_html: {
                           class:'tw-form-input',
                           autocomplete: "off",
@@ -59,9 +60,9 @@
                         hint: "Laisse ce champ vide si tu ne souhaites pas le modifier",
                         required: false,
                         autocomplete: "off",
-                        input_html: { 
-                          class: 'tw-form-input',
-                          autocomplete: "new-password",
+                        input_html: {
+                          class:'tw-form-input'
+                          autocomplete: "off",
                           "data-form-type": "other",
                           "data-auto-fill": "false",
                           "data-lpignore": "true",
@@ -72,23 +73,25 @@
                         hint_html: { class: 'text-sm text-gray-400' } %>
             <%= f.input :password_confirmation,
                         required: false,
-                        input_html: { autocomplete: "new-password" },
-                        input_html: { class:'tw-form-input'},
-                        label: "Confirmation du nouveau mot de passe",
-                        label_html: { class:"tw-form-label mt-sm"},
-                        hint_html: { class: 'text-sm text-gray-400' } %>
-            <%= f.input :current_password,
-                        hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications",
-                        required: true,
                         autocomplete: "off",
                         input_html: {
+                          class:'tw-form-input'
                           autocomplete: "off",
                           "data-form-type": "other",
                           "data-auto-fill": "false",
                           "data-lpignore": "true",
                           "data-1p-ignore": "true"
                         },
-                        input_html: { class:'tw-form-input'},
+                        label: "Confirmation du nouveau mot de passe",
+                        label_html: { class:"tw-form-label mt-sm"},
+                        hint_html: { class: 'text-sm text-gray-400' } %>
+            <%= f.input :current_password,
+                        hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications",
+                        required: true,
+                        input_html: {
+                          class:'tw-form-input',
+                          autocomplete: "password"
+                        },
                         label: "Mot de passe actuel",
                         label_html: { class:"tw-form-label mt-sm"},
                         hint_html: { class: 'text-sm text-gray-400' } %>
