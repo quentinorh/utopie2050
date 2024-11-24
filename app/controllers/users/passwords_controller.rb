@@ -14,6 +14,6 @@ class Users::PasswordsController < Devise::PasswordsController
   protected
 
   def after_resetting_password_path_for(resource)
-    edit_user_registration_path
+    root_path
   end
 end 
