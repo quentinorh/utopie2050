@@ -64,7 +64,14 @@
             <%= f.input :current_password,
                         hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications",
                         required: true,
-                        input_html: { autocomplete: "current-password" },
+                        autocomplete: "off",
+                        input_html: {
+                          autocomplete: "current-password",
+                          "data-form-type": "other",
+                          "data-auto-fill": "false",
+                          "data-lpignore": "true",
+                          "data-1p-ignore": "true"
+                        },
                         input_html: { class:'tw-form-input'},
                         label: "Mot de passe actuel",
                         label_html: { class:"tw-form-label mt-sm"},
