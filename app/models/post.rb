@@ -1,6 +1,7 @@
 class Post < ApplicationRecord
   belongs_to :user
   has_one_attached :photo
+  has_one_attached :cover_image
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
   has_many :post_themes, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
@@ -45,6 +46,8 @@ class Post < ApplicationRecord
       tsearch: { prefix: true }
     }
 
+
+
   def calculate_reading_time
     words_per_minute = 180
     total_word_count = (body.present? ? body.split.size : 0) + chapters.sum { |chapter| chapter.body.split.size }
@@ -70,6 +73,24 @@ class Post < ApplicationRecord
       link: event_code.link,
       color: event_code.color
     }
+  end
+
+  def social_image_url
+    return nil unless cover_image.attached?
+    
+    public_id = "utopia2050/#{cover_image.key}"
+    Cloudinary::Utils.cloudinary_url(
+      public_id,
+      type: :upload,
+      resource_type: :image,
+      format: :jpg,
+      transformation: {
+          width: 1000,
+          height: 1400,
+          crop: :fill,
+          quality: :auto
+      }
+    )
   end
 
   private

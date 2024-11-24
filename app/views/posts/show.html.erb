@@ -1,9 +1,19 @@
 <% content_for :title, "SP 2050 - #{@post.title}" %>
 <% content_for :description, truncate(strip_tags(@post.body), length: 160) %>
-<% content_for :article_meta do %>
+
+<% content_for :meta_tags do %>
+  <%# Meta pour les articles %>
   <meta property="article:published_time" content="<%= @post.created_at.iso8601 %>">
   <meta property="article:author" content="<%= @post.user.username %>">
+  
+  <%# Balises Open Graph et Twitter %>
   <meta property="og:type" content="article">
+  <meta property="og:title" content="<%= @post.title %>">
+  <meta property="og:description" content="<%= truncate(strip_tags(@post.body), length: 160) %>">
+  <meta property="og:image" content="<%= @post.social_image_url %>">
+  <meta name="twitter:image" content="<%= @post.social_image_url %>">
+  
+  <%# URL canonique %>
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 

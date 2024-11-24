@@ -36,6 +36,10 @@ class PostsController < ApplicationController
     @post = current_user.posts.build(post_params.except(:event_code))
     set_event_code
     
+    if @post.valid?
+      attach_cover_image
+    end
+    
     if @post.save
       redirect_to @post
     else
@@ -49,9 +53,15 @@ class PostsController < ApplicationController
 
   def update
     set_event_code
+    @post.assign_attributes(post_params.except(:event_code))
     
-    if @post.update(post_params.except(:event_code))
-      redirect_to @post
+    if @post.valid?
+      attach_cover_image
+      if @post.save
+        redirect_to @post
+      else
+        render :edit
+      end
     else
       render :edit
     end
@@ -121,6 +131,7 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
+      :cover_image,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 
@@ -136,5 +147,19 @@ class PostsController < ApplicationController
     else
       @post.event_code = nil
     end
+  end
+
+  def attach_cover_image
+    return unless @post.cover.present?
+    
+    # Attacher directement le SVG
+    @post.cover_image.attach(
+      io: StringIO.new(@post.cover),
+      filename: "cover-#{Time.current.to_i}.svg",
+      content_type: 'image/svg+xml'
+    )
+  rescue => e
+    Rails.logger.error "Erreur lors de l'attachement de l'image: #{e.message}"
+    @post.errors.add(:cover_image, "n'a pas pu être attachée")
   end
 end
