@@ -15,13 +15,23 @@
             <%= f.input :username, 
                         required: true, 
                         autofocus: true,
-                        input_html: { class:'tw-form-input'},
+                        input_html: {
+                          class:'tw-form-input',
+                          autocomplete: "off",
+                          "data-form-type": "other",
+                          "data-auto-fill": "false",
+                          "data-lpignore": "true",
+                          "data-1p-ignore": "true"
+                        },
                         label: "Nom d'utilisateur",
                         label_html: { class:"tw-form-label mt-sm"}
             %>
             <%= f.input :email, 
                         required: true,
-                        input_html: { class:'tw-form-input'},
+                        input_html: {
+                          class:'tw-form-input',
+                          autocomplete: "username"
+                        },
                         label: "Email",
                         label_html: { class:"tw-form-label mt-sm"}
             %>
@@ -66,7 +76,7 @@
                         required: true,
                         autocomplete: "off",
                         input_html: {
-                          autocomplete: "current-password",
+                          autocomplete: "off",
                           "data-form-type": "other",
                           "data-auto-fill": "false",
                           "data-lpignore": "true",
