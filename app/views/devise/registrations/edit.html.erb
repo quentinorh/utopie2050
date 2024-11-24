@@ -43,8 +43,14 @@
                         hint: "Laisse ce champ vide si tu ne souhaites pas le modifier",
                         required: false,
                         autocomplete: "off",
-                        input_html: { autocomplete: "new-password" },
-                        input_html: { class:'tw-form-input'},
+                        input_html: { 
+                          class: 'tw-form-input',
+                          autocomplete: "new-password",
+                          "data-form-type": "other",
+                          "data-auto-fill": "false",
+                          "data-lpignore": "true",
+                          "data-1p-ignore": "true"
+                        },
                         label: "Nouveau mot de passe",
                         label_html: { class:"tw-form-label mt-sm"},
                         hint_html: { class: 'text-sm text-gray-400' } %>
