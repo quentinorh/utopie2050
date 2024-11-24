@@ -27,7 +27,10 @@
             %>
             <%= f.input :age, 
                         required: true,
-                        input_html: { class:'tw-form-input'},
+                        input_html: { 
+                          class: 'tw-form-input',
+                          value: resource.age
+                        },
                         label: "Âge en 2050",
                         label_html: { class:"tw-form-label mt-sm"}
             %>
@@ -62,7 +65,13 @@
           </div>
 
           <div class="form-actions">
-            <%= f.button :submit, "Mettre à jour", class:"tw-btn-primary w-full mt-sm", data: { form_type: "other" } %>
+            <%= f.button :submit, "Mettre à jour", 
+                        class: "tw-btn-primary w-full mt-sm", 
+                        autocomplete: "off",
+                        data: { 
+                          form_type: "other",
+                          disable_with: "Mettre à jour"
+                        } %>
           </div>
         <% end %>
 
