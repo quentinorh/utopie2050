@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@bugsnag/browser-performance": "^2.10.1",
+    "@bugsnag/js": "^8.1.2",
     "gsap": "^3.12.5",
     "lenis": "^1.1.9",
     "nouislider": "^15.8.1"

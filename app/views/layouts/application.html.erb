@@ -2,13 +2,19 @@
 <html lang="fr">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "SP 2050" %></title>
-    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Description par défaut de SP 2050' %>">
-    <script src="//d2wy8f7a9ursnm.cloudfront.net/v7/bugsnag.min.js"></script>
-    <script type="module">
-      import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
-      Bugsnag.start({ apiKey: '412b86730e7d4f1b0e9f63f5dd2d8a7f' })
-      BugsnagPerformance.start({ apiKey: '412b86730e7d4f1b0e9f63f5dd2d8a7f' })
+    <script src="https://d2wy8f7a9ursnm.cloudfront.net/v7/bugsnag.min.js" crossorigin="anonymous"></script>
+    <script src="https://d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js" crossorigin="anonymous"></script>
+    <script>
+      Bugsnag.start({ 
+        apiKey: '412b86730e7d4f1b0e9f63f5dd2d8a7f',
+        enabledReleaseStages: ['production', 'staging']
+      });
+      BugsnagPerformance.start({ 
+        apiKey: '412b86730e7d4f1b0e9f63f5dd2d8a7f',
+        enabledReleaseStages: ['production', 'staging']
+      });
     </script>
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Description par défaut de SP 2050' %>">
     <!-- Balises Open Graph pour les réseaux sociaux -->
     <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : 'SP 2050' %>">
     <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Description par défaut de SP 2050' %>">
