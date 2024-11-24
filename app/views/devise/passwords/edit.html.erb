@@ -1,27 +1,37 @@
-<h2>Change your password</h2>
+<% content_for :title, "SP 2050 - Changement de mot de passe" %>
+<% content_for :description, "Changez votre mot de passe SP 2050" %>
+<% content_for :meta_robots, "noindex, nofollow" %>
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= f.error_notification %>
+<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);">
+  <div class="text-xl flex flex-col items-center w-full">
+    <div class="bg-white p-sm rounded-lg shadow md:w-[400px]">
+      <h2 class="text-center">Changement de mot de passe</h2>
 
-  <%= f.input :reset_password_token, as: :hidden %>
-  <%= f.full_error :reset_password_token %>
+      <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+        <%= f.error_notification class: "text-sm bg-red-50 text-red-500 p-3 rounded-md mb-4" %>
+        <%= f.input :reset_password_token, class: "hidden", as: :hidden %>
+        <%= f.full_error :reset_password_token, class: "text-sm block text-red-500 mt-1 mb-4 text-center" %>
 
-  <div class="form-inputs">
-    <%= f.input :password,
-                label: "New password",
-                required: true,
-                autofocus: true,
-                hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
-                label: "Confirm your new password",
-                required: true,
-                input_html: { autocomplete: "new-password" } %>
+        <div class="form-inputs">
+          <%= f.input :password,
+                      label: "Nouveau mot de passe",
+                      required: true,
+                      autofocus: true,
+                      hint: ("#{@minimum_password_length} caractères minimum" if @minimum_password_length),
+                      hint_html: { class: "text-sm text-gray-500 mt-1 italic" },
+                      input_html: { autocomplete: "new-password", class: 'tw-form-input' },
+                      label_html: { class: "tw-form-label mt-sm" } %>
+          <%= f.input :password_confirmation,
+                      label: "Confirmez le nouveau mot de passe",
+                      required: true,
+                      input_html: { autocomplete: "new-password", class: 'tw-form-input' },
+                      label_html: { class: "tw-form-label mt-sm" } %>
+        </div>
+
+        <div class="form-actions">
+          <%= f.button :submit, "Changer mon mot de passe", class: "tw-btn-primary w-full", data: { form_type: "other" } %>
+        </div>
+      <% end %>
+    </div>
   </div>
-
-  <div class="form-actions">
-    <%= f.button :submit, "Change my password", data: { form_type: "other" } %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

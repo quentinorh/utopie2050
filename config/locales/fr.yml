@@ -1,4 +1,4 @@
- fr:
+fr:
   activerecord:
     errors:
       models:
@@ -6,3 +6,15 @@
           attributes:
             confirmation_token:
               invalid: "Le jeton de confirmation est invalide"
+            reset_password_token:
+              invalid: "Le lien de réinitialisation du mot de passe n'est plus valide. Veuillez faire une nouvelle demande."
+            password:
+              too_short: "Le mot de passe est trop court (minimum %{count} caractères)"
+              blank: "Le mot de passe ne peut pas être vide"
+            password_confirmation:
+              confirmation: "Les mots de passe ne correspondent pas"
+  errors:
+    messages:
+      invalid: "n'est pas valide"
+      already_confirmed: "a déjà été confirmé"
+      confirmation_period_expired: "doit être confirmé dans les %{period}, veuillez en faire une nouvelle demande"

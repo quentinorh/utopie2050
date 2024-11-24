@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: 'users/registrations' }
+  devise_for :users, controllers: {
+    registrations: 'users/registrations',
+    passwords: 'users/passwords'
+  }
   
   resources :posts, path: 'futurs' do
     collection do
@@ -37,4 +40,6 @@ Rails.application.routes.draw do
   end
 
   get '/sitemap.xml.gz', to: redirect('https://sp2050.s3.us-east-1.amazonaws.com/sitemaps/sitemap.xml.gz')
+
+  post 'password_resets', to: 'password_resets#create'
 end
