@@ -80,7 +80,7 @@
           <p class="text-sm text-left font-mono">En publiant sur ce site, tu acceptes que tous les contenus soient partagés sous la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons BY-NC-SA 4.0</a>. Cela signifie que les textes pourront être partagés et adaptés, à condition qu'ils ne soient pas utilisés à des fins commerciales, que l'auteur.ice soit crédité.e et que les œuvres dérivées soient publiées sous la même licence.</p>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <%= f.button :submit, "Je m'inscris", class: "tw-btn-primary w-full mt-sm" %>
+            <%= f.button :submit, "Je m'inscris", class: "tw-btn-primary w-full mt-sm", data: { form_type: "other" } %>
           </div>
           <p class="text-base text-center mt-sm">En cliquant sur le bouton 'Je m'inscris', tu confirmes avoir pris connaissance et accepté les conditions d'utilisation</p>
         </div>

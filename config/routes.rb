@@ -3,7 +3,6 @@ Rails.application.routes.draw do
   
   resources :posts, path: 'futurs' do
     collection do
-      get :favorites
       get :deleted
     end
     
@@ -25,7 +24,8 @@ Rails.application.routes.draw do
     get 'confirmation', to: 'users/registrations#confirmation', as: 'registration_confirmation'
   end
 
-  get 'mes_futurs/:user_id', to: 'posts#user_posts', as: 'user_posts'
+  get 'mes_futurs', to: 'posts#user_posts', as: 'user_posts'
+  get 'mes_favoris', to: 'posts#favorites', as: 'user_favorites'
 
   root to: "pages#home"
 

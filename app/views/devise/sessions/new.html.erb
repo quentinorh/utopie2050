@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-actions">
-          <%= f.button :submit, "Je me connecte", class:"tw-btn-primary w-full" %>
+          <%= f.button :submit, "Je me connecte", class:"tw-btn-primary w-full", data: { form_type: "other" } %>
         </div>
         <div class="text-center mt-4">
           <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "text-sm text-blue-500 hover:text-blue-700" %>
