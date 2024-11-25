@@ -1,9 +1,9 @@
-<div data-controller="chapter preview" 
-     data-preview-username-value="<%= current_user.username %>" 
+<div data-controller="chapter preview"
+     data-preview-username-value="<%= current_user.username %>"
      data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
      class="w-full">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col" }) do |form| %>
-    
+
     <!-- Affichage des erreurs -->
     <% if @post.errors.any? %>
       <div id="error_explanation">
@@ -26,7 +26,7 @@
                 <label for="body" class="text-l tw-form-label">Couverture</label>
                 <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
               </div>
-              <div class="mt-xs"> 
+              <div class="mt-xs">
                 <!-- Controls -->
                 <div class="mt-4 text-l">
                   <div>
@@ -39,14 +39,14 @@
                   </div>
                   <div>
                     <label class="text-sm font-mono" for="hue">Couleur: </label>
-                    <input class="h-2 w-full cursor-pointer appearance-none rounded-full" 
-                          type="range" 
-                          id="hue" 
-                          min="0" 
-                          max="360" 
-                          value="0" 
-                          data-action="input->preview#updateHue" 
-                          data-preview-target="hue" 
+                    <input class="h-2 w-full cursor-pointer appearance-none rounded-full"
+                          type="range"
+                          id="hue"
+                          min="0"
+                          max="360"
+                          value="0"
+                          data-action="input->preview#updateHue"
+                          data-preview-target="hue"
                           style="background: linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%));">
                   </div>
                   <div>
@@ -101,9 +101,9 @@
         <div class="p-sm rounded-lg bg-white shadow w-full mt-sm">
           <label class="text-l tw-form-label">Code événement</label>
           <p class="text-sm text-gray-600 pb-2">Si ce futur fait partie d'un événement, tu peux indiquer le code ici</p>
-          <%= form.text_field :event_code, 
-              value: @post.event_code&.code, 
-              class: "tw-form-input", 
+          <%= form.text_field :event_code,
+              value: @post.event_code&.code,
+              class: "tw-form-input",
               placeholder: "optionnel"%>
         </div>
       </div>
@@ -131,6 +131,9 @@
           <div id="chapters" data-chapter-target="chapters">
             <%= form.fields_for :chapters do |chapter_form| %>
               <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
+                <div class="hidden" data-chapter-target="chapterIndex">
+                  <%= chapter_form.options[:child_index] %>
+                </div>
                 <label class="tw-form-label">Titre du chapitre</label>
                 <%= chapter_form.text_field :title, class: "tw-form-input" %>
 
