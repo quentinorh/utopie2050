@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["chapters"]
+  static targets = ["chapters", "chapter", "chapterIndex"]
 
   addChapter(event) {
     event.preventDefault();
@@ -9,17 +9,18 @@ export default class extends Controller {
     // Crée un nouvel élément div pour contenir le chapitre
     const newChapter = document.createElement("div");
     newChapter.classList.add("chapter-fields", "mt-sm");
+    const nextIndex = parseInt(this.chapterIndexTargets.pop().textContent.trim()) + 1;
 
     // Générer l'HTML pour le nouveau chapitre
     newChapter.innerHTML = `
       <label class="tw-form-label">Titre du chapitre</label>
-      <input type="text" name="post[chapters_attributes][][title]" class="tw-form-input">
+      <input type="text" name="post[chapters_attributes][${nextIndex}][title]" class="tw-form-input">
 
       <label class="tw-form-label">Texte du chapitre</label>
-      <textarea name="post[chapters_attributes][][body]" class="tw-form-input", rows="5"></textarea>
+      <textarea name="post[chapters_attributes][${nextIndex}][body]" class="tw-form-input", rows="5"></textarea>
 
-      <input type="hidden" name="post[chapters_attributes][][position]" value="">
-      <input type="hidden" name="post[chapters_attributes][][_destroy]" value="false">
+      <input type="hidden" name="post[chapters_attributes][${nextIndex}][position]" value="">
+      <input type="hidden" name="post[chapters_attributes][${nextIndex}][_destroy]" value="false">
 
       <a href="#" class="tw-btn-secondary" data-action="click->chapter#removeChapter">Supprimer ce chapitre</a>
     `;
