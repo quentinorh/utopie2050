@@ -16,6 +16,8 @@ export default class extends Controller {
   }
 
   handleKeydown(event) {
+    if (!document.querySelector('#registration-steps')) return;
+    
     if (event.key === "Enter") {
       event.preventDefault();
       const currentStep = this.stepTargets.find(step => step.style.display !== 'none');
