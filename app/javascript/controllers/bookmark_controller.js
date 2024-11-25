@@ -86,7 +86,7 @@ export default class extends Controller {
     const postId = this.element.dataset.postId;
     if (this.isUserLoggedIn()) {
       try {
-        const response = await fetch(`/posts/${postId}/bookmark`, {
+        const response = await fetch(`/futurs/${postId}/bookmark`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default class extends Controller {
     const postId = this.element.dataset.postId;
     if (this.isUserLoggedIn()) {
       try {
-        const response = await fetch(`/posts/${postId}/bookmark`, {
+        const response = await fetch(`/futurs/${postId}/bookmark`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ export default class extends Controller {
     const postId = this.element.dataset.postId;
     if (this.isUserLoggedIn()) {
       try {
-        const response = await fetch(`/posts/${postId}/bookmark`, {
+        const response = await fetch(`/futurs/${postId}/bookmark`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -4,8 +4,8 @@
 User-agent: *
 # Pages publiques autorisées
 Allow: /
-Allow: /posts
-Allow: /posts/*
+Allow: /futurs
+Allow: /futurs/*
 
 # Pages privées et administratives
 Disallow: /admin/
@@ -16,11 +16,11 @@ Disallow: /reports
 Disallow: /deleted
 
 # Pages avec paramètres de recherche et filtres
-Disallow: /posts?*query=
-Disallow: /posts?*filter=
-Disallow: /posts?*page=
-Disallow: /posts?*by_author=
-Disallow: /posts?*by_reading_time_range=
+Disallow: /futurs?*query=
+Disallow: /futurs?*filter=
+Disallow: /futurs?*page=
+Disallow: /futurs?*by_author=
+Disallow: /futurs?*by_reading_time_range=
 
 # Pages d'authentification
 Disallow: /users/sign_in
