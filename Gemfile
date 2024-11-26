@@ -92,3 +92,5 @@ gem "tailwindcss-rails", "~> 2.6"
 gem 'sitemap_generator'
 gem 'fog-aws'
 gem 'aws-sdk-s3'
+
+gem "bugsnag", "~> 6.27"
