@@ -18,7 +18,11 @@ class User < ApplicationRecord
   # Ajouter un callback pour s'assurer que le pseudo est toujours présent
   before_validation :set_default_username, on: :create
 
-  scope :has_posts, -> { joins(:posts).distinct }
+  scope :has_posts, -> { 
+    joins(:posts)
+      .where(posts: { draft: [false, nil] })
+      .distinct 
+  }
 
   # Définir la méthode admin? comme publique
   def admin?
