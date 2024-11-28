@@ -26,9 +26,10 @@
                       label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions pb-2">
           <%= f.button :submit, "Je me connecte", class:"tw-btn-primary w-full", data: { form_type: "other" } %>
         </div>
+        <%= link_to "Créer un compte", new_user_registration_path, class: "text-center tw-btn-secondary w-full block" %>
         <div class="text-center mt-4">
           <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "text-sm text-blue-500 hover:text-blue-700" %>
         </div>
