@@ -10,7 +10,7 @@ class Post < ApplicationRecord
   has_many :favorited_by, through: :favorites, source: :user
   has_many :reports, dependent: :destroy
   belongs_to :event_code, optional: true
-  before_save :update_color_from_pattern_settings, :set_reading_time
+  before_save :update_color_from_pattern_settings, :set_reading_time, :clean_body
 
   accepts_nested_attributes_for :chapters, allow_destroy: true
 
@@ -104,5 +104,9 @@ class Post < ApplicationRecord
 
   def set_reading_time
     self.reading_time = calculate_reading_time.to_i
+  end
+
+  def clean_body
+    self.body = body.strip if body.present?
   end
 end
