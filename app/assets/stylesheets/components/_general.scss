@@ -11,3 +11,16 @@
   transform: translateY(0);
   transition: transform 0.3s ease-in-out;
 }
+
+@keyframes move3D {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(5px, 5px, 5px);
+  }
+}
+
+.animated-path {
+  animation: move3D 3s infinite alternate;
+} 

@@ -42,4 +42,6 @@ Rails.application.routes.draw do
   get '/sitemap.xml.gz', to: redirect('https://sp2050.s3.us-east-1.amazonaws.com/sitemaps/sitemap.xml.gz')
 
   post 'password_resets', to: 'password_resets#create'
+
+  get 'test', to: 'pages#test'
 end
