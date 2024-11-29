@@ -3,30 +3,41 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["chapters", "chapter", "chapterIndex"]
 
+  connect() {
+    // Initialiser le compteur avec le plus grand index existant + 1
+    this.nextIndex = 0;
+    if (this.chapterIndexTargets.length > 0) {
+      this.nextIndex = Math.max(...this.chapterIndexTargets.map(target => 
+        parseInt(target.textContent.trim())
+      )) + 1;
+    }
+  }
+
   addChapter(event) {
     event.preventDefault();
 
-    // Crée un nouvel élément div pour contenir le chapitre
     const newChapter = document.createElement("div");
     newChapter.classList.add("chapter-fields", "mt-sm");
-    const nextIndex = parseInt(this.chapterIndexTargets.pop().textContent.trim()) + 1;
-
-    // Générer l'HTML pour le nouveau chapitre
+    
+    // Utiliser this.nextIndex et l'incrémenter après
     newChapter.innerHTML = `
+      <div class="hidden" data-chapter-target="chapterIndex">
+        ${this.nextIndex}
+      </div>
       <label class="tw-form-label">Titre du chapitre</label>
-      <input type="text" name="post[chapters_attributes][${nextIndex}][title]" class="tw-form-input">
+      <input type="text" name="post[chapters_attributes][${this.nextIndex}][title]" class="tw-form-input">
 
       <label class="tw-form-label">Texte du chapitre</label>
-      <textarea name="post[chapters_attributes][${nextIndex}][body]" class="tw-form-input", rows="5"></textarea>
+      <textarea name="post[chapters_attributes][${this.nextIndex}][body]" class="tw-form-input", rows="5"></textarea>
 
-      <input type="hidden" name="post[chapters_attributes][${nextIndex}][position]" value="">
-      <input type="hidden" name="post[chapters_attributes][${nextIndex}][_destroy]" value="false">
+      <input type="hidden" name="post[chapters_attributes][${this.nextIndex}][position]" value="">
+      <input type="hidden" name="post[chapters_attributes][${this.nextIndex}][_destroy]" value="false">
 
       <a href="#" class="tw-btn-secondary" data-action="click->chapter#removeChapter">Supprimer ce chapitre</a>
     `;
 
-    // Ajouter le nouveau chapitre à la section des chapitres
     this.chaptersTarget.appendChild(newChapter);
+    this.nextIndex++; // Incrémenter l'index pour le prochain chapitre
   }
 
   removeChapter(event) {
