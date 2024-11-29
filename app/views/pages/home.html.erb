@@ -4,7 +4,29 @@
 <!-- Ajoutez ceci juste avant votre div hero -->
 <%= render 'shared/hero_animation' %>
 
-<div class="h-[100vh] flex items-center justify-center">
+<div class="flex items-center">
+  <div class="flex flex-col py-xl px-sm md:px-base lg:px-2xl xl:px-[400px] h-full">
+    <div class="border-l-8 border-primary pl-8">
+      <p class="text-2l pb-4">
+        Dérèglement climatique, effondrement de la biodiversité, montée des eaux, apocalypse nucléaire …
+      </p>
+      <p class="text-2l pb-4">
+        La liste des nouveaux sujets de société est longue et anxiogène. Face à ces bouleversements et ces trajectoires accablantes, SP-2050 propose un espace pour se ressourcer, s’inspirer, et créer de nouveaux imaginaires.
+      </p>
+      <p class="text-2l pb-4">
+        Les imaginaires sont puissants et trop souvent dictés par des intérêts économiques ou électoralistes, ici il s’agit de donner ce pouvoir à toutes et tous, et particulièrement à celles et ceux qui n’ont pas l’habitude de l’avoir.
+      </p>
+      <p class="text-2l pb-4">
+        Une seule consigne, essayer d'écrire des futurs positifs et désirables, sinon aucune limite pour imaginer les mondes de demain ! Tout est possible, alors essayons d'imaginer le meilleur de ce qui pourrait advenir en 2050 … Écrire le futur c’est commencer à le rendre possible, le faire exister.
+      </p>
+      <p class="text-2l">
+        Dans quelques mois, en fonction des retours, nous reviendrons vers vous sur la manière de poursuivre cette expérience … une édition, un festival, un podcast … qui sait ce que l’avenir nous réserve !
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="bg-black-100 h-[100vh] flex items-center justify-center">
   <div class="text-center">
     <div class="flex flex-col md:px-xl lg:px-2xl justify-center items-center h-full">
       <p class="text-2xl md:text-xl base:text-xxlish text-balance leading-normal" data-controller="text-reveal">
@@ -18,7 +40,7 @@
 </div>
 
 <% if @posts.any? %>
-  <div class="bg-black-100 py-xl">
+  <div class="py-xl">
     <div class="text-xxlish md:text-xxl uppercase text-center mb-8">
       <span>Les derniers futurs</span>
     </div>
