@@ -17,7 +17,8 @@
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 
-<div data-controller="scroll cover text-to-speech actions svg-animation relative" 
+<div data-controller="scroll cover actions svg-animation relative bookmark" 
+     data-post-id="<%= @post.id %>"
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
   
@@ -34,17 +35,17 @@
          data-margin-target="element" 
          class="relative lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 lg:fixed flex justify-center lg:mr-0 mr-auto">
         <div class="relative cover-svg opacity-0">
-          <div class="svg-full-height" data-controller="coversize">
-            <%= @post.cover.html_safe %>
-          </div>
           <div class="absolute top-0 left-0">
-            <div class="h-fit text-xl z-99 opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
+            <div class="px-xs py-[5px] mt-[-5px] text-xl z-99 text-black w-4/5" data-cover-target="titleWrapper" data-svg-animation-target="title">
               <%= @post.title %>
             </div>
-            <div class="text-base z-99 w-fit opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
+            <div class="px-xs py-[5px] mt-[6px] text-l z-99 w-fit text-black" data-cover-target="userName" data-svg-animation-target="userName">
               <%= @post.user.username %>
             </div>
           </div> 
+          <div class="svg-full-height z-99" data-controller="coversize">
+            <%= @post.cover.html_safe %>
+          </div>
       </div>
     </div>
 
@@ -74,15 +75,15 @@
         </div>
       <% end %>
       <div class="post-body" data-scroll-target="content">
-        <div class="mt-lg adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
+        <div class="body-content mt-lg adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
         <% if @post.chapters.any? %>
-          <div class="adjustable w-full  pt-0 mt lg transition-opacity duration-1000" data-scroll-target="content" data-text-to-speech-target="content">
+          <div class="adjustable w-full  pt-0 mt lg transition-opacity duration-1000" data-scroll-target="content">
             <% @post.chapters.each_with_index do |chapter, index| %>
               <div class="mt-lg">
-                <h2 class="text-2xl mt-8 mb-4">
+                <h2 class="chapter-title text-2xl mt-8 mb-4">
                   Chapitre <%= index + 1 %> : <%= chapter.title %>
                 </h2>
-                <div class="mt-0 whitespace-pre-wrap"><%= chapter.body %></div>
+                <div class="chapter-content mt-0 whitespace-pre-wrap"><%= chapter.body %></div>
               </div>
             <% end %>
           </div>

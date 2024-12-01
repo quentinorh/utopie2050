@@ -2,11 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 
 export default class extends Controller {
-  static targets = ['title', 'buttons']
+  static targets = ['title', 'buttons', 'content']
 
   connect() {
     this.titleAnimation()
     this.buttonsAnimation()
+    this.contentTarget.classList.remove('hidden')
   }
 
   titleAnimation() {

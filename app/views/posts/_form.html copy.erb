@@ -1,0 +1,172 @@
+<div data-controller="chapter preview"
+     data-preview-username-value="<%= current_user.username %>"
+     data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
+     class="w-full">
+  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col" }) do |form| %>
+
+    <!-- Affichage des erreurs -->
+    <% if @post.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@post.errors.count, "erreur") %> erreurs ont empêché ce post d'être sauvegardé :</h2>
+        <ul>
+          <% @post.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="grid grid-cols-1  xl:grid-cols-7 gap-sm">
+      <!-- Colonne de gauche (paramètres et aperçu) -->
+      <div class="xl:col-span-3">
+        <div class="p-sm rounded-lg bg-white shadow w-full">
+          <div class="flex gap-sm sm:flex-nowrap flex-wrap">
+            <!-- Paramètres de la couverture-->
+            <div class="flex-grow min-w-0">
+              <div class="flex justify-between items-center">
+                <label for="body" class="text-l tw-form-label">Couverture</label>
+                <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
+              </div>
+              <div class="mt-xs">
+                <!-- Controls -->
+                <div class="mt-4 text-l">
+                  <div>
+                    <label class="text-sm font-mono" for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="columns" min="1" max="50" value="1" data-preview-target="columns" data-action="input->preview#updatePattern">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="rows" min="1" max="50" value="1" data-action="input->preview#updatePattern" data-preview-target="rows">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="hue">Couleur: </label>
+                    <input class="h-2 w-full cursor-pointer appearance-none rounded-full"
+                          type="range"
+                          id="hue"
+                          min="0"
+                          max="360"
+                          value="0"
+                          data-action="input->preview#updateHue"
+                          data-preview-target="hue"
+                          style="background: linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%));">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="filled-squares">Espace principal: <span data-preview-target="filledValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="filled-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="filledSquares">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="white-squares">Espace secondaire: <span data-preview-target="whiteValue">1</span></label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="white-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="whiteSquares">
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
+                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
+                  </div>
+                  <label class="text-sm font-mono" for="padding">Forme: </label>
+                  <div class="mt-2 flex justify-between">
+                    <button type="button" class="shape-button active p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="square" data-action="click->preview#changeShape" aria-label="Carré">
+                      <%= inline_svg_tag('carre.svg', class: 'w-8 h-8', aria: true) %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="ellipse" data-action="click->preview#changeShape" aria-label="Cercle">
+                      <%= inline_svg_tag('cercle.svg', class: 'w-8 h-8') %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="triangle" data-action="click->preview#changeShape" aria-label="Triangle">
+                      <%= inline_svg_tag('triangle.svg', class: 'w-8 h-8') %>
+                    </button>
+                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="losange" data-action="click->preview#changeShape" aria-label="Losange">
+                      <%= inline_svg_tag('losange.svg', class: 'w-8 h-8') %>
+                    </button>
+                  </div>
+                  <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
+                  <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
+                </div>
+              </div>
+            </div>
+            <!-- Aperçu -->
+            <div class="flex flex-col items-center justify-center max-sm:w-full">
+              <!-- Pattern Container -->
+              <div class="relative h-[384px] w-[calc(384px*250/350)]">
+                <div class="absolute bottom-0 top-0">
+                  <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
+                  </div>
+                  <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
+                    <%= current_user.username %>
+                  </div>
+                </div>
+                <div id="pattern-container" data-preview-target="patternContainer" data-controller="coversize" class="h-[384px] w-[calc(384px*250/350)]">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sm rounded-lg bg-white shadow w-full mt-sm">
+          <label class="text-l tw-form-label">Code événement</label>
+          <p class="text-sm text-gray-600 pb-2">Si ce futur fait partie d'un événement, tu peux indiquer le code ici</p>
+          <%= form.text_field :event_code,
+              value: @post.event_code&.code,
+              class: "tw-form-input",
+              placeholder: "optionnel"%>
+        </div>
+      </div>
+      <!-- Colonne de droite (contenu) -->
+      <div class="p-sm rounded-lg bg-white shadow w-full xl:col-span-4">
+        <!-- Titre -->
+        <label for="title" class="text-l tw-form-label">Titre</label>
+        <div class="relative">
+          <%= form.text_field :title, class: "tw-form-input", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->preview#updateTitle", preview_target: "title" } %>
+          <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>
+        </div>
+
+        <!-- Texte -->
+        <div>
+          <label for="body" class="mt-6 text-l tw-form-label">Texte</label>
+          <%= form.text_area :body, class: "tw-form-input", rows: 10 %>
+        </div>
+
+        <!-- Chapitres -->
+        <div class="mt-6">
+          <div class="flex items-center justify-between">
+            <span class="text-l">Chapitres</span>
+            <%= button_tag "Ajouter", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
+          </div>
+          <div id="chapters" data-chapter-target="chapters">
+            <%= form.fields_for :chapters do |chapter_form| %>
+              <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
+                <div class="hidden" data-chapter-target="chapterIndex">
+                  <%= chapter_form.options[:child_index] %>
+                </div>
+                <label class="tw-form-label">Titre du chapitre</label>
+                <%= chapter_form.text_field :title, class: "tw-form-input" %>
+
+                <label class="tw-form-label mt-2">Texte du chapitre</label>
+                <%= chapter_form.text_area :body, class: "tw-form-input", rows: 5 %>
+
+                <%= chapter_form.hidden_field :position %>
+                <%= chapter_form.hidden_field :_destroy %>
+
+                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6", data: { action: "click->chapter#removeChapter" } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Draft -->
+        <div class="mt-sm">
+          <label for="body" class="mt-6 text-l tw-form-label">Brouillon ?</label>
+          <div class="mt-xs flex items-center gap-2">
+            <%= form.check_box :draft, class: "tw-form-checkbox" %>
+            <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-sm">
+          <% if @post.new_record? %>
+            <%= form.submit "Créer le futur", class: "tw-btn-primary w-full", data: { action: "click->preview#validateForm" } %>
+          <% else %>
+            <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full", data: { action: "click->preview#validateForm" } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -2,9 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "patternContainer", "columns", "rows", "hue", "filledSquares", "whiteSquares",
-    "padding", "columnValue", "rowValue", "filledValue",
-    "whiteValue", "paddingValue", "title", "patternSettings", "titleWrapper", "userName", "cover"
+    "hue", "title", "patternSettings", "titleWrapper", "userName", "cover"
   ]
 
   static values = {
@@ -15,19 +13,14 @@ export default class extends Controller {
   connect() {
   this.currentShape = 'square';
 
-  // Initialiser currentShape avec une valeur par défaut si non définie
-  if (!this.currentShape) {
-    this.currentShape = 'square'; // ou toute autre forme par défaut
-  }
-
   // Vérifier si des paramètres de motif existent
   if (this.patternSettingsTarget.value) {
     const settings = JSON.parse(this.patternSettingsTarget.value);
-
+    
     // Appliquer les valeurs des paramètres aux cibles
     this.columnsTarget.value = settings.columns || 1;
     this.rowsTarget.value = settings.rows || 1;
-    this.hueTarget.value = settings.hue || this.getRandomHue(); // Utiliser la valeur sauvegardée ou une valeur aléatoire
+    this.hueTarget.value = settings.hue || this.getRandomHue();
     this.filledSquaresTarget.value = settings.filledSquares || 1;
     this.whiteSquaresTarget.value = settings.whiteSquares || 1;
     this.paddingTarget.value = settings.padding || 0;

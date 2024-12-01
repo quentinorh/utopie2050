@@ -3,7 +3,7 @@
   <div class="flex flex-1 items-center relative h-full lg:hidden">
     <div class="absolute left-0 flex gap-sm px-sm items-center">
       <button id="actions-button" 
-              class="flex items-center px-lg" 
+              class="flex items-center" 
               data-action="click->actions#toggleActions"
               aria-label="Menu des actions">
         <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
@@ -35,14 +35,12 @@
     <div class="flex flex-1 items-center relative">
       <div class="absolute left-0 flex gap-sm items-center">
         <button class="flex items-center px-sm" 
-                data-controller="bookmark"
-                data-post-id="<%= @post.id %>"
                 data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
                 data-action="click->bookmark#toggle"
+                data-bookmark-target="button"
                 aria-label="Ajouter ou supprimer un marque-page">
-          <i class="fa-solid fa-bookmark text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" 
-             title="Ajouter un marque page"
-             data-bookmark-target="button"></i>
+          <i class="fa-regular fa-bookmark text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" 
+             title="Ajouter un marque page"></i>
         </button>
       </div>
       <div class="flex-1 flex justify-center items-center">

@@ -79,6 +79,15 @@ class PostsController < ApplicationController
   def user_posts
     @user = current_user
     @posts = @user.posts
+
+    @user_posts = @user.posts
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render turbo_stream: turbo_stream.update('user_posts', 
+        partial: 'posts', 
+        locals: { posts: @user_posts }) }
+    end
   end
 
   def favorite

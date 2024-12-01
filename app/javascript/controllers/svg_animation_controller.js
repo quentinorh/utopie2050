@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["title", "userName"]
 
   connect() {
-    console.log("SVG Animation Controller connected");
     // Sélectionner la classe parente
     const parent = this.element.querySelector('.cover-svg');
 

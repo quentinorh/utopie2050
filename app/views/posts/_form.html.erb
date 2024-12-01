@@ -1,8 +1,10 @@
-<div data-controller="chapter preview"
+<% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
+<div data-controller="chapter preview test"
      data-preview-username-value="<%= current_user.username %>"
      data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
+     data-test-unique-id-value="<%= unique_id %>"
      class="w-full">
-  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col" }) do |form| %>
+  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col", data: { action: "submit->test#saveSVG submit->test#savePatternSettings" } }) do |form| %>
 
     <!-- Affichage des erreurs -->
     <% if @post.errors.any? %>
@@ -18,66 +20,111 @@
     <div class="grid grid-cols-1  xl:grid-cols-7 gap-sm">
       <!-- Colonne de gauche (paramètres et aperçu) -->
       <div class="xl:col-span-3">
-        <div class="p-sm rounded-lg bg-white shadow w-full">
+        <div class="p-sm rounded-lg  bg-gray-700 shadow w-full">
           <div class="flex gap-sm sm:flex-nowrap flex-wrap">
             <!-- Paramètres de la couverture-->
             <div class="flex-grow min-w-0">
               <div class="flex justify-between items-center">
-                <label for="body" class="text-l tw-form-label">Couverture</label>
-                <button type="button" class="tw-btn-secondary text-sm py-1 px-2" data-action="click->preview#randomizeParameters">Aléatoire</button>
+                <label for="body" class="text-white text-l tw-form-label">Couverture</label>
+                <button type="button" class="tw-btn-primary text-sm py-1 px-2" data-action="click->test#randomize">Aléatoire</button>            
               </div>
               <div class="mt-xs">
                 <!-- Controls -->
-                <div class="mt-4 text-l">
+                <div class="mt-4 text-l text-white">
                   <div>
-                    <label class="text-sm font-mono" for="columns">Colonnes: <span data-preview-target="columnValue">1</span></label>
-                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="columns" min="1" max="50" value="1" data-preview-target="columns" data-action="input->preview#updatePattern">
-                  </div>
-                  <div>
-                    <label class="text-sm font-mono" for="rows">Lignes: <span data-preview-target="rowValue">1</span></label>
-                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="rows" min="1" max="50" value="1" data-action="input->preview#updatePattern" data-preview-target="rows">
-                  </div>
-                  <div>
-                    <label class="text-sm font-mono" for="hue">Couleur: </label>
-                    <input class="h-2 w-full cursor-pointer appearance-none rounded-full"
-                          type="range"
-                          id="hue"
-                          min="0"
-                          max="360"
-                          value="0"
-                          data-action="input->preview#updateHue"
-                          data-preview-target="hue"
-                          style="background: linear-gradient(to right, hsl(0, 80%, 70%), hsl(60, 80%, 70%), hsl(120, 80%, 70%), hsl(180, 80%, 70%), hsl(240, 80%, 70%), hsl(300, 80%, 70%), hsl(360, 80%, 70%));">
+                    <label class="text-sm font-mono">Nombre de symétries:</label>
+                    <div class="flex gap-4 text-sm font-mono mt-1 mb-2">
+                      <label>
+                        <input type="radio" name="symmetryMode" value="x4" data-test-target="symmetryMode" data-action="change->test#updateCurve">
+                        <span class="align-middle">x4</span>
+                      </label>
+                      <label>
+                        <input type="radio" name="symmetryMode" value="x8" data-test-target="symmetryMode" data-action="change->test#updateCurve">
+                        <span class="align-middle">x8</span>
+                      </label>
+                      <label>
+                        <input type="radio" name="symmetryMode" value="x16" data-test-target="symmetryMode" data-action="change->test#updateCurve">
+                        <span class="align-middle">x16</span>
+                      </label>
+                    </div>
                   </div>
                   <div>
-                    <label class="text-sm font-mono" for="filled-squares">Espace principal: <span data-preview-target="filledValue">1</span></label>
-                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="filled-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="filledSquares">
+                    <label class="text-sm font-mono" for="colorPicker">Couleur:</label>
+                    <input 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                      type="range"
+                      id="hue"
+                      data-test-target="colorPicker"
+                      data-action="input->test#updateColors input->test#updateTitle input->test#updateCurve"
+                      min="0"
+                      max="360"
+                      value="280"
+                      style="background: linear-gradient(to right, 
+                        hsl(0, 80%, 70%), 
+                        hsl(60, 80%, 70%), 
+                        hsl(120, 80%, 70%), 
+                        hsl(180, 80%, 70%), 
+                        hsl(240, 80%, 70%), 
+                        hsl(300, 80%, 70%), 
+                        hsl(360, 80%, 70%));"
+                    >
                   </div>
                   <div>
-                    <label class="text-sm font-mono" for="white-squares">Espace secondaire: <span data-preview-target="whiteValue">1</span></label>
-                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="white-squares" min="1" max="100" value="1" data-action="input->preview#updatePattern" data-preview-target="whiteSquares">
+                    <label class="text-sm font-mono" for="sliderX">Contrôle 1:</label>
+                    <input type="range" 
+                      data-test-target="firstSliderControl" 
+                      data-action="input->test#updateCurve"
+                      min="0" max="100" value="50" 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                    >
                   </div>
                   <div>
-                    <label class="text-sm font-mono" for="padding">Marge: <span data-preview-target="paddingValue">0</span>%</label>
-                    <input class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-gray-200 disabled:cursor-not-allowed" type="range" id="padding" min="0" max="50" value="0" data-action="input->preview#updatePattern" data-preview-target="padding">
+                    <label class="text-sm font-mono" for="sliderX3">Contrôle 2:</label>
+                    <input type="range" 
+                      data-test-target="secondSliderControl" 
+                      data-action="input->test#updateCurve"
+                      min="0" max="100" value="50" 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                    >
                   </div>
-                  <label class="text-sm font-mono" for="padding">Forme: </label>
-                  <div class="mt-2 flex justify-between">
-                    <button type="button" class="shape-button active p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="square" data-action="click->preview#changeShape" aria-label="Carré">
-                      <%= inline_svg_tag('carre.svg', class: 'w-8 h-8', aria: true) %>
-                    </button>
-                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="ellipse" data-action="click->preview#changeShape" aria-label="Cercle">
-                      <%= inline_svg_tag('cercle.svg', class: 'w-8 h-8') %>
-                    </button>
-                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="triangle" data-action="click->preview#changeShape" aria-label="Triangle">
-                      <%= inline_svg_tag('triangle.svg', class: 'w-8 h-8') %>
-                    </button>
-                    <button type="button" class="shape-button p-2 border rounded flex items-center justify-center w-10 h-10" data-shape="losange" data-action="click->preview#changeShape" aria-label="Losange">
-                      <%= inline_svg_tag('losange.svg', class: 'w-8 h-8') %>
-                    </button>
+                  <div>
+                    <label class="text-sm font-mono" for="rows">Nombre de lignes:</label>
+                    <input 
+                      type="range" 
+                      data-test-target="rows" 
+                      data-action="input->test#updateCurve"
+                      min="1" 
+                      max="5" 
+                      value="1" 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                    >
                   </div>
-                  <%= form.hidden_field :pattern_settings, data: { preview_target: "patternSettings" } %>
-                  <%= form.hidden_field :cover, data: { preview_target: "cover" } %>
+                  <div>
+                    <label class="text-sm font-mono" for="columns">Nombre de colonnes:</label>
+                    <input 
+                      type="range" 
+                      data-test-target="columns" 
+                      data-action="input->test#updateCurve"
+                      min="1" 
+                      max="5" 
+                      value="1" 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                    >
+                  </div>
+                  <div>
+                    <label class="text-sm font-mono" for="smoothing">Transformation:</label>
+                    <input 
+                      type="range" 
+                      data-test-target="smoothing" 
+                      data-action="input->test#updateCurve"
+                      min="10" 
+                      max="100" 
+                      value="50" 
+                      class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
+                    >
+                  </div>
+                  <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
+                  <%= form.hidden_field :cover, data: { test_target: "cover" } %>
                 </div>
               </div>
             </div>
@@ -85,15 +132,30 @@
             <div class="flex flex-col items-center justify-center max-sm:w-full">
               <!-- Pattern Container -->
               <div class="relative h-[384px] w-[calc(384px*250/350)]">
-                <div class="absolute bottom-0 top-0">
-                  <div class="h-fit text-2l z-99" data-preview-target="titleWrapper">
+                <div class="absolute top-0 left-0">
+                  <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
                   </div>
-                  <div class="p-xs text-sm z-99 w-fit" data-preview-target="userName">
+                  <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
                     <%= current_user.username %>
                   </div>
                 </div>
-                <div id="pattern-container" data-preview-target="patternContainer" data-controller="coversize" class="h-[384px] w-[calc(384px*250/350)]">
-                </div>
+                <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                    <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                    <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                  </defs>
+                  <g data-test-target="curveGroup"></g>
+                </svg>
               </div>
             </div>
           </div>
@@ -112,7 +174,7 @@
         <!-- Titre -->
         <label for="title" class="text-l tw-form-label">Titre</label>
         <div class="relative">
-          <%= form.text_field :title, class: "tw-form-input", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->preview#updateTitle", preview_target: "title" } %>
+          <%= form.text_field :title, class: "tw-form-input", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->test#updateTitle", test_target: "titleInput" } %>
           <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>
         </div>
 
