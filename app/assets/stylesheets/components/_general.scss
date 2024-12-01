@@ -24,3 +24,8 @@
 .animated-path {
   animation: move3D 3s infinite alternate;
 } 
+
+.highlight{
+  line-height: 1.6;
+  box-decoration-break: clone;
+}

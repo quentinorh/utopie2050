@@ -12,7 +12,7 @@
       </div>
       <div class="mt-8 flow-root">
         <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
-          <div class="">
+          <div data-controller="staggered-animation">
             <% if @favorite_posts.any? %>
               <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <%= render partial: "post", collection: @favorite_posts %>

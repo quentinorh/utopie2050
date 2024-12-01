@@ -12,45 +12,25 @@
       </div>
       <div class="mt-8 flow-root">
         <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
-          <div class="">
-            <% if @posts.any? %>
+          <div data-controller="staggered-animation">
+            <% if @user_posts.any? %>
               <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <% @posts.each do |post| %>
-                  <div class="w-[240px] h-auto justify-center justify-self-center mx-auto text-xl transition-colors group bg-white opacity-100 overflow-hidden">
-                    <%= link_to post, class: "block" do %>
-                      <div class="w-[240px] h-[calc(240px*1.4)]" data-controller="cover coversize">
-                        <input type="hidden" data-cover-target="title" value="<%= post.title %>">
-                        <input type="hidden" data-scroll-target="title" value="<%= post.title %>">
-                        <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
-                        <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
-                        <div class="relative aspect-[9/14] overflow-hidden">
-                          <div class="absolute inset-0 flex flex-col justify-start">
-                            <div class="h-fit text-l z-10" data-cover-target="titleWrapper">
-                              <%= post.title %>
-                            </div>
-                            <div class="text-sm z-10 w-fit" data-cover-target="userName">
-                              <%= post.user.username %>
-                            </div>
-                          </div>
-                          <div class="cover-svg absolute inset-0 w-[240px] h-[calc(240px*1.4)]" data-controller="coversize">
-                            <%= post.cover.html_safe %>
-                          </div>
-                          <div class="absolute bottom-12 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
-                            <%= link_to 'Editer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
-                            <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block border border-red-500" %>
-                          </div>
-                          <% if post.draft == true %>
-                            <%= link_to 'Brouillon', edit_post_path(post), class: "absolute top-1 right-1 bg-primary rounded-full z-50 text-white px-2 py-1 text-sm font-mono" %>
-                          <% end %>
-                        </div>
-                      </div>
+                <% @user_posts.order(created_at: :desc).each do |post| %>
+                  <div class="relative">
+                    <%= render "posts/post", post: post %>
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
+                      <%= link_to 'Éditer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
+                      <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block border border-red-500" %>
+                    </div>
+                    <% if post.draft == true %>
+                      <%= link_to 'Brouillon', edit_post_path(post), class: "absolute top-1 right-1 bg-primary rounded-full z-50 text-white px-2 py-1 text-sm font-mono" %>
                     <% end %>
                   </div>
                 <% end %>
               </div>
             <% else %>
               <div class="text-center text-gray-500">
-                  <p>Tu n'as pas encore créé de futurs.</p>
+                <p>Tu n'as pas encore créé de futurs.</p>
               </div>
             <% end %>
           </div>

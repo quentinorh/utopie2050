@@ -1,23 +1,25 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["button"]
+  static targets = ["button", "actionsButton"]
   
-  connect() {
-    this.loadBookmark()
+  async connect() {
+    await this.loadBookmark();
+    this.updateBookmarkIcon(this.isBookmarkPresent())
   }
   
   async toggle() {
     const postId = this.element.dataset.postId;
     const currentPosition = this.getCurrentPosition();
     this.insertBookmark(); // Appel de la méthode ici
+    this.updateBookmarkIcon(); // Met à jour l'icône après l'insertion
   }
   
   getCurrentPosition() {
     try {
       const postBody = document.querySelector('.post-body');
       const viewportTop = window.scrollY + 90;
-      const elements = postBody.querySelectorAll('p, h2');
+      const elements = postBody.querySelectorAll('div.body-content, div.chapter-content, h2.chapter-title');
 
       for (let el of elements) {
         const rect = el.getBoundingClientRect();
@@ -76,9 +78,11 @@ export default class extends Controller {
 
       // Envoyer la position au serveur
       await this.saveBookmark(positionInfo.totalPosition);
+      this.updateBookmarkIcon(true); // Met à jour l'icône pour indiquer un marque-page ajouté
     } else {
       // Si aucune position n'est trouvée, supprimez le marque-page
       await this.removeBookmark();
+      this.updateBookmarkIcon(false); // Met à jour l'icône pour indiquer un marque-page supprimé
     }
   }
 
@@ -107,6 +111,7 @@ export default class extends Controller {
       // Supprimer le marque-page du cookie
       document.cookie = `bookmark_${postId}=; path=/; max-age=0`;
     }
+    this.updateBookmarkIcon(false); // Met à jour l'icône pour indiquer un marque-page supprimé
   }
 
   async saveBookmark(characterPosition) {
@@ -168,7 +173,7 @@ export default class extends Controller {
 
   displayBookmark(characterPosition) {
     const postBody = document.querySelector('.post-body');
-    const elements = postBody.querySelectorAll('p, h2');
+    const elements = postBody.querySelectorAll('div.body-content, div.chapter-content, h2.chapter-title');
     let totalLength = 0;
 
     for (let el of elements) {
@@ -187,10 +192,10 @@ export default class extends Controller {
         el.style.position = 'relative'; // Assurez-vous que l'élément parent a une position relative
 
         // Faire défiler la page jusqu'à l'élément contenant le marque-page
-        const rect = el.getBoundingClientRect();
-        const offset = window.scrollY + rect.top - 90; // Ajustez 90 pour compenser la barre de navigation
-        window.scrollTo({ top: offset, behavior: 'smooth' });
-
+        const bookmarkIcon2 = el.querySelector('.bookmark-icon');
+        if (bookmarkIcon2) {
+            bookmarkIcon2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       }
       totalLength += textLength;
@@ -201,5 +206,26 @@ export default class extends Controller {
     // Vérifiez si une balise meta indique que l'utilisateur est connecté
     const userLoggedInMeta = document.querySelector('meta[name="user-logged-in"]');
     return userLoggedInMeta && userLoggedInMeta.getAttribute('content') === 'true';
+  }
+
+  updateBookmarkIcon(isBookmarked) {
+    const button = this.buttonTarget.querySelector('i');
+    const actionsButton = this.actionsButtonTarget.querySelector('i');
+    if (isBookmarked) {
+      button.classList.remove('fa-regular');
+      button.classList.add('fa-solid'); // Changez l'icône pour indiquer un marque-page
+      actionsButton.classList.remove('fa-regular');
+      actionsButton.classList.add('fa-solid'); // Changez l'icône pour indiquer un marque-page
+    } else {
+      button.classList.remove('fa-solid');
+      button.classList.add('fa-regular'); // Changez l'icône pour indiquer aucun marque-page
+      actionsButton.classList.remove('fa-solid');
+      actionsButton.classList.add('fa-regular'); // Changez l'icône pour indiquer aucun marque-page
+    }
+  }
+
+  isBookmarkPresent() {
+    const bookmarkIcon = document.querySelector('.bookmark-icon');
+    return bookmarkIcon !== null;
   }
 }

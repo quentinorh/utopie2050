@@ -14,6 +14,18 @@ export default class extends Controller {
                      "font",
                      "theme" ]
 
+  connect() {
+    this.loadSettings()
+    this.settingsPanelTarget.classList.toggle('hidden')
+    this.actionsPanelTarget.classList.toggle('hidden')
+    this.sharePanelTarget.classList.toggle('hidden')
+    this.addBookmarkPanelTarget.classList.toggle('hidden')
+    this.editPanelTarget.classList.toggle('hidden')
+    this.deletePanelTarget.classList.toggle('hidden')
+    this.reportPanelTarget.classList.toggle('hidden')
+    this.reportConfirmationPanelTarget.classList.toggle('hidden')
+  }
+
   toggleSettings() {
     if (window.innerWidth < 1024) {
       this.actionsPanelTarget.classList.remove('active')
@@ -63,18 +75,6 @@ export default class extends Controller {
     if (window.innerWidth < 1024) {
       this.settingsPanelTarget.classList.remove('active')
     }
-  }
-
-  connect() {
-    this.loadSettings()
-    this.settingsPanelTarget.classList.toggle('hidden')
-    this.actionsPanelTarget.classList.toggle('hidden')
-    this.sharePanelTarget.classList.toggle('hidden')
-    this.addBookmarkPanelTarget.classList.toggle('hidden')
-    this.editPanelTarget.classList.toggle('hidden')
-    this.deletePanelTarget.classList.toggle('hidden')
-    this.reportPanelTarget.classList.toggle('hidden')
-    this.reportConfirmationPanelTarget.classList.toggle('hidden')
   }
 
   changeTextSize(event) {

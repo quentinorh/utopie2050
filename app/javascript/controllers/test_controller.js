@@ -1,33 +1,79 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["path", "sliderX", "sliderY", "sliderX3", "sliderY3", 
+  static targets = ["path", "firstSliderControl", "secondSliderControl", 
                    "symmetryMode", "curveGroup", "colorPicker", 
-                   "rows", "columns", "smoothing"]
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings"]
+  static values = { uniqueId: String }
 
   connect() {
+    if (this.hasPatternSettingsTarget && this.patternSettingsTarget.value) {
+      this.loadPatternSettings();
+    } else {
+      this.randomize();
+    }
     this.updateColors()
     this.updateCurve()
+    this.updateTitle()
+  }
+
+  loadPatternSettings() {
+    const patternSettings = JSON.parse(this.patternSettingsTarget.value);
+
+    // Charger les valeurs dans les contrôles
+    this.symmetryModeTargets.forEach(target => {
+      target.checked = (target.value === patternSettings.symmetryMode);
+    });
+    this.colorPickerTarget.value = patternSettings.color;
+    this.firstSliderControlTarget.value = patternSettings.firstSliderControl;
+    this.secondSliderControlTarget.value = patternSettings.secondSliderControl;
+    this.rowsTarget.value = patternSettings.rows;
+    this.columnsTarget.value = patternSettings.columns;
+    this.smoothingTarget.value = patternSettings.smoothing;
+  }
+
+  updateTitle() {
+    const title = this.titleInputTarget.value || "Futur titre";
+    
+    this.titleWrapperTarget.innerHTML = '';
+
+    const hue = this.colorPickerTarget.value;
+    const backgroundColor = `hsl(${hue}, 80%, 70%)`;
+
+    const titleSpan = document.createElement('span');
+    titleSpan.textContent = title;
+    
+    titleSpan.style.boxShadow = `0 0 0 10px ${backgroundColor}`;
+    titleSpan.style.backgroundColor = backgroundColor;
+
+    this.userNameTarget.style.backgroundColor = backgroundColor
+
+    titleSpan.classList.add('leading-relaxed', 'box-decoration-clone');
+
+    this.titleWrapperTarget.appendChild(titleSpan);
   }
 
   updateCurve() {
+    const selectedMode = this.symmetryModeTargets.find(target => target.checked);
+    const mode = selectedMode.value;
+
     // Récupérer le nombre de lignes et colonnes
     const rows = parseInt(this.rowsTarget.value)
     const columns = parseInt(this.columnsTarget.value)
 
     // Calculer la taille de chaque motif en fonction du nombre de lignes et colonnes
-    const totalWidth = 400  // largeur totale du SVG
-    const totalHeight = 600 // hauteur totale du SVG
+    const totalWidth = 250  // largeur totale du SVG
+    const totalHeight = 350 // hauteur totale du SVG
     const width = totalWidth / columns
     const height = totalHeight / rows
 
     const startPoint = [0, height]
     const endPoint = [width, 0]
 
-    const x = this.sliderXTarget.value / 100
-    const y = this.sliderYTarget.value / 100
-    const x3 = this.sliderX3Target.value / 100
-    const y3 = this.sliderY3Target.value / 100
+    const x = this.firstSliderControlTarget.value / 100
+    const y = 1 - this.firstSliderControlTarget.value / 100
+    const x3 = this.secondSliderControlTarget.value / 100
+    const y3 = 1 - this.secondSliderControlTarget.value / 100
 
     // Récupérer la valeur de lissage
     const smoothing = this.smoothingTarget.value / 100
@@ -46,51 +92,49 @@ export default class extends Controller {
       ${endPoint[0]},${endPoint[1]}
     `
 
-    // Application des symétries selon le mode sélectionné
-    const mode = this.symmetryModeTarget.value
     let transforms = []
 
     switch(mode) {
       case 'x4':
         transforms = [
-          'scale(1,1) translate(-200,-300)',
-          'scale(-1,1) translate(-200,-300)',
-          'scale(1,-1) translate(-200,-300)',
-          'scale(-1,-1) translate(-200,-300)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
       case 'x8':
         transforms = [
-          'scale(1,1) translate(-200,-300)',
-          'scale(-1,1) translate(-200,-300)',
-          'scale(1,-1) translate(-200,-300)',
-          'scale(-1,-1) translate(-200,-300)',
-          'rotate(90) scale(1,1) translate(-200,-300)',
-          'rotate(90) scale(-1,1) translate(-200,-300)',
-          'rotate(90) scale(1,-1) translate(-200,-300)',
-          'rotate(90) scale(-1,-1) translate(-200,-300)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)',
+          'rotate(90) scale(1,1) translate(-125,-175)',
+          'rotate(90) scale(-1,1) translate(-125,-175)',
+          'rotate(90) scale(1,-1) translate(-125,-175)',
+          'rotate(90) scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
       case 'x16':
         transforms = [
-          'scale(1,1) translate(-200,-300)',
-          'scale(-1,1) translate(-200,-300)',
-          'scale(1,-1) translate(-200,-300)',
-          'scale(-1,-1) translate(-200,-300)',
-          'rotate(90) scale(1,1) translate(-200,-300)',
-          'rotate(90) scale(-1,1) translate(-200,-300)',
-          'rotate(90) scale(1,-1) translate(-200,-300)',
-          'rotate(90) scale(-1,-1) translate(-200,-300)',
-          'rotate(45) scale(1,1) translate(-200,-300)',
-          'rotate(45) scale(-1,1) translate(-200,-300)',
-          'rotate(45) scale(1,-1) translate(-200,-300)',
-          'rotate(45) scale(-1,-1) translate(-200,-300)',
-          'rotate(135) scale(1,1) translate(-200,-300)',
-          'rotate(135) scale(-1,1) translate(-200,-300)',
-          'rotate(135) scale(1,-1) translate(-200,-300)',
-          'rotate(135) scale(-1,-1) translate(-200,-300)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)',
+          'rotate(90) scale(1,1) translate(-125,-175)',
+          'rotate(90) scale(-1,1) translate(-125,-175)',
+          'rotate(90) scale(1,-1) translate(-125,-175)',
+          'rotate(90) scale(-1,-1) translate(-125,-175)',
+          'rotate(45) scale(1,1) translate(-125,-175)',
+          'rotate(45) scale(-1,1) translate(-125,-175)',
+          'rotate(45) scale(1,-1) translate(-125,-175)',
+          'rotate(45) scale(-1,-1) translate(-125,-175)',
+          'rotate(135) scale(1,1) translate(-125,-175)',
+          'rotate(135) scale(-1,1) translate(-125,-175)',
+          'rotate(135) scale(1,-1) translate(-125,-175)',
+          'rotate(135) scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
@@ -106,8 +150,18 @@ export default class extends Controller {
     const spacingY = totalHeight / rows
 
     // Calculer le décalage pour centrer la grille
-    const offsetX = (totalWidth - (spacingX * columns)) / 2
-    const offsetY = (totalHeight - (spacingY * rows)) / 2
+    const offsetX = ((totalWidth - (spacingX * columns)) / 2)-1
+    const offsetY = ((totalHeight - (spacingY * rows)) / 2)-1
+
+    const hue = this.colorPickerTarget.value;
+    const backgroundColor = `hsl(${hue}, 50%, 13%)`;
+
+    // Ajouter un rectangle de fond
+    const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    backgroundRect.setAttribute('width', totalWidth);
+    backgroundRect.setAttribute('height', totalHeight);
+    backgroundRect.setAttribute('fill', backgroundColor);
+    this.curveGroupTarget.appendChild(backgroundRect);
 
     // Créer une grille de motifs
     for (let row = 0; row < rows; row++) {
@@ -122,7 +176,7 @@ export default class extends Controller {
           
           // Alterner les gradients
           const gradientIndex = (Math.floor(index / 4) % 3) + 1
-          newPath.setAttribute('fill', `url(#gradient${gradientIndex})`)
+          newPath.setAttribute('fill', `url(#gradient${gradientIndex}-${this.uniqueIdValue})`)
           newPath.setAttribute('stroke', 'none')
           
           this.curveGroupTarget.appendChild(newPath)
@@ -132,35 +186,30 @@ export default class extends Controller {
   }
 
   updateColors() {
-    const hue = parseInt(this.colorPickerTarget.value)
-    const mode = this.symmetryModeTarget.value
+    const hue = parseInt(this.colorPickerTarget.value);
+    const mode = this.symmetryModeTarget.value;
     
-    // Création de l'objet HSL de base
-    const baseHsl = {
-      h: hue,
-      s: 100,
-      l: 65
-    }
-    
-    // Calcul des couleurs complémentaires et triadiques
-    const compHsl = {...baseHsl, h: (baseHsl.h + 180) % 360}
-    const triad1Hsl = {...baseHsl, h: (baseHsl.h + 60) % 360}
-    const triad2Hsl = {...baseHsl, h: (baseHsl.h + 180) % 360}
-    const triad3Hsl = {...baseHsl, h: (baseHsl.h + 300) % 360}
+    const baseHsl = { h: hue, s: 100, l: 65 };
+    const compHsl = { ...baseHsl, h: (baseHsl.h + 180) % 360 };
+    const triad1Hsl = { ...baseHsl, h: (baseHsl.h + 60) % 360 };
+    const triad2Hsl = { ...baseHsl, h: (baseHsl.h + 180) % 360 };
+    const triad3Hsl = { ...baseHsl, h: (baseHsl.h + 300) % 360 };
 
-    this.updateGradient('gradient1', this.hslToHex(baseHsl), this.hslToHex(triad1Hsl))
-    this.updateGradient('gradient2', this.hslToHex(baseHsl), this.hslToHex(triad2Hsl))
-    this.updateGradient('gradient3', this.hslToHex(baseHsl), this.hslToHex(triad3Hsl))
+    // Utilisez l'ID unique pour créer des identifiants de dégradé
+    const uniqueId = this.uniqueIdValue;
+
+    this.updateGradient(`gradient1-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad1Hsl));
+    this.updateGradient(`gradient2-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad2Hsl));
+    this.updateGradient(`gradient3-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad3Hsl));
   }
 
   updateGradient(id, color1, color2) {
-    const gradient = document.getElementById(id)
+    const gradient = document.getElementById(id);
     
-    // Utiliser les deux couleurs fournies pour le dégradé
-    gradient.querySelector('stop:first-child').style.stopColor = color1
-    gradient.querySelector('stop:first-child').style.stopOpacity = '1'
-    gradient.querySelector('stop:last-child').style.stopColor = color2
-    gradient.querySelector('stop:last-child').style.stopOpacity = '1'
+    gradient.querySelector('stop:first-child').style.stopColor = color1;
+    gradient.querySelector('stop:first-child').style.stopOpacity = '1';
+    gradient.querySelector('stop:last-child').style.stopColor = color2;
+    gradient.querySelector('stop:last-child').style.stopOpacity = '1';
   }
 
   hexToHSL(hex) {
@@ -206,28 +255,54 @@ export default class extends Controller {
 
   randomize() {
     // Générer des valeurs aléatoires pour tous les sliders
-    this.sliderXTarget.value = Math.random() * 100
-    this.sliderYTarget.value = Math.random() * 100
-    this.sliderX3Target.value = Math.random() * 100
-    this.sliderY3Target.value = Math.random() * 100
+    this.firstSliderControlTarget.value = Math.random() * 100;
+    this.secondSliderControlTarget.value = Math.random() * 100;
     
     // Générer une couleur aléatoire
-    this.colorPickerTarget.value = Math.floor(Math.random() * 360)
+    this.colorPickerTarget.value = Math.floor(Math.random() * 360);
     
     // Choisir un mode de symétrie aléatoire
-    const modes = ['x4', 'x8', 'x16']
-    const randomMode = modes[Math.floor(Math.random() * modes.length)]
-    this.symmetryModeTarget.value = randomMode
+    const modes = ['x4', 'x8', 'x16'];
+    const randomMode = modes[Math.floor(Math.random() * modes.length)];
+    
+    // Sélectionner le bouton radio correspondant
+    this.symmetryModeTargets.forEach(target => {
+      target.checked = (target.value === randomMode);
+    });
     
     // Générer des valeurs aléatoires pour les lignes et colonnes
-    this.rowsTarget.value = Math.floor(Math.random() * 4) + 1
-    this.columnsTarget.value = Math.floor(Math.random() * 4) + 1
+    this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
+    this.columnsTarget.value = Math.floor(Math.random() * 4) + 1;
 
     // Générer une valeur aléatoire pour le lissage
-    this.smoothingTarget.value = Math.floor(Math.random() * 99) + 1
+    this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
     
     // Mettre à jour les couleurs et la courbe
-    this.updateColors()
-    this.updateCurve()
+    this.updateColors();
+    this.updateCurve();
+    this.updateTitle();
+  }
+
+  saveSVG() {
+    const svgElement = this.curveGroupTarget.closest('svg');
+    const svgText = new XMLSerializer().serializeToString(svgElement);
+    const coverField = this.coverTarget;
+    coverField.value = svgText;
+  }
+
+  savePatternSettings() {
+    const patternSettings = {
+      symmetryMode: this.symmetryModeTargets.find(target => target.checked)?.value,
+      color: this.colorPickerTarget.value,
+      firstSliderControl: this.firstSliderControlTarget.value,
+      secondSliderControl: this.secondSliderControlTarget.value,
+      rows: this.rowsTarget.value,
+      columns: this.columnsTarget.value,
+      smoothing: this.smoothingTarget.value,
+      hue: this.colorPickerTarget.value
+    };
+
+    const patternSettingsField = this.patternSettingsTarget;
+    patternSettingsField.value = JSON.stringify(patternSettings);
   }
 } 
