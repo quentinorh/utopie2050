@@ -22,6 +22,36 @@
       <div class="xl:col-span-3">
         <div class="p-sm rounded-lg  bg-gray-700 shadow w-full">
           <div class="flex gap-sm sm:flex-nowrap flex-wrap">
+            <!-- Aperçu -->
+            <div class="flex flex-col items-center justify-center max-sm:w-full">
+              <!-- Pattern Container -->
+              <div class="relative h-[384px] w-[calc(384px*250/350)]">
+                <div class="absolute top-0 left-0">
+                  <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
+                  </div>
+                  <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
+                    <%= current_user.username %>
+                  </div>
+                </div>
+                <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                    <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                    <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%"/>
+                      <stop offset="100%"/>
+                    </radialGradient>
+                  </defs>
+                  <g data-test-target="curveGroup"></g>
+                </svg>
+              </div>
+            </div>
             <!-- Paramètres de la couverture-->
             <div class="flex-grow min-w-0">
               <div class="flex justify-between items-center">
@@ -126,36 +156,6 @@
                   <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
                   <%= form.hidden_field :cover, data: { test_target: "cover" } %>
                 </div>
-              </div>
-            </div>
-            <!-- Aperçu -->
-            <div class="flex flex-col items-center justify-center max-sm:w-full">
-              <!-- Pattern Container -->
-              <div class="relative h-[384px] w-[calc(384px*250/350)]">
-                <div class="absolute top-0 left-0">
-                  <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
-                  </div>
-                  <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
-                    <%= current_user.username %>
-                  </div>
-                </div>
-                <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
-                  <defs>
-                    <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%"/>
-                      <stop offset="100%"/>
-                    </radialGradient>
-                    <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%"/>
-                      <stop offset="100%"/>
-                    </radialGradient>
-                    <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%"/>
-                      <stop offset="100%"/>
-                    </radialGradient>
-                  </defs>
-                  <g data-test-target="curveGroup"></g>
-                </svg>
               </div>
             </div>
           </div>
