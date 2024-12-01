@@ -61,7 +61,7 @@ export default class extends Controller {
   }
 
   updateCurve() {
-    const totalWidth = window.innerWidth;;
+    const totalWidth = window.innerWidth;
     const totalHeight = window.innerHeight - 60;
 
     const mode = this.mode;
@@ -73,15 +73,20 @@ export default class extends Controller {
     const y3 = this.y3;
     const smoothing = this.smoothing;
 
-    const width = totalWidth / columns
-    const height = totalHeight / rows
-    const startPoint = [0, height]
-    const endPoint = [width, 0]
+    const width = totalWidth / columns;
+    const height = totalHeight / rows;
+    const startPoint = [0, height];
+
+    // Vérifier que les valeurs sont valides
+    if (isNaN(width) || isNaN(height) || isNaN(x) || isNaN(y) || isNaN(x3) || isNaN(y3) || isNaN(smoothing)) {
+        console.error("Invalid parameters for path construction");
+        return;
+    }
 
     // Ajuster les points de contrôle pour le lissage
-    const control1 = [width * x * smoothing, height * smoothing]
-    const control2 = [width * smoothing, height * (1 - y * smoothing)]
-    const control3 = [width * x3 * smoothing, height * (1 - y3 * smoothing)]
+    const control1 = [width * x * smoothing, height * smoothing];
+    const control2 = [width * smoothing, height * (1 - y * smoothing)];
+    const control3 = [width * x3 * smoothing, height * (1 - y3 * smoothing)];
 
     // Création du chemin de base
     const basePath = `
@@ -89,8 +94,7 @@ export default class extends Controller {
       C ${control1[0]},${control1[1]}
       ${control3[0]},${control3[1]}
       ${control2[0]},${control2[1]}
-      ${endPoint[0]},${endPoint[1]}
-    `
+    `;
 
     let transforms = []
 

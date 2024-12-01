@@ -68,7 +68,6 @@ export default class extends Controller {
     const height = totalHeight / rows
 
     const startPoint = [0, height]
-    const endPoint = [width, 0]
 
     const x = this.firstSliderControlTarget.value / 100
     const y = 1 - this.firstSliderControlTarget.value / 100
@@ -89,7 +88,6 @@ export default class extends Controller {
       C ${control1[0]},${control1[1]}
       ${control3[0]},${control3[1]}
       ${control2[0]},${control2[1]}
-      ${endPoint[0]},${endPoint[1]}
     `
 
     let transforms = []
