@@ -6,7 +6,7 @@ export default class extends Controller {
 
   connect() {
     this.totalWidth = window.innerWidth;
-    this.totalHeight = window.visualViewport?.height - 60 || window.innerHeight - 60;
+    this.totalHeight = window.innerHeight - 60;
 
     this.generateParameters();
 
@@ -14,11 +14,7 @@ export default class extends Controller {
     this.updateCurve()
     this.updateViewBox()
     
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', this.updateViewBox.bind(this));
-    } else {
-      window.addEventListener('resize', this.updateViewBox.bind(this));
-    }
+    window.addEventListener('resize', this.updateViewBox.bind(this));
 
     // Commencer l'animation
     this.animationFrameId = null;
@@ -26,11 +22,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', this.updateViewBox.bind(this));
-    } else {
-      window.removeEventListener('resize', this.updateViewBox.bind(this));
-    }
+    window.removeEventListener('resize', this.updateViewBox.bind(this));
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
@@ -39,7 +31,7 @@ export default class extends Controller {
   updateViewBox() {
     const svgElement = this.svgTarget;
     const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height - 60|| window.innerHeight - 60;
+    const totalHeight = window.innerHeight - 60;
     svgElement.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     this.updateCurve()
   }
@@ -74,7 +66,7 @@ export default class extends Controller {
 
   updateCurve() {
     const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height - 60|| window.innerHeight - 60;
+    const totalHeight = window.innerHeight - 60;
 
     const mode = this.mode;
     const rows = this.rows;
