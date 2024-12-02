@@ -77,6 +77,8 @@ export default class extends Controller {
     // Récupérer la valeur de lissage
     const smoothing = this.smoothingTarget.value / 100
 
+    console.log(x, y, x3, y3, smoothing)
+
     // Ajuster les points de contrôle pour le lissage
     const control1 = [width * x * smoothing, height * smoothing]
     const control2 = [width * smoothing, height * (1 - y * smoothing)]
