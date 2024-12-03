@@ -1,4 +1,4 @@
-<h1 class="text-xl lg:text-display px-sm pt-8 pb-4">Tous les futurs
+<h1 class="text-xl lg:text-display pb-xs">Tous les futurs
   <div class="font-mono text-2xl inline-flex items-center">
     <span>[</span>
     <div data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= posts.count %>"><%= posts.count %></div>
@@ -6,7 +6,7 @@
   </div>
 </h1>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 gap-y-8 flex-grow p-sm justify-center" data-controller="staggered-animation">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-xs growjustify-center" data-controller="staggered-animation">
   <% if posts.any? %>
     <% posts.each do |post| %>
       <%= render "post", post: post %>

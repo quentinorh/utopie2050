@@ -1,9 +1,9 @@
 <% content_for :title, "SP 2050 - Explorer les futurs désirables" %>
 <% content_for :description, "Découvre notre collection de récits solarpunk. Des histoires qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
 
-<div class="flex flex-col lg:flex-row">
-  <%= turbo_frame_tag :posts, class: "lg:w-3/4 xl:w-4/5" do %>
-    <div class="m-auto justify-center">
+<div class="flex flex-col lg:flex-row min-h-screen">
+  <%= turbo_frame_tag :posts, class: "w-100 grow" do %>
+    <div class="m-auto justify-center p-xs">
       <%= render "posts", posts: @posts %>
     </div>
   <% end %>
@@ -12,7 +12,7 @@
   <div data-controller="filter" 
        data-filter-visible-class="translate-y-[theme('top.navbar-height')]"
        data-filter-hidden-class="-translate-y-full"
-       class="fixed inset-x-0 h-0 top-0 lg:static lg:w-1/4 xl:w-1/5 z-20">
+       class="lg:w-1/4 xl:w-1/5 z-20 p-sm bg-gray-100">
     
     <!-- Bouton Filtre modifié -->
     <button data-action="click->filter#toggle" 
@@ -26,23 +26,24 @@
 
     <!-- Panneau de filtrage -->
     <div data-filter-target="panel" 
-         class="w-full z-50 bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out -translate-y-full lg:translate-y-0 lg:h-[calc(100dvh-theme('top.navbar-height'))] lg:fixed lg:w-[280px] lg:top-[theme('top.navbar-height')] lg:right-0">
-      <span class="hidden text-gray-900 text-l">Filtres</span>
+         class="">
+      <span class="text-gray-900 text-2l mt-sm mb-sm block border-b border-gray-300 pb-sm">Filtrer les futurs</span>
       <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
-        <div class="text-base">Mot-clé</div>
+        <%= label_tag :by_query, "Mot-clé", class: "text-base mb-xxs block" %>
         <%= text_field_tag :by_query,
             params[:by_query],
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
+            class: "tw-form-input",
             placeholder: "Rechercher...",
             "aria-label": "Rechercher des articles",
             data: { action: "input->search#submit" }
         %>
-        <div class="mt-4 text-base">Auteur·ice·s</div>
+        <%= label_tag :by_author, "Auteur·ice·s", class: "text-base mb-xxs block mt-sm" %>
         <%= select_tag :by_author,
             options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
-            prompt: "Sélectionner...",
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
+            prompt: "Sélectionner...", 
+            class: "tw-form-input",
             "aria-label": "Filtrer par auteur",
+            label_class: "tw-form-label",
             data: { action: "change->search#submit" }  %>
         <div class="mt-4 flex gap-4 items-center">
           <div class="w-full">
