@@ -1,7 +1,7 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 const navbarHeight = {
-  'navbar-height': '60px',
+  'navbar-height': '50px',
 };
 
 const spacings = {
@@ -77,6 +77,9 @@ module.exports = {
           '50%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(100%)' },
         },
+      },
+      transitionTimingFunction: {
+        'bezier-fast': 'cubic-bezier(0.79, 0.13, 0.35, 0.77)'
       },
       borderWidth: {
         DEFAULT: '1px',
