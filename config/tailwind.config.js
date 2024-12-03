@@ -79,7 +79,7 @@ module.exports = {
         },
       },
       transitionTimingFunction: {
-        'bezier-fast': 'cubic-bezier(0.79, 0.13, 0.35, 0.77)'
+        'bezier-fast': 'cubic-bezier(0.25, 0.1, 0.35, 1)'
       },
       borderWidth: {
         DEFAULT: '1px',
