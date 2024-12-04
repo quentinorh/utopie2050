@@ -1,9 +1,10 @@
-<div class="h-[calc(100vh-theme('top.navbar-height'))] w-full relative">
+<div class="h-[calc(100vh-theme('top.navbar-height'))] w-full relative bg-[#000000]">
     <% unique_id = SecureRandom.uuid %>
         <div data-controller="hero"
             data-hero-unique-id-value="<%= unique_id %>"
-            class="w-full">
-            <svg data-hero-target="svg" shape-rendering="auto" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet">
+            class="w-full h-full">
+            
+            <svg data-hero-target="svg" shape-rendering="auto" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet" class="h-full opacity-30">
             <defs>
                 <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
                 <stop offset="0%"/>
@@ -25,9 +26,11 @@
     <!-- Nouvelle div superposée avec fond translucide -->
     <div data-controller="hero-animation"
          class="h-[calc(100dvh-theme('top.navbar-height'))] absolute inset-0 flex flex-col items-center justify-center">
-        <div class="hidden w-full bg-[#000000]/30" data-hero-animation-target="content">
-            <div class="flex flex-col justify-center mx-auto p-4 md:p-12 lg:w-1/2">
-                <h1 class="text-white text-xl md:text-xxl lg:text-display text-center" data-hero-animation-target="title">
+         
+        <div class="hidden w-full" data-hero-animation-target="content">
+            
+            <div class="flex flex-col justify-center mx-auto p-4 md:p-12 lg:w-3/4">
+                <h1 class="text-white text-xl md:text-xxl lg:text-display text-center text-balance" data-hero-animation-target="title">
                     Lire et écrire des futurs désirables
                 </h1>
                 <div class="flex gap-sm mt-sm justify-center" data-hero-animation-target="buttons">

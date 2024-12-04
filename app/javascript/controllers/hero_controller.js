@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import gsap from "gsap"
 
 export default class extends Controller {
   static targets = ["path", "curveGroup", "svg"]
@@ -7,7 +8,12 @@ export default class extends Controller {
   connect() {
     this.totalWidth = window.innerWidth;
     this.totalHeight = window.visualViewport?.height - 60 || window.innerHeight - 60;
-
+    // Initial scale animation
+    gsap.from(this.element, {
+      scale: 1.15,
+      duration: 1,
+      ease: "quad4.out"
+    });
     this.generateParameters();
 
     this.updateColors()
@@ -274,10 +280,14 @@ export default class extends Controller {
     const speed = 0.001; // Ajustez cette valeur pour changer la vitesse de l'animation
 
     // Mettre à jour les paramètres progressivement
-    this.x += this.xDirection * speed;
-    this.y += this.yDirection * speed;
-    this.x3 += this.x3Direction * speed;
-    this.y3 += this.y3Direction * speed;
+    gsap.to(this, {
+      x: `+=${this.xDirection * speed}`,
+      y: `+=${this.yDirection * speed}`,
+      x3: `+=${this.x3Direction * speed}`,
+      y3: `+=${this.y3Direction * speed}`,
+      duration: 0.016, // Roughly one frame at 60fps
+      ease: "expo.out"
+    });
     this.smoothing += this.smoothingDirection * speed;
     this.hue = (this.hue + 1) % 360; // Incrémenter la teinte pour un changement continu
 
