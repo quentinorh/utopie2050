@@ -10,9 +10,11 @@ export default class extends Controller {
     this.totalHeight = window.visualViewport?.height - 60 || window.innerHeight - 60;
     // Initial scale animation
     gsap.from(this.element, {
-      scale: 1.15,
-      duration: 1,
-      ease: "quad4.out"
+      scale: 1.25,
+      opacity: 0,
+      delay: 0.4,
+      duration: 1.6,
+      ease: "power4.out"
     });
     this.generateParameters();
 
