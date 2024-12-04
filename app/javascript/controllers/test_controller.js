@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl", 
                    "symmetryMode", "curveGroup", "colorPicker", 
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings"]
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor", "grid"]
   static values = { uniqueId: String }
 
   connect() {
@@ -77,7 +77,7 @@ export default class extends Controller {
     // Récupérer la valeur de lissage
     const smoothing = this.smoothingTarget.value / 100
 
-    console.log(x, y, x3, y3, smoothing)
+    //console.log(x, y, x3, y3, smoothing)
 
     // Ajuster les points de contrôle pour le lissage
     const control1 = [width * x * smoothing, height * smoothing]
@@ -304,5 +304,57 @@ export default class extends Controller {
 
     const patternSettingsField = this.patternSettingsTarget;
     patternSettingsField.value = JSON.stringify(patternSettings);
+  }
+
+
+  startDrag(event) {
+    console.log('startDrag');
+  }
+
+  drag(event) {
+    console.log('drag');
+    const gridParent = event.currentTarget.parentElement;
+    const gridRect = gridParent.getBoundingClientRect();
+    const target = event.currentTarget;
+
+    // Calculate mouse position relative to grid
+    const mouseX = event.clientX - gridRect.left;
+    const mouseY = event.clientY - gridRect.top;
+
+    // Constrain position within grid boundaries
+    const maxX = gridRect.width - target.offsetWidth;
+    const maxY = gridRect.height - target.offsetHeight;
+    
+    const newX = Math.min(Math.max(0, mouseX), maxX);
+    const newY = Math.min(Math.max(0, mouseY), maxY);
+
+    // Update target position
+    target.style.left = `${newX}px`;
+    target.style.top = `${newY}px`;
+
+    // Calculate percentage coordinates
+    const percentX = (newX / maxX) * 100;
+    const percentY = (newY / maxY) * 100;
+
+    // Round to 2 decimal places for cleaner output
+    const roundedX = Math.round(percentX * 100) / 100;
+    const roundedY = Math.round(percentY * 100) / 100;
+
+    console.log(`Anchor position: ${roundedX}%, ${roundedY}%`);
+    // Update slider controls with anchor position percentages
+    if (gridParent.dataset.patternGrid === "1") {
+      this.firstSliderControlTarget.value = roundedX;
+      this.secondSliderControlTarget.value = roundedY;
+    } else if (gridParent.dataset.patternGrid === "2") {
+      this.rowsTarget.value = 1 + (roundedX / 25); // Maps 0-100 to 1-5
+      this.columnsTarget.value = 1 + (roundedY / 25); // Maps 0-100 to 1-5
+    }
+
+    // Update the curve with new control point positions
+    this.updateCurve();
+  }
+
+  stopDrag(event) {
+    console.log('stopDrag');
   }
 } 

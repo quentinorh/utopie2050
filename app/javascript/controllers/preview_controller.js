@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "hue", "title", "patternSettings", "titleWrapper", "userName", "cover"
+    "hue", "title", "patternSettings", "titleWrapper", "userName", "cover", "grid", "anchor"
   ]
 
   static values = {
