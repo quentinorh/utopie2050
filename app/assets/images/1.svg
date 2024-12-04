@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet" class="w-[571px] h-[799px]" style="opacity: 1;">
+    <defs>
+    <radialGradient id="gradient1-70" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color: rgb(94, 255, 77); stop-opacity: 1;"></stop>
+        <stop offset="100%" style="stop-color: rgb(77, 255, 237); stop-opacity: 1;"></stop>
+    </radialGradient>
+    <radialGradient id="gradient2-70" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color: rgb(94, 255, 77); stop-opacity: 1;"></stop>
+        <stop offset="100%" style="stop-color: rgb(237, 77, 255); stop-opacity: 1;"></stop>
+    </radialGradient>
+    <radialGradient id="gradient3-70" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color: rgb(94, 255, 77); stop-opacity: 1;"></stop>
+        <stop offset="100%" style="stop-color: rgb(255, 237, 77); stop-opacity: 1;"></stop>
+    </radialGradient>
+    </defs>
+    <g data-test-target="curveGroup">
+        <rect width="250" height="350" fill="hsl(114, 50%, 13%)"></rect>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            "
+            transform="translate(40.666666666666664, 174) scale(1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            "
+            transform="translate(40.666666666666664, 174) scale(-1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            "
+            transform="translate(40.666666666666664, 174) scale(1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            " transform="translate(40.666666666666664, 174) scale(-1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            " transform="translate(124, 174) scale(1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            " transform="translate(124, 174) scale(-1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+            " transform="translate(124, 174) scale(1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+            M 0,350
+            C 5.949999999999999,147
+            5.6,226.52
+            35,227.98999999999998
+        " transform="translate(124, 174) scale(-1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+        M 0,350
+        C 5.949999999999999,147
+        5.6,226.52
+        35,227.98999999999998
+        " transform="translate(207.33333333333331, 174) scale(1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+        M 0,350
+        C 5.949999999999999,147
+        5.6,226.52
+        35,227.98999999999998
+        " transform="translate(207.33333333333331, 174) scale(-1,1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+        M 0,350
+        C 5.949999999999999,147
+        5.6,226.52
+        35,227.98999999999998
+        " transform="translate(207.33333333333331, 174) scale(1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+        <path d="
+        M 0,350
+        C 5.949999999999999,147
+        5.6,226.52
+        35,227.98999999999998
+        " transform="translate(207.33333333333331, 174) scale(-1,-1) translate(-125,-175)" fill="url(#gradient1-70)" stroke="none">
+        </path>
+    </g>
+</svg>

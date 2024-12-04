@@ -34,18 +34,18 @@
     <div data-controller="margin"
          data-margin-target="element" 
          class="relative lg:mb-0 mb-xl bg-gray-100 dark:bg-gray-600 lg:fixed flex justify-center lg:mr-0 mr-auto">
-        <div class="relative cover-svg opacity-0">
+        <div class="relative cover opacity-0">
+         <div class="svg-container svg-full-height z-99" data-controller="coversize">
+            <%= @post.cover.html_safe %>
+          </div>
           <div class="absolute top-0 left-0">
-            <div class="px-xs py-[5px] mt-[-5px] text-xl z-99 text-black w-4/5" data-cover-target="titleWrapper" data-svg-animation-target="title">
+            <div class="px-xs py-[5px] mt-[-5px] text-xl z-99 text-black w-4/5 hidden translate-x-[-100%]" data-cover-target="titleWrapper" data-svg-animation-target="title">
               <%= @post.title %>
             </div>
-            <div class="px-xs py-[5px] mt-[6px] text-l z-99 w-fit text-black" data-cover-target="userName" data-svg-animation-target="userName">
+            <div class="px-xs py-[5px] mt-[6px] text-l z-99 w-fit text-black hidden translate-x-[-100%]" data-cover-target="userName" data-svg-animation-target="userName">
               <%= @post.user.username %>
             </div>
           </div> 
-          <div class="svg-full-height z-99" data-controller="coversize">
-            <%= @post.cover.html_safe %>
-          </div>
       </div>
     </div>
 
@@ -73,7 +73,7 @@
             <% end %>
           <% end %>
         </div>
-      <% end %>
+      <% end %>  
       <div class="post-body" data-scroll-target="content">
         <div class="body-content mt-lg adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
         <% if @post.chapters.any? %>

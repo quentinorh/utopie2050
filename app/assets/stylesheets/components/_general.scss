@@ -4,12 +4,10 @@
 
 .slide-up {
   transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
 }
 
 .slide-up.active {
   transform: translateY(0);
-  transition: transform 0.3s ease-in-out;
 }
 
 @keyframes move3D {

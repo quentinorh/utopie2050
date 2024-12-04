@@ -80,9 +80,18 @@ export default class extends Controller {
     console.log(x, y, x3, y3, smoothing)
 
     // Ajuster les points de contrôle pour le lissage
-    const control1 = [width * x * smoothing, height * smoothing]
-    const control2 = [width * smoothing, height * (1 - y * smoothing)]
-    const control3 = [width * x3 * smoothing, height * (1 - y3 * smoothing)]
+    const control1 = [
+      (width * x * smoothing).toFixed(2), 
+      (height * smoothing).toFixed(2)
+    ];
+    const control2 = [
+      (width * smoothing).toFixed(2), 
+      (height * (1 - y * smoothing)).toFixed(2)
+    ];
+    const control3 = [
+      (width * x3 * smoothing).toFixed(2), 
+      (height * (1 - y3 * smoothing)).toFixed(2)
+    ];
 
     // Création du chemin de base
     const basePath = `
