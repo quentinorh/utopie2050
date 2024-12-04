@@ -172,27 +172,44 @@
       <!-- Colonne de droite (contenu) -->
       <div class="p-base bg-white shadow w-full xl:col-span-4">
         <!-- Titre -->
-        <%= form.text_field :title, class: "tw-form-input text-2l pb-xs border-b border-gray-300 ring-0 p-0 rounded-none text-black-900", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->test#updateTitle", test_target: "titleInput" } %>
+        <%= form.text_field :title, 
+                            class: "tw-form-input text-2l pb-xs border-b border-gray-300 ring-0 ring-transparent ring-offset-0 p-0 rounded-none text-black-900", 
+                            placeholder: "Futur titre", 
+                            value: @post.title, 
+                            required: true, 
+                            autofocus: true,
+                            data: { action: "input->test#updateTitle", test_target: "titleInput" } %>
         <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>
         
         <div class="flex justify-between items-center mt-sm">
           <span class="text-sm font-mono">COUV_N°95,0.05,0.795,0.035</span>
-          <div class="flex gap-xs">
+          <div class="flex gap-sm items-center">
+            <div class="flex items-center gap-xs">
+              <button type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" role="switch" aria-checked="false">
+                <span class="sr-only">Publier comme brouillon</span>
+                <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+                <span aria-hidden="true" class="pointer-events-none inline-block size-5 translate-x-0 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+              </button>
+              <span class="text-sm text-nowrap">Enregistrer comme brouillon</span>
+              <div class="mt-xs flex items-center gap-2">
+              <%= form.check_box :draft, class: "tw-form-checkbox" %>
+            <%= form.label :draft, "brouillon", class: "tw-form-label" %>
+          </div>
+            </div>
             <% if @post.new_record? %>
-              <%= form.submit "Créer le futur", class: "tw-btn-primary w-full", data: { action: "click->preview#validateForm" } %>
+              <%= form.submit "Publier le futur", class: "tw-btn-primary w-full", data: { action: "click->preview#validateForm" } %>
             <% else %>
               <%= form.submit "Éditer le futur", class: "tw-btn-primary w-full", data: { action: "click->preview#validateForm" } %>
             <% end %>
           </div>
         </div>
         <!-- Texte -->
-        <%= form.text_area :body, class: "tw-form-input mt-sm", rows: 10 %>
+        <%= form.text_area :body, class: "tw-form-input mt-sm p-sm", rows: 10, placeholder: "Écris ton futur ici..." %>
 
         <!-- Chapitres -->
         <div class="mt-6">
-          <div class="flex items-center justify-between">
-            <span class="text-l">Chapitres</span>
-            <%= button_tag "Ajouter", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
+          <div class="flex items-center justify-end">
+            <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
           </div>
           <div id="chapters" data-chapter-target="chapters">
             <%= form.fields_for :chapters do |chapter_form| %>
@@ -212,15 +229,6 @@
                 <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6", data: { action: "click->chapter#removeChapter" } %>
               </div>
             <% end %>
-          </div>
-        </div>
-
-        <!-- Draft -->
-        <div class="mt-sm">
-          <label for="body" class="mt-6 text-l tw-form-label">Brouillon ?</label>
-          <div class="mt-xs flex items-center gap-2">
-            <%= form.check_box :draft, class: "tw-form-checkbox" %>
-            <%= form.label :draft, "Marquer comme brouillon", class: "tw-form-label" %>
           </div>
         </div>
       </div>
