@@ -7,7 +7,7 @@ export default class extends Controller {
 
   connect() {
     const originalText = this.textValue;
-    const animationDuration = 1000; // 1 second
+    const animationDuration = 400; // 1 second
     const refreshInterval = 60;
     const totalIterations = animationDuration / refreshInterval;
     let currentIteration = 0;
