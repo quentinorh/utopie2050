@@ -7,6 +7,7 @@
   .tw-btn-primary{
     @apply rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm uppercase font-mono text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
   }
+  
 
   .tw-btn-secondary{
     @apply rounded-md bg-transparent px-3.5 py-2.5 text-sm uppercase font-mono border border-indigo-500 text-sm text-indigo-600 shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
