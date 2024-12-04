@@ -317,11 +317,17 @@ export default class extends Controller {
 
 
   startDrag(event) {
-    console.log('startDrag');
+    event.currentTarget.addEventListener('mousemove', this.drag.bind(this));
+    event.currentTarget.addEventListener('mouseup', this.stopDrag.bind(this));
+    this.isDragging = true;
   }
 
   drag(event) {
-    console.log('drag');
+    // Only proceed if mouse was pressed in startDrag
+    if (!this.isDragging) {
+      return;
+    }
+
     const gridParent = event.currentTarget.parentElement;
     const gridRect = gridParent.getBoundingClientRect();
     const target = event.currentTarget;
@@ -364,6 +370,9 @@ export default class extends Controller {
   }
 
   stopDrag(event) {
-    console.log('stopDrag');
+    const target = event.currentTarget;
+    target.removeEventListener('mousemove', this.drag);
+    target.removeEventListener('mouseup', this.stopDrag);
+    this.isDragging = false;
   }
 } 
