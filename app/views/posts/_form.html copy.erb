@@ -110,9 +110,8 @@
       <!-- Colonne de droite (contenu) -->
       <div class="p-sm rounded-lg bg-white shadow w-full xl:col-span-4">
         <!-- Titre -->
-        <label for="title" class="text-l tw-form-label">Titre</label>
         <div class="relative">
-          <%= form.text_field :title, class: "tw-form-input", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->preview#updateTitle", preview_target: "title" } %>
+          <%= form.text_field :title, class: "tw-form-input text-2l mb-sm border-b border-gray-300", placeholder: "Futur titre", value: @post.title, required: true, data: { action: "input->preview#updateTitle", preview_target: "title" } %>
           <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>
         </div>
 
