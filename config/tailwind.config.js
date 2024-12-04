@@ -37,6 +37,7 @@ module.exports = {
         black: {
           100: '#EFEFEF',
           500: '#989898',
+          800: '#424242',
           900: '#323232',
         },
       },
@@ -57,7 +58,7 @@ module.exports = {
       },
       fontSize: {
         'xxs': 'xxx',
-        'xs': 'xx',
+        'xs': '0.65rem',
         'sm': '0.75rem',
         'base': '0.95rem',
         'l': '1.1875rem',
