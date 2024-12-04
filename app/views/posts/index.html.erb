@@ -1,22 +1,35 @@
 <% content_for :title, "SP 2050 - Explorer les futurs désirables" %>
 <% content_for :description, "Découvre notre collection de récits solarpunk. Des histoires qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
 
-<div class="flex flex-col lg:flex-row">
-  <%= turbo_frame_tag :posts, class: "lg:w-3/4 xl:w-4/5" do %>
-    <div class="m-auto justify-center">
+<div class="flex flex-col lg:flex-row min-h-screen" data-controller="filter">
+  <%= turbo_frame_tag :posts, class: "w-100 grow" do %>
+    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-[99] bg-white">
+      <h1 class="text-2l lg:text-display items-center flex">Tous les futurs
+        <div class="font-mono text-base md:text-2xl inline-flex items-center ml-xxs">
+          <span>[</span>
+        <div data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @posts.count %>"><%= @posts.count %></div>
+        <span>]</span>
+        </div>
+      </h1>
+      <span class="md:hidden text-xs tw-btn-secondary w-fit h-fit p-xxs" data-action="click->filter#toggle" >
+        <%= inline_svg_tag('filter.svg') %>
+      </span>
+    </div>
+    <div class="m-auto justify-center p-xs pt-0">
       <%= render "posts", posts: @posts %>
     </div>
   <% end %>
 
   <!-- Colonne de filtrage avec son contrôleur -->
-  <div data-controller="filter" 
+  <div 
        data-filter-visible-class="translate-y-[theme('top.navbar-height')]"
-       data-filter-hidden-class="-translate-y-full"
-       class="fixed inset-x-0 h-0 top-0 lg:static lg:w-1/4 xl:w-1/5 z-20">
+       data-filter-hidden-class=""
+       data-filter-target="panel"
+       class="fixed h-calc(100dvh-theme('top.navbar-height')) top-[theme('top.navbar-height') + 50px] translate-x-full md:translate-x-0 md:static w-full md:w-1/4 xl:w-1/5 z-[999] p-xs bg-gray-100 transition duration-[650ms] ease-bezier-fast">
     
     <!-- Bouton Filtre modifié -->
-    <button data-action="click->filter#toggle" 
-            class="fixed top-[calc(theme('top.navbar-height')-2px)] right-[12px] lg:hidden bg-primary hover:bg-primary-dark text-white rounded-t-lg rounded-full p-[6px] shadow-lg transition-transform duration-300 ease-in-out transform"
+    <button 
+            class="hidden top-[calc(theme('top.navbar-height')-2px) = ] right-[12px] lg:hidden bg-primary hover:bg-primary-dark text-white rounded-t-lg rounded-full p-[6px] shadow-lg transition-transform duration-[500ms] ease-bezier-fast transform"
             data-filter-target="button">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" data-filter-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path data-filter-target="filterPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -26,28 +39,35 @@
 
     <!-- Panneau de filtrage -->
     <div data-filter-target="panel" 
-         class="w-full z-50 bg-gray-100 p-4 overflow-y-auto shadow-lg lg:shadow-none transform transition-transform duration-300 ease-in-out -translate-y-full lg:translate-y-0 lg:h-[calc(100dvh-theme('top.navbar-height'))] lg:fixed lg:w-[280px] lg:top-[theme('top.navbar-height')] lg:right-0">
-      <span class="hidden text-gray-900 text-l">Filtres</span>
+         class="">
+      <span class="hidden md:block text-gray-900 text-2l mt-0 md:mt-sm mb-xs md:mb-sm block border-b border-gray-300 pb-xs md:pb-sm">Filtrer les futurs</span>
+      <div class="block md:hidden flex items-center justify-between border-b border-gray-300 pb-xs">
+        <span class="md:blocktext-gray-900 text-2l mt-0 md:mt-sm mb-0 md:mb-sm block md:pb-sm">Futurs filtrés</span>
+        <span class="tw-btn-secondary w-fit h-fit p-xxs">
+          <%= inline_svg_tag('x.svg', class: 'w-4 h-4', aria: true, data: { action: "click->filter#toggle" }) %>
+        </span>
+      </div>
       <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
-        <div class="text-base">Mot-clé</div>
+        <%= label_tag :by_query, "Mot-clé", class: "mt-sm md:mt-0text-base mb-xxs block" %>
         <%= text_field_tag :by_query,
             params[:by_query],
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
+            class: "tw-form-input",
             placeholder: "Rechercher...",
             "aria-label": "Rechercher des articles",
             data: { action: "input->search#submit" }
         %>
-        <div class="mt-4 text-base">Auteur·ice·s</div>
+        <%= label_tag :by_author, "Auteur·ice·s", class: "text-base mb-xxs block mt-sm" %>
         <%= select_tag :by_author,
             options_from_collection_for_select(User.has_posts, "id", "username", params[:by_author]),
-            prompt: "Sélectionner...",
-            class: "block w-full rounded-md border-0 py-xxs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-800 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm md:text-base",
+            prompt: "Sélectionner...", 
+            class: "tw-form-input",
             "aria-label": "Filtrer par auteur",
+            label_class: "tw-form-label",
             data: { action: "change->search#submit" }  %>
         <div class="mt-4 flex gap-4 items-center">
           <div class="w-full">
-            <label class="text-base">Temps de lecture (minutes)</label>
-            <div class="mt-2 px-2 flex flex-col gap-2">
+            <label class="mt-sm md:mt-0 text-base">Temps de lecture (minutes)</label>
+            <div class="mt-xs px-2 flex flex-col gap-2">
               <div id="reading-time-slider" 
                    class="w-full relative h-2 bg-gray-200 rounded-lg tailwind-slider" 
                    data-controller="slider"

@@ -220,20 +220,20 @@ quentin_user.skip_confirmation!
 quentin_user.save!
 
 # Create 2 additional random users
-users = 2.times.map do
-  user = User.create!(
-    email: Faker::Internet.unique.email,
-    password: "password",
-    username: Faker::Name.name,
-    age: rand(18..70)
-  )
-  user.skip_confirmation!
-  user.save!
-  user
-end
+# users = 2.times.map do
+#   user = User.create!(
+#     email: Faker::Internet.unique.email,
+#     password: "password",
+#     username: Faker::Name.name,
+#     age: rand(18..70)
+#   )
+#   user.skip_confirmation!
+#   user.save!
+#   user
+# end
 
 # Add the specific user to the users array
-users << quentin_user
+# users << quentin_user
 
 puts "5 utilisateurs créés"
 
@@ -267,11 +267,11 @@ themes = [
 ]
 
 # Créer des articles pour chaque utilisateur en utilisant les thèmes disponibles
-users.each do |user|
-  5.times do
-    theme = themes.sample # Choisir un thème aléatoire pour chaque article
-    generer_article(client, user, theme)
-  end
-end
+# users.each do |user|
+#   5.times do
+#     theme = themes.sample # Choisir un thème aléatoire pour chaque article
+#     generer_article(client, user, theme)
+#   end
+# end
 
 puts "Données de seed créées avec succès !"
