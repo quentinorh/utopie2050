@@ -290,6 +290,9 @@ export default class extends Controller {
     this.updateColors();
     this.updateCurve();
     this.updateTitle();
+
+    // Mettre à jour les positions des curseurs
+    this.updateCursorPositions();
   }
 
   saveSVG() {
@@ -317,62 +320,98 @@ export default class extends Controller {
 
 
   startDrag(event) {
-    event.currentTarget.addEventListener('mousemove', this.drag.bind(this));
-    event.currentTarget.addEventListener('mouseup', this.stopDrag.bind(this));
     this.isDragging = true;
+    this.dragTarget = event.currentTarget;
+    this.lastMouseX = event.clientX;
+    this.lastMouseY = event.clientY;
+    document.addEventListener('mousemove', this.drag);
+    document.addEventListener('mouseup', this.stopDrag);
+    document.addEventListener('mouseleave', this.stopDrag);
   }
 
-  drag(event) {
-    // Only proceed if mouse was pressed in startDrag
-    if (!this.isDragging) {
-      return;
-    }
-
-    const gridParent = event.currentTarget.parentElement;
-    const gridRect = gridParent.getBoundingClientRect();
-    const target = event.currentTarget;
-
-    // Calculate mouse position relative to grid
-    const mouseX = event.clientX - gridRect.left;
-    const mouseY = event.clientY - gridRect.top;
-
-    // Constrain position within grid boundaries
-    const maxX = gridRect.width - target.offsetWidth;
-    const maxY = gridRect.height - target.offsetHeight;
+  drag = (event) => {
+    if (!this.isDragging) return;
     
-    const newX = Math.min(Math.max(0, mouseX), maxX);
-    const newY = Math.min(Math.max(0, mouseY), maxY);
+    requestAnimationFrame(() => {
+      const gridParent = this.dragTarget.parentElement;
+      const gridRect = gridParent.getBoundingClientRect();
 
-    // Update target position
-    target.style.left = `${newX}px`;
-    target.style.top = `${newY}px`;
+      // Calculer la position de la souris par rapport à la grille
+      const mouseX = event.clientX - gridRect.left;
+      const mouseY = event.clientY - gridRect.top;
 
-    // Calculate percentage coordinates
-    const percentX = (newX / maxX) * 100;
-    const percentY = (newY / maxY) * 100;
+      // Contraindre la position dans les limites de la grille
+      const maxX = gridRect.width;
+      const maxY = gridRect.height;
 
-    // Round to 2 decimal places for cleaner output
-    const roundedX = Math.round(percentX * 100) / 100;
-    const roundedY = Math.round(percentY * 100) / 100;
+      const newX = Math.min(Math.max(0, mouseX), maxX);
+      const newY = Math.min(Math.max(0, mouseY), maxY);
 
-    console.log(`Anchor position: ${roundedX}%, ${roundedY}%`);
-    // Update slider controls with anchor position percentages
-    if (gridParent.dataset.patternGrid === "1") {
-      this.firstSliderControlTarget.value = roundedX;
-      this.secondSliderControlTarget.value = roundedY;
-    } else if (gridParent.dataset.patternGrid === "2") {
-      this.rowsTarget.value = 1 + (roundedX / 25); // Maps 0-100 to 1-5
-      this.columnsTarget.value = 1 + (roundedY / 25); // Maps 0-100 to 1-5
-    }
+      // Mettre à jour la position de la cible
+      this.dragTarget.style.left = `${newX}px`;
+      this.dragTarget.style.top = `${newY}px`;
 
-    // Update the curve with new control point positions
-    this.updateCurve();
+      // Calculer les coordonnées en pourcentage
+      const percentX = (newX / maxX) * 100;
+      const percentY = (newY / maxY) * 100;
+
+      // Arrondir à 2 décimales pour un affichage plus propre
+      const roundedX = Math.round(percentX * 100) / 100;
+      const roundedY = Math.round(percentY * 100) / 100;
+
+      console.log(`Anchor position: ${roundedX}%, ${roundedY}%`);
+      // Mettre à jour les contrôles de curseur avec les pourcentages de position de l'ancre
+      if (gridParent.dataset.patternGrid === "1") {
+        this.firstSliderControlTarget.value = roundedX;
+        this.secondSliderControlTarget.value = roundedY;
+      } else if (gridParent.dataset.patternGrid === "2") {
+        this.rowsTarget.value = 1 + (roundedX / 25); // Maps 0-100 to 1-5
+        this.columnsTarget.value = 1 + (roundedY / 25); // Maps 0-100 to 1-5
+      }
+
+      // Mettre à jour la courbe avec les nouvelles positions des points de contrôle
+      this.updateCurve();
+    });
   }
 
-  stopDrag(event) {
-    const target = event.currentTarget;
-    target.removeEventListener('mousemove', this.drag);
-    target.removeEventListener('mouseup', this.stopDrag);
+  stopDrag = (event) => {
     this.isDragging = false;
+    document.removeEventListener('mousemove', this.drag);
+    document.removeEventListener('mouseup', this.stopDrag);
+    document.removeEventListener('mouseleave', this.stopDrag);
+  }
+
+  updateCursorPositions() {
+    // console.log('Grid Targets:', this.gridTargets);
+    // console.log('Anchor Targets:', this.anchorTargets);
+
+    const grid1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
+    const grid2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
+
+    if (grid1 && this.anchorTargets[0]) {
+      const gridRect1 = grid1.getBoundingClientRect();
+      const firstSliderValue = this.firstSliderControlTarget.value;
+      const secondSliderValue = this.secondSliderControlTarget.value;
+      // console.log(`First Slider Value: ${firstSliderValue}, Second Slider Value: ${secondSliderValue}`);
+
+      const newX1 = (firstSliderValue / 100) * gridRect1.width;
+      const newY1 = (secondSliderValue / 100) * gridRect1.height;
+      console.log(`Grid 1 - New X: ${newX1}, New Y: ${newY1}`);
+      this.dragTarget.style.left = `${newX1}px`;
+      this.dragTarget.style.top = `${newY1}px`;
+    }
+
+    if (grid2 && this.anchorTargets[1]) {
+      const gridRect2 = grid2.getBoundingClientRect();
+      const rowsValue = this.rowsTarget.value;
+      const columnsValue = this.columnsTarget.value;
+      // console.log(`Rows Value: ${rowsValue}, Columns Value: ${columnsValue}`);
+
+      const newX2 = ((rowsValue - 1) / 4) * gridRect2.width;
+      const newY2 = ((columnsValue - 1) / 4) * gridRect2.height;
+      console.log(`Grid 2 - New X: ${newX2}, New Y: ${newY2}`);
+      this.dragTarget.style.left = `${newX2}px`;
+      this.dragTarget.style.top = `${newY2}px`;
+    }
   }
 } 
