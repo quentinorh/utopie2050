@@ -5,9 +5,23 @@
 }
 
 
-@media (max-width: 1024px) and (max-aspect-ratio: 250/410) {
+@media (max-width: 1024px) and (max-aspect-ratio: 250/400) {
   .svg-full-height {
     height: auto;
     width: 100vw;
+  }
+}
+
+.svg-with-controls {
+  height: calc(100dvh - 250px);
+  width: calc(((100dvh - 250px))*250/350);
+  display: block;
+}
+
+
+@media (max-width: 1024px) and (max-aspect-ratio: 250/500) {
+  .svg-with-controls {
+    height: auto;
+    width: calc(100vw);
   }
 }
