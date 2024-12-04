@@ -23,7 +23,9 @@
       </div>
       <div class="absolute inset-0 w-full">
         <%#= post.cover.html_safe %>
-        <%= cl_image_tag post.cover_image.key, format: :jpg, crop: :fill, aspect_ratio: "5:7", width: 500, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out" %>
+        <% if post.cover_image.present? %>
+          <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "5:7", width: 500, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out" %>
+        <% end %>
         <%#= post.social_image_url %>
       </div>
     </div>

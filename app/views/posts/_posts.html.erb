@@ -1,7 +1,7 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-xs growjustify-center" data-controller="staggered-animation">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-xs grow justify-center" data-controller="staggered-animation">
   <% if posts.any? %>
     <% posts.each do |post| %>
-      <%= render "post", post: post %>
+      <%= render "posts/post", post: post %>
     <% end %>
   <% else %>
     <p class="col-span-4 text-center text-gray-500">Aucun futur n'a été trouvé.</p>
