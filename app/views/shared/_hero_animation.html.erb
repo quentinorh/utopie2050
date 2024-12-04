@@ -34,8 +34,8 @@
                     Lire et écrire des futurs désirables
                 </h1>
                 <div class="flex gap-sm mt-sm justify-center" data-hero-animation-target="buttons">
-                    <%= link_to "Lire les futurs", posts_path, class: "tw-btn-primary text-center max-sm:p-2", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs" } %>
-                    <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary bg-white text-center max-sm:p-2", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur" } %>
+                    <%= link_to "Lire les futurs", posts_path, class: "tw-btn-primary text-center max-sm:p-2 text-base", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs", action: "mouseover->randomize-letter-animation#connect" } %>
+                    <%= link_to "Écrire le futur", new_post_path, class: "tw-btn-secondary bg-white text-center max-sm:p-2 text-base", data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur", action: "mouseover->randomize-letter-animation#connect" } %>
                 </div>
             </div>
         </div>
