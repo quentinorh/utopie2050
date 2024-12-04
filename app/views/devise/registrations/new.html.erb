@@ -2,7 +2,7 @@
 <% content_for :description, "Rejoignez la communauté SP 2050. Créez votre compte pour partager vos visions d'un futur désirable et durable." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
 
-<div class="flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 60px);" data-controller="signup">
+<div class="flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
   <div class="flex flex-col items-center w-full md:w-[600px]">   
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
       <div id="registration-steps" class="p-none p-sm md:p-base text-center">
