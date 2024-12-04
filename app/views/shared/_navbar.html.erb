@@ -1,17 +1,23 @@
 <nav class="bg-white dark:bg-gray-800 border-b dark:text-gray-100 border-gray-200 dark:border-gray-600 sticky top-0 z-[99] h-navbar-height flex w-full items-center" data-controller="navbar fullscreen">
-  <div class="flex justify-between w-full px-xs">
+  <div class="flex justify-between w-full px-xs md:px-sm">
     <div class="flex">
       <div class="flex flex-shrink-0 items-center gap-xs">
         <%= link_to root_path, class: "navbar-brand" do %>
           <h1>SP 2050</h1>
         <% end %>
         <span class="pb-[0.15em]">|</span>
-        <%= link_to "Lire les futurs", posts_path, class: "text-sm font-mono" %>
+        <%= link_to "Lire les futurs", posts_path, 
+                    class: "text-sm font-mono",
+                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs", 
+                    action: "mouseover->randomize-letter-animation#connect" } %>
       </div>
     </div>
     <div class="flex items-center">
       <% if user_signed_in? %>
-        <%= link_to 'Nouveau futur', new_post_path, class: "max-sm:hidden tw-btn-primary p-2 text-sm" %>
+        <%= link_to 'Nouveau futur', new_post_path, 
+                      class: "max-sm:hidden tw-btn-primary p-2 text-sm",
+                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur", 
+                    action: "mouseover->randomize-letter-animation#connect" } %>
       <% else %>
         <div class="flex max-sm:hidden gap-2 gap-1">
           <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary p-2 text-sm" %>
@@ -46,7 +52,11 @@
               </div>
             </div>
             <div class="hidden absolute right-[-40px] text-center z-20 mt-6 w-40 origin-top-right text-sm rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" data-navbar-target="menuDesktop">
-              <%= link_to 'Nouveau futur', new_post_path, class: "inline-block mt-1 sm:hidden tw-btn-primary p-2 text-sm" %>
+              <%= link_to 'Nouveau futur', new_post_path, 
+                          class: "inline-block mt-1 sm:hidden tw-btn-primary p-2 text-sm",
+                          data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur", 
+                          action: "mouseover->randomize-letter-animation#connect" } %>
+
               <% if current_user&.admin? %>
                 <%= link_to "Administration", admin_dashboard_path, class: "tw-nav-link uppercase" %>
               <% end %>
