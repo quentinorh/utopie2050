@@ -65,7 +65,7 @@
   }
 
   :root {
-    --navbar-height: 60px;
+    --navbar-height: 50px;
   }
 
   @supports (bottom: env(keyboard-inset-height)) {
