@@ -279,7 +279,7 @@ export default class extends Controller {
   }
 
   animateParameters() {
-    const speed = 0.001; // Ajustez cette valeur pour changer la vitesse de l'animation
+    const speed = 0.0007; // Ajustez cette valeur pour changer la vitesse de l'animation
 
     // Mettre à jour les paramètres progressivement
     gsap.to(this, {
@@ -287,7 +287,7 @@ export default class extends Controller {
       y: `+=${this.yDirection * speed}`,
       x3: `+=${this.x3Direction * speed}`,
       y3: `+=${this.y3Direction * speed}`,
-      duration: 0.016, // Roughly one frame at 60fps
+      duration: 0.0016, // Roughly one frame at 60fps
       ease: "expo.out"
     });
     this.smoothing += this.smoothingDirection * speed;
