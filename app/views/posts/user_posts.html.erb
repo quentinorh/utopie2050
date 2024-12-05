@@ -3,7 +3,7 @@
 <% content_for :meta_robots, "noindex, nofollow" %>
 
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[700px] px-0 py-sm sm:px-sm"> 
+  <div class="flex flex-col items-center w-full px-0 py-sm sm:px-sm"> 
     <div class="bg-white p-sm rounded-lg shadow">
       <div class="sm:flex">
         <div class="sm:flex-auto">
@@ -14,9 +14,9 @@
         <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
           <div data-controller="staggered-animation">
             <% if @user_posts.any? %>
-              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <% @user_posts.order(created_at: :desc).each do |post| %>
-                  <div class="relative">
+                  <div class="relative flex" style="width: 250px; height: 350px;">
                     <%= render "posts/post", post: post %>
                     <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
                       <%= link_to 'Éditer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
