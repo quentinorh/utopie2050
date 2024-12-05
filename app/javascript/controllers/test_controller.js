@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl", 
                    "symmetryMode", "curveGroup", "colorPicker", 
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor", "grid"]
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft"]
   static values = { uniqueId: String }
 
   connect() {
@@ -15,21 +15,47 @@ export default class extends Controller {
     this.updateColors()
     this.updateCurve()
     this.updateTitle()
+    this.updateCursorPositions()
+
+    // Ajouter un écouteur d'événement pour les boutons de symétrie
+    this.symmetryModeTargets.forEach(target => {
+      target.addEventListener('click', (event) => {
+        this.symmetryModeTargets.forEach(btn => {
+          btn.classList.remove('active', 'tw-btn-primary');
+          btn.classList.add('bg-white', 'tw-btn-secondary');
+        });
+        event.currentTarget.classList.add('active', 'tw-btn-primary');
+        event.currentTarget.classList.remove('bg-white', 'tw-btn-secondary');
+        
+        // Mettre à jour le mode de symétrie
+        this.symmetryMode = event.currentTarget.dataset.value;
+        this.updateCurve();
+      });
+    });
   }
 
   loadPatternSettings() {
     const patternSettings = JSON.parse(this.patternSettingsTarget.value);
-
+    console.log(patternSettings)
     // Charger les valeurs dans les contrôles
-    this.symmetryModeTargets.forEach(target => {
-      target.checked = (target.value === patternSettings.symmetryMode);
-    });
+
+    this.symmetryMode = patternSettings.symmetryMode
     this.colorPickerTarget.value = patternSettings.color;
     this.firstSliderControlTarget.value = patternSettings.firstSliderControl;
     this.secondSliderControlTarget.value = patternSettings.secondSliderControl;
     this.rowsTarget.value = patternSettings.rows;
     this.columnsTarget.value = patternSettings.columns;
     this.smoothingTarget.value = patternSettings.smoothing;
+
+    this.updateSymmetrybutton(patternSettings.symmetryMode)
+
+    console.log(this.colorPickerTarget.value)
+    console.log(this.firstSliderControlTarget.value)
+    console.log(this.secondSliderControlTarget.value)
+    console.log(this.rowsTarget.value)
+    console.log(this.columnsTarget.value)
+    console.log(this.smoothingTarget.value)
+    console.log("settings loaded")
   }
 
   updateTitle() {
@@ -54,8 +80,9 @@ export default class extends Controller {
   }
 
   updateCurve() {
-    const selectedMode = this.symmetryModeTargets.find(target => target.checked);
-    const mode = selectedMode.value;
+    // Utiliser le mode de symétrie mis à jour
+    const mode = this.symmetryMode;
+    this.updateSymmetrybutton(mode);
 
     // Récupérer le nombre de lignes et colonnes
     const rows = parseInt(this.rowsTarget.value)
@@ -159,8 +186,8 @@ export default class extends Controller {
     const spacingY = totalHeight / rows
 
     // Calculer le décalage pour centrer la grille
-    const offsetX = ((totalWidth - (spacingX * columns)) / 2)-1
-    const offsetY = ((totalHeight - (spacingY * rows)) / 2)-1
+    const offsetX = ((totalWidth - (spacingX * columns)) / 2)
+    const offsetY = ((totalHeight - (spacingY * rows)) / 2)
 
     const hue = this.colorPickerTarget.value;
     const backgroundColor = `hsl(${hue}, 50%, 13%)`;
@@ -273,11 +300,12 @@ export default class extends Controller {
     // Choisir un mode de symétrie aléatoire
     const modes = ['x4', 'x8', 'x16'];
     const randomMode = modes[Math.floor(Math.random() * modes.length)];
-    
-    // Sélectionner le bouton radio correspondant
-    this.symmetryModeTargets.forEach(target => {
-      target.checked = (target.value === randomMode);
-    });
+
+
+    // Mettre à jour les boutons pour refléter le mode sélectionné
+
+    this.updateSymmetrybutton(randomMode)
+    this.symmetryMode = this.symmetryModeTargets.find(target => target.classList.contains('active')).dataset.value
     
     // Générer des valeurs aléatoires pour les lignes et colonnes
     this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
@@ -291,8 +319,20 @@ export default class extends Controller {
     this.updateCurve();
     this.updateTitle();
 
-    // Mettre à jour les positions des curseurs
-    this.updateCursorPositions();
+    // Mettre à jour les positions des curseurs après la randomisation
+    requestAnimationFrame(() => this.updateCursorPositions());
+  }
+
+  updateSymmetrybutton(symmetryMode) {
+    this.symmetryModeTargets.forEach(target => {
+      if (target.dataset.value === symmetryMode) {
+        target.classList.add('active', 'tw-btn-primary');
+        target.classList.remove('bg-white', 'tw-btn-secondary');
+      } else {
+        target.classList.remove('active', 'tw-btn-primary');
+        target.classList.add('bg-white', 'tw-btn-secondary');
+      }
+    });
   }
 
   saveSVG() {
@@ -303,8 +343,10 @@ export default class extends Controller {
   }
 
   savePatternSettings() {
+    const activeButton = this.symmetryModeTargets.find(target => target.classList.contains('active'));
+    console.log(activeButton.dataset.value)
     const patternSettings = {
-      symmetryMode: this.symmetryModeTargets.find(target => target.checked)?.value,
+      symmetryMode: activeButton.dataset.value,
       color: this.colorPickerTarget.value,
       firstSliderControl: this.firstSliderControlTarget.value,
       secondSliderControl: this.secondSliderControlTarget.value,
@@ -313,7 +355,7 @@ export default class extends Controller {
       smoothing: this.smoothingTarget.value,
       hue: this.colorPickerTarget.value
     };
-
+  
     const patternSettingsField = this.patternSettingsTarget;
     patternSettingsField.value = JSON.stringify(patternSettings);
   }
@@ -365,8 +407,8 @@ export default class extends Controller {
         this.firstSliderControlTarget.value = roundedX;
         this.secondSliderControlTarget.value = roundedY;
       } else if (gridParent.dataset.patternGrid === "2") {
-        this.rowsTarget.value = 1 + (roundedX / 25); // Maps 0-100 to 1-5
-        this.columnsTarget.value = 1 + (roundedY / 25); // Maps 0-100 to 1-5
+        this.rowsTarget.value = 1 + (roundedY / 25); // Maps 0-100 to 1-5
+        this.columnsTarget.value = 1 + (roundedX / 25); // Maps 0-100 to 1-5
       }
 
       // Mettre à jour la courbe avec les nouvelles positions des points de contrôle
@@ -382,36 +424,54 @@ export default class extends Controller {
   }
 
   updateCursorPositions() {
-    // console.log('Grid Targets:', this.gridTargets);
-    // console.log('Anchor Targets:', this.anchorTargets);
-
     const grid1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
     const grid2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
 
-    if (grid1 && this.anchorTargets[0]) {
+    if (grid1 && this.hasAnchor1Target) {
       const gridRect1 = grid1.getBoundingClientRect();
       const firstSliderValue = this.firstSliderControlTarget.value;
       const secondSliderValue = this.secondSliderControlTarget.value;
-      // console.log(`First Slider Value: ${firstSliderValue}, Second Slider Value: ${secondSliderValue}`);
 
       const newX1 = (firstSliderValue / 100) * gridRect1.width;
       const newY1 = (secondSliderValue / 100) * gridRect1.height;
-      console.log(`Grid 1 - New X: ${newX1}, New Y: ${newY1}`);
-      this.dragTarget.style.left = `${newX1}px`;
-      this.dragTarget.style.top = `${newY1}px`;
+
+      this.anchor1Target.style.left = `${newX1}px`;
+      this.anchor1Target.style.top = `${newY1}px`;
     }
 
-    if (grid2 && this.anchorTargets[1]) {
+    if (grid2 && this.hasAnchor2Target) {
       const gridRect2 = grid2.getBoundingClientRect();
-      const rowsValue = this.rowsTarget.value;
       const columnsValue = this.columnsTarget.value;
-      // console.log(`Rows Value: ${rowsValue}, Columns Value: ${columnsValue}`);
+      const rowsValue = this.rowsTarget.value;
 
-      const newX2 = ((rowsValue - 1) / 4) * gridRect2.width;
-      const newY2 = ((columnsValue - 1) / 4) * gridRect2.height;
-      console.log(`Grid 2 - New X: ${newX2}, New Y: ${newY2}`);
-      this.dragTarget.style.left = `${newX2}px`;
-      this.dragTarget.style.top = `${newY2}px`;
+      // Inverser les calculs pour la deuxième grille
+      const newX2 = ((columnsValue - 1) / 4) * gridRect2.width;
+      const newY2 = ((rowsValue - 1) / 4) * gridRect2.height;
+
+      this.anchor2Target.style.left = `${newX2}px`;
+      this.anchor2Target.style.top = `${newY2}px`;
     }
+  }
+
+  toggleDraft(event) {
+    const button = event.currentTarget;
+    const isChecked = button.getAttribute('aria-checked') === 'true';
+    
+    // Inverser l'état du bouton
+    button.setAttribute('aria-checked', !isChecked);
+    button.querySelector('span[aria-hidden="true"]').classList.toggle('translate-x-5', !isChecked);
+    button.querySelector('span[aria-hidden="true"]').classList.toggle('translate-x-0', isChecked);
+
+    // Mettre à jour la classe de couleur du bouton
+    if (isChecked) {
+      button.classList.remove('bg-primary');
+      button.classList.add('bg-gray-200');
+    } else {
+      button.classList.remove('bg-gray-200');
+      button.classList.add('bg-primary');
+    }
+
+    // Mettre à jour le champ caché
+    this.draftTarget.value = !isChecked;
   }
 } 

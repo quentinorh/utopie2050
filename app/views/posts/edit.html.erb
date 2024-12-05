@@ -3,26 +3,7 @@
 <% content_for :meta_robots, "noindex, nofollow" %>
 
 <div class="bg-black-100">
-  <div class="text-xl p-sm flex flex-col items-center w-full min-h-screen"> 
+  <div class="text-xl flex flex-col items-center w-full min-h-screen"> 
       <%= render 'form', post: @post %>
   </div>
 </div>
-<% if @pattern_settings.present? %>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const previewController = document.querySelector('[data-controller="preview"]').dataset;
-      const settings = <%= raw @pattern_settings.to_json %>;
-
-      previewController.columns = settings.columns || 1;
-      previewController.rows = settings.rows || 1;
-      previewController.hue = settings.hue || '#ff0000';
-      previewController.filledSquares = settings.filledSquares || 1;
-      previewController.whiteSquares = settings.whiteSquares || 1;
-      previewController.padding = settings.padding || 0;
-      previewController.complementaryBg = settings.complementaryBg || false;
-
-      // Mettre à jour le rendu initial
-      previewController.updatePattern();
-    });
-  </script>
-<% end %>

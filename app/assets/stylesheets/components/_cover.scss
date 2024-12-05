@@ -13,13 +13,13 @@
 }
 
 .svg-with-controls {
-  height: calc(100dvh - 250px);
-  width: calc(((100dvh - 250px))*250/350);
+  height: calc(100dvh - 200px);
+  width: calc(((100dvh - 200px))*250/350);
   display: block;
 }
 
 
-@media (max-width: 1024px) and (max-aspect-ratio: 250/500) {
+@media (max-width: 1024px) and (max-aspect-ratio: 250/440) {
   .svg-with-controls {
     height: auto;
     width: calc(100vw);
