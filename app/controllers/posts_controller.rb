@@ -36,11 +36,8 @@ class PostsController < ApplicationController
     @post = current_user.posts.build(post_params.except(:event_code))
     set_event_code
     
-    if @post.valid?
-      attach_cover_image
-    end
-    
     if @post.save
+      AttachCoverImageJob.perform_later(@post.id)
       redirect_to @post
     else
       render :new
@@ -55,13 +52,9 @@ class PostsController < ApplicationController
     set_event_code
     @post.assign_attributes(post_params.except(:event_code))
     
-    if @post.valid?
-      attach_cover_image
-      if @post.save
-        redirect_to @post
-      else
-        render :edit
-      end
+    if @post.save
+      AttachCoverImageJob.perform_later(@post.id)
+      redirect_to @post
     else
       render :edit
     end
@@ -156,19 +149,5 @@ class PostsController < ApplicationController
     else
       @post.event_code = nil
     end
-  end
-
-  def attach_cover_image
-    return unless @post.cover.present?
-    
-    # Attacher directement le SVG
-    @post.cover_image.attach(
-      io: StringIO.new(@post.cover),
-      filename: "cover-#{Time.current.to_i}.svg",
-      content_type: 'image/svg+xml'
-    )
-  rescue => e
-    Rails.logger.error "Erreur lors de l'attachement de l'image: #{e.message}"
-    @post.errors.add(:cover_image, "n'a pas pu être attachée")
   end
 end

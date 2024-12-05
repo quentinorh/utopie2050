@@ -7,7 +7,7 @@ export default class extends Controller {
 
   connect() {
     this.totalWidth = window.innerWidth;
-    this.totalHeight = window.visualViewport?.height - 60 || window.innerHeight - 60;
+    this.totalHeight = window.visualViewport?.height - 50 || window.innerHeight - 50;
     // Initial scale animation
     gsap.from(this.element, {
       scale: 1.25,
@@ -47,7 +47,7 @@ export default class extends Controller {
   updateViewBox() {
     const svgElement = this.svgTarget;
     const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height - 60|| window.innerHeight - 60;
+    const totalHeight = window.visualViewport?.height -50|| window.innerHeight - 50;
     svgElement.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     this.updateCurve()
   }
@@ -61,13 +61,13 @@ export default class extends Controller {
     // this.columns = parseInt(Math.floor(Math.random() * 3) + 2);
     this.rows = 1;
     this.columns = 1;
-    this.x = Math.random();
+    this.x = 0.7;
     //this.y = 1 -this.x;
-    this.y = Math.random();
-    this.x3 = Math.random();
+    this.y = 0.5;
+    this.x3 = 0.9;
     //this.y3 = 1 - this.x3;
-    this.y3 = Math.random();
-    this.smoothing = (Math.floor(Math.random() * 10) + 90) / 100;
+    this.y3 = 0.9;
+    this.smoothing = 0.95;
     this.hue = parseInt(Math.floor(Math.random() * 360));
 
     // Initialiser les directions de changement
@@ -82,7 +82,7 @@ export default class extends Controller {
 
   updateCurve() {
     const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height - 60|| window.innerHeight - 60;
+    const totalHeight = window.visualViewport?.height - 50|| window.innerHeight - 50;
 
     const mode = this.mode;
     const rows = this.rows;
@@ -282,22 +282,28 @@ export default class extends Controller {
     const speed = 0.0007; // Ajustez cette valeur pour changer la vitesse de l'animation
 
     // Mettre à jour les paramètres progressivement
-    gsap.to(this, {
-      x: `+=${this.xDirection * speed}`,
-      y: `+=${this.yDirection * speed}`,
-      x3: `+=${this.x3Direction * speed}`,
-      y3: `+=${this.y3Direction * speed}`,
-      duration: 0.0016, // Roughly one frame at 60fps
-      ease: "expo.out"
-    });
-    this.smoothing += this.smoothingDirection * speed;
+    // gsap.to(this, {
+    //   x: `+=${this.xDirection * speed}`,
+    //   y: `+=${this.yDirection * speed}`,
+    //   x3: `+=${this.x3Direction * speed}`,
+    //   y3: `+=${this.y3Direction * speed}`,
+    //   duration: 0.0016, // Roughly one frame at 60fps
+    //   ease: "expo.out"
+    // });
+
+    this.x += this.xDirection * speed;
+    this.y += this.yDirection * speed;
+    this.x3 += this.x3Direction * speed;
+    this.y3 += this.y3Direction * speed;
+
+    // this.smoothing += this.smoothingDirection * speed;
     this.hue = (this.hue + 1) % 360; // Incrémenter la teinte pour un changement continu
 
     // Inverser la direction si les limites sont atteintes
-    if (this.x <= 0.1 || this.x >= 1) this.xDirection *= -1;
-    if (this.y <= 0.1 || this.y >= 1) this.yDirection *= -1;
-    if (this.x3 <= 0.1 || this.x3 >=1) this.x3Direction *= -1;
-    if (this.y3 <= 0.1 || this.y3 >=1) this.y3Direction *= -1;
+    if (this.x <= 0.5 || this.x >= 1) this.xDirection *= -1;
+    if (this.y <= 0.3 || this.y >= 0.8) this.yDirection *= -1;
+    if (this.x3 <= 0.2 || this.x3 >=0.6) this.x3Direction *= -1;
+    if (this.y3 <= 0.7 || this.y3 >=1) this.y3Direction *= -1;
     if (this.smoothing <= 0.9 || this.smoothing >= 1) this.smoothingDirection *= -1;
 
     // console.log(this.x, this.y, this.x3, this.y3)

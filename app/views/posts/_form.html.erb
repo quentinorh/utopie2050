@@ -1,8 +1,9 @@
 <% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
-<div data-controller="chapter preview test"
+<div data-controller="chapter test"
      data-preview-username-value="<%= current_user.username %>"
      data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
      data-test-unique-id-value="<%= unique_id %>"
+     data-test-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
      class="w-full">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col min-h-screen", data: { action: "submit->test#saveSVG submit->test#savePatternSettings" } }) do |form| %>
 
@@ -18,77 +19,78 @@
       </div>
     <% end %>
     <div class="flex flex-col lg:flex-row mx-0 dark:bg-gray-800 bg-gray-100">
-      <!-- Colonne de gauche (paramètres et aperçu) -->
-      <div class="relative lg:mb-0 mb-xl w-[auto] lg:fixed flex justify-center lg:mr-0">
-        <div class="relative cover">
-          <!-- Aperçu de la couverture-->
-          <div class="svg-with-controls z-99" data-controller="coversize">
-            <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
-              <defs>
-                <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%"/>
-                  <stop offset="100%"/>
-                </radialGradient>
-                <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%"/>
-                  <stop offset="100%"/>
-                </radialGradient>
-                <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%"/>
-                  <stop offset="100%"/>
-                </radialGradient>
-              </defs>
-              <g data-test-target="curveGroup"></g>
-            </svg>
+      <!-- Colonne de gauche -->
+      <div class="relative lg:mb-0 mb-xl w-[auto] lg:fixed flex justify-center lg:mr-0">   
+        <div class="flex flex-col">
+          <!-- Couverture-->
+          <div class="relative">
+            <div class="svg-with-controls z-99" data-controller="coversize">
+              <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"/>
+                    <stop offset="100%"/>
+                  </radialGradient>
+                  <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"/>
+                    <stop offset="100%"/>
+                  </radialGradient>
+                  <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"/>
+                    <stop offset="100%"/>
+                  </radialGradient>
+                </defs>
+                <g data-test-target="curveGroup"></g>
+              </svg>
+            </div>
+            <div class="absolute top-0 left-0">
+              <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
+              </div>
+              <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
+                <%= current_user.username %>
+              </div>
+            </div>
+            <div class="absolute bottom-4 right-4">
+              <button type="button" class="tw-btn-primary text-sm p-xs" data-action="click->test#randomize">Aléatoire</button>            
+            </div>
           </div>
-          <div class="absolute top-0 left-0">
-            <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
-            </div>
-            <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
-              <%= current_user.username %>
-            </div>
-          </div>
-          <!-- Paramètres de la couverture-->
-          <div class="flex-grow min-w-0 h-[200px] bg-gray-600 ">
-            <div class="flex justify-between items-center">
-              <button type="button" class="tw-btn-primary text-sm py-1 px-2" data-action="click->test#randomize">Aléatoire</button>            
-            </div>
-            <div class="mt-xs">
-              <!-- Controls -->
-              <div class="mt-4 text-l text-white"> 
-                <div class="hidden">
-                  <label class="text-sm font-mono" for="sliderX">Contrôle 1:</label>
-                  <input type="range" 
-                    data-test-target="firstSliderControl" 
-                    data-action="input->test#updateCurve"
-                    min="0" max="100" value="50" 
-                    class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                  >
-                </div>
 
-                <!-- Joysticks -->
-                <div class="flex gap-sm justify-center">
-                  <div>
-                    <div class="flex flex-col gap-sm text-sm font-mono mt-1 mb-2">
-                      <label>
-                        <input type="radio" name="symmetryMode" value="x4" data-test-target="symmetryMode" data-action="change->test#updateCurve">
-                        <span class="align-middle">x4</span>
-                      </label>
-                      <label>
-                        <input type="radio" name="symmetryMode" value="x8" data-test-target="symmetryMode" data-action="change->test#updateCurve">
-                        <span class="align-middle">x8</span>
-                      </label>
-                      <label>
-                        <input type="radio" name="symmetryMode" value="x16" data-test-target="symmetryMode" data-action="change->test#updateCurve">
-                        <span class="align-middle">x16</span>
-                      </label>
+          <!-- Paramètres-->
+          <div class="flex-grow min-w-0 h-[150px] bg-gray-600 flex items-center justify-center">
+            <div class="w-full">
+              <!-- Controls -->
+              <div class="text-l text-white"> 
+                <div class="flex gap-1 justify-around px-sm">
+                  <div class="">
+                    <div class="flex flex-col justify-center items-center gap-xs text-sm font-mono h-full">
+                      <button type="button" 
+                              class="tw-btn-primary w-10 px-2 py-1" 
+                              data-test-target="symmetryMode" 
+                              data-action="click->test#updateCurve" 
+                              data-value="x4">
+                        x4
+                      </button>
+                      <button type="button" 
+                              class="tw-btn-primary w-10 px-2 py-1" 
+                              data-test-target="symmetryMode" 
+                              data-action="click->test#updateCurve" 
+                              data-value="x8">
+                        x8
+                      </button>
+                      <button type="button" 
+                              class="tw-btn-primary w-10 px-2 py-1" 
+                              data-test-target="symmetryMode" 
+                              data-action="click->test#updateCurve" 
+                              data-value="x16">
+                        x16
+                      </button>
                     </div>
                   </div>
 
-                  <div>
+                  <div class="">
                     <label class="text-sm font-mono hidden" for="colorPicker">Couleur:</label>
                     <input 
-                      class="h-[64px] w-2 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed [-webkit-appearance:slider-vertical] [writing-mode:bt-lr]"
+                      class="h-[96px] w-1 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
                       type="range"
                       id="hue"
                       data-test-target="colorPicker"
@@ -96,6 +98,7 @@
                       min="0"
                       max="360"
                       value="280"
+                      orient="vertical"
                       style="background: linear-gradient(to bottom, 
                         hsl(0, 80%, 70%), 
                         hsl(60, 80%, 70%), 
@@ -108,32 +111,32 @@
                   </div>
 
                   <div class="">
-                    <div class="relative w-32 h-32 border border-black-500" data-pattern-grid=1>
-                      <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 divide-black-500/50" data-test-target="grid">
-                        <% 36.times do |i| %>
+                    <div class="relative w-24 h-24 border border-black-500" data-pattern-grid="1">
+                      <div class="absolute inset-0 grid grid-cols-8 grid-rows-8 divide-black-500/50" data-test-target="grid" data-pattern-grid="1">
+                        <% 64.times do |i| %>
                           <span class="border-r border-t border-black-500/50"></span>
                         <% end %>
                       </div>
                       
                       <!-- Center circle -->
-                      <div data-test-target="anchor" data-action="mousedown->test#startDrag mousemove->test#drag mouseup->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full"></div>
+                      <div data-test-target="anchor1" data-action="mousedown->test#startDrag mousemove->test#drag mouseup->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full"></div>
                     </div>
                   </div>
 
                   <div class="">
-                    <div class="relative w-32 h-32 border border-black-500" data-pattern-grid=2>
-                      <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 divide-black-500/50" data-test-target="grid">
-                        <% 36.times do |i| %>
+                    <div class="relative w-24 h-24 border border-black-500" data-pattern-grid="2">
+                      <div class="absolute inset-0 grid grid-cols-4 grid-rows-4 divide-black-500/50" data-test-target="grid" data-pattern-grid="2">
+                        <% 16.times do |i| %>
                           <span class="border-r border-t border-black-500/50"></span>
                         <% end %>
                       </div>
                       
                       <!-- Center circle -->
-                      <div data-test-target="anchor" data-action="mousedown->test#startDrag mousemove->test#drag mouseup->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full"></div>
+                      <div data-test-target="anchor2" data-action="mousedown->test#startDrag mousemove->test#drag mouseup->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full"></div>
                     </div>
                   </div>
-
-                  <div class="h-[64px]">
+                  
+                  <div class="h-[96px]">
                     <input 
                       type="range" 
                       data-test-target="smoothing" 
@@ -141,45 +144,15 @@
                       min="10" 
                       max="100" 
                       value="50" 
-                      class="h-full w-2 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed [writing-mode:bt-lr] [-webkit-appearance:slider-vertical]"
+                      orient="vertical"
+                      class="h-full w-2 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
                     >
                   </div>
-
                 </div>
-                <div class="hidden">
-                  <label class="text-sm font-mono" for="sliderX3">Contrôle 2:</label>
-                  <input type="range" 
-                    data-test-target="secondSliderControl" 
-                    data-action="input->test#updateCurve"
-                    min="0" max="100" value="50" 
-                    class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                  >
-                </div>
-                <div class="hidden">
-                  <label class="text-sm font-mono" for="rows">Nombre de lignes:</label>
-                  <input 
-                    type="range" 
-                    data-test-target="rows" 
-                    data-action="input->test#updateCurve"
-                    min="1" 
-                    max="5" 
-                    value="1" 
-                    class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                  >
-                </div>
-                <div class="hidden">
-                  <label class="text-sm font-mono" for="columns">Nombre de colonnes:</label>
-                  <input 
-                    type="range" 
-                    data-test-target="columns" 
-                    data-action="input->test#updateCurve"
-                    min="1" 
-                    max="5" 
-                    value="1" 
-                    class="h-2 w-full cursor-ew-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                  >
-                </div>
-                
+                <input type="range" data-test-target="firstSliderControl" data-action="input->test#updateCurve" class="hidden">
+                <input type="range" data-test-target="secondSliderControl" data-action="input->test#updateCurve" class="hidden">              
+                <input data-test-target="rows" data-action="input->test#updateCurve" class="hidden">
+                <input data-test-target="columns" data-action="input->test#updateCurve" class="hidden">
                 <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
                 <%= form.hidden_field :cover, data: { test_target: "cover" } %>
               </div>
@@ -188,16 +161,16 @@
         </div>
       </div>
       <!-- Colonne de droite (contenu) -->
-      <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-250px)] px-sm lg:px-xl pt-[60px]  pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100dvh-250px)*(250/350))]">
+      <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-200px)] px-sm lg:px-xl pt-[60px]  pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100dvh-200px)*(250/350))]">
         <div class="flex items-center justify-between gap-sm">
           <span class="text-sm font-mono text-gray-500 block mb-sm">COUV_N°95,0.05,0.795,0.035</span>
           <% if !@post.new_record? %>
-            <span class="text-sm font-mono text-gray-500 block mb-sm">Crée le <%= @post.created_at.strftime("%d/%m/%Y") %></span>
+            <span class="text-sm font-mono text-gray-500 block mb-sm uppercase">Crée le <%= @post.created_at.strftime("%d/%m/%Y") %></span>
           <% end %>
         </div>
         <!-- Titre -->
         <%= form.text_field :title, 
-                          class: "tw-form-input text-2l pb-xs border-b border-gray-300 ring-0 ring-transparent ring-offset-0 p-0 rounded-none text-black-900", 
+                          class: "tw-form-input text-2l p-xs border-gray-300 ring-0 ring-transparent ring-offset-0 p-0 rounded-none text-black-900", 
                           placeholder: "Futur titre", 
                           value: @post.title, 
                           required: true, 
@@ -207,26 +180,27 @@
         
         <div class="flex justify-between items-center mt-sm">
           <div class="flex gap-sm items-center w-full">
-            <div class="grow mr-base">
-              <label class="text-base tw-form-label">Code événement</label>
-              <p class="text-xs text-gray-600 pb-2">Si ce futur fait partie d'un événement, indique le code ici</p>
-  
-            <%= form.text_field :event_code,
-                value: @post.event_code&.code,
-                class: "tw-form-input text-sm",
-                placeholder: "optionnel"%>
+            <div class="flex flex-col">
+              <p class="text-sm text-gray-600 pl-[2px]">Code événement :</p>
+              <%= form.text_field :event_code,
+                  value: @post.event_code&.code,
+                  class: "tw-form-input text-sm pt-1 pb-0 px-xs",
+                  placeholder: "Optionnel"%>
             </div>
-            <div class="flex items-center gap-xs">
-              <span class="text-sm text-nowrap">Enregistrer comme brouillon</span>
-              <button type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" role="switch" aria-checked="false">
+            <div class="flex items-center justify-end gap-xs grow">
+              <span class="text-sm text-nowrap">Brouillon</span>
+              <% draft_checked = @post.draft ? 'true' : 'false' %>
+              <% translate_class = @post.draft ? 'translate-x-5' : 'translate-x-0' %>
+              <% button_color_class = @post.draft ? 'bg-primary' : 'bg-gray-200' %>
+              <button type="button" 
+                      class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent <%= button_color_class %> transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" 
+                      role="switch" 
+                      aria-checked="<%= draft_checked %>" 
+                      data-action="click->test#toggleDraft">
                 <span class="sr-only">Publier comme brouillon</span>
-                <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
-                <span aria-hidden="true" class="pointer-events-none inline-block size-5 translate-x-0 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                <span aria-hidden="true" class="pointer-events-none inline-block size-5 <%= translate_class %> transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
               </button>
-              <div class="flex items-center gap-2">
-                <%= form.check_box :draft, class: "tw-form-checkbox" %>
-                <%= form.label :draft, "brouillon", class: "tw-form-label" %>
-              </div>
+              <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
             </div>
             <% if @post.new_record? %>
               <%= form.submit "Publier le futur", class: "tw-btn-primary w-fit", data: { action: "click->preview#validateForm" } %>
