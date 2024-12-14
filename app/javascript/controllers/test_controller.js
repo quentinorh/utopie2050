@@ -378,9 +378,9 @@ export default class extends Controller {
       const gridParent = this.dragTarget.parentElement;
       const gridRect = gridParent.getBoundingClientRect();
 
-      // Calculer la position de la souris par rapport à la grille
-      const mouseX = event.clientX - gridRect.left;
-      const mouseY = event.clientY - gridRect.top;
+      // Calculer la position de la souris/du toucher par rapport à la grille
+      const mouseX = event.touches ? event.touches[0].clientX - gridRect.left : event.clientX - gridRect.left;
+      const mouseY = event.touches ? event.touches[0].clientY - gridRect.top : event.clientY - gridRect.top;
 
       // Contraindre la position dans les limites de la grille
       const maxX = gridRect.width;
