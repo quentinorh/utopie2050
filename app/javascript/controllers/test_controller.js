@@ -364,23 +364,28 @@ export default class extends Controller {
   startDrag(event) {
     this.isDragging = true;
     this.dragTarget = event.currentTarget;
-    this.lastMouseX = event.clientX;
-    this.lastMouseY = event.clientY;
+    this.lastMouseX = event.clientX || event.touches[0].clientX;
+    this.lastMouseY = event.clientY || event.touches[0].clientY;
     document.addEventListener('mousemove', this.drag);
     document.addEventListener('mouseup', this.stopDrag);
     document.addEventListener('mouseleave', this.stopDrag);
+    document.addEventListener('touchmove', this.drag, { passive: false });
+    document.addEventListener('touchend', this.stopDrag);
+    document.addEventListener('touchcancel', this.stopDrag);
   }
 
   drag = (event) => {
     if (!this.isDragging) return;
     
+    event.preventDefault(); // Empêche le défilement par défaut sur mobile
+
     requestAnimationFrame(() => {
       const gridParent = this.dragTarget.parentElement;
       const gridRect = gridParent.getBoundingClientRect();
 
-      // Calculer la position de la souris par rapport à la grille
-      const mouseX = event.clientX - gridRect.left;
-      const mouseY = event.clientY - gridRect.top;
+      // Calculer la position de la souris ou du toucher par rapport à la grille
+      const mouseX = (event.clientX || event.touches[0].clientX) - gridRect.left;
+      const mouseY = (event.clientY || event.touches[0].clientY) - gridRect.top;
 
       // Contraindre la position dans les limites de la grille
       const maxX = gridRect.width;
@@ -421,9 +426,13 @@ export default class extends Controller {
     document.removeEventListener('mousemove', this.drag);
     document.removeEventListener('mouseup', this.stopDrag);
     document.removeEventListener('mouseleave', this.stopDrag);
+    document.removeEventListener('touchmove', this.drag);
+    document.removeEventListener('touchend', this.stopDrag);
+    document.removeEventListener('touchcancel', this.stopDrag);
   }
 
   updateCursorPositions() {
+    console.log("updateCursorPositions")
     const grid1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
     const grid2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
 

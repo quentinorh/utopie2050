@@ -3,7 +3,7 @@
 <% content_for :meta_robots, "noindex, nofollow" %>
 
 <div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[700px] px-0 py-sm sm:px-sm"> 
+  <div class="flex flex-col items-center w-full px-0 py-sm sm:px-sm"> 
     <div class="bg-white p-sm rounded-lg shadow">
       <div class="sm:flex">
         <div class="sm:flex-auto">
@@ -14,7 +14,7 @@
         <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
           <div data-controller="staggered-animation">
             <% if @favorite_posts.any? %>
-              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <%= render partial: "post", collection: @favorite_posts %>
               </div>
             <% else %>

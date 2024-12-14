@@ -85,4 +85,7 @@ Rails.application.configure do
 
   # config.force_ssl = false
   # config.assets.compile = true
+
+  # config.hosts << /.*\.ngrok\.io$/
+  # config.hosts << /.*\.ngrok-free\.app$/s
 end
