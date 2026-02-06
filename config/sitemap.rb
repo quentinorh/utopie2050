@@ -22,11 +22,11 @@ SitemapGenerator::Sitemap.create do
   add root_path, changefreq: 'weekly', priority: 1.0
   puts "Ajout de la page d'accueil"
   
-  # Liste des récits
+  # Liste des futurs
   add posts_path, changefreq: 'daily', priority: 0.9
-  puts "Ajout de la liste des récits"
+  puts "Ajout de la liste des futurs"
   
-  # Récits individuels
+  # Futurs individuels
   Post.where("draft IS NULL OR draft = ?", false)
       .find_each do |post|
     puts "Ajout du post: #{post.title}"

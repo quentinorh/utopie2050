@@ -94,3 +94,4 @@ gem 'fog-aws'
 gem 'aws-sdk-s3'
 
 gem "bugsnag", "~> 6.27"
+gem "rack-attack"

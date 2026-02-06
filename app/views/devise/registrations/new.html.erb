@@ -5,6 +5,11 @@
 <div class="flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
   <div class="flex flex-col items-center w-full md:w-[600px]">   
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+      <%# Honeypot anti-bot : champ invisible que seuls les bots remplissent %>
+      <div aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+        <label for="user_website_url">Ne pas remplir</label>
+        <input type="text" name="user[website_url]" id="user_website_url" tabindex="-1" autocomplete="off" />
+      </div>
       <div id="registration-steps" class="p-none p-sm md:p-base text-center">
         <div class="step" id="step-intro" data-signup-target="step">
           <h3 class="text-xl uppercase text-center mb-sm">Introduction</h3>

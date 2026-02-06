@@ -1,18 +1,21 @@
 <% content_for :title, "SP 2050 - Explorer les futurs désirables" %>
-<% content_for :description, "Découvre notre collection de récits solarpunk. Des histoires qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
+<% content_for :description, "Découvre notre collection de futurs. Des récits qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
 
 <div class="flex flex-col lg:flex-row min-h-screen" data-controller="filter">
-  <%= turbo_frame_tag :posts, class: "w-100 grow" do %>
-    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-[99] bg-white">
-      <h1 class="text-2l lg:text-display items-center flex">Tous les futurs
+  <%= turbo_frame_tag :posts, class: "w-full grow min-w-0 lg:mr-[25%]" do %>
+    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-20 bg-white">
+      <h1 class="text-2l lg:text-display items-center flex"><%= @filters_active ? "Futurs trouvés" : "Tous les futurs" %>
         <div class="font-mono text-base md:text-2xl inline-flex items-center ml-xxs">
           <span>[</span>
         <div data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @posts.count %>"><%= @posts.count %></div>
         <span>]</span>
         </div>
       </h1>
-      <span class="md:hidden text-xs tw-btn-secondary w-fit h-fit p-xxs" data-action="click->filter#toggle" >
-        <%= inline_svg_tag('filter.svg') %>
+      <span class="lg:hidden text-xs w-fit h-fit p-xxs cursor-pointer" data-action="click->filter#toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path data-filter-target="filterPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          <path data-filter-target="closePath" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </span>
     </div>
     <div class="m-auto justify-center p-xs pt-0">
@@ -25,7 +28,7 @@
        data-filter-visible-class="translate-y-[theme('top.navbar-height')]"
        data-filter-hidden-class=""
        data-filter-target="panel"
-       class="fixed h-calc(100dvh-theme('top.navbar-height')) top-[theme('top.navbar-height') + 50px] translate-x-full md:translate-x-0 md:static w-full md:w-1/4 xl:w-1/5 z-[999] p-xs bg-gray-100 transition duration-[650ms] ease-bezier-fast">
+       class="fixed right-0 h-[calc(100dvh-theme('top.navbar-height'))] top-[theme('top.navbar-height')] translate-x-full lg:translate-x-0 w-full lg:w-1/4 z-10 p-xs transition duration-[650ms] ease-bezier-fast border-l border-gray-300 bg-white overflow-y-auto">
     
     <!-- Bouton Filtre modifié -->
     <button 
@@ -38,14 +41,9 @@
     </button>
 
     <!-- Panneau de filtrage -->
-    <div data-filter-target="panel" 
-         class="">
-      <span class="hidden md:block text-gray-900 text-2l mt-0 md:mt-sm mb-xs md:mb-sm block border-b border-gray-300 pb-xs md:pb-sm">Filtrer les futurs</span>
-      <div class="block md:hidden flex items-center justify-between border-b border-gray-300 pb-xs">
-        <span class="md:blocktext-gray-900 text-2l mt-0 md:mt-sm mb-0 md:mb-sm block md:pb-sm">Futurs filtrés</span>
-        <span class="tw-btn-secondary w-fit h-fit p-xxs">
-          <%= inline_svg_tag('x.svg', class: 'w-4 h-4', aria: true, data: { action: "click->filter#toggle" }) %>
-        </span>
+    <div data-filter-target="panel" class="">
+      <div class="block flex items-center justify-between pb-xs">
+        <span class="text-gray-900 text-2l block">Filtres</span>
       </div>
       <%= form_with url: posts_path, method: :get, html: { data: { turbo: true, turbo_stream: true, controller: "search", "turbo-frame": "search", "turbo-action": "advance" } } do %>
         <%= label_tag :by_query, "Mot-clé", class: "mt-sm md:mt-0text-base mb-xxs block" %>

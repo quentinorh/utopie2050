@@ -12,16 +12,19 @@ class PostsController < ApplicationController
   def index
     @max_reading_time = Post.maximum(:reading_time).to_i
     @posts = apply_scopes(Post.published).order(created_at: :desc)
-  
+    @filters_active = params[:by_query].present? || params[:by_author].present? ||
+      (params.dig(:by_reading_time_range, :min).to_i > 0) ||
+      (params.dig(:by_reading_time_range, :max).present? && params.dig(:by_reading_time_range, :max).to_i < @max_reading_time)
+
     respond_to do |format|
       format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.update('posts', partial: 'posts', locals: { posts: @posts }) }
+      format.turbo_stream
     end
   end
 
   def show
     unless can_view_draft?(@post)
-      redirect_to posts_path, alert: "Ce récit n'est pas accessible."
+      redirect_to posts_path, alert: "Ce futur n'est pas accessible."
       return
     end
     @report = Report.new

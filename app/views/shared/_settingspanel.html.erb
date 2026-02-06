@@ -1,7 +1,7 @@
 <div data-actions-target="settingsPanel"
-     class="slide-up transition ease-bezier-fast duration-[650ms] hidden fixed grid grid-cols-2 md:grid-cols-4 bg-white dark:bg-gray-800 text-black-900 dark:text-gray-100 justify-evenly items-center lg:w-[calc(100vw-((100dvh-100px)*(250/350)))] lg:ml-[calc((100dvh-100px)*(250/350))] z-30 w-full border-t border-gray-200 dark:border-gray-600 md:h-navbar-height h-[calc(2*50px)]"
+     class="slide-up transition ease-bezier-fast duration-[650ms] hidden fixed grid grid-cols-2 xl:grid-cols-4 bg-white dark:bg-gray-800 text-black-900 dark:text-gray-100 justify-evenly items-center lg:w-[calc(100vw-((100dvh-100px)*(250/350)))] lg:ml-[calc((100dvh-100px)*(250/350))] z-30 w-full border-t border-gray-200 dark:border-gray-600 xl:h-navbar-height h-[calc(2*50px)]"
      style="bottom: 50px;">
-  <div class="flex space-x-1 justify-center items-center">
+  <div class="h-full border-b xl:border-b-0 border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
     <button id="text-size-small" aria-label="Très petite taille de texte" class="border-2 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="small">
       <span style="font-size: 0.6rem;">A</span>
     </button>
@@ -15,7 +15,7 @@
       <span style="font-size: 1.2rem;">A</span>
     </button>
   </div>
-  <div class="flex space-x-1 justify-center items-center">
+  <div class="h-full border-b xl:border-b-0 xl:border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
     <button id="line-height-small" aria-label="Interligne très serré" class="border-2 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="small">
       <%= inline_svg_tag('lineh-1.svg') %>
     </button>
@@ -29,7 +29,7 @@
       <%= inline_svg_tag('lineh-4.svg') %>
     </button>
   </div>
-  <div class="flex space-x-1 justify-center items-center">
+  <div class="h-full border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
     <button id="font-sans" aria-label="Police Apfel" class="h-7 w-16 border-2 hover:border-primary focus:outline-none px-2 py-1 font-sans" data-action="click->actions#changeFont" data-actions-target="font" data-value="sans" style="font-size: 0.8rem;">Apfel</button>
     <button id="font-dyslexic" aria-label="Police OpenDyslexic" class="h-7 w-16 border-2 hover:border-primary focus:outline-none px-2 py-1 font-opendyslexic" data-action="click->actions#changeFont" data-actions-target="font" data-value="Opendylexic" style="font-size: 0.8rem;">Dyslexic</button>
   </div>

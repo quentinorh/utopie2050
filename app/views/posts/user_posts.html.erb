@@ -1,40 +1,93 @@
 <% content_for :title, "SP 2050 - Mes Futurs" %>
-<% content_for :description, "Découvrez tous mes récits. Une collection d'histoires solarpunk uniques et inspirantes." %>
+<% content_for :description, "Découvrez tous mes futurs." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
 
-<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[700px] px-0 py-sm sm:px-sm"> 
-    <div class="bg-white p-sm rounded-lg shadow">
-      <div class="sm:flex">
-        <div class="sm:flex-auto">
-          <h1 class="text-xl pt-sm text-center font-semibold leading-6 text-gray-900">Mes futurs</h1>
+<div class="flex flex-col min-h-screen">
+  <div class="w-full grow min-w-0">
+    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-20 bg-white">
+      <h1 class="text-2l lg:text-display items-center flex">Mes futurs
+        <div class="font-mono text-base md:text-2xl inline-flex items-center ml-xxs">
+          <span>[</span>
+          <div data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @user_posts.count %>"><%= @user_posts.count %></div>
+          <span>]</span>
         </div>
-      </div>
-      <div class="mt-8 flow-root">
-        <div class="inline-block min-w-full p-0 sm:py-2 align-middle sm:px-xs">
-          <div data-controller="staggered-animation">
-            <% if @user_posts.any? %>
-              <div class="m-auto p-0 sm:p-2 justify-center grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <% @user_posts.order(created_at: :desc).each do |post| %>
-                  <div class="relative">
-                    <%= render "posts/post", post: post %>
-                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 p-2 bg-white bg-opacity-75">
-                      <%= link_to 'Éditer', edit_post_path(post), class: "tw-btn-secondary uppercase inline-block" %>
-                      <%= link_to 'Supprimer', post_path(post), data: { turbo_method: :delete }, class: "tw-btn-danger uppercase inline-block border border-red-500" %>
-                    </div>
-                    <% if post.draft == true %>
-                      <%= link_to 'Brouillon', edit_post_path(post), class: "absolute top-1 right-1 bg-primary rounded-full z-50 text-white px-2 py-1 text-sm font-mono" %>
-                    <% end %>
-                  </div>
+      </h1>
+    </div>
+
+    <div class="m-auto justify-center p-xs pt-0">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-xs grow justify-center" data-controller="staggered-animation">
+        <% if @user_posts.any? %>
+          <% @user_posts.order(created_at: :desc).each do |post| %>
+            <div class="relative group/card">
+              <%# Puce de statut %>
+              <div class="absolute top-2 right-2 z-30">
+                <% if post.draft? %>
+                  <span class="inline-flex items-center gap-1 bg-amber-500 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                    Brouillon
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center gap-1 bg-green-600 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                    Publié
+                  </span>
                 <% end %>
               </div>
-            <% else %>
-              <div class="text-center text-gray-500">
-                <p>Tu n'as pas encore créé de futurs.</p>
+
+              <%# Couverture du post %>
+              <%= link_to post,
+                  class: "aspect-[5/7] w-full relative block overflow-hidden",
+                  data: {
+                    staggered_animation_target: "element",
+                    stagger_count: 12,
+                    turbo: false, turbo_stream: false
+                  } do %>
+                <div class="w-full h-full" data-controller="cover">
+                  <input type="hidden" data-cover-target="title" value="<%= post.title %>">
+                  <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
+                  <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
+
+                  <div class="absolute h-full inset-0 flex flex-col justify-start">
+                    <div class="px-xs pt-[3px] h-fit text-2l z-10 w-4/5" data-cover-target="titleWrapper">
+                      <%= post.title %>
+                    </div>
+                    <div class="px-xs py-[5px] text-sm mt-xs z-10 w-fit" data-cover-target="userName">
+                      <%= post.user.username %>
+                    </div>
+                  </div>
+                  <div class="absolute inset-0 w-full">
+                    <% if post.cover_image.present? %>
+                      <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "5:7", width: 500, class: "w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300 ease-in-out" %>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+
+              <%# Boutons d'actions %>
+              <div class="flex gap-2 mt-2">
+                <%= link_to edit_post_path(post), class: "flex-1 text-center text-sm font-medium py-1.5 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Éditer
+                <% end %>
+                <%= link_to post_path(post),
+                    data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr·e de vouloir supprimer ce futur ?" },
+                    class: "flex-1 text-center text-sm font-medium py-1.5 px-3 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Supprimer
+                <% end %>
               </div>
-            <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="col-span-full text-center py-lg">
+            <p class="text-gray-500 text-lg">Tu n'as pas encore créé de futurs.</p>
+            <%= link_to "Écrire mon premier futur", new_post_path, class: "mt-sm inline-block tw-btn-secondary" %>
           </div>
-        </div>
+        <% end %>
       </div>
     </div>
   </div>

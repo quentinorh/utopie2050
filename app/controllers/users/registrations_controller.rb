@@ -1,5 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_sign_up_params, only: [:create]
+  before_action :reject_honeypot, only: [:create]
 
   def new
     super
@@ -49,5 +50,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [:age, :username])
+  end
+
+  private
+
+  # Honeypot : si le champ caché est rempli, c'est un bot
+  def reject_honeypot
+    if params.dig(:user, :website_url).present?
+      Rails.logger.warn "[Honeypot] Bot détecté depuis l'IP #{request.remote_ip}"
+      # Redirige silencieusement comme si l'inscription avait réussi
+      redirect_to registration_confirmation_path
+    end
   end
 end

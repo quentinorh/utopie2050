@@ -24,6 +24,21 @@ class User < ApplicationRecord
       .distinct 
   }
 
+  # Comptes non confirmés depuis plus de 48h (probablement des bots)
+  scope :unconfirmed_expired, -> {
+    where(confirmed_at: nil)
+      .where("confirmation_sent_at < ?", 48.hours.ago)
+  }
+
+  # Supprime les comptes non confirmés expirés
+  def self.cleanup_unconfirmed!
+    users = unconfirmed_expired
+    count = users.count
+    users.destroy_all
+    Rails.logger.info "[Cleanup] #{count} compte(s) non confirmé(s) supprimé(s)"
+    count
+  end
+
   # Définir la méthode admin? comme publique
   def admin?
     role == "admin"
