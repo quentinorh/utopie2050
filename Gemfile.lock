@@ -147,8 +147,7 @@ GEM
       multipart-post (~> 2)
     faraday-net_http (3.3.0)
       net-http
-    ffi (1.17.0-arm64-darwin)
-    ffi (1.17.0-x86_64-linux-gnu)
+    ffi (1.16.3)
     fog-aws (3.29.0)
       base64 (~> 0.2.0)
       fog-core (~> 2.6)
@@ -365,6 +364,7 @@ DEPENDENCIES
   devise
   dotenv-rails
   faker
+  ffi (~> 1.16.3)
   fog-aws
   font-awesome-sass (~> 6.1)
   has_scope
