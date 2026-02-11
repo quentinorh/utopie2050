@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl", 
                    "symmetryMode", "curveGroup", "colorPicker", 
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft"]
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "controlsToggleIcon"]
   static values = { uniqueId: String }
 
   connect() {
@@ -361,26 +361,52 @@ export default class extends Controller {
   }
 
 
+  // Helper pour obtenir les coordonnées (souris ou tactile)
+  getEventCoordinates(event) {
+    if (event.touches && event.touches.length > 0) {
+      return {
+        clientX: event.touches[0].clientX,
+        clientY: event.touches[0].clientY
+      };
+    }
+    return {
+      clientX: event.clientX,
+      clientY: event.clientY
+    };
+  }
+
   startDrag(event) {
+    event.preventDefault(); // Empêcher le scroll sur mobile
     this.isDragging = true;
     this.dragTarget = event.currentTarget;
-    this.lastMouseX = event.clientX;
-    this.lastMouseY = event.clientY;
+    const coords = this.getEventCoordinates(event);
+    this.lastMouseX = coords.clientX;
+    this.lastMouseY = coords.clientY;
+    
+    // Événements souris
     document.addEventListener('mousemove', this.drag);
     document.addEventListener('mouseup', this.stopDrag);
     document.addEventListener('mouseleave', this.stopDrag);
+    
+    // Événements tactiles
+    document.addEventListener('touchmove', this.drag, { passive: false });
+    document.addEventListener('touchend', this.stopDrag);
+    document.addEventListener('touchcancel', this.stopDrag);
   }
 
   drag = (event) => {
     if (!this.isDragging) return;
     
+    event.preventDefault(); // Empêcher le scroll pendant le drag
+    
     requestAnimationFrame(() => {
       const gridParent = this.dragTarget.parentElement;
       const gridRect = gridParent.getBoundingClientRect();
 
-      // Calculer la position de la souris par rapport à la grille
-      const mouseX = event.clientX - gridRect.left;
-      const mouseY = event.clientY - gridRect.top;
+      // Calculer la position (souris ou tactile) par rapport à la grille
+      const coords = this.getEventCoordinates(event);
+      const mouseX = coords.clientX - gridRect.left;
+      const mouseY = coords.clientY - gridRect.top;
 
       // Contraindre la position dans les limites de la grille
       const maxX = gridRect.width;
@@ -418,9 +444,16 @@ export default class extends Controller {
 
   stopDrag = (event) => {
     this.isDragging = false;
+    
+    // Retirer les écouteurs souris
     document.removeEventListener('mousemove', this.drag);
     document.removeEventListener('mouseup', this.stopDrag);
     document.removeEventListener('mouseleave', this.stopDrag);
+    
+    // Retirer les écouteurs tactiles
+    document.removeEventListener('touchmove', this.drag);
+    document.removeEventListener('touchend', this.stopDrag);
+    document.removeEventListener('touchcancel', this.stopDrag);
   }
 
   updateCursorPositions() {
@@ -451,6 +484,25 @@ export default class extends Controller {
       this.anchor2Target.style.left = `${newX2}px`;
       this.anchor2Target.style.top = `${newY2}px`;
     }
+  }
+
+  toggleControls() {
+    const editor = this.element.closest('.form-editor');
+
+    // Activer les transitions uniquement pour le toggle
+    editor.classList.add('is-animating');
+    editor.classList.toggle('controls-collapsed');
+
+    // Rotation du chevron
+    if (this.hasControlsToggleIconTarget) {
+      this.controlsToggleIconTarget.classList.toggle('rotate-180');
+    }
+
+    // Retirer la classe d'animation et mettre à jour le coversize après la transition
+    setTimeout(() => {
+      editor.classList.remove('is-animating');
+      window.dispatchEvent(new Event('resize'));
+    }, 350);
   }
 
   toggleDraft(event) {

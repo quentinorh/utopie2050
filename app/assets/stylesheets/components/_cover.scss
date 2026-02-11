@@ -1,9 +1,12 @@
+/* ================================
+   Cover pour la page show
+   ================================ */
+
 .svg-full-height {
   height: calc(100dvh - 100px);
   width: calc(((100dvh - 100px))*250/350);
   display: block;
 }
-
 
 @media (max-width: 1024px) and (max-aspect-ratio: 250/400) {
   .svg-full-height {
@@ -12,16 +15,78 @@
   }
 }
 
-.svg-with-controls {
-  height: calc(100dvh - 200px);
-  width: calc(((100dvh - 200px))*250/350);
-  display: block;
+/* ================================
+   Form Editor Layout
+   ================================ */
+
+.form-editor {
+  --controls-height: 174px; /* 24px toggle + 150px contenu */
+  --navbar-height: 50px;
+
+  &.controls-collapsed {
+    --controls-height: 24px;
+  }
 }
 
+/* Panneau gauche : couverture + contrôles */
+.form-left-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100dvh - var(--navbar-height));
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
 
-@media (max-width: 1024px) and (max-aspect-ratio: 250/440) {
-  .svg-with-controls {
-    height: auto;
-    width: calc(100vw);
+  @media (min-width: 1024px) {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+  }
+}
+
+/* Wrapper de la couverture — centre le SVG dans l'espace disponible */
+.form-cover-wrapper {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Conteneur SVG de la couverture — ratio 250:350 */
+.form-cover-svg {
+  display: block;
+
+  /* min() gère portrait (contraint par largeur) et paysage (contraint par hauteur) */
+  width: #{"min(calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350), 100vw)"};
+  height: #{"min(calc(100dvh - var(--navbar-height) - var(--controls-height)), calc(100vw * 350 / 250))"};
+}
+
+/* Panneau de contrôles (escamotable) */
+.form-controls {
+  height: var(--controls-height);
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Panneau de contenu (droite) */
+.form-right-panel {
+  @media (min-width: 1024px) {
+    margin-left: calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350);
+  }
+}
+
+/* Transitions uniquement pendant le toggle (pas pendant le resize navigateur) */
+.form-editor.is-animating {
+  .form-cover-svg {
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  .form-controls {
+    transition: height 0.3s ease;
+  }
+  .form-right-panel {
+    transition: margin-left 0.3s ease;
   }
 }

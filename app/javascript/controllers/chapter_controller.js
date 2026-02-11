@@ -24,10 +24,10 @@ export default class extends Controller {
       <div class="hidden" data-chapter-target="chapterIndex">
         ${this.nextIndex}
       </div>
-      <label class="tw-form-label">Titre du chapitre</label>
+      <p class="text-sm text-gray-600 pl-[2px]">Titre du chapitre :</p>
       <input type="text" name="post[chapters_attributes][${this.nextIndex}][title]" class="tw-form-input">
 
-      <label class="tw-form-label">Texte du chapitre</label>
+      <p class="text-sm text-gray-600 pl-[2px] mt-xs">Texte du chapitre :</p>
       <textarea name="post[chapters_attributes][${this.nextIndex}][body]" class="tw-form-input", rows="5"></textarea>
 
       <input type="hidden" name="post[chapters_attributes][${this.nextIndex}][position]" value="">
