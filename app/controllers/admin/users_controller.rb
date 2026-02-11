@@ -22,6 +22,25 @@ class Admin::UsersController < ApplicationController
     redirect_to admin_dashboard_path, notice: 'Utilisateur supprimé avec succès.'
   end
 
+  def destroy_multiple
+    user_ids = params[:user_ids] || []
+    
+    if user_ids.empty?
+      redirect_to admin_dashboard_path, alert: 'Aucun utilisateur sélectionné.'
+      return
+    end
+
+    # Empêcher la suppression de l'utilisateur admin actuel
+    user_ids = user_ids.reject { |id| id.to_i == current_user.id }
+    
+    users = User.where(id: user_ids)
+    count = users.count
+    
+    users.each(&:destroy)
+    
+    redirect_to admin_dashboard_path, notice: "#{count} utilisateur(s) supprimé(s) avec succès."
+  end
+
   private
 
   def set_user

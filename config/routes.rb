@@ -34,7 +34,11 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
-    resources :users
+    resources :users do
+      collection do
+        delete :destroy_multiple
+      end
+    end
     resources :reports, only: [:destroy]
     resources :event_codes
   end

@@ -27,7 +27,11 @@ class User < ApplicationRecord
   # Comptes non confirmés depuis plus de 48h (probablement des bots)
   scope :unconfirmed_expired, -> {
     where(confirmed_at: nil)
-      .where("confirmation_sent_at < ?", 48.hours.ago)
+      .where(
+        "(confirmation_sent_at IS NOT NULL AND confirmation_sent_at < ?) OR (confirmation_sent_at IS NULL AND created_at < ?)",
+        48.hours.ago,
+        48.hours.ago
+      )
   }
 
   # Supprime les comptes non confirmés expirés

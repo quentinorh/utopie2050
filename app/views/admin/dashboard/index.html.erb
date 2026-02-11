@@ -66,14 +66,28 @@
 
   <!-- Section Utilisateurs -->
   <div class="mb-12">
-    <h2 class="text-xl font-semibold mb-4">
-      Utilisateurs (<%= @users.size %>)
-    </h2>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">
+        Utilisateurs (<span id="users-count"><%= @users.size %></span>)
+      </h2>
+      <%= form_with url: destroy_multiple_admin_users_path, method: :delete, id: "delete-users-form", class: "flex items-center gap-2" do |f| %>
+        <button type="button" id="select-all-users" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+          Tout sélectionner
+        </button>
+        <button type="submit" id="delete-selected-btn" disabled class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed" 
+                data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer les utilisateurs sélectionnés ? Cette action est irréversible." }>
+          Supprimer les sélectionnés (<span id="selected-count">0</span>)
+        </button>
+      <% end %>
+    </div>
     
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white shadow-md rounded">
         <thead class="bg-gray-100">
           <tr>
+            <th class="px-2 py-3 text-left w-12">
+              <input type="checkbox" id="select-all-checkbox" class="cursor-pointer">
+            </th>
             <th class="px-2 py-3 text-left">Nom d'utilisateur</th>
             <th class="px-2 py-3 text-center">Email</th>
             <th class="px-2 py-3 text-center">Date d'inscription</th>
@@ -83,15 +97,29 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           <% @users.each do |user| %>
-            <tr class="hover:bg-gray-50">
-              <td class="px-2 py-4"><%= user.username %></td>
+            <tr class="hover:bg-gray-50 <%= 'bg-yellow-50' if user.id == current_user.id %>">
+              <td class="px-2 py-4">
+                <% unless user.id == current_user.id %>
+                  <%= check_box_tag "user_ids[]", user.id, false, class: "user-checkbox cursor-pointer", id: "user_#{user.id}" %>
+                <% else %>
+                  <span class="text-xs text-gray-400" title="Vous ne pouvez pas vous supprimer vous-même">-</span>
+                <% end %>
+              </td>
+              <td class="px-2 py-4">
+                <%= user.username %>
+                <% if user.id == current_user.id %>
+                  <span class="text-xs text-gray-500">(vous)</span>
+                <% end %>
+              </td>
               <td class="px-2 py-4 text-center"><%= user.email %></td>
               <td class="px-2 py-4 text-center"><%= user.created_at.strftime("%d/%m/%Y") %></td>
               <td class="px-2 py-4 text-center"><%= user.posts.count %></td>
               <td class="px-2 py-4 text-center space-x-2">
-                <%= link_to "Supprimer", admin_user_path(user), 
-                    data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?" },
-                    class: "text-red-600 hover:text-red-800" %>
+                <% unless user.id == current_user.id %>
+                  <%= link_to "Supprimer", admin_user_path(user), 
+                      data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?" },
+                      class: "text-red-600 hover:text-red-800" %>
+                <% end %>
               </td>
             </tr>
           <% end %>
@@ -99,6 +127,60 @@
       </table>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectAllCheckbox = document.getElementById('select-all-checkbox');
+      const selectAllButton = document.getElementById('select-all-users');
+      const userCheckboxes = document.querySelectorAll('.user-checkbox');
+      const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+      const selectedCountSpan = document.getElementById('selected-count');
+      const deleteForm = document.getElementById('delete-users-form');
+      let allSelected = false;
+
+      function updateSelectedCount() {
+        const selected = document.querySelectorAll('.user-checkbox:checked').length;
+        selectedCountSpan.textContent = selected;
+        deleteSelectedBtn.disabled = selected === 0;
+        
+        // Mettre à jour l'état de la checkbox "Tout sélectionner"
+        const totalCheckboxes = userCheckboxes.length;
+        selectAllCheckbox.checked = selected > 0 && selected === totalCheckboxes;
+        selectAllCheckbox.indeterminate = selected > 0 && selected < totalCheckboxes;
+      }
+
+      // Checkbox "Tout sélectionner" dans le header
+      selectAllCheckbox.addEventListener('change', function() {
+        const checked = this.checked;
+        userCheckboxes.forEach(checkbox => {
+          checkbox.checked = checked;
+        });
+        updateSelectedCount();
+        allSelected = checked;
+        selectAllButton.textContent = checked ? 'Tout désélectionner' : 'Tout sélectionner';
+      });
+
+      // Bouton "Tout sélectionner"
+      selectAllButton.addEventListener('click', function() {
+        allSelected = !allSelected;
+        userCheckboxes.forEach(checkbox => {
+          checkbox.checked = allSelected;
+        });
+        selectAllCheckbox.checked = allSelected;
+        selectAllCheckbox.indeterminate = false;
+        updateSelectedCount();
+        this.textContent = allSelected ? 'Tout désélectionner' : 'Tout sélectionner';
+      });
+
+      // Écouter les changements sur chaque checkbox individuelle
+      userCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+      });
+
+      // Initialiser le compteur
+      updateSelectedCount();
+    });
+  </script>
 
   <!-- Section Signalements -->
   <div class="mb-12">
