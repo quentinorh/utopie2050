@@ -2,7 +2,7 @@
     <% unique_id = SecureRandom.uuid %>
         <div data-controller="hero"
             data-hero-unique-id-value="<%= unique_id %>"
-            class="w-full">
+            class="w-full h-full">
             <svg data-hero-target="svg" shape-rendering="auto" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet">
             <defs>
                 <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
@@ -23,7 +23,7 @@
         </div>
 
     <div data-controller="hero-animation"
-         class="h-[calc(100vh-theme('top.navbar-height'))] absolute inset-0 flex flex-col items-center justify-center">
+         class="h-[calc(100dvh-theme('top.navbar-height'))] absolute inset-0 flex flex-col items-center justify-center">
          
         <div class="hidden w-full" data-hero-animation-target="content">
             

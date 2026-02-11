@@ -6,31 +6,63 @@ export default class extends Controller {
   static values = { uniqueId: String }
 
   connect() {
-    this.totalWidth = window.innerWidth;
-    this.totalHeight = window.visualViewport?.height - 50 || window.innerHeight - 50;
-    // Initial scale animation
-    gsap.from(this.element, {
-      scale: 1.25,
-      opacity: 0,
-      delay: 0.4,
-      duration: 1.6,
-      ease: "power4.out"
-    });
-    this.generateParameters();
-
-    this.updateColors()
-    this.updateCurve()
-    this.updateViewBox()
+    // Nettoyer toutes les animations GSAP existantes pour éviter les conflits
+    gsap.killTweensOf(this.element);
     
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', this.updateViewBox.bind(this));
-    } else {
-      window.addEventListener('resize', this.updateViewBox.bind(this));
-    }
+    // Réinitialiser les valeurs de l'élément immédiatement pour éviter le flash
+    gsap.set(this.element, {
+      scale: 1.25,
+      opacity: 0
+    });
+    
+    // Attendre que le layout soit stabilisé avant de démarrer les animations
+    // Cela évite les problèmes de décalage lors de la navigation Turbo
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Utiliser les dimensions réelles du SVG plutôt que du conteneur
+        // Le SVG doit avoir les mêmes dimensions que son conteneur parent
+        const svgElement = this.svgTarget;
+        const svgRect = svgElement.getBoundingClientRect();
+        const containerRect = this.element.getBoundingClientRect();
+        
+        // Utiliser les dimensions du conteneur, ou du SVG si disponibles
+        this.totalWidth = containerRect.width || svgRect.width || window.innerWidth;
+        this.totalHeight = containerRect.height || svgRect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
+        
+        // S'assurer que le SVG prend toute la hauteur disponible
+        if (svgElement.style.height !== '100%') {
+          svgElement.style.width = '100%';
+          svgElement.style.height = '100%';
+        }
+        
+        this.generateParameters();
+        this.updateColors()
+        this.updateCurve()
+        this.updateViewBox()
+        
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', this.updateViewBox.bind(this));
+        } else {
+          window.addEventListener('resize', this.updateViewBox.bind(this));
+        }
 
-    // Commencer l'animation
-    this.animationFrameId = null;
-    this.animateParameters();
+        // Attendre encore un frame pour s'assurer que le SVG est complètement rendu
+        requestAnimationFrame(() => {
+          // Initial scale animation
+          gsap.to(this.element, {
+            scale: 1,
+            opacity: 1,
+            delay: 0.4,
+            duration: 1.6,
+            ease: "power4.out"
+          });
+
+          // Commencer l'animation
+          this.animationFrameId = null;
+          this.animateParameters();
+        });
+      });
+    });
   }
 
   disconnect() {
@@ -46,8 +78,18 @@ export default class extends Controller {
   
   updateViewBox() {
     const svgElement = this.svgTarget;
-    const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height -50|| window.innerHeight - 50;
+    // Utiliser les dimensions réelles du conteneur et du SVG
+    const containerRect = this.element.getBoundingClientRect();
+    const svgRect = svgElement.getBoundingClientRect();
+    
+    // Prioriser les dimensions du conteneur, puis du SVG
+    const totalWidth = containerRect.width || svgRect.width || window.innerWidth;
+    const totalHeight = containerRect.height || svgRect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
+    
+    // Mettre à jour les dimensions internes si elles ont changé
+    this.totalWidth = totalWidth;
+    this.totalHeight = totalHeight;
+    
     svgElement.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     this.updateCurve()
   }
@@ -81,8 +123,10 @@ export default class extends Controller {
   }
 
   updateCurve() {
-    const totalWidth = window.innerWidth;
-    const totalHeight = window.visualViewport?.height - 50|| window.innerHeight - 50;
+    // Utiliser les dimensions stockées ou les recalculer depuis le conteneur
+    const rect = this.element.getBoundingClientRect();
+    const totalWidth = this.totalWidth || rect.width || window.innerWidth;
+    const totalHeight = this.totalHeight || rect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
 
     const mode = this.mode;
     const rows = this.rows;

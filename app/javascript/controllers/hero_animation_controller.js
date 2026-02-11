@@ -5,9 +5,19 @@ export default class extends Controller {
   static targets = ['title', 'buttons', 'content']
 
   connect() {
-    this.titleAnimation()
-    this.buttonsAnimation()
-    this.contentTarget.classList.remove('hidden')
+    // Nettoyer toutes les animations GSAP existantes pour éviter les conflits
+    gsap.killTweensOf(this.titleTarget);
+    gsap.killTweensOf(this.buttonsTarget.children);
+    
+    // Attendre que le layout soit stabilisé avant de démarrer les animations
+    // Cela évite les problèmes de décalage lors de la navigation Turbo
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.titleAnimation()
+        this.buttonsAnimation()
+        this.contentTarget.classList.remove('hidden')
+      });
+    });
   }
 
   titleAnimation() {
@@ -29,11 +39,17 @@ export default class extends Controller {
         innerSpan.textContent = word
         innerSpan.style.display = 'inline-block'
         
+        // Définir explicitement la position initiale avant l'animation
+        gsap.set(innerSpan, {
+          y: '100%',
+          clearProps: "all"
+        });
+        
         wordSpan.appendChild(innerSpan)
          this.titleTarget.appendChild(wordSpan)
 
-        gsap.from(innerSpan, {
-          y: '100%',
+        gsap.to(innerSpan, {
+          y: '0%',
           duration: 0.5,
           ease: "power2.out",
           delay: index * 0.05
@@ -44,8 +60,15 @@ export default class extends Controller {
 
   buttonsAnimation() {
     const buttons = this.buttonsTarget
-    gsap.from(buttons.children, {
+    
+    // Définir explicitement l'opacité initiale avant l'animation
+    gsap.set(buttons.children, {
       opacity: 0,
+      clearProps: "all"
+    });
+    
+    gsap.to(buttons.children, {
+      opacity: 1,
       duration: 0.5,
       ease: "power2.out",
       stagger: 0.1,
