@@ -94,7 +94,7 @@ export default class extends Controller {
   changeFont(event) {
     const font = event.currentTarget.dataset.value
     this.setActiveButton('font', font)
-    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Opendylexic')
+    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
     this.saveSetting('font-family', font)
   }
 
@@ -171,7 +171,7 @@ export default class extends Controller {
 
     this.applyStyleToAdjustable('fontSize', this.getFontSize(textSize))
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(lineHeight))
-    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Opendylexic')
+    this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
     
     // Appliquer le thème au body et aux éléments .show-content
     document.body.classList.toggle('dark', theme === 'dark')

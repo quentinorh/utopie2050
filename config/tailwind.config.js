@@ -26,7 +26,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Apfel', ...defaultTheme.fontFamily.sans],
-        Opendylexic: ['Opendylexic'],
+        Lexend: ['Lexend'],
         mono: ['Roboto Mono', 'monospace'],
       },
       colors: {
