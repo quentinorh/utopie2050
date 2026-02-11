@@ -9,7 +9,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     build_resource(sign_up_params)
 
-    resource.save
+    begin
+      resource.save
+    rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
+      Rails.logger.error "[SMTP] Erreur lors de l'envoi du mail de confirmation : #{e.message}"
+      resource.destroy if resource.persisted?
+      clean_up_passwords resource
+      set_minimum_password_length
+      flash.now[:alert] = "L'adresse email semble invalide ou n'accepte pas les emails. Veuillez vérifier votre adresse."
+      respond_with resource
+      return
+    rescue Net::SMTPError => e
+      Rails.logger.error "[SMTP] Erreur SMTP inattendue : #{e.message}"
+      # L'utilisateur est créé mais le mail n'a pas pu être envoyé
+      # On continue quand même pour ne pas bloquer l'inscription
+    end
+
     yield resource if block_given?
     if resource.persisted?
       # Si l'utilisateur doit confirmer son email
