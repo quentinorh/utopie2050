@@ -177,6 +177,34 @@
         checkbox.addEventListener('change', updateSelectedCount);
       });
 
+      // Avant soumission, injecter les user_ids cochés dans le formulaire
+      deleteForm.addEventListener('submit', function(e) {
+        // Supprimer les anciens hidden inputs
+        deleteForm.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
+
+        // Ajouter un hidden input pour chaque checkbox cochée
+        document.querySelectorAll('.user-checkbox:checked').forEach(checkbox => {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'user_ids[]';
+          hidden.value = checkbox.value;
+          deleteForm.appendChild(hidden);
+        });
+      });
+
+      // Même chose pour Turbo (au cas où Turbo intercepte le submit)
+      deleteForm.addEventListener('turbo:submit-start', function(e) {
+        deleteForm.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
+
+        document.querySelectorAll('.user-checkbox:checked').forEach(checkbox => {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'user_ids[]';
+          hidden.value = checkbox.value;
+          deleteForm.appendChild(hidden);
+        });
+      });
+
       // Initialiser le compteur
       updateSelectedCount();
     });
