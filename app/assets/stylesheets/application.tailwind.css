@@ -19,7 +19,25 @@
 
   /* Navigation */
   .tw-nav-link{
-    @apply block px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors duration-200
+    @apply block px-5 py-3 text-xs font-mono uppercase tracking-wider text-gray-600 hover:text-primary hover:bg-neutral transition-all duration-200
+  }
+
+  /* Dropdown menu container */
+  .tw-dropdown-menu {
+    @apply fixed z-30 w-48 origin-top-right bg-white border border-gray-100 shadow-lg py-1;
+    @apply opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out;
+    right: 0px;
+    top: var(--navbar-height);
+  }
+
+  @media (min-width: 768px) {
+    .tw-dropdown-menu {
+      right: 0px;
+    }
+  }
+
+  .tw-dropdown-menu.is-open {
+    @apply opacity-100 scale-100 pointer-events-auto;
   }
 
   /* Forms */
@@ -32,7 +50,7 @@
   }
 
   .tw-form-input {
-    @apply block w-full rounded-md border-0 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6
+    @apply block w-full rounded-none border border-gray-300 text-black-900 ring-0 ring-transparent ring-offset-0 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-400
   }
 
   .tw-form-checkbox {

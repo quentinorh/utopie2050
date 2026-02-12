@@ -22,6 +22,8 @@
 .form-editor {
   --controls-height: 174px; /* 24px toggle + 150px contenu */
   --navbar-height: 50px;
+  --controls-min-width: 350px;
+  --left-panel-width: calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350);
 
   &.controls-collapsed {
     --controls-height: 24px;
@@ -42,6 +44,7 @@
     position: fixed;
     top: var(--navbar-height);
     left: 0;
+    width: #{"max(var(--controls-min-width), var(--left-panel-width))"};
   }
 }
 
@@ -74,7 +77,7 @@
 /* Panneau de contenu (droite) */
 .form-right-panel {
   @media (min-width: 1024px) {
-    margin-left: calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350);
+    margin-left: #{"max(var(--controls-min-width), var(--left-panel-width))"};
   }
 }
 

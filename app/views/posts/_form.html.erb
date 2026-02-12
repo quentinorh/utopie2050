@@ -18,7 +18,7 @@
         </ul>
       </div>
     <% end %>
-    <div class="flex flex-col lg:flex-row dark:bg-gray-800 bg-gray-100 flex-1">
+    <div class="flex flex-col dark:bg-gray-800 bg-gray-100 flex-1">
       <!-- Colonne de gauche : couverture + contrôles -->
       <div class="form-left-panel bg-gray-800">
         <div class="form-cover-wrapper">
@@ -181,7 +181,7 @@
         </div>
         <!-- Titre -->
         <%= form.text_field :title, 
-                          class: "tw-form-input text-2l p-xs border-gray-300 ring-0 ring-transparent ring-offset-0 p-0 rounded-none text-black-900", 
+                          class: "tw-form-input text-2l p-xs p-0", 
                           placeholder: "Futur titre", 
                           value: @post.title, 
                           required: true,

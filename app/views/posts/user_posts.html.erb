@@ -20,20 +20,36 @@
           <% @user_posts.order(created_at: :desc).each do |post| %>
             <div class="relative group/card">
               <%# Puce de statut %>
-              <div class="absolute top-2 right-2 z-30">
+              <div class="absolute top-2 right-2 z-10">
                 <% if post.draft? %>
-                  <span class="inline-flex items-center gap-1 bg-amber-500 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+                  <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
                     <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
                     Brouillon
                   </span>
                 <% else %>
-                  <span class="inline-flex items-center gap-1 bg-green-600 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
+                  <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
                     <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
                     Publié
                   </span>
                 <% end %>
               </div>
-
+              <%# Boutons d'actions %>
+              <div class="absolute bottom-2 left-2 right-2 z-10 flex gap-2">
+                <%= link_to edit_post_path(post), class: "flex-1 text-center text-sm font-medium bg-white/90 backdrop-blur-sm py-1.5 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Éditer
+                <% end %>
+                <%= link_to post_path(post),
+                    data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr·e de vouloir supprimer ce futur ?" },
+                    class: "flex-1 text-center text-sm font-medium bg-white/90 backdrop-blur-sm py-1.5 px-3 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Supprimer
+                <% end %>
+              </div>
               <%# Couverture du post %>
               <%= link_to post,
                   class: "aspect-[5/7] w-full relative block overflow-hidden",
@@ -62,24 +78,6 @@
                   </div>
                 </div>
               <% end %>
-
-              <%# Boutons d'actions %>
-              <div class="flex gap-2 mt-2">
-                <%= link_to edit_post_path(post), class: "flex-1 text-center text-sm font-medium py-1.5 px-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200" do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Éditer
-                <% end %>
-                <%= link_to post_path(post),
-                    data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr·e de vouloir supprimer ce futur ?" },
-                    class: "flex-1 text-center text-sm font-medium py-1.5 px-3 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200" do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Supprimer
-                <% end %>
-              </div>
             </div>
           <% end %>
         <% else %>
