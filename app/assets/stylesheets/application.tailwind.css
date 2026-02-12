@@ -53,6 +53,10 @@
     @apply block w-full rounded-none border border-gray-300 text-black-900 ring-0 ring-transparent ring-offset-0 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-400
   }
 
+  textarea.tw-form-input {
+    overscroll-behavior: contain;
+  }
+
   .tw-form-checkbox {
     @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600
   }

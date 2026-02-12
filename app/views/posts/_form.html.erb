@@ -255,3 +255,21 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  // Empêcher la propagation du scroll depuis les textarea vers la page
+  document.addEventListener('wheel', function(e) {
+    const textarea = e.target.closest('textarea');
+    if (textarea) {
+      const { scrollTop, scrollHeight, clientHeight } = textarea;
+      const isAtTop = scrollTop === 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      
+      if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+        e.preventDefault();
+      } else {
+        e.stopPropagation();
+      }
+    }
+  }, { passive: false });
+</script>
