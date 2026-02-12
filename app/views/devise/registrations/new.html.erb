@@ -23,7 +23,7 @@
                       required: true,
                       label: false,
                       wrapper_html: { class: 'mt-sm' },
-                      input_html: { class: 'tw-form-input', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
+                      input_html: { class: 'tw-form-input text-center', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
           <div class="text-red-500 text-sm" data-signup-target="usernameError"></div>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="tw-btn-secondary w-full mt-sm">Précédent</button>
@@ -37,7 +37,7 @@
                       required: true,
                       label: false,
                       wrapper_html: { class: 'mt-sm' },
-                      input_html: { class: 'tw-form-input' } %>
+                      input_html: { class: 'tw-form-input text-center' } %>
           <div class="text-red-500 text-sm" data-signup-target="ageError"></div>
           <div class="flex justify-between gap-sm">
             <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="tw-btn-secondary w-full mt-sm">Précédent</button>
@@ -52,7 +52,7 @@
                       autofocus: true,
                       label: false,
                       wrapper_html: { class: 'mt-sm' },
-                      input_html: { autocomplete: "email", class: 'tw-form-input', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
+                      input_html: { autocomplete: "email", class: 'tw-form-input text-center', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
           <div class="text-red-500 text-sm" data-signup-target="emailError"></div>
           <h3 class="mt-base text-xl uppercase text-center">Ton mot de passe ?</h3>
           <%= f.input :password,
@@ -61,7 +61,7 @@
                       wrapper_html: { class: 'mt-sm' },
                       input_html: { 
                         autocomplete: "new-password", 
-                        class: 'tw-form-input',
+                        class: 'tw-form-input text-center',
                         'data-signup-target': 'password',
                         'data-action': 'input->signup#checkPassword'
                       } %>
