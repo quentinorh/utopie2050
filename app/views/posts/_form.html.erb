@@ -228,7 +228,7 @@
         <!-- Chapitres -->
         <div class="mt-6">
           <div class="flex items-center justify-end">
-            <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-secondary", data: { action: "click->chapter#addChapter" } %>
+            <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-secondary bg-white", data: { action: "click->chapter#addChapter" } %>
           </div>
           <div id="chapters" data-chapter-target="chapters">
             <%= form.fields_for :chapters do |chapter_form| %>
@@ -245,7 +245,7 @@
                 <%= chapter_form.hidden_field :position %>
                 <%= chapter_form.hidden_field :_destroy %>
 
-                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6", data: { action: "click->chapter#removeChapter" } %>
+                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6 bg-white", data: { action: "click->chapter#removeChapter" } %>
               </div>
             <% end %>
           </div>

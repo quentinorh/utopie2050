@@ -33,7 +33,7 @@ export default class extends Controller {
       <input type="hidden" name="post[chapters_attributes][${this.nextIndex}][position]" value="">
       <input type="hidden" name="post[chapters_attributes][${this.nextIndex}][_destroy]" value="false">
 
-      <a href="#" class="tw-btn-secondary" data-action="click->chapter#removeChapter">Supprimer ce chapitre</a>
+      <a href="#" class="tw-btn-secondary bg-white" data-action="click->chapter#removeChapter">Supprimer ce chapitre</a>
     `;
 
     this.chaptersTarget.appendChild(newChapter);
