@@ -4,7 +4,7 @@
 
 <div class="flex flex-col min-h-screen">
   <div class="w-full grow min-w-0">
-    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-20 bg-white">
+    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-30 bg-white">
       <h1 class="text-2l lg:text-display items-center flex">Mes futurs
         <div class="font-mono text-base md:text-2xl inline-flex items-center ml-xxs">
           <span>[</span>
@@ -20,7 +20,7 @@
           <% @user_posts.order(created_at: :desc).each do |post| %>
             <div class="relative group/card">
               <%# Puce de statut %>
-              <div class="absolute top-2 right-2 z-10">
+              <div class="absolute top-2 right-2 z-20">
                 <% if post.draft? %>
                   <span class="inline-flex items-center gap-1 bg-indigo-600 text-white text-xs font-mono px-2 py-1 rounded-full shadow">
                     <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
