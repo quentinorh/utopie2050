@@ -110,8 +110,10 @@ export default class extends Controller {
     //this.y3 = 1 - this.x3;
     this.y3 = 0.9;
     this.smoothing = 0.95;
-    this.hue = parseInt(Math.floor(Math.random() * 360));
-
+    // Teinte fixe pour éviter la variation des couleurs
+    this.hue = 220; // Valeur fixe (bleu/violet) - ajustez selon vos préférences
+    //this.hue = parseInt(Math.floor(Math.random() * 360));
+    
     // Initialiser les directions de changement
     this.xDirection = Math.random() < 0.5 ? 1 : -1;
     //this.yDirection = - this.xDirection;
@@ -256,20 +258,28 @@ export default class extends Controller {
   }
 
   updateColors() {
-    
-    
+    // Utiliser uniquement des variations de bleu/violet (pas de couleurs complémentaires)
     const baseHsl = { h: this.hue, s: 100, l: 65 };
-    const compHsl = { ...baseHsl, h: (baseHsl.h + 180) % 360 };
-    const triad1Hsl = { ...baseHsl, h: (baseHsl.h + 60) % 360 };
-    const triad2Hsl = { ...baseHsl, h: (baseHsl.h + 180) % 360 };
-    const triad3Hsl = { ...baseHsl, h: (baseHsl.h + 300) % 360 };
+    // Variations très proches de la teinte de base : -5, +5, +10 degrés pour rester très proche
+    const variation1Hsl = { ...baseHsl, h: (baseHsl.h - 5 + 360) % 360 };
+    const variation2Hsl = { ...baseHsl, h: (baseHsl.h + 5) % 360 };
+    const variation3Hsl = { ...baseHsl, h: (baseHsl.h + 10) % 360 };
+
+    // Créer des variations avec beaucoup plus de contraste tout en gardant la saturation à 100% pour des couleurs vives
+    const lightVariation1Hsl = { h: variation1Hsl.h, s: 100, l: 80 }; // Très clair, saturation max
+    const darkVariation1Hsl = { h: variation1Hsl.h, s: 100, l: 30 };  // Foncé, saturation max
+    const lightVariation2Hsl = { h: variation2Hsl.h, s: 100, l: 85 };
+    const darkVariation2Hsl = { h: variation2Hsl.h, s: 100, l: 25 };
+    const lightVariation3Hsl = { h: variation3Hsl.h, s: 100, l: 80 };
+    const darkVariation3Hsl = { h: variation3Hsl.h, s: 100, l: 35 };
 
     // Utilisez l'ID unique pour créer des identifiants de dégradé
     const uniqueId = this.uniqueIdValue;
 
-    this.updateGradient(`gradient1-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad1Hsl));
-    this.updateGradient(`gradient2-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad2Hsl));
-    this.updateGradient(`gradient3-${uniqueId}`, this.hslToHex(baseHsl), this.hslToHex(triad3Hsl));
+    // Gradients avec contraste de luminosité pour plus de visibilité
+    this.updateGradient(`gradient1-${uniqueId}`, this.hslToHex(lightVariation1Hsl), this.hslToHex(darkVariation1Hsl));
+    this.updateGradient(`gradient2-${uniqueId}`, this.hslToHex(lightVariation2Hsl), this.hslToHex(darkVariation2Hsl));
+    this.updateGradient(`gradient3-${uniqueId}`, this.hslToHex(lightVariation3Hsl), this.hslToHex(darkVariation3Hsl));
   }
 
   updateGradient(id, color1, color2) {
@@ -341,7 +351,8 @@ export default class extends Controller {
     this.y3 += this.y3Direction * speed;
 
     // this.smoothing += this.smoothingDirection * speed;
-    this.hue = (this.hue + 1) % 360; // Incrémenter la teinte pour un changement continu
+    // Teinte fixe - ne plus faire varier les couleurs
+    // this.hue = (this.hue + 1) % 360; // Incrémenter la teinte pour un changement continu
 
     // Inverser la direction si les limites sont atteintes
     if (this.x <= 0.5 || this.x >= 1) this.xDirection *= -1;
