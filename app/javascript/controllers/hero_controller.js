@@ -111,7 +111,7 @@ export default class extends Controller {
     this.y3 = 0.9;
     this.smoothing = 0.95;
     // Teinte fixe pour éviter la variation des couleurs
-    this.hue = 220; // Valeur fixe (bleu/violet) - ajustez selon vos préférences
+    this.hue = 243; // Violet souhaité (#4f46e5)
     //this.hue = parseInt(Math.floor(Math.random() * 360));
     
     // Initialiser les directions de changement
@@ -258,20 +258,20 @@ export default class extends Controller {
   }
 
   updateColors() {
-    // Utiliser uniquement des variations de bleu/violet (pas de couleurs complémentaires)
-    const baseHsl = { h: this.hue, s: 100, l: 65 };
-    // Variations très proches de la teinte de base : -5, +5, +10 degrés pour rester très proche
-    const variation1Hsl = { ...baseHsl, h: (baseHsl.h - 5 + 360) % 360 };
-    const variation2Hsl = { ...baseHsl, h: (baseHsl.h + 5) % 360 };
-    const variation3Hsl = { ...baseHsl, h: (baseHsl.h + 10) % 360 };
+    // Utiliser uniquement des variations de violet (#4f46e5) - T: 243°, S: 69%, L: 90%
+    const baseHsl = { h: this.hue, s: 69, l: 90 };
+    // Variations très proches de la teinte de base : même teinte, variations de luminosité uniquement
+    const variation1Hsl = { ...baseHsl };
+    const variation2Hsl = { ...baseHsl };
+    const variation3Hsl = { ...baseHsl };
 
-    // Créer des variations avec beaucoup plus de contraste tout en gardant la saturation à 100% pour des couleurs vives
-    const lightVariation1Hsl = { h: variation1Hsl.h, s: 100, l: 80 }; // Très clair, saturation max
-    const darkVariation1Hsl = { h: variation1Hsl.h, s: 100, l: 30 };  // Foncé, saturation max
-    const lightVariation2Hsl = { h: variation2Hsl.h, s: 100, l: 85 };
-    const darkVariation2Hsl = { h: variation2Hsl.h, s: 100, l: 25 };
-    const lightVariation3Hsl = { h: variation3Hsl.h, s: 100, l: 80 };
-    const darkVariation3Hsl = { h: variation3Hsl.h, s: 100, l: 35 };
+    // Créer des variations avec contraste de luminosité en gardant la saturation à 69% (violet souhaité)
+    const lightVariation1Hsl = { h: variation1Hsl.h, s: 69, l: 95 }; // Très clair
+    const darkVariation1Hsl = { h: variation1Hsl.h, s: 69, l: 50 };  // Foncé
+    const lightVariation2Hsl = { h: variation2Hsl.h, s: 69, l: 90 };
+    const darkVariation2Hsl = { h: variation2Hsl.h, s: 69, l: 45 };
+    const lightVariation3Hsl = { h: variation3Hsl.h, s: 69, l: 92 };
+    const darkVariation3Hsl = { h: variation3Hsl.h, s: 69, l: 55 };
 
     // Utilisez l'ID unique pour créer des identifiants de dégradé
     const uniqueId = this.uniqueIdValue;
