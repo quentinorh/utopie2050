@@ -9,21 +9,14 @@ export default class extends Controller {
   }
 
   updateSvgClass() {
-    const width = this.element.offsetWidth;
-    const height = this.element.offsetHeight;
-
-    // Supprimer les anciennes classes
+    // Supprimer les anciennes classes de dimension (px ou arbitraires)
     this.svgTarget.classList.forEach(className => {
-      if (className.startsWith('w-[') || className.startsWith('h-[')) {
+      if (className.startsWith('w-[') || className.startsWith('h-[') || className === 'w-full' || className === 'h-full') {
         this.svgTarget.classList.remove(className);
       }
     });
 
-    // Ajouter les nouvelles classes
-    const widthClass = `w-[${width}px]`;
-    const heightClass = `h-[${height}px]`;
-
-    this.svgTarget.classList.add(widthClass);
-    this.svgTarget.classList.add(heightClass);
+    // Utiliser 100% pour remplir exactement le conteneur (pas de rognage dû au arrondi en px)
+    this.svgTarget.classList.add('w-full', 'h-full');
   }
 }

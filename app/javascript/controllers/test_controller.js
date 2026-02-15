@@ -36,7 +36,6 @@ export default class extends Controller {
 
   loadPatternSettings() {
     const patternSettings = JSON.parse(this.patternSettingsTarget.value);
-    console.log(patternSettings)
     // Charger les valeurs dans les contrôles
 
     this.symmetryMode = patternSettings.symmetryMode
@@ -48,14 +47,6 @@ export default class extends Controller {
     this.smoothingTarget.value = patternSettings.smoothing;
 
     this.updateSymmetrybutton(patternSettings.symmetryMode)
-
-    console.log(this.colorPickerTarget.value)
-    console.log(this.firstSliderControlTarget.value)
-    console.log(this.secondSliderControlTarget.value)
-    console.log(this.rowsTarget.value)
-    console.log(this.columnsTarget.value)
-    console.log(this.smoothingTarget.value)
-    console.log("settings loaded")
   }
 
   updateTitle() {
@@ -103,8 +94,6 @@ export default class extends Controller {
 
     // Récupérer la valeur de lissage
     const smoothing = this.smoothingTarget.value / 100
-
-    //console.log(x, y, x3, y3, smoothing)
 
     // Ajuster les points de contrôle pour le lissage
     const control1 = [
@@ -344,7 +333,6 @@ export default class extends Controller {
 
   savePatternSettings() {
     const activeButton = this.symmetryModeTargets.find(target => target.classList.contains('active'));
-    console.log(activeButton.dataset.value)
     const patternSettings = {
       symmetryMode: activeButton.dataset.value,
       color: this.colorPickerTarget.value,
@@ -427,7 +415,7 @@ export default class extends Controller {
       const roundedX = Math.round(percentX * 100) / 100;
       const roundedY = Math.round(percentY * 100) / 100;
 
-      console.log(`Anchor position: ${roundedX}%, ${roundedY}%`);
+  
       // Mettre à jour les contrôles de curseur avec les pourcentages de position de l'ancre
       if (gridParent.dataset.patternGrid === "1") {
         this.firstSliderControlTarget.value = roundedX;

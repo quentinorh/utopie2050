@@ -6,6 +6,7 @@
   height: calc(100dvh - 100px);
   width: calc(((100dvh - 100px))*250/350);
   display: block;
+  overflow: visible; /* évite tout rognage du SVG à l’affichage */
 }
 
 @media (max-width: 1024px) and (max-aspect-ratio: 250/400) {

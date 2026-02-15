@@ -1,22 +1,28 @@
-<div class="grid grid-cols-6 gap-4 p-2 md:p-sm sm:gap-y-sm md:gap-y-base mt-xl mb-0 ">
+<div class="grid grid-cols-6 gap-4 p-2 md:p-sm gap-y-sm mt-xl mb-0 ">
     <div class="col-span-2">
+        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Instagram</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Typographies</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Création &</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Développement</p>
-        
+        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Développement</p>     
     </div>
     <div class="col-span-4 text-right">
+        <%= link_to "https://www.instagram.com/sp2050_org",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            class: "inline-flex items-center gap-2 text-l sm:text-2xl md:text-xl md:mb-xs",
+            "aria-label": "Suivre le projet sur Instagram" do %>
+            <span>sp2050_org</span>
+        <% end %>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Apfel Grotesk</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Quentin Orhant</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">& SuperSerif</p>
     </div>
     <div class="col-span-6 h-[5px] sm-[8px] md:h-[10px] bg-gray-900">
-
     </div>
     <div class="col-span-2">
         <p class="text-l sm:text-2xl md:text-xl">2026</p>
     </div>
-    <div class="col-span-4 text-right flex justify-end items-center gap-2">
+    <div class="col-span-4 text-right flex justify-end items-center gap-2 flex-wrap">
         <%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/", 
             target: "_blank", 
             class: "flex items-center gap-2",

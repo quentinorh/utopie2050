@@ -361,9 +361,6 @@ export default class extends Controller {
     if (this.y3 <= 0.7 || this.y3 >=1) this.y3Direction *= -1;
     if (this.smoothing <= 0.9 || this.smoothing >= 1) this.smoothingDirection *= -1;
 
-    // console.log(this.x, this.y, this.x3, this.y3)
-    // console.log(this.smoothing)
-    
     // Mettre à jour le motif
     this.updateCurve();
 
