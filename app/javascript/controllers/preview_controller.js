@@ -109,7 +109,7 @@ export default class extends Controller {
 
   updatePattern() {
     const width = 250
-    const height = 350
+    const height = 312
     const columns = Math.min(parseInt(this.columnsTarget.value), 50)
     const rows = Math.min(parseInt(this.rowsTarget.value), 50)
     const filledSquares = parseInt(this.filledSquaresTarget.value)
@@ -153,7 +153,7 @@ export default class extends Controller {
     }
 
     const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet" data-coversize-target="svg">
+      <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="auto" viewBox="0 0 250 312" preserveAspectRatio="xMidYMid meet" data-coversize-target="svg">
         ${svgContent}
       </svg>
     `
@@ -392,7 +392,7 @@ export default class extends Controller {
     // const height = this.patternContainerTarget.clientHeight;
 
     const width = 250;
-    const height = 350;
+    const height = 312;
     
     // Get the pattern SVG
     const patternSVG = this.patternContainerTarget.innerHTML;

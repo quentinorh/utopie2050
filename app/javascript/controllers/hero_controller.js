@@ -167,23 +167,23 @@ export default class extends Controller {
     switch(mode) {
       case 'x4':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)'
+          'scale(1,1) translate(-125,-156)',
+          'scale(-1,1) translate(-125,-156)',
+          'scale(1,-1) translate(-125,-156)',
+          'scale(-1,-1) translate(-125,-156)'
         ]
         
         break
       case 'x8':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)',
-          'rotate(90) scale(1,1) translate(-125,-175)',
-          'rotate(90) scale(-1,1) translate(-125,-175)',
-          'rotate(90) scale(1,-1) translate(-125,-175)',
-          'rotate(90) scale(-1,-1) translate(-125,-175)'
+          'scale(1,1) translate(-125,-156)',
+          'scale(-1,1) translate(-125,-156)',
+          'scale(1,-1) translate(-125,-156)',
+          'scale(-1,-1) translate(-125,-156)',
+          'rotate(90) scale(1,1) translate(-125,-156)',
+          'rotate(90) scale(-1,1) translate(-125,-156)',
+          'rotate(90) scale(1,-1) translate(-125,-156)',
+          'rotate(90) scale(-1,-1) translate(-125,-156)'
         ]
         
         break

@@ -81,7 +81,7 @@ export default class extends Controller {
 
     // Calculer la taille de chaque motif en fonction du nombre de lignes et colonnes
     const totalWidth = 250  // largeur totale du SVG
-    const totalHeight = 350 // hauteur totale du SVG
+    const totalHeight = 312 // hauteur totale du SVG
     const width = totalWidth / columns
     const height = totalHeight / rows
 
@@ -122,44 +122,44 @@ export default class extends Controller {
     switch(mode) {
       case 'x4':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)'
+          'scale(1,1) translate(-125,-156)',
+          'scale(-1,1) translate(-125,-156)',
+          'scale(1,-1) translate(-125,-156)',
+          'scale(-1,-1) translate(-125,-156)'
         ]
         this.updateColors()
         break
       case 'x8':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)',
-          'rotate(90) scale(1,1) translate(-125,-175)',
-          'rotate(90) scale(-1,1) translate(-125,-175)',
-          'rotate(90) scale(1,-1) translate(-125,-175)',
-          'rotate(90) scale(-1,-1) translate(-125,-175)'
+          'scale(1,1) translate(-125,-156)',
+          'scale(-1,1) translate(-125,-156)',
+          'scale(1,-1) translate(-125,-156)',
+          'scale(-1,-1) translate(-125,-156)',
+          'rotate(90) scale(1,1) translate(-125,-156)',
+          'rotate(90) scale(-1,1) translate(-125,-156)',
+          'rotate(90) scale(1,-1) translate(-125,-156)',
+          'rotate(90) scale(-1,-1) translate(-125,-156)'
         ]
         this.updateColors()
         break
       case 'x16':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)',
-          'rotate(90) scale(1,1) translate(-125,-175)',
-          'rotate(90) scale(-1,1) translate(-125,-175)',
-          'rotate(90) scale(1,-1) translate(-125,-175)',
-          'rotate(90) scale(-1,-1) translate(-125,-175)',
-          'rotate(45) scale(1,1) translate(-125,-175)',
-          'rotate(45) scale(-1,1) translate(-125,-175)',
-          'rotate(45) scale(1,-1) translate(-125,-175)',
-          'rotate(45) scale(-1,-1) translate(-125,-175)',
-          'rotate(135) scale(1,1) translate(-125,-175)',
-          'rotate(135) scale(-1,1) translate(-125,-175)',
-          'rotate(135) scale(1,-1) translate(-125,-175)',
-          'rotate(135) scale(-1,-1) translate(-125,-175)'
+          'scale(1,1) translate(-125,-156)',
+          'scale(-1,1) translate(-125,-156)',
+          'scale(1,-1) translate(-125,-156)',
+          'scale(-1,-1) translate(-125,-156)',
+          'rotate(90) scale(1,1) translate(-125,-156)',
+          'rotate(90) scale(-1,1) translate(-125,-156)',
+          'rotate(90) scale(1,-1) translate(-125,-156)',
+          'rotate(90) scale(-1,-1) translate(-125,-156)',
+          'rotate(45) scale(1,1) translate(-125,-156)',
+          'rotate(45) scale(-1,1) translate(-125,-156)',
+          'rotate(45) scale(1,-1) translate(-125,-156)',
+          'rotate(45) scale(-1,-1) translate(-125,-156)',
+          'rotate(135) scale(1,1) translate(-125,-156)',
+          'rotate(135) scale(-1,1) translate(-125,-156)',
+          'rotate(135) scale(1,-1) translate(-125,-156)',
+          'rotate(135) scale(-1,-1) translate(-125,-156)'
         ]
         this.updateColors()
         break
@@ -490,7 +490,7 @@ export default class extends Controller {
     setTimeout(() => {
       editor.classList.remove('is-animating');
       window.dispatchEvent(new Event('resize'));
-    }, 350);
+    }, 312);
   }
 
   toggleDraft(event) {

@@ -4,7 +4,7 @@
 
 .svg-full-height {
   height: calc(100dvh - 100px);
-  width: calc(((100dvh - 100px))*250/350);
+  width: calc(((100dvh - 100px))*250/312);
   display: block;
   overflow: visible; /* évite tout rognage du SVG à l’affichage */
 }
@@ -23,8 +23,8 @@
 .form-editor {
   --controls-height: 174px; /* 24px toggle + 150px contenu */
   --navbar-height: 50px;
-  --controls-min-width: 350px;
-  --left-panel-width: calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350);
+  --controls-min-width: 312px;
+  --left-panel-width: calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 312);
 
   &.controls-collapsed {
     --controls-height: 24px;
@@ -58,13 +58,13 @@
   align-items: center;
 }
 
-/* Conteneur SVG de la couverture — ratio 250:350 */
+/* Conteneur SVG de la couverture — ratio 250:312 */
 .form-cover-svg {
   display: block;
 
   /* min() gère portrait (contraint par largeur) et paysage (contraint par hauteur) */
-  width: #{"min(calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 350), 100vw)"};
-  height: #{"min(calc(100dvh - var(--navbar-height) - var(--controls-height)), calc(100vw * 350 / 250))"};
+  width: #{"min(calc((100dvh - var(--navbar-height) - var(--controls-height)) * 250 / 312), 100vw)"};
+  height: #{"min(calc(100dvh - var(--navbar-height) - var(--controls-height)), calc(100vw * 312 / 250))"};
 }
 
 /* Panneau de contrôles (escamotable) */
