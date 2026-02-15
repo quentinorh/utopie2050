@@ -1,6 +1,6 @@
 <% if !post.draft || current_user&.admin? || current_user == post.user %>
   <%= link_to post,
-      class: "aspect-[5/7] w-full relative group overflow-hidden",
+      class: "aspect-[4/5] w-full relative group overflow-hidden",
       data: {
         staggered_animation_target: "element", 
         stagger_count: 12,
