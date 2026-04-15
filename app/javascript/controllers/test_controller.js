@@ -17,6 +17,14 @@ export default class extends Controller {
     this.updateTitle()
     this.updateCursorPositions()
 
+    // Premier recalcul immédiat pour éviter un délai au chargement
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.fitTitleToLongestLine());
+    });
+
+    this.boundFitTitle = () => this.scheduleFitTitle();
+    window.addEventListener("resize", this.boundFitTitle);
+
     // Ajouter un écouteur d'événement pour les boutons de symétrie
     this.symmetryModeTargets.forEach(target => {
       target.addEventListener('click', (event) => {
@@ -32,6 +40,21 @@ export default class extends Controller {
         this.updateCurve();
       });
     });
+  }
+
+  disconnect() {
+    if (this.boundFitTitle) {
+      window.removeEventListener("resize", this.boundFitTitle);
+    }
+    if (this._fitTitleTimeout) clearTimeout(this._fitTitleTimeout);
+  }
+
+  scheduleFitTitle() {
+    if (this._fitTitleTimeout) clearTimeout(this._fitTitleTimeout);
+    this._fitTitleTimeout = setTimeout(() => {
+      this._fitTitleTimeout = null;
+      requestAnimationFrame(() => this.fitTitleToLongestLine());
+    }, 100);
   }
 
   loadPatternSettings() {
@@ -51,23 +74,62 @@ export default class extends Controller {
 
   updateTitle() {
     const title = this.titleInputTarget.value || "Futur titre";
-    
-    this.titleWrapperTarget.innerHTML = '';
 
     const hue = this.colorPickerTarget.value;
     const backgroundColor = `hsl(${hue}, 80%, 70%)`;
 
-    const titleSpan = document.createElement('span');
-    titleSpan.textContent = title;
-    
-    titleSpan.style.boxShadow = `0 0 0 10px ${backgroundColor}`;
-    titleSpan.style.backgroundColor = backgroundColor;
+    this.titleWrapperTarget.textContent = title;
+    this.titleWrapperTarget.style.boxShadow = `0 0 0 10px ${backgroundColor}`;
+    this.titleWrapperTarget.style.backgroundColor = backgroundColor;
 
-    this.userNameTarget.style.backgroundColor = backgroundColor
+    this.userNameTarget.style.backgroundColor = backgroundColor;
 
-    titleSpan.classList.add('leading-relaxed', 'box-decoration-clone');
+    // On ne touche pas à la largeur pendant la saisie : elle est fixée au chargement et au resize
+    // pour éviter que les côtés bougent et que les mots sautent d'une ligne à l'autre
+  }
 
-    this.titleWrapperTarget.appendChild(titleSpan);
+  // Ajuste la largeur du titre à la ligne la plus longue (évite un fond trop large sur 2+ lignes)
+  fitTitleToLongestLine() {
+    if (!this.hasTitleWrapperTarget) return;
+    const wrapper = this.titleWrapperTarget;
+    if (!wrapper.isConnected) return;
+    const parent = wrapper.parentElement;
+    const maxW = parent?.offsetWidth ?? 250;
+    const cap = maxW * 0.8;
+    // Toujours mesurer avec la largeur max pour obtenir la bonne longueur de ligne
+    wrapper.style.transition = "none";
+    wrapper.style.width = `${cap}px`;
+    wrapper.offsetHeight; // force reflow
+    const textNode = wrapper.firstChild;
+    if (!textNode || !textNode.textContent.trim()) return;
+    const text = textNode.textContent;
+    const len = text.length;
+    if (len === 0) return;
+    const range = document.createRange();
+    let maxWidth = 0;
+    let lineStart = 0;
+    let lastBottom = null;
+    for (let i = 1; i <= len; i++) {
+      range.setStart(textNode, 0);
+      range.setEnd(textNode, i);
+      const rect = range.getBoundingClientRect();
+      if (lastBottom !== null && rect.bottom > lastBottom) {
+        range.setStart(textNode, lineStart);
+        range.setEnd(textNode, i - 1);
+        const lineRect = range.getBoundingClientRect();
+        maxWidth = Math.max(maxWidth, lineRect.width);
+        lineStart = i;
+      }
+      lastBottom = rect.bottom;
+    }
+    range.setStart(textNode, lineStart);
+    range.setEnd(textNode, len);
+    const lastRect = range.getBoundingClientRect();
+    maxWidth = Math.max(maxWidth, lastRect.width);
+    const style = getComputedStyle(wrapper);
+    const padding = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+    wrapper.style.transition = "width 0.15s ease-out";
+    wrapper.style.width = `${Math.min(maxWidth + padding, cap)}px`;
   }
 
   updateCurve() {
@@ -81,7 +143,7 @@ export default class extends Controller {
 
     // Calculer la taille de chaque motif en fonction du nombre de lignes et colonnes
     const totalWidth = 250  // largeur totale du SVG
-    const totalHeight = 312 // hauteur totale du SVG
+    const totalHeight = 350 // hauteur totale du SVG
     const width = totalWidth / columns
     const height = totalHeight / rows
 
@@ -122,44 +184,44 @@ export default class extends Controller {
     switch(mode) {
       case 'x4':
         transforms = [
-          'scale(1,1) translate(-125,-156)',
-          'scale(-1,1) translate(-125,-156)',
-          'scale(1,-1) translate(-125,-156)',
-          'scale(-1,-1) translate(-125,-156)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
       case 'x8':
         transforms = [
-          'scale(1,1) translate(-125,-156)',
-          'scale(-1,1) translate(-125,-156)',
-          'scale(1,-1) translate(-125,-156)',
-          'scale(-1,-1) translate(-125,-156)',
-          'rotate(90) scale(1,1) translate(-125,-156)',
-          'rotate(90) scale(-1,1) translate(-125,-156)',
-          'rotate(90) scale(1,-1) translate(-125,-156)',
-          'rotate(90) scale(-1,-1) translate(-125,-156)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)',
+          'rotate(90) scale(1,1) translate(-125,-175)',
+          'rotate(90) scale(-1,1) translate(-125,-175)',
+          'rotate(90) scale(1,-1) translate(-125,-175)',
+          'rotate(90) scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
       case 'x16':
         transforms = [
-          'scale(1,1) translate(-125,-156)',
-          'scale(-1,1) translate(-125,-156)',
-          'scale(1,-1) translate(-125,-156)',
-          'scale(-1,-1) translate(-125,-156)',
-          'rotate(90) scale(1,1) translate(-125,-156)',
-          'rotate(90) scale(-1,1) translate(-125,-156)',
-          'rotate(90) scale(1,-1) translate(-125,-156)',
-          'rotate(90) scale(-1,-1) translate(-125,-156)',
-          'rotate(45) scale(1,1) translate(-125,-156)',
-          'rotate(45) scale(-1,1) translate(-125,-156)',
-          'rotate(45) scale(1,-1) translate(-125,-156)',
-          'rotate(45) scale(-1,-1) translate(-125,-156)',
-          'rotate(135) scale(1,1) translate(-125,-156)',
-          'rotate(135) scale(-1,1) translate(-125,-156)',
-          'rotate(135) scale(1,-1) translate(-125,-156)',
-          'rotate(135) scale(-1,-1) translate(-125,-156)'
+          'scale(1,1) translate(-125,-175)',
+          'scale(-1,1) translate(-125,-175)',
+          'scale(1,-1) translate(-125,-175)',
+          'scale(-1,-1) translate(-125,-175)',
+          'rotate(90) scale(1,1) translate(-125,-175)',
+          'rotate(90) scale(-1,1) translate(-125,-175)',
+          'rotate(90) scale(1,-1) translate(-125,-175)',
+          'rotate(90) scale(-1,-1) translate(-125,-175)',
+          'rotate(45) scale(1,1) translate(-125,-175)',
+          'rotate(45) scale(-1,1) translate(-125,-175)',
+          'rotate(45) scale(1,-1) translate(-125,-175)',
+          'rotate(45) scale(-1,-1) translate(-125,-175)',
+          'rotate(135) scale(1,1) translate(-125,-175)',
+          'rotate(135) scale(-1,1) translate(-125,-175)',
+          'rotate(135) scale(1,-1) translate(-125,-175)',
+          'rotate(135) scale(-1,-1) translate(-125,-175)'
         ]
         this.updateColors()
         break
@@ -490,7 +552,7 @@ export default class extends Controller {
     setTimeout(() => {
       editor.classList.remove('is-animating');
       window.dispatchEvent(new Event('resize'));
-    }, 312);
+    }, 350);
   }
 
   toggleDraft(event) {

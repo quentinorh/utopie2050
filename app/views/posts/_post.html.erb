@@ -1,6 +1,6 @@
 <% if !post.draft || current_user&.admin? || current_user == post.user %>
   <%= link_to post,
-      class: "aspect-[4/5] w-full relative group overflow-hidden",
+      class: "aspect-[5/7] w-full relative group overflow-hidden",
       data: {
         staggered_animation_target: "element", 
         stagger_count: 12,
@@ -13,11 +13,11 @@
       <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
       <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
 
-      <div class="absolute h-full inset-0 flex flex-col justify-start">
+      <div class="absolute z-10 h-full inset-0 flex flex-col justify-start pointer-events-none">
         <div class="px-xs pt-[3px] h-fit text-2l z-10 w-4/5" data-cover-target="titleWrapper">
           <%= post.title %>
         </div>
-        <div class="px-xs py-[5px] text-sm mt-xs z-10 w-fit" data-cover-target="userName">
+        <div class="px-xs py-[5px] text-sm mt-4 z-10 w-fit" data-cover-target="userName">
           <%= post.user.username %>
         </div>
       </div>

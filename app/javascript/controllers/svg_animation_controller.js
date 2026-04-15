@@ -5,62 +5,73 @@ export default class extends Controller {
   static targets = ["title", "userName"]
 
   connect() {
-    // Sélectionner la classe parente
     const cover = this.element.querySelector('.cover');
-
-    // Sélectionner le svg
     const shapes = this.element.querySelector('.svg-container');
+    const svg = shapes?.querySelector('svg') || shapes?.firstElementChild;
 
-    // Créer une timeline pour synchroniser les animations
     const tl = gsap.timeline();
-
-    // Définir l'opacité initiale
-    this.titleTarget.classList.remove('hidden')
-    this.userNameTarget.classList.remove('hidden')
-
-    gsap.set(shapes, { 
-      opacity: 0,
-      zIndex: 1 
-    });
     gsap.set(cover, { opacity: 1 });
 
+    // Fond = premier rect (pleine taille), motifs = paths + autres rect/ellipse/polygon
+    const bgRect = svg?.querySelector('rect');
+    const allRects = svg ? Array.from(svg.querySelectorAll('rect')) : [];
+    const firstRect = allRects[0];
+    const motifRects = allRects.slice(1);
+    const motifPaths = svg ? Array.from(svg.querySelectorAll('path')) : [];
+    const motifOthers = svg ? Array.from(svg.querySelectorAll('ellipse, polygon')) : [];
+    const motifElements = [].concat(motifPaths, motifRects, motifOthers);
 
+    if (firstRect) {
+      gsap.set(firstRect, { opacity: 0 });
+      motifElements.forEach(el => gsap.set(el, { opacity: 0 }));
 
+      // Fond + titre + auteur en même temps (1,5 s)
+      tl.to(firstRect, {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 0);
+      tl.to(this.titleTarget, {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 0);
+      tl.to(this.userNameTarget, {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 0);
+      // Motifs : apparition en fondu doux à 0,9 s
+      if (motifElements.length > 0) {
+        tl.to(motifElements, {
+          opacity: 1,
+          duration: 1.2,
+          ease: "sine.inOut"
+        }, 0.9);
+      }
+    } else {
+      // Fallback : tout le SVG comme avant
+      gsap.set(shapes, { opacity: 0, zIndex: 1 });
+      tl.to(shapes, { opacity: 1, duration: 1.5, ease: "power4.inOut" }, 0);
+      tl.to(this.titleTarget, { opacity: 1, duration: 1.5, ease: "power2.out" }, 0);
+      tl.to(this.userNameTarget, { opacity: 1, duration: 1.5, ease: "power2.out" }, 0);
+    }
 
-    // Animer la couverture pour la rendre visible
-    tl.to(shapes, {
-      opacity: 1,
-      duration: 2,
-      ease: "power4.inOut",
-    }, 0);
-
-    // Animer le titre et l'auteur en glissant de gauche à droite
-    tl.to(this.titleTarget, {
-      x: '0%', // Position finale
-      duration: 2,
-      ease: "power4.out"
-    }, 0);
-    tl.to(this.userNameTarget, {
-      x: '0%', // Position finale
-      duration: 2,
-      ease: "power4.out"
-    }, 0); 
-
-    // Sélectionner tous les paths du SVG
+    // Animation des formes (paths) : démarre plus tôt (0,5 s)
     const paths = this.element.querySelectorAll('.svg-container path');
-    
-    // Pour chaque path, créer une animation
+    const pathDelay = firstRect ? 0.5 : 0;
+
     paths.forEach(path => {
       const currentD = path.getAttribute('d');
       const cParams = this.extractCParams(currentD);
-      
-      // Animer chaque paramètre C
+
       cParams.forEach((param, index) => {
         gsap.to(path, {
           attr: {
             d: this.updateCParam(currentD, index, param - ((Math.random() * 0.02 - 0.01)))
           },
           duration: 3,
+          delay: pathDelay,
           ease: "sine.inOut",
         });
       });

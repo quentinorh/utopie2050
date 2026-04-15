@@ -23,7 +23,7 @@
       <div class="form-left-panel bg-gray-800">
         <div class="form-cover-wrapper">
           <div class="form-cover-svg relative" data-controller="coversize">
-            <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 312" preserveAspectRatio="xMidYMid meet">
+            <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
                   <stop offset="0%"/>
@@ -40,14 +40,13 @@
               </defs>
               <g data-test-target="curveGroup"></g>
             </svg>
-            <div class="absolute top-0 left-0">
-              <div class="px-xs py-[5px] mt-[-1px] text-l z-99 text-black w-4/5" data-test-target="titleWrapper">
-              </div>
-              <div class="px-xs py-[5px] mt-[6px] text-sm z-99 w-fit text-black" data-test-target="userName">
-                <%= current_user.username %>
-              </div>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div class="px-2 text-l sm:text-xl z-99 text-black w-fit max-w-[80%] text-center" data-test-target="titleWrapper"></div>
             </div>
-            <div class="absolute bottom-4 right-4">
+            <div class="absolute bottom-0 right-0 px-xs py-[5px] text-l z-99 text-black pointer-events-none" data-test-target="userName">
+              <%= current_user.username %>
+            </div>
+            <div class="absolute bottom-4 left-4">
               <button type="button" class="tw-btn-primary text-sm p-xs" data-action="click->test#randomize">Aléatoire</button>
             </div>
           </div>

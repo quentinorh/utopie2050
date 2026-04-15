@@ -36,19 +36,19 @@
         <div class="svg-container svg-full-height z-99" data-controller="coversize">
           <%= @post.cover.html_safe %>
         </div>
-        <div class="absolute top-0 left-0">
-          <div class="px-xs py-[5px] mt-[-5px] text-xl z-99 text-black w-4/5 hidden translate-x-[-100%]" data-cover-target="titleWrapper" data-svg-animation-target="title">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="px-2 text-xl z-99 text-black w-fit max-w-[80%] text-center opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
             <%= @post.title %>
           </div>
-          <div class="px-xs py-[5px] mt-[6px] text-l z-99 w-fit text-black hidden translate-x-[-100%]" data-cover-target="userName" data-svg-animation-target="userName">
-            <%= @post.user.username %>
-          </div>
+        </div>
+        <div class="absolute bottom-0 right-0 px-xs py-[5px] text-l z-99 text-black pointer-events-none opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
+          <%= @post.user.username %>
         </div> 
       </div>
     </div>
 
     <!-- Colonne de droite déroulante -->
-    <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-50px)] px-sm lg:px-12 xl:px-xl pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100dvh-100px)*(250/312))]">
+    <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-50px)] px-sm lg:px-12 xl:px-xl pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100dvh-100px)*(250/350))]">
       <!-- Intro and data -->
       <div class="flex justify-between font-mono text-sm py-sm uppercase">
         <div>
