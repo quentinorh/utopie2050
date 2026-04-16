@@ -1,0 +1,72 @@
+<%# Osmo "Big Typo Scroll Preview" — center-fixed cover that reveals
+    via clip-path on the row currently in the viewport center
+    (touch) or under the cursor (mouse). All `data-typo-scroll-*`
+    attributes preserved verbatim so the controller can find them.
+    `data-typo-scroll-infinite="false"` because we already have a
+    global Lenis (see app/javascript/application.js) and a second one
+    would fight it.
+
+    Locals:
+      featured_users  — top-N real users (each :name + their latest post)
+      featured_covers — { user_id => Post } mapping
+%>
+<%
+  # Real entries: top-N featured users, each paired with their latest cover.
+  real_entries = featured_users.map do |user|
+    { name: user.username, post: featured_covers[user.id] }
+  end
+
+  # Fake names — solarpunk-y, French-friendly. Cover is recycled from a
+  # real post so the reveal still has something to show.
+  real_covers = real_entries.map { |e| e[:post] }.compact
+  fake_names = [
+    "Ada Solène", "Mira Voltage", "Théo Bocage", "Naïm Algue",
+    "Ines Forêt", "Sami Ruisseau", "Yara Lichen", "Jules Sève",
+    "Anouk Phare", "Méline Pollen", "Esther Mycelium", "Kim Atlas",
+    "Roman Rhizome", "Camille Tournesol", "Léo Solstice",
+    "Mehdi Compost", "Soraya Verdure", "Iris Estuaire",
+    "Loïs Lichen", "Selma Brume"
+  ]
+  fake_entries = fake_names.map.with_index do |name, i|
+    cover = real_covers.any? ? real_covers[i % real_covers.size] : nil
+    { name: name, post: cover }
+  end
+
+  # Real first, fakes after. Aspect-ratio classes cycle so the
+  # composition stays visually varied.
+  entries = real_entries + fake_entries
+  aspect_classes = [nil, "is--3-2", "is--2-3", "is--1-1"]
+%>
+
+<section class="typo-scroll"
+         data-controller="typo-scroll"
+         data-typo-scroll-init=""
+         data-typo-scroll-infinite="false"
+         data-navbar-dark=""
+         aria-label="Auteurices à découvrir">
+  <div class="typo-scroll__collection">
+    <div class="typo-scroll__list" data-typo-scroll-list="">
+      <% entries.each_with_index do |entry, i| %>
+        <% post = entry[:post] %>
+        <% aspect = aspect_classes[i % aspect_classes.size] %>
+        <div class="typo-scroll__item" data-typo-scroll-item="">
+          <%= link_to (post ? post : "#"),
+                      class: "typo-scroll__link",
+                      data: { cursor_marquee_text: "Lire" } do %>
+            <h3 class="typo-scroll__h"><%= entry[:name] %></h3>
+            <div class="typo-scroll__media <%= aspect %>" aria-hidden="true">
+              <% if post&.cover.present? %>
+                <%= post.cover.html_safe %>
+              <% elsif post&.cover_image.present? %>
+                <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "4:5", width: 360, draggable: "false", class: "typo-scroll__img" %>
+              <% end %>
+              <% if post %>
+                <p class="typo-scroll__p">[ Lire ce futur ]</p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

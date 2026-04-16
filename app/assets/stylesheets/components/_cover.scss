@@ -113,6 +113,69 @@
 }
 
 /* ================================
+   Navbar — dark variant
+   Toggled by navbar_controller's IntersectionObserver whenever any
+   [data-navbar-dark] section overlaps the navbar band. Wins over
+   `--scrolled` and `--transparent` so the navbar always blends with
+   the dark section behind it.
+   ================================ */
+
+%navbar-dark-base {
+  background-color: #12142C !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  transition:
+    background-color 0.45s cubic-bezier(0.625, 0.05, 0, 1),
+    border-color 0.45s cubic-bezier(0.625, 0.05, 0, 1),
+    color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+
+  .navbar-logo-text {
+    color: #ffffff;
+    transition: color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .navbar-dot {
+    background-color: #ffffff !important;
+    transition: background-color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .navbar-center-link {
+    color: #ffffff;
+    transition: color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .navbar-fullscreen-btn {
+    border-color: rgba(255, 255, 255, 0.25);
+    transition: border-color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .navbar-fullscreen-text,
+  .navbar-fullscreen-icon {
+    color: rgba(255, 255, 255, 0.85);
+    transition: color 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  }
+}
+
+.navbar--dark { @extend %navbar-dark-base; }
+
+/* Force-win even when the page also added --scrolled / --transparent */
+.navbar--dark.navbar--transparent,
+.navbar--dark.navbar--scrolled,
+.navbar--dark.navbar--transparent.navbar--scrolled,
+.dark .navbar--dark,
+.dark .navbar--dark.navbar--scrolled,
+.dark .navbar--dark.navbar--transparent.navbar--scrolled { @extend %navbar-dark-base; }
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar--dark,
+  .navbar--dark .navbar-logo-text,
+  .navbar--dark .navbar-dot,
+  .navbar--dark .navbar-center-link,
+  .navbar--dark .navbar-fullscreen-btn,
+  .navbar--dark .navbar-fullscreen-text,
+  .navbar--dark .navbar-fullscreen-icon { transition: none; }
+}
+
+/* ================================
    Cover pour la page show
    ================================ */
 

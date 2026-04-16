@@ -29,6 +29,13 @@ class PostsController < ApplicationController
     end
     @report = Report.new
     @show_settings_panel = true
+    # Up-to-three other published posts to feed the stacking-cards
+    # parallax block at the bottom of the page (random pick keeps the
+    # tail fresh between visits).
+    @suggested_posts = Post.published
+                           .where.not(id: @post.id)
+                           .order(Arel.sql("RANDOM()"))
+                           .limit(3)
   end
 
   def new

@@ -17,28 +17,44 @@
     @apply rounded-md bg-red-100 px-3.5 py-2.5 border border-gray-100 text-sm uppercase font-mono text-red-600 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600
   }
 
-  /* Dropdown menu container */
+  /* Dropdown menu container — brand easing, slight rise + scale */
   .tw-dropdown-menu {
     @apply fixed z-50 min-w-[180px] p-2 flex flex-col gap-0.5;
     @apply bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl;
     @apply shadow-lg shadow-gray-950/5 dark:shadow-none;
-    @apply opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out;
+    @apply opacity-0 pointer-events-none;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     right: 16px;
     top: 75px;
+    transform-origin: top right;
+    transform: translateY(-4px) scale(0.96);
+    transition:
+      opacity 220ms cubic-bezier(0.625, 0.05, 0, 1),
+      transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .tw-dropdown-menu.is-open {
-    @apply opacity-100 scale-100 pointer-events-auto;
+    @apply opacity-100 pointer-events-auto;
+    transform: translateY(0) scale(1);
   }
 
-  /* Navigation links inside dropdown */
+  /* Navigation links inside dropdown — soft hover slide */
   .tw-nav-link {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left;
     @apply text-sm text-gray-600 dark:text-gray-300;
     @apply hover:bg-gray-950/5 dark:hover:bg-white/5;
     @apply hover:text-gray-900 dark:hover:text-white;
+    transition:
+      background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      padding-left 220ms cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tw-nav-link:hover {
+      padding-left: 1rem;
+    }
   }
 
   /* Forms */
@@ -51,11 +67,35 @@
   }
 
   .tw-form-input {
-    @apply block w-full rounded-none border border-gray-300 text-black-900 ring-0 ring-transparent ring-offset-0 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-400
+    @apply block w-full rounded-none border border-gray-300 text-black-900 ring-0 ring-transparent ring-offset-0 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-gray-400;
+    transition:
+      border-color 220ms cubic-bezier(0.625, 0.05, 0, 1),
+      box-shadow 220ms cubic-bezier(0.625, 0.05, 0, 1),
+      background-color 220ms cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  /* Subtle inset shadow when typing — gives the input a "live" feel
+     without painting an outline (Devise screens often have outlines
+     elsewhere; we want this one to be pure border + shadow). */
+  .tw-form-input:focus {
+    box-shadow: inset 0 -1px 0 0 currentColor;
+  }
+
+  /* Label rises slightly on focus-within to draw the eye to the field
+     the user is typing in. Pair this with the wrapper around the
+     label+input (Simple Form's default `<div class="form-group">`). */
+  .form-group {
+    transition: transform 240ms cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .form-group:focus-within .tw-form-label {
+    color: var(--focus-ring-color, #4f46e5);
+    transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   textarea.tw-form-input {
     overscroll-behavior: contain;
+    line-height: 1.55;
   }
 
   .tw-form-checkbox {
@@ -68,6 +108,12 @@
 
   .word {
     @apply overflow-hidden inline-block
+  }
+
+  /* Splitting.js drops standalone <br> tags, so the manifesto uses
+     real <p> children for section breaks. Give them block spacing. */
+  .manifesto-text p + p {
+    margin-top: 1em;
   }
 
   h1 .word {

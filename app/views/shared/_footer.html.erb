@@ -1,36 +1,70 @@
-<div class="grid grid-cols-6 gap-4 p-2 md:p-sm gap-y-sm mt-xl mb-0 ">
-    <div class="col-span-2">
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Instagram</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Typographies</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Création &</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Développement</p>     
+<%# Footer with Osmo parallax sticky effect — outer wrap is observed by
+    the stimulus controller, the inner <footer> is what slides up
+    against the dark layer. Keep ALL data-footer-parallax-* attributes:
+    they're targeted by JS.
+
+    `footer-reveal` adds the entrance choreography on top:
+      - data-footer-reveal-target="stagger" → fades & rises in sequence
+      - data-footer-reveal-target="chars"   → split-by-char mask reveal
+    %>
+<div data-controller="footer-parallax footer-reveal"
+     data-footer-parallax=""
+     class="footer-wrap">
+  <footer data-footer-parallax-inner="" class="demo-footer">
+
+    <div class="demo-footer__links-row">
+      <div class="demo-footer__col" data-footer-reveal-target="stagger">
+        <p class="demo-eyebrow">( Suivre )</p>
+        <div class="demo-footer__links">
+          <%= link_to "https://www.instagram.com/sp2050_org",
+                      class: "demo-footer__a",
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      "aria-label": "Suivre le projet sur Instagram" do %>
+            sp2050_org
+          <% end %>
+        </div>
+      </div>
+
+      <div class="demo-footer__col" data-footer-reveal-target="stagger">
+        <p class="demo-eyebrow">( Typographies )</p>
+        <div class="demo-footer__links">
+          <span class="demo-footer__a">Apfel Grotezk</span>
+          <span class="demo-footer__a">SuperSerif</span>
+        </div>
+      </div>
+
+      <div class="demo-footer__col" data-footer-reveal-target="stagger">
+        <p class="demo-eyebrow">( Création & développement )</p>
+        <div class="demo-footer__links">
+          <span class="demo-footer__a">Quentin Orhant</span>
+        </div>
+      </div>
     </div>
-    <div class="col-span-4 text-right">
-        <%= link_to "https://www.instagram.com/sp2050_org",
-            target: "_blank",
-            rel: "noopener noreferrer",
-            class: "inline-flex items-center gap-2 text-l sm:text-2xl md:text-xl md:mb-xs",
-            "aria-label": "Suivre le projet sur Instagram" do %>
-            <span>sp2050_org</span>
+
+    <div class="demo-footer__logo-row">
+      <p class="demo-eyebrow" data-footer-reveal-target="stagger">Imaginer le meilleur de 2050</p>
+      <div class="demo-footer__bottom">
+        <span class="demo-footer__year"
+              data-footer-reveal-target="chars"
+              data-footer-reveal-chars="">SP&nbsp;2050</span>
+        <span class="demo-footer__year"
+              data-footer-reveal-target="chars"
+              data-footer-reveal-chars="">2026</span>
+      </div>
+      <div class="demo-footer__license" data-footer-reveal-target="stagger">
+        <%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+                    target: "_blank",
+                    class: "demo-footer__cc",
+                    "aria-label": "Licence Creative Commons BY-NC-SA 4.0" do %>
+          <%= inline_svg_tag('cc.svg', class: 'demo-footer__cc-svg') %>
+          <%= inline_svg_tag('nc.svg', class: 'demo-footer__cc-svg') %>
+          <%= inline_svg_tag('by.svg', class: 'demo-footer__cc-svg') %>
+          <%= inline_svg_tag('sa.svg', class: 'demo-footer__cc-svg') %>
         <% end %>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Apfel Grotesk</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Quentin Orhant</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">& SuperSerif</p>
+      </div>
     </div>
-    <div class="col-span-6 h-[5px] sm-[8px] md:h-[10px] bg-gray-900">
-    </div>
-    <div class="col-span-2">
-        <p class="text-l sm:text-2xl md:text-xl">2026</p>
-    </div>
-    <div class="col-span-4 text-right flex justify-end items-center gap-2 flex-wrap">
-        <%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/", 
-            target: "_blank", 
-            class: "flex items-center gap-2",
-            "aria-label": "Licence Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International" do %>
-            <%= inline_svg_tag('cc.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
-            <%= inline_svg_tag('nc.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
-            <%= inline_svg_tag('by.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
-            <%= inline_svg_tag('sa.svg', class: 'overflow-visible w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8') %>
-        <% end %>
-    </div>
+  </footer>
+
+  <div data-footer-parallax-dark="" class="footer-wrap__dark"></div>
 </div>

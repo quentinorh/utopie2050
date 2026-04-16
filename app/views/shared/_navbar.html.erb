@@ -24,14 +24,19 @@
 
     <!-- Right: Actions -->
     <div class="flex items-center gap-[8px] flex-nowrap">
-      <!-- Fullscreen button (desktop) -->
+      <!-- Fullscreen button (desktop) — icon-only, matches the
+           42px square footprint of the avatar / signin button to its
+           right. The tooltip controller hangs the bubble inside the
+           button (needs `relative`) on hover. -->
       <button type="button"
-              class="hidden lg:flex items-center gap-[10px] px-[17px] py-[8px] rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn"
+              class="hidden lg:flex h-[42px] w-[42px] items-center justify-center rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn relative"
               data-action="click->fullscreen#toggle"
+              data-controller="tooltip"
+              data-tooltip-text-value="Plein écran"
+              data-tap=""
               aria-label="Basculer en mode plein écran">
-        <span class="text-xs leading-[16px] navbar-fullscreen-text">Plein écran</span>
-        <span data-fullscreen-target="enterIcon">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
+        <span data-fullscreen-target="enterIcon" class="flex">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
             <path d="M1 4V1H4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M11 4V1H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M1 8V11H4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
@@ -39,7 +44,7 @@
           </svg>
         </span>
         <span class="hidden" data-fullscreen-target="exitIcon">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
             <path d="M4 1V4H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M8 1V4H11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 11V8H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
@@ -59,6 +64,7 @@
         <div class="relative flex-shrink-0">
           <button class="h-[42px] w-[42px] flex items-center justify-center rounded-full border border-primary"
                data-action="click->navbar#toogleSignin"
+               data-tap=""
                aria-label="Menu de connexion">
             <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor" class="text-primary">
               <circle cx="8" cy="5" r="4"/>
@@ -84,7 +90,7 @@
       <% if user_signed_in? %>
         <div class="flex-shrink-0">
           <div class="relative">
-            <button class="h-[42px] w-[42px] relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
+            <button class="h-[42px] w-[42px] relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu" data-tap="">
               <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-[14px] font-medium" data-navbar-target="username">
                 <%= current_user.username[0].upcase %>
               </span>

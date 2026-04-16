@@ -1,7 +1,7 @@
 <% content_for :title, "SP 2050 - Explorer les futurs désirables" %>
 <% content_for :description, "Découvre notre collection de futurs. Des récits qui imaginent un futur durable, écologique et socialement juste. Laisse-toi inspirer par les visions de nos auteur·ice·s." %>
 
-<div data-controller="filter">
+<div data-controller="filter page-transition">
   <!-- Title section -->
   <div class="index-title-section">
     <h1 class="index-title"><%= @filters_active ? "Futurs trouvés" : "Tous les futurs" %><span class="index-title-count font-mono">[<span data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @posts.count %>"><%= @posts.count %></span>]</span></h1>

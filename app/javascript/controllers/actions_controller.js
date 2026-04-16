@@ -16,21 +16,78 @@ export default class extends Controller {
                      "theme" ]
 
   connect() {
+    // Suppress the select-pulse during the initial sync to persisted
+    // cookies — only changes the user actively makes should pop.
+    this._suppressPulse = true
     this.loadSettings()
+    this._suppressPulse = false
   }
 
   // ─── Panel animation helpers ───
 
+  // Springy reveal: scale + translate Y come in on a slight overshoot
+  // (Osmo "spring" curve), opacity uses the brand sharp-out so the
+  // panel reads as "snapping into focus". Children stagger in just
+  // behind the container so the panel feels assembled rather than
+  // pasted in.
   _showPanel(panel) {
+    if (this._reducedMotion()) return this._showPanelReduced(panel)
     panel.classList.remove('!hidden')
-    gsap.to(panel, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" })
+    gsap.killTweensOf(panel)
+
+    gsap.fromTo(panel,
+      { opacity: 0, y: 12, scale: 0.96 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.42,
+        ease: "back.out(1.5)", overwrite: "auto" }
+    )
+
+    const items = this._panelItems(panel)
+    if (items.length) {
+      gsap.killTweensOf(items)
+      gsap.fromTo(items,
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.32, ease: "power3.out",
+          stagger: 0.035, delay: 0.06, overwrite: "auto",
+          clearProps: "transform" }
+      )
+    }
   }
 
   _hidePanel(panel) {
+    if (this._reducedMotion()) return this._hidePanelReduced(panel)
+    gsap.killTweensOf(panel)
+    const items = this._panelItems(panel)
+    if (items.length) gsap.killTweensOf(items)
     gsap.to(panel, {
-      opacity: 0, y: 8, duration: 0.15, ease: "power2.in",
+      opacity: 0, y: 12, scale: 0.96,
+      duration: 0.22, ease: "power2.in", overwrite: "auto",
       onComplete: () => panel.classList.add('!hidden')
     })
+  }
+
+  _showPanelReduced(panel) {
+    panel.classList.remove('!hidden')
+    panel.style.opacity = '1'
+    panel.style.transform = 'none'
+  }
+
+  _hidePanelReduced(panel) {
+    panel.style.opacity = '0'
+    panel.classList.add('!hidden')
+  }
+
+  _reducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  }
+
+  // Direct children of the panel's first inner card — these are the
+  // "rows" we stagger. Falling back to direct children of the panel
+  // covers toast-style panels with no inner wrapper.
+  _panelItems(panel) {
+    const card = panel.querySelector(":scope > div")
+    if (!card) return []
+    const rows = card.querySelectorAll(":scope > *")
+    return rows.length > 1 ? Array.from(rows) : []
   }
 
   _togglePanel(panel) {
@@ -39,6 +96,19 @@ export default class extends Controller {
     } else {
       this._hidePanel(panel)
     }
+  }
+
+  // Tiny pop on a setting-button to confirm the user's selection.
+  // Uses `is-select-pulsing` (no opacity change) so the button never
+  // flashes invisible — important since these buttons stay visible
+  // throughout the interaction.
+  _pulse(el) {
+    if (!el || this._reducedMotion()) return
+    el.classList.remove("is-select-pulsing")
+    // eslint-disable-next-line no-unused-expressions
+    void el.offsetWidth
+    el.classList.add("is-select-pulsing")
+    setTimeout(() => el.classList.remove("is-select-pulsing"), 400)
   }
 
   _hideAll(except) {
@@ -144,6 +214,10 @@ export default class extends Controller {
     const buttons = this[group + "Targets"]
     if (!buttons) return
 
+    const previouslyActive = buttons.find(b =>
+      b.classList.contains('bg-gray-950/5') || b.classList.contains('dark:bg-white/5')
+    )
+
     buttons.forEach(button => {
       button.classList.remove('border-gray-950/10', 'dark:border-white/10', 'bg-gray-950/5', 'dark:bg-white/5')
       button.classList.add('border-transparent')
@@ -153,6 +227,12 @@ export default class extends Controller {
     if (activeButton) {
       activeButton.classList.remove('border-transparent')
       activeButton.classList.add('border-gray-950/10', 'dark:border-white/10', 'bg-gray-950/5', 'dark:bg-white/5')
+
+      // Pop only on a real change — no phantom pulse during initial
+      // load when we sync the UI to persisted cookies.
+      if (!this._suppressPulse && previouslyActive !== activeButton) {
+        this._pulse(activeButton)
+      }
     }
   }
 

@@ -152,6 +152,10 @@ export default class extends Controller {
           }
         });
 
+        // 404 just means "no bookmark yet for this post" — that's the
+        // normal first-read state, not an error worth logging.
+        if (response.status === 404) return;
+
         const data = await response.json();
         if (data.status === 'success' && data.bookmark) {
           this.displayBookmark(data.bookmark.character_position);
@@ -214,16 +218,35 @@ export default class extends Controller {
 
     targets.forEach(target => {
       const svg = target.querySelector('svg')
-      if (svg) {
-        if (isBookmarked) {
-          svg.setAttribute('fill', 'currentColor')
-          svg.classList.add('fill-gray-500')
-        } else {
-          svg.setAttribute('fill', 'none')
-          svg.classList.remove('fill-gray-500')
-        }
+      if (!svg) return
+
+      const wasBookmarked = svg.getAttribute('fill') === 'currentColor'
+
+      if (isBookmarked) {
+        svg.setAttribute('fill', 'currentColor')
+        svg.classList.add('fill-gray-500')
+      } else {
+        svg.setAttribute('fill', 'none')
+        svg.classList.remove('fill-gray-500')
+      }
+
+      // Pulse only on actual state change — avoids a phantom pulse on
+      // page-load when we sync the icon to the persisted bookmark.
+      if (wasBookmarked !== isBookmarked) {
+        this._pulse(svg)
       }
     })
+  }
+
+  // Re-trigger the heart-pulse keyframe animation by removing + adding
+  // the class across a forced reflow. Without the reflow, browsers
+  // ignore the re-add since the class state didn't change.
+  _pulse(el) {
+    el.classList.remove("is-heart-pulsing")
+    // eslint-disable-next-line no-unused-expressions
+    void el.offsetWidth
+    el.classList.add("is-heart-pulsing")
+    setTimeout(() => el.classList.remove("is-heart-pulsing"), 700)
   }
 
   isBookmarkPresent() {

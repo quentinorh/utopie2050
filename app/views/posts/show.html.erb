@@ -92,3 +92,16 @@
 
   <%= render 'shared/bottomnavbar' %>
 </div>
+
+<%# Stacking-cards parallax tail — kept OUTSIDE the post-page wrapper
+    because that wrapper uses display:flex, and the Osmo effect requires
+    its `.stacking-cards__collection` parent to be a normal block. %>
+<% if @suggested_posts&.any? %>
+  <%= render 'shared/stacking_cards',
+             cards: @suggested_posts,
+             eyebrow: "Prochain futur" %>
+<% end %>
+
+<%# Sticky-parallax footer (same one used on home). Sits after the
+    stacking-cards block so the page ends on the dark→bright reveal. %>
+<%= render 'shared/footer' %>

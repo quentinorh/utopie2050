@@ -1,0 +1,199 @@
+// Osmo "Footer Parallax Effect" — outer wrap clips a footer that
+// translates upward against a darkening overlay as the user scrolls
+// the wrap into view. JS lives in footer_parallax_controller.js.
+//
+// We keep the Osmo class names (`demo-footer*`, `footer-wrap*`) so the
+// data-attribute targeting and the CSS targeting agree with the source.
+
+.footer-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  color: #12142C;
+}
+
+.demo-footer {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  gap: 7.5em;
+  min-height: 100svh;
+  padding: 2.5em;
+  letter-spacing: -0.02em;
+  font-family: "Apfel", sans-serif;
+  font-weight: 500;
+  position: relative;
+}
+
+.demo-eyebrow {
+  opacity: 0.5;
+  margin: 0 0 0.25em;
+  font-size: 1.0625em;
+  font-weight: 500;
+  font-family: "Apfel", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.demo-footer__links-row {
+  display: flex;
+  gap: 2.5em;
+  flex-wrap: wrap;
+}
+
+.demo-footer__col {
+  flex-flow: column;
+  display: flex;
+  gap: 1em;
+  width: calc(33.3333% - 1.66667em);
+  min-width: 220px;
+}
+
+.demo-footer__links {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  gap: 0.15em;
+}
+
+.demo-footer__a {
+  color: inherit;
+  font-size: clamp(1.4rem, 2.6vw, 2.75em);
+  line-height: 1;
+  text-decoration: none;
+  font-family: "Apfel", sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  position: relative;
+
+  // Underline-on-hover for real anchors only.
+  &[href] {
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.05em;
+      width: 100%;
+      height: 0.06em;
+      background-color: currentColor;
+      transform: scaleX(0) rotate(0.001deg);
+      transform-origin: right;
+      transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover::before {
+        transform: scaleX(1) rotate(0.001deg);
+        transform-origin: left;
+      }
+    }
+  }
+}
+
+.demo-footer__logo-row {
+  display: flex;
+  flex-flow: column;
+  gap: 1em;
+}
+
+.demo-footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-family: "Apfel", sans-serif;
+  font-weight: 500;
+  font-size: clamp(3.5rem, 12vw, 18rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.demo-footer__year {
+  display: inline-block;
+}
+
+// Per-char mask used by footer_reveal_controller — wraps each `.char`
+// emitted by Splitting so the GSAP `yPercent: 110 → 0` reveal is
+// clipped against the baseline rather than spilling above the line.
+//
+// Splitting flags the parent with `data-splitting="chars"`; we scope
+// the mask styling there so we don't accidentally clip text in other
+// Splitting contexts on the page.
+.demo-footer__year[data-splitting] {
+  // Establish a stacking context so masks line up cleanly.
+  display: inline-block;
+}
+
+.demo-footer__year .char-mask {
+  display: inline-block;
+  overflow: hidden;
+  // Keep glyph metrics intact: the mask sits on the same baseline as
+  // the original char and inherits its line-height.
+  vertical-align: top;
+  line-height: inherit;
+  // GSAP starts each .char at yPercent: 110 — until the controller
+  // sets it, hide the char so we don't see a flash of unmasked text.
+  .char { display: inline-block; will-change: transform; }
+}
+
+// Reveal-safe initial state: while JS is wiring up (between turbo:load
+// and the 2-RAF deferred boot), keep the chars hidden so we don't see
+// them flash above the baseline before the first paint of the tween.
+.footer-wrap [data-footer-reveal-chars] .char {
+  // Honoured *only* when the controller hasn't applied its own
+  // transform yet. The tween wins as soon as it starts.
+  will-change: transform;
+}
+
+.demo-footer__license {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5em;
+}
+
+.demo-footer__cc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.demo-footer__cc-svg {
+  width: 1.75em;
+  height: 1.75em;
+  overflow: visible;
+}
+
+// Dark overlay revealed as the wrap scrolls into view (driven by
+// footer_parallax_controller.js — fades from 0.5 → 1 via gsap.from).
+.footer-wrap__dark {
+  opacity: 0;
+  pointer-events: none;
+  background-color: #12142C;
+  position: absolute;
+  inset: 0;
+}
+
+@media (max-width: 991px) {
+  .demo-footer {
+    gap: 5em;
+    padding: 2em 1em;
+  }
+  .demo-footer__links-row {
+    flex-flow: column;
+    gap: 2em;
+  }
+  .demo-footer__col {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .demo-footer__bottom {
+    font-size: 22vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-wrap__dark {
+    display: none;
+  }
+}

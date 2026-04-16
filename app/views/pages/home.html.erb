@@ -3,57 +3,67 @@
 <% content_for :navbar_transparent, true %>
 <% content_for :navbar_scroll, true %>
 
-<!-- Ajoutez ceci juste avant votre div hero -->
 <%= render 'shared/hero_animation' %>
 
-<div class="flex items-center">
-  <div class="flex flex-col py-base md:py-xl pl-2 pr-sm md:px-base lg:px-2xl 2xl:px-[400px] h-full">
-    <div class="border-l-6 md:border-l-8 border-primary pl-2 md:pl-8">
-      <p class="text-l md:text-2l pb-4">
-        Dérèglement climatique, effondrement de la biodiversité, montée des eaux, menace nucléaire…
-      </p>
-      <p class="text-l md:text-2l pb-4">
-        La liste des nouveaux sujets de société est longue et anxiogène. Face à ces bouleversements et ces trajectoires accablantes, SP-2050 propose un espace pour se ressourcer, s’inspirer, et créer de nouveaux imaginaires.
-      </p>
-      <p class="text-l md:text-2l pb-4">
-        Les imaginaires sont puissants et trop souvent dictés par des intérêts économiques ou électoralistes, ici il s’agit de donner ce pouvoir à toutes et tous, et particulièrement à celles et ceux qui n’ont pas l’habitude de l’avoir.
-      </p>
-      <p class="text-l md:text-2l pb-4">
-        Une seule consigne, essayer d'écrire des futurs positifs et désirables, sinon aucune limite pour imaginer les mondes de demain ! Tout est possible, alors essayons d'imaginer le meilleur de ce qui pourrait advenir en 2050.
-      </p>
-      <p class="text-l md:text-2l pb-4">
-        Écrire le futur c’est commencer à le rendre possible, le faire exister.
-      </p>
-      <p class="text-l md:text-2l">
-        Dans quelques mois, en fonction des retours, nous réflechirons sur la manière de poursuivre cette expérience : une édition, un festival, un podcast… qui sait ce que l’avenir nous réserve !
-      </p>
+<%# Intro manifesto — wrapper carries the single text controller so
+    the letter-by-letter scrub is one continuous fade across all the
+    sections; each <p> inside still gets normal block spacing.
+    (Splitting drops standalone <br> tags, so we use real paragraphs.) %>
+<section class="flex items-center"
+         data-controller="reveal-group"
+         data-stagger="120"
+         data-distance="2.5em"
+         data-start="top 80%">
+  <div class="flex flex-col py-base md:py-xl pl-2 pr-sm md:px-base lg:px-xl h-full">
+    <div class="border-l-6 md:border-l-8 border-primary pl-2 md:pl-8 manifesto-text text-2xl font-medium tracking-tight text-balance leading-tight"
+         data-controller="text"
+         data-text="highlight-scroll"
+         data-text-fade="0.12"
+         data-text-stagger="0.012"
+         data-text-start="top 78%"
+         data-text-end="bottom 35%">
+      <p>Dérèglement climatique, effondrement de la biodiversité, montée des eaux, menace nucléaire…</p>
+      <p>La liste des nouveaux sujets de société est longue et anxiogène. Face à ces bouleversements et ces trajectoires accablantes, SP-2050 propose un espace pour se ressourcer, s’inspirer, et créer de nouveaux imaginaires.</p>
+      <p>Les imaginaires sont puissants et trop souvent dictés par des intérêts économiques ou électoralistes, ici il s’agit de donner ce pouvoir à toutes et tous, et particulièrement à celles et ceux qui n’ont pas l’habitude de l’avoir.</p>
+      <p>Une seule consigne, essayer d'écrire des futurs positifs et désirables, sinon aucune limite pour imaginer les mondes de demain ! Tout est possible, alors essayons d'imaginer le meilleur de ce qui pourrait advenir en 2050.</p>
+      <p>Écrire le futur c’est commencer à le rendre possible, le faire exister.</p>
+      <p>Dans quelques mois, en fonction des retours, nous réflechirons sur la manière de poursuivre cette expérience : une édition, un festival, un podcast… qui sait ce que l’avenir nous réserve !</p>
     </div>
   </div>
-</div>
+</section>
 
+<%# mwg_026 draggable infinite grid — last 15 posts. %>
 <% if @posts.any? %>
-  <div class="">
-    <div class="text-xxlish md:text-display uppercase ml-xs">
-      <span>Les derniers futurs</span>
-    </div>
-      <div class="m-auto justify-center p-xs pt-0">
-        <%= render partial: "posts/posts", locals: { posts: @posts.order(created_at: :desc).limit(10) } %>
-      </div>
-    </div>
-  </div>
+  <% wheel_posts = @posts.order(created_at: :desc).limit(15) %>
+  <%= render 'shared/posts_grid', wheel_posts: wheel_posts %>
 <% end %>
 
-<div class="h-[100vh] flex items-center justify-center">
-  <div class="text-center">
-    <div class="flex flex-col md:px-xl lg:px-2xl justify-center items-center h-full">
-      <p class="text-2xl md:text-xl base:text-xxlish text-balance leading-normal" data-controller="text-reveal">
-        Le solarpunk est un mouvement artistique et politique qui propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté ... à l'égard du changement climatique, de la pollution, des inégalités, des intolérances et discriminations sociales.
-      </p>
-      <p class="mt-base text-l md:text-2xl text-primary base:text-xxlish text-balance" data-controller="text-reveal">
-        Source : wikipedia.org/wiki/Solarpunk
-      </p>
-    </div>
+<%# Big-typo author list — top 20 contributors with their latest cover. %>
+<% if @featured_users&.any? %>
+  <%= render 'shared/typo_scroll',
+             featured_users: @featured_users,
+             featured_covers: @featured_user_covers %>
+<% end %>
+
+<%# Solarpunk definition — letter-by-letter scrub fade. %>
+<section class="min-h-dvh flex items-center justify-center px-base md:px-xl lg:px-2xl"
+         data-controller="reveal-group"
+         data-stagger="200">
+  <div class="flex flex-col items-center justify-center text-center space-y-base">
+    <p class="max-w-[35ch] text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight text-balance leading-snug"
+       data-controller="text"
+       data-text="highlight-scroll"
+       data-text-fade="0.12"
+       data-text-stagger="0.02">
+      Le solarpunk est un mouvement artistique et politique qui propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté ... à l'égard du changement climatique, de la pollution, des inégalités, des intolérances et discriminations sociales.
+    </p>
+    <p class="text-l md:text-2xl text-primary text-balance"
+       data-controller="text"
+       data-text="scramble-scroll"
+       data-text-chars="upperCase">
+      Source : wikipedia.org/wiki/Solarpunk
+    </p>
   </div>
-</div>
+</section>
 
 <%= render 'shared/footer' %>

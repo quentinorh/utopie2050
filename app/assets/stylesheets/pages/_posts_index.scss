@@ -38,11 +38,31 @@
   }
 }
 
-/* Card — full bleed, portrait ratio */
+/* Card — full bleed, portrait ratio.
+   The card itself NEVER scales or transforms — its outer box stays
+   pinned to the grid cell. All hover motion happens inside
+   `.index-card__cover`, which is `overflow: hidden`, so the SVG can
+   zoom/rotate while the card's footprint is unchanged. */
 .index-card {
   display: block;
   text-decoration: none;
   overflow: hidden;
+  // Only colour-space / opacity transitions on the card itself —
+  // no transforms here, so the grid stays perfectly aligned even
+  // while a sibling is hovered.
+  transition:
+    filter 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+// "Focus mode": when ANY card in the grid is hovered, the others dim
+// in place (no transform, no layout shift). Falls back gracefully on
+// browsers without :has().
+.index-grid:has(.index-card:hover) {
+  .index-card:not(:hover) {
+    opacity: 0.5;
+    filter: saturate(0.65);
+  }
 }
 
 .index-card__cover {
@@ -50,13 +70,66 @@
   width: 100%;
   aspect-ratio: 4 / 5;
   background-color: #12142C;
+  // The clip wrapper — every transform on the SVG below is contained
+  // by this overflow boundary so the card's footprint never grows.
   overflow: hidden;
+  isolation: isolate;
+
+  // Specular sweep — a soft diagonal highlight that glides across the
+  // cover on hover. Sits above the SVG (z-index 5) but below the title
+  // block (z-index 10), and is `pointer-events: none` so it never
+  // intercepts the link click. The transform is animated; the opacity
+  // is keyed on the hover state of the card so the gradient only paints
+  // when it's actually moving.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -20% -40%;
+    z-index: 5;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+    opacity: 0;
+    mix-blend-mode: overlay;
+    transition: transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1),
+                opacity 0.3s ease-out;
+  }
+
+  // Soft inner accent ring — fades in on hover, hints at the
+  // interactive boundary without competing with the SVG.
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    z-index: 6;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    transition: border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                inset 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }
 
 .index-card__svg {
   position: absolute;
   inset: 0;
   padding: 0;
+  // The SVG zooms + rotates inside the clipped cover — the card's
+  // outer dimensions never change. Long, eased transition both ways
+  // (in AND out) for an organic "alive" feel.
+  transition:
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform-origin: 50% 55%;
+  will-change: transform;
+  // Idle state — explicit so the transition out has a clear target.
+  transform: scale(1) rotate(0deg);
+  filter: saturate(1) brightness(1);
 
   svg {
     width: 100%;
@@ -68,6 +141,89 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+}
+
+.index-card:hover .index-card__svg {
+  transform: scale(1.08) rotate(-1.2deg);
+  filter: saturate(1.15) brightness(1.04);
+}
+
+// Trigger the specular sweep + inner ring only on real hover devices.
+// We use `(hover: hover)` so taps on touch screens don't leave a
+// half-painted state behind.
+@media (hover: hover) and (pointer: fine) {
+  .index-card:hover .index-card__cover::after {
+    transform: translateX(120%);
+    opacity: 1;
+  }
+
+  .index-card:hover .index-card__cover::before {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+}
+
+// Title slides up a touch when its card is the focused one — also
+// inside the clip wrapper, so no layout impact.
+.index-card__info {
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.index-card:hover .index-card__info {
+  transform: translateY(-4px);
+}
+
+// Title — soft letter-spacing breathe + tiny scale. Reads as the
+// title "leaning forward" toward the reader without breaking layout
+// (the title block already has its own width via fit-to-line).
+.index-card__title {
+  transition: letter-spacing 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: left bottom;
+  will-change: transform, letter-spacing;
+}
+
+.index-card:hover .index-card__title {
+  letter-spacing: 0.4px;
+  transform: scale(1.015);
+}
+
+// Username badge — micro lift + subtle shadow on hover, telegraphs
+// authorship as the secondary tier of information.
+.index-card__username {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.index-card:hover .index-card__username {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .index-card,
+  .index-card__svg,
+  .index-card__info,
+  .index-card__title,
+  .index-card__username,
+  .index-card__cover::after,
+  .index-card__cover::before {
+    transition: none !important;
+  }
+  .index-card:hover .index-card__svg,
+  .index-card:hover .index-card__info,
+  .index-card:hover .index-card__title,
+  .index-card:hover .index-card__username {
+    transform: none;
+    filter: none;
+    letter-spacing: normal;
+    box-shadow: none;
+  }
+  .index-card:hover .index-card__cover::after,
+  .index-card:hover .index-card__cover::before {
+    opacity: 0;
+    border-color: transparent;
   }
 }
 

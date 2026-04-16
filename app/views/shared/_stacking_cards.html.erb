@@ -1,0 +1,57 @@
+<%# Osmo "Stacking Cards Parallax" — markup mirrors the Osmo source 1:1
+    so the GSAP transforms ride on `[data-stacking-cards-item]` exactly
+    as Osmo expects. Clickability is provided by a stretched <a>
+    overlay (positioned absolutely over the whole card) — wrapping the
+    heading + image in a link instead would blockify the anchor and
+    subtly throw off layout/transforms.
+
+    Locals:
+      cards     — collection of Posts (max 3)
+      eyebrow   — short label rendered card top-left (default "Prochain futur") %>
+<% eyebrow ||= "Prochain futur" %>
+<% total = cards.size %>
+<section class="stacking-cards"
+         data-controller="stacking-cards"
+         aria-label="Suggestions de lecture">
+  <div class="stacking-cards__collection">
+    <div class="stacking-cards__list">
+      <% cards.each_with_index do |post, i| %>
+        <%
+          hue_match = post.color.to_s.match(/hsl\((\d+)/)
+          hue = hue_match ? hue_match[1].to_i : 0
+          card_bg = "hsl(#{hue}, 80%, 70%)"
+        %>
+        <div data-stacking-cards-item=""
+             class="stacking-cards__item"
+             style="background-color: <%= card_bg %>;">
+          <h2 class="stacking-cards__item-h">
+            <span class="stacking-card__heading-faded"><%= post.user.username %></span><br>
+            <%= post.title %>
+          </h2>
+
+          <div class="stacking-cards__item-img" data-stacking-cards-img="">
+            <% if post.cover.present? %>
+              <%= post.cover.html_safe %>
+            <% elsif post.cover_image.present? %>
+              <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "1:1", width: 600, draggable: "false", class: "w-full h-full object-cover" %>
+            <% end %>
+          </div>
+
+          <div class="stacking-cards__item-top">
+            <span class="stacking-card__top-span"><%= eyebrow %></span>
+            <span class="stacking-card__top-span">
+              <%= "%02d" % (i + 1) %> / <%= "%02d" % total %>
+            </span>
+          </div>
+
+          <%# Stretched link — covers the whole card, takes the click. %>
+          <%= link_to "",
+                      post,
+                      class: "stacking-cards__overlay-link",
+                      "aria-label": post.title,
+                      data: { cursor_marquee_text: "Lire" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

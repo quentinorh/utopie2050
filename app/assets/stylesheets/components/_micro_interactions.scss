@@ -1,0 +1,228 @@
+// Micro-interactions primitives — the shared vocabulary every
+// interactive surface on the site reaches for. Living style notes:
+//
+//   --ease-brand     :: signature easing (Osmo footer underline)
+//   --ease-snap      :: quick, no-overshoot, used for state toggles
+//   --ease-spring    :: tiny overshoot for confirmations (favourite, save)
+//   --ease-out-soft  :: standard "stage exit" feel for hover-out
+//
+// Durations stay coarse — three buckets — to keep the system tunable.
+//
+// All primitives respect prefers-reduced-motion by collapsing to 0ms.
+
+:root {
+  // Easings
+  --ease-brand:     cubic-bezier(0.625, 0.05, 0, 1);
+  --ease-snap:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-soft:  cubic-bezier(0.22, 1, 0.36, 1);
+
+  // Durations
+  --dur-xs: 120ms;   // affordance feedback (hover, focus ring)
+  --dur-sm: 220ms;   // state change (tab active, toggle on)
+  --dur-md: 420ms;   // surface transitions (panel open, fade in)
+  --dur-lg: 720ms;   // hero entrances, choreographed reveals
+
+  // Lift / hover surfaces
+  --lift-shadow-soft:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 6px 16px -8px rgba(0, 0, 0, 0.18);
+  --lift-shadow-strong:
+    0 2px 4px rgba(0, 0, 0, 0.10),
+    0 12px 28px -10px rgba(0, 0, 0, 0.32);
+
+  // Focus ring — accessibility-first, brand-coloured, never grey.
+  --focus-ring-color:  #4f46e5; // indigo-600
+  --focus-ring-offset: 3px;
+  --focus-ring-width:  2px;
+}
+
+// ── Universal interaction baseline ─────────────────────────────────
+//
+// Every actionable surface on the site that doesn't define its own
+// transition picks up these defaults. Buttons + anchors get smooth
+// colour/transform transitions and a consistent focus-visible ring.
+
+button,
+[role="button"],
+a {
+  transition:
+    color var(--dur-sm) var(--ease-out-soft),
+    background-color var(--dur-sm) var(--ease-out-soft),
+    border-color var(--dur-sm) var(--ease-out-soft),
+    box-shadow var(--dur-sm) var(--ease-out-soft),
+    transform var(--dur-xs) var(--ease-snap);
+}
+
+// `:focus-visible` only — never paint outlines on mouse clicks.
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 4px;
+}
+
+// ── Press affordance ───────────────────────────────────────────────
+//
+// Anything tagged `data-press` (or a button inside one) gets a subtle
+// downward press on :active. Cheap, universal feedback for taps.
+
+[data-press],
+.tw-btn-primary,
+.tw-btn-secondary {
+  &:active {
+    transform: translateY(1px);
+    transition-duration: 50ms;
+  }
+}
+
+// ── Lift on hover ──────────────────────────────────────────────────
+//
+// Cards, pills, anything that should feel pickup-able. Opt-in by
+// adding `data-lift` to the surface.
+
+[data-lift] {
+  transition:
+    transform var(--dur-sm) var(--ease-out-soft),
+    box-shadow var(--dur-sm) var(--ease-out-soft);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--lift-shadow-strong);
+    }
+    &:active {
+      transform: translateY(0);
+      box-shadow: var(--lift-shadow-soft);
+    }
+  }
+}
+
+// ── Tap-scale ──────────────────────────────────────────────────────
+//
+// Icon buttons (heart, bookmark, share) feel better with a brief
+// scale-down on press. Pair with `data-tap` on the button itself.
+
+[data-tap] {
+  transition: transform var(--dur-xs) var(--ease-snap);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover  { transform: scale(1.06); }
+  }
+  &:active { transform: scale(0.92); transition-duration: 60ms; }
+}
+
+// ── Underline-on-hover ─────────────────────────────────────────────
+//
+// Reusable shape of the footer's signature underline animation.
+// Apply `data-underline` to the link itself; the underline is drawn
+// from right → left on hover-in, left → right on hover-out.
+
+[data-underline] {
+  position: relative;
+  text-decoration: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.05em;
+    width: 100%;
+    height: 0.06em;
+    background-color: currentColor;
+    transform: scaleX(0) rotate(0.001deg);
+    transform-origin: right;
+    transition: transform 0.6s var(--ease-brand);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::before {
+      transform: scaleX(1) rotate(0.001deg);
+      transform-origin: left;
+    }
+  }
+}
+
+// ── Pop-in (entrance) ──────────────────────────────────────────────
+//
+// Applied via JS when an element should pop into view (e.g. saved
+// confirmation pill). Single-shot; the controller toggles the class.
+
+@keyframes pop-in {
+  0%   { opacity: 0; transform: scale(0.84) translateY(4px); }
+  60%  { opacity: 1; transform: scale(1.04) translateY(0); }
+  100% { opacity: 1; transform: scale(1.00) translateY(0); }
+}
+
+.is-popping-in {
+  animation: pop-in var(--dur-md) var(--ease-spring) both;
+}
+
+// ── Heart burst (favourite confirmation) ───────────────────────────
+//
+// Used by the bookmark micro-interaction when the user toggles a
+// favourite. Combines a scale pulse with a radial burst of dots.
+
+@keyframes heart-pulse {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.35); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.is-heart-pulsing {
+  animation: heart-pulse 520ms var(--ease-spring);
+}
+
+// ── Select pulse (toggle / radio confirmation) ─────────────────────
+//
+// Smaller, snappier sibling of heart-pulse. Used when a user picks
+// one of a group (text size, line height, theme). No opacity change
+// so it stacks safely on already-visible buttons.
+
+@keyframes select-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.10); }
+  70%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.is-select-pulsing {
+  animation: select-pulse 360ms var(--ease-spring);
+  // The tween shouldn't fight the press-down state on `:active`.
+  pointer-events: auto;
+}
+
+// ── Reduced motion — collapse all primitives ──────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-xs: 0ms;
+    --dur-sm: 0ms;
+    --dur-md: 0ms;
+    --dur-lg: 0ms;
+  }
+
+  button,
+  [role="button"],
+  a,
+  [data-lift],
+  [data-tap],
+  [data-press],
+  [data-underline]::before {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .is-popping-in,
+  .is-heart-pulsing,
+  .is-select-pulsing {
+    animation: none !important;
+  }
+}

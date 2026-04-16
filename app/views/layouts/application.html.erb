@@ -43,11 +43,23 @@
     <%= yield :meta_tags %>
   </head>
 
-  <body>
+  <body data-controller="cursor-marquee">
     <%= render 'shared/navbar', transparent: content_for?(:navbar_transparent) %>
     <main>
       <%= yield %>
     </main>
     <%= render 'shared/flashes' %>
+
+    <%# Pointer-following marquee pill (Osmo cursor-marquee). Hidden on
+        touch devices via media query in _cursor_marquee.scss. %>
+    <div class="cursor-marquee"
+         data-cursor-marquee-target="cursor"
+         data-cursor-marquee-status=""
+         aria-hidden="true">
+      <div class="cursor-marquee__card">
+        <span class="cursor-marquee__text-span" data-cursor-marquee-target="text">Lire</span>
+        <span class="cursor-marquee__text-span is--duplicate" data-cursor-marquee-target="text">Lire</span>
+      </div>
+    </div>
   </body>
 </html>

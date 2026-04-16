@@ -18,15 +18,20 @@ function coverEase(t) {
 }
 
 export default class extends Controller {
-  static targets = ["path", "curveGroup", "svg"]
+  static targets = ["path", "curveGroup", "svg", "revealGrad"]
   static values = { uniqueId: String }
 
   connect() {
     gsap.killTweensOf(this.element);
 
+    // The pattern is now revealed via an SVG dissolve mask (see the
+    // <radialGradient data-hero-target="revealGrad"> in the partial),
+    // not via a CSS scale + opacity tween — so the host stays at its
+    // natural size and the noise-edged disc grows out from centre.
     gsap.set(this.element, {
-      scale: 1.25,
-      opacity: 0
+      scale: 1,
+      opacity: 1,
+      clearProps: "transform"
     });
 
     requestAnimationFrame(() => {
@@ -57,19 +62,40 @@ export default class extends Controller {
         }
 
         requestAnimationFrame(() => {
-          gsap.to(this.element, {
-            scale: 1,
-            opacity: 1,
-            delay: 0.2,
-            duration: 0.8,
-            ease: coverEase
-          });
+          this._animateReveal()
 
           this.animationFrameId = null;
           this.animateParameters();
         });
       });
     });
+  }
+
+  // Drive the dissolve mask: grow the radial gradient's `r` from 0 to
+  // a value that overshoots the corners (≈1.4 in objectBoundingBox
+  // units). The gradient's edge is displaced by feTurbulence so the
+  // reveal reads as a noisy organic dissolve from the centre outward.
+  _animateReveal() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (this.hasRevealGradTarget) {
+        this.revealGradTarget.setAttribute("r", "1.4")
+      }
+      return
+    }
+    if (!this.hasRevealGradTarget) return
+
+    // Animate via a proxy so we can write the SVG attribute each frame
+    // without depending on the GSAP attr plugin being available.
+    const proxy = { r: 0 }
+    gsap.to(proxy, {
+      r: 1.4,
+      duration: 1.8,
+      delay: 0.15,
+      ease: coverEase,
+      onUpdate: () => {
+        this.revealGradTarget.setAttribute("r", proxy.r.toFixed(4))
+      }
+    })
   }
 
   disconnect() {
@@ -113,11 +139,67 @@ export default class extends Controller {
     this.smoothing = 0.95;
     this.hue = 243;
 
-    this.xDirection = Math.random() < 0.5 ? 1 : -1;
-    this.yDirection = Math.random() < 0.5 ? 1 : -1;
-    this.x3Direction = Math.random() < 0.5 ? 1 : -1;
-    this.y3Direction = Math.random() < 0.5 ? 1 : -1;
-    this.smoothingDirection = Math.random() < 0.5 ? 1 : -1;
+    // Perlin noise drives every animated parameter — purely forward in
+    // time, no direction-flipping, no perceptible loop. Each parameter
+    // gets its own gradient table + time offset so they evolve
+    // independently and never resync into a recognisable pattern.
+    const buildGradients = () => {
+      const g = new Array(256)
+      for (let i = 0; i < 256; i++) g[i] = Math.random() * 2 - 1
+      return g
+    }
+    this._noise = {
+      x: buildGradients(),
+      y: buildGradients(),
+      x3: buildGradients(),
+      y3: buildGradients(),
+      smoothing: buildGradients()
+    }
+    // Random per-mount phase offsets — different visitors / reloads
+    // see different starting curves.
+    this._noiseOffsets = {
+      x: Math.random() * 1000,
+      y: Math.random() * 1000,
+      x3: Math.random() * 1000,
+      y3: Math.random() * 1000,
+      smoothing: Math.random() * 1000
+    }
+    // Each parameter has its own drift speed (cycles per second of
+    // clock time fed into Perlin space). Picking incommensurable
+    // values keeps the field feeling alive.
+    this._noiseSpeeds = {
+      x: 0.060,
+      y: 0.048,
+      x3: 0.072,
+      y3: 0.040,
+      smoothing: 0.025
+    }
+    this._noiseStart = performance.now()
+  }
+
+  // Classic 1-D Perlin gradient noise. Returns roughly [-0.5, 0.5];
+  // the result is smoothly interpolated and never repeats within the
+  // 256-element period for our drift speeds (period ≈ thousands of
+  // seconds at this rate).
+  _perlin1D(t, gradients) {
+    const xi = Math.floor(t) & 255
+    const xf = t - Math.floor(t)
+    const fade = u => u * u * u * (u * (u * 6 - 15) + 10)
+    const u = fade(xf)
+    const g0 = gradients[xi]
+    const g1 = gradients[(xi + 1) & 255]
+    const n0 = g0 * xf
+    const n1 = g1 * (xf - 1)
+    return n0 + u * (n1 - n0)
+  }
+
+  // Map raw noise (~[-0.5, 0.5]) into a target [min, max] range.
+  _noiseTo(min, max, raw) {
+    const center = (min + max) / 2
+    const half = (max - min) / 2
+    // Clamp lightly so the rare out-of-range Perlin spike doesn't
+    // overshoot our intended bounds.
+    return center + half * Math.max(-1, Math.min(1, raw * 2))
   }
 
   updateCurve() {
@@ -303,18 +385,15 @@ export default class extends Controller {
   }
 
   animateParameters() {
-    const speed = 0.0007;
+    // Time strictly moves forward — Perlin produces an organic,
+    // non-repeating drift, so we never need to flip a direction.
+    const t = (performance.now() - this._noiseStart) / 1000
 
-    this.x += this.xDirection * speed;
-    this.y += this.yDirection * speed;
-    this.x3 += this.x3Direction * speed;
-    this.y3 += this.y3Direction * speed;
-
-    if (this.x <= 0.5 || this.x >= 1) this.xDirection *= -1;
-    if (this.y <= 0.3 || this.y >= 0.8) this.yDirection *= -1;
-    if (this.x3 <= 0.2 || this.x3 >=0.6) this.x3Direction *= -1;
-    if (this.y3 <= 0.7 || this.y3 >=1) this.y3Direction *= -1;
-    if (this.smoothing <= 0.9 || this.smoothing >= 1) this.smoothingDirection *= -1;
+    this.x        = this._noiseTo(0.50, 1.00, this._perlin1D(this._noiseOffsets.x        + t * this._noiseSpeeds.x,        this._noise.x))
+    this.y        = this._noiseTo(0.30, 0.80, this._perlin1D(this._noiseOffsets.y        + t * this._noiseSpeeds.y,        this._noise.y))
+    this.x3       = this._noiseTo(0.20, 0.60, this._perlin1D(this._noiseOffsets.x3       + t * this._noiseSpeeds.x3,       this._noise.x3))
+    this.y3       = this._noiseTo(0.70, 1.00, this._perlin1D(this._noiseOffsets.y3       + t * this._noiseSpeeds.y3,       this._noise.y3))
+    this.smoothing = this._noiseTo(0.90, 1.00, this._perlin1D(this._noiseOffsets.smoothing + t * this._noiseSpeeds.smoothing, this._noise.smoothing))
 
     this.updateCurve();
 

@@ -1,0 +1,209 @@
+// Hero shell — layers the source SVG (invisible), the WebGL
+// distortion canvas (visible), the welcoming loader, and the title /
+// CTAs that ride on top.
+
+.hero-shell {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  // Some mobile browsers report 100vh including the URL bar — when
+  // svh is supported we prefer it so the hero matches the visible area.
+  height: 100svh;
+  background: #000;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+// --- Source SVG --------------------------------------------------------
+
+// The hero SVG is the *base layer* the user sees. The WebGL canvas
+// above it draws a transparent interactive lens that distorts the
+// SVG only near the cursor — outside the lens the live SVG shows
+// through cleanly.
+.hero-source {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 1;
+  pointer-events: none;
+  // Promote to its own compositor layer so the WebGL canvas above
+  // composites against a stable bitmap rather than triggering
+  // paint-on-paint costs every frame.
+  transform: translateZ(0);
+  will-change: transform;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+// --- Distortion canvas (the visible hero) ------------------------------
+
+.hero-distortion {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none; // links above stay clickable
+
+  &.is-fallback {
+    // Hide the canvas if WebGL is unavailable; the source SVG behind
+    // is bumped to opacity:1 by the controller in that case.
+    display: none;
+  }
+}
+
+.hero-distortion__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// --- Title + CTAs ------------------------------------------------------
+
+.hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; // children re-enable below
+}
+
+.hero-content__inner {
+  width: 100%;
+}
+
+.hero-content__stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-inline: auto;
+  padding: 1rem;
+
+  @media (min-width: 768px) {
+    padding: 3rem;
+  }
+
+  @media (min-width: 1024px) {
+    width: 75%;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+  justify-content: center;
+  pointer-events: auto;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+}
+
+// --- Hero CTAs — match the navbar pill -------------------------------
+// Mirrors `.navbar` "Nouveau futur" pill exactly:
+//   inline-flex items-center px-[18px] py-[13px] rounded-full
+//   bg-primary text-white text-[14px] leading-[16px]
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 18px;
+  border-radius: 9999px;
+  font-size: 14px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  // Subtle press-affordance.
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.hero-pill--primary {
+  background-color: var(--color-primary, #4f46e5);
+  color: #fff;
+  &:hover {
+    background-color: #6366f1; // indigo-500
+    color: #fff;
+  }
+}
+
+.hero-pill--ghost {
+  background-color: #fff;
+  color: var(--color-primary, #4f46e5);
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.92);
+    color: #4338ca; // indigo-700
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+  }
+}
+
+// --- Welcoming loader --------------------------------------------------
+
+.welcoming-loader-mount {
+  position: relative;
+}
+
+.welcoming-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+  cursor: progress;
+  color: #fff;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.welcoming-loader__stage {
+  position: relative;
+  display: grid;
+  // All greetings overlap in the same cell — GSAP timing decides
+  // which one is visible. This keeps centred typography regardless of
+  // word width.
+  place-items: center;
+  // Interpolated so libsass doesn't try to evaluate cross-unit min().
+  width: #{"min(90vw, 720px)"};
+  // Reserve vertical room so the loader doesn't reflow when a tall
+  // glyph (e.g. devanagari) cycles in.
+  min-height: 1.6em;
+  // Interpolated so libsass doesn't try to evaluate the cross-unit clamp() math.
+  font-size: #{"clamp(2.4rem, 8vw, 5.5rem)"};
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.welcoming-loader__word {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  // Initial state — GSAP overrides on each cycle, but we want a clean
+  // starting point in case the script is delayed.
+  opacity: 0;
+  transform: translateY(60%);
+  filter: blur(8px);
+  white-space: nowrap;
+  text-shadow: 0 0 28px rgba(255, 255, 255, 0.08);
+}

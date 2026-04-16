@@ -1,0 +1,55 @@
+<%# "Les derniers futurs" — horizontal scrolling cards with scaleX
+    reveal/exit (mwg_047). The section is pinned for the duration of
+    its horizontal travel; vertical wheel / Lenis scroll progresses
+    the container's translateX. Each card's cover scales in from the
+    left as it enters the viewport and squashes out to the right as
+    it leaves. %>
+<section class="mwg_effect047"
+         data-controller="posts-grid"
+         aria-label="Les derniers futurs publiés">
+  <div class="mwg_effect047__header" data-posts-grid-target="header" aria-hidden="true">
+    <p>Les derniers futurs</p>
+    <svg class="mwg_effect047__arrow" viewBox="0 0 24 24" fill="none"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M5 12h14M13 6l6 6-6 6"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="mwg_effect047__container" data-posts-grid-target="container">
+    <ul class="mwg_effect047__list">
+      <% wheel_posts.each do |post| %>
+        <%
+          hue_match = post.color.to_s.match(/hsl\((\d+)/)
+          hue = hue_match ? hue_match[1].to_i : 0
+          title_bg    = "hsl(#{hue}, 80%, 70%)"
+          username_bg = "hsl(#{(hue + 120) % 360}, 80%, 70%)"
+        %>
+        <li class="media">
+          <%= link_to post,
+              class: "media__link",
+              draggable: "false",
+              data: { cursor_marquee_text: "Lire" },
+              aria: { label: post.title } do %>
+            <div class="media__svg" data-posts-grid-target="cover">
+              <% if post.cover.present? %>
+                <%= post.cover.html_safe %>
+              <% elsif post.cover_image.present? %>
+                <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "4:5", width: 600, draggable: "false", class: "w-full h-full object-cover" %>
+              <% end %>
+            </div>
+            <div class="media__info">
+              <div class="media__username" style="background-color: <%= username_bg %>;">
+                <%= post.user.username %>
+              </div>
+              <div class="media__title" style="background-color: <%= title_bg %>;">
+                <%= post.title %>
+              </div>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</section>

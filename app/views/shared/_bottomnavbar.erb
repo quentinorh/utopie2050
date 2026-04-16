@@ -5,9 +5,10 @@
   <div class="relative flex items-center h-full px-4 lg:px-12">
     <!-- Left: Actions toggle -->
     <button data-action="click->actions#toggleActions"
-            class="relative group size-10 flex items-center justify-center rounded-full"
+            data-tap=""
+            class="relative group size-10 flex items-center justify-center rounded-full hover:bg-gray-950/5 dark:hover:bg-white/5"
             aria-label="Menu des actions">
-      <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+      <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0 transition-[stroke] duration-200 ease-out" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
         <line x1="2" y1="4" x2="14" y2="4"/>
         <line x1="2" y1="8" x2="14" y2="8"/>
         <line x1="2" y1="12" x2="14" y2="12"/>
@@ -23,20 +24,22 @@
 
     <!-- Right: Bookmark + Settings -->
     <div class="flex items-center gap-1">
-      <button class="relative group size-10 flex items-center justify-center rounded-full"
+      <button class="relative group size-10 flex items-center justify-center rounded-full hover:bg-gray-950/5 dark:hover:bg-white/5"
               data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
               data-action="click->bookmark#toggle"
               data-bookmark-target="button"
+              data-tap=""
               aria-label="Marque-page">
-        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0 transition-[stroke,fill] duration-200 ease-out" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 2.5h10v13L8 12l-5 3.5V2.5z"/>
         </svg>
       </button>
 
       <button data-action="click->actions#toggleSettings"
-              class="relative group size-10 flex items-center justify-center rounded-full"
+              data-tap=""
+              class="relative group size-10 flex items-center justify-center rounded-full hover:bg-gray-950/5 dark:hover:bg-white/5"
               aria-label="Paramètres d'affichage">
-        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0 transition-[stroke] duration-200 ease-out" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
           <line x1="2" y1="4" x2="14" y2="4"/>
           <line x1="2" y1="12" x2="14" y2="12"/>
           <circle cx="5" cy="4" r="1.5" fill="currentColor" class="fill-gray-400 group-hover:fill-gray-900 dark:group-hover:fill-white"/>

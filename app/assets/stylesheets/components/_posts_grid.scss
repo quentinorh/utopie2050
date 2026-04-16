@@ -1,0 +1,204 @@
+// Horizontal pinned scroll with scaleX reveal/exit (mwg_047 port).
+//
+// Structure (matches posts_grid_controller.js + _posts_grid.erb):
+//   .mwg_effect047                — 100vh stage, the section that pins
+//     .mwg_effect047__header      — fixed title at top of viewport
+//     .mwg_effect047__container   — flex row, wider than viewport,
+//                                   translates horizontally on scroll
+//       .mwg_effect047__list      — ul of cards
+//         .media (li)             — card cell, fixed aspect ratio
+//           .media__link          — anchor, full bleed
+//             .media__svg         — cover SVG / image (scaleX animated)
+//             .media__info        — username + title overlay
+
+.mwg_effect047 {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  color: #12142C;
+}
+
+// ── Header (fixed across the section) ─────────────────────────────
+.mwg_effect047__header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 25px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+
+  p {
+    font-family: "Apfel", sans-serif;
+    font-weight: 500;
+    font-size: 7.6vw;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #12142C;
+    margin: 0;
+  }
+}
+
+.mwg_effect047__arrow {
+  width: 5.4vw;
+  height: 5.4vw;
+  color: #12142C;
+  flex-shrink: 0;
+}
+
+// ── Horizontal track ──────────────────────────────────────────────
+.mwg_effect047__container {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.mwg_effect047__list {
+  display: flex;
+  width: max-content;
+  align-items: flex-end;
+  gap: 4vw;
+  padding: 0 8vw 6vw;
+  list-style: none;
+  margin: 0;
+}
+
+.mwg_effect047 .media {
+  width: 22vw;
+  aspect-ratio: 0.74;
+  position: relative;
+  flex-shrink: 0;
+  list-style: none;
+}
+
+.mwg_effect047 .media__link {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  text-decoration: none;
+  isolation: isolate;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+// The cover wrapper is the element that scales — scaleX(0)→1 on enter,
+// then 1→0 on exit. Origin is animated to flip from left to right.
+.mwg_effect047 .media__svg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  will-change: transform;
+  background: #12142C;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+}
+
+.mwg_effect047 .media__info {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  // The info overlay scales together with the cover so it fades in
+  // and out at the same time as the image — driven via a CSS variable
+  // set by the controller.
+  transform: scaleX(var(--media-scale, 0));
+  transform-origin: var(--media-origin, 0% 50%);
+}
+
+.mwg_effect047 .media__username {
+  font-family: "Apfel", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.12;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000;
+  padding: 3px 5px;
+  width: fit-content;
+}
+
+.mwg_effect047 .media__title {
+  font-family: "Apfel", sans-serif;
+  font-size: clamp(0.95rem, 1.3vw, 1.5rem);
+  line-height: 1.12;
+  color: #12142C;
+  padding: 8px 10px;
+}
+
+// ── Mobile — bigger cards, tighter padding ────────────────────────
+@media (max-width: 900px) {
+  .mwg_effect047 .media {
+    width: 60vw;
+  }
+  .mwg_effect047__list {
+    gap: 8vw;
+    padding: 0 12vw 10vw;
+  }
+}
+
+// ── Reduced-motion fallback — show static grid, no pin ────────────
+.mwg_effect047.posts-grid--static {
+  display: block;
+  height: auto;
+  overflow: visible;
+
+  .mwg_effect047__header {
+    position: static;
+    padding: 1rem 2rem;
+
+    p { font-size: 2.5rem; }
+  }
+
+  .mwg_effect047__container {
+    display: block;
+    transform: none !important;
+    width: 100%;
+  }
+
+  .mwg_effect047__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    width: 100%;
+  }
+
+  .media {
+    width: 100%;
+  }
+
+  .media__svg {
+    transform: none;
+  }
+
+  .media__info {
+    transform: none;
+  }
+}

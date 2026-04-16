@@ -1,0 +1,145 @@
+// Osmo "Stacking Cards Parallax" — adapted to our type system.
+//
+// Each card sits at min-height: 100vh and gets pulled up by ~1em via
+// negative margin so they stack visually as you scroll. The previous
+// card translates upward via GSAP scrub (see stacking_cards_controller.js)
+// while its inner image rotates and slides slightly.
+
+.stacking-cards {
+  position: relative;
+  width: 100%;
+  // Important: the parent must NOT use display:flex. We are inside a
+  // normal block flow on posts/show, so we're safe.
+}
+
+.stacking-cards__collection {
+  width: 100%;
+}
+
+.stacking-cards__list {
+  display: flex;
+  flex-flow: column;
+}
+
+.stacking-cards__item {
+  color: #12142C;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  margin-top: -1em;
+  padding: 5em 2em;
+  display: flex;
+  position: relative;
+  text-decoration: none;
+  overflow: hidden;
+  -webkit-user-drag: none;
+  user-drag: none;
+  // Falls back to white if no inline style set.
+  background-color: #ffffff;
+  // Scale-down recession should pull AWAY from the top edge, not from
+  // centre — gives a true depth-stack feel instead of a "shrink in
+  // place" feel.
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+.stacking-cards__item-top {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  top: 2.5em;
+  left: 2.5em;
+  right: 2.5em;
+  z-index: 2;
+}
+
+.stacking-card__top-span {
+  font-family: "Apfel", sans-serif;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #12142C;
+}
+
+.stacking-cards__item-h {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+  font-family: "Apfel", sans-serif;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 8vw, 9rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: #12142C;
+  z-index: 2;
+  position: relative;
+  text-wrap: balance;
+}
+
+.stacking-card__heading-faded {
+  opacity: 0.5;
+}
+
+.stacking-cards__item-img {
+  aspect-ratio: 1;
+  border-radius: 0.75em;
+  width: 30vw;
+  margin-top: -1vw;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  background: #12142C;
+  will-change: transform;
+
+  svg,
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+}
+
+// Stretched link — sits over the entire card so the click target is the
+// whole stacked surface. Kept above the heading/image (z-index: 3) but
+// below the eyebrow row (z-index: 2 → bumped to 4 if we ever need the
+// fraction to be selectable).
+.stacking-cards__overlay-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  text-decoration: none;
+  color: transparent;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+@media (max-width: 900px) {
+  .stacking-cards__item {
+    padding: 4em 1em;
+  }
+  .stacking-cards__item-top {
+    top: 1.5em;
+    left: 1.5em;
+    right: 1.5em;
+  }
+  .stacking-cards__item-img {
+    width: 60vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stacking-cards__item {
+    margin-top: 0;
+  }
+  .stacking-cards__item-img {
+    transform: none !important;
+  }
+}
