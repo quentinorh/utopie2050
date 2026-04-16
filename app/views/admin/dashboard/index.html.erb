@@ -1,294 +1,320 @@
 <% content_for :title, "SP 2050 - Administration" %>
-<% content_for :description, "Tableau de bord d'administration de SP 2050. Gérez les utilisateurs, les signalements et le contenu du site." %>
+<% content_for :description, "Tableau de bord d'administration de SP 2050." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
 
-<div class="container mx-auto px-4 py-8">
-  <!-- Section Posts -->
-  <div class="mb-12">
-    <h2 class="text-xl font-semibold mb-4">
-      Articles (<%= @posts.size %>)
-    </h2>
-    
-    <div class="mb-6">
-      <%= form_with url: admin_dashboard_path, method: :get, class: "flex gap-4" do |f| %>
-        <div class="flex-1">
-          <%= f.text_field :search, 
+<div class="mx-auto max-w-7xl px-4 pt-28 pb-16 sm:px-6 lg:px-8">
+
+  <%# ── Stats — quiet, top-of-page pulse ── %>
+  <div class="flex items-baseline gap-10 border-b border-gray-950/5 dark:border-white/5 pb-6">
+    <% [
+      ["Articles", @posts.size],
+      ["Utilisateurs", @users.size],
+      ["Signalements", @reports.size],
+      ["Événements", @event_codes.size]
+    ].each do |label, count| %>
+      <div>
+        <p class="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 tabular-nums"><%= count %></p>
+        <p class="font-mono text-[0.6875rem] uppercase tracking-wide text-gray-400 dark:text-gray-500 truncate"><%= label %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Posts — hero section, cover grid ── %>
+  <section class="mt-12">
+    <div class="flex items-baseline gap-6">
+      <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 text-balance">Articles</h2>
+      <div class="ml-auto">
+        <%= form_with url: admin_dashboard_path, method: :get, class: "flex gap-2" do |f| %>
+          <%= f.text_field :search,
+              value: params[:search],
               placeholder: "Rechercher par titre...",
-              class: "w-full px-4 py-2 border rounded-md" %>
-        </div>
-        <%= f.submit "Rechercher", 
-            class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" %>
-      <% end %>
+              aria_label: "Rechercher",
+              class: "w-52 rounded-lg bg-transparent ring-1 ring-gray-950/10 dark:ring-white/10 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-950/20 dark:focus:ring-white/20 focus:outline-none" %>
+          <%= f.submit "Rechercher",
+              class: "rounded-lg bg-gray-900 dark:bg-white px-3 py-1.5 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 cursor-pointer" %>
+        <% end %>
+      </div>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white shadow-md rounded">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-2 py-3 text-left">Titre</th>
-            <th class="px-2 py-3 text-center">Auteur</th>
-            <th class="px-2 py-3 text-center">Date de création</th>
-            <th class="px-2 py-3 text-center">Signalements</th>
-            <th class="px-2 py-3 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <% @posts.each do |post| %>
-            <tr class="hover:bg-gray-50 <%= 'bg-red-50' if post.reports.any? %>">
-              <td class="px-2 py-4 max-w-xs truncate">
-                <% if post.draft == true %>
-                  <%= link_to post.title, post_path(post), class: "text-gray-500" %>
-                <% else %>
-                  <%= link_to post.title, post_path(post) %>
-                <% end %>
-              </td>
-              <td class="px-2 py-4 text-center"><%= post.user.username %></td>
-              <td class="px-2 py-4 text-center"><%= post.created_at.strftime("%d/%m/%Y") %></td>
-              <td class="px-2 py-4 text-center">
-                <% if post.reports.any? %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <%= post.reports.count %>
-                  </span>
-                <% end %>
-              </td>
-              <td class="px-2 py-4 text-center">
-                <%= link_to "Éditer", edit_post_path(post), class: "text-yellow-600 hover:text-yellow-800" %><br>
-                <%= link_to "Supprimer", post_path(post), 
-                    data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr ?" },
-                    class: "text-red-600 hover:text-red-800" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Section Utilisateurs -->
-  <div class="mb-12">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">
-        Utilisateurs (<span id="users-count"><%= @users.size %></span>)
-      </h2>
-      <%= form_with url: destroy_multiple_admin_users_path, method: :delete, id: "delete-users-form", class: "flex items-center gap-2" do |f| %>
-        <button type="button" id="select-all-users" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-          Tout sélectionner
-        </button>
-        <button type="submit" id="delete-selected-btn" disabled class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed" 
-                data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer les utilisateurs sélectionnés ? Cette action est irréversible." }>
-          Supprimer les sélectionnés (<span id="selected-count">0</span>)
-        </button>
-      <% end %>
-    </div>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white shadow-md rounded">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-2 py-3 text-left w-12">
-              <input type="checkbox" id="select-all-checkbox" class="cursor-pointer">
-            </th>
-            <th class="px-2 py-3 text-left">Nom d'utilisateur</th>
-            <th class="px-2 py-3 text-center">Email</th>
-            <th class="px-2 py-3 text-center">Date d'inscription</th>
-            <th class="px-2 py-3 text-center">Nombre d'articles</th>
-            <th class="px-2 py-3 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <% @users.each do |user| %>
-            <tr class="hover:bg-gray-50 <%= 'bg-yellow-50' if user.id == current_user.id %>">
-              <td class="px-2 py-4">
-                <% unless user.id == current_user.id %>
-                  <%= check_box_tag "user_ids[]", user.id, false, class: "user-checkbox cursor-pointer", id: "user_#{user.id}" %>
-                <% else %>
-                  <span class="text-xs text-gray-400" title="Vous ne pouvez pas vous supprimer vous-même">-</span>
-                <% end %>
-              </td>
-              <td class="px-2 py-4">
-                <%= user.username %>
-                <% if user.id == current_user.id %>
-                  <span class="text-xs text-gray-500">(vous)</span>
-                <% end %>
-              </td>
-              <td class="px-2 py-4 text-center"><%= user.email %></td>
-              <td class="px-2 py-4 text-center"><%= user.created_at.strftime("%d/%m/%Y") %></td>
-              <td class="px-2 py-4 text-center"><%= user.posts.count %></td>
-              <td class="px-2 py-4 text-center space-x-2">
-                <% unless user.id == current_user.id %>
-                  <%= link_to "Supprimer", admin_user_path(user), 
-                      data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?" },
-                      class: "text-red-600 hover:text-red-800" %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const selectAllCheckbox = document.getElementById('select-all-checkbox');
-      const selectAllButton = document.getElementById('select-all-users');
-      const userCheckboxes = document.querySelectorAll('.user-checkbox');
-      const deleteSelectedBtn = document.getElementById('delete-selected-btn');
-      const selectedCountSpan = document.getElementById('selected-count');
-      const deleteForm = document.getElementById('delete-users-form');
-      let allSelected = false;
-
-      function updateSelectedCount() {
-        const selected = document.querySelectorAll('.user-checkbox:checked').length;
-        selectedCountSpan.textContent = selected;
-        deleteSelectedBtn.disabled = selected === 0;
-        
-        // Mettre à jour l'état de la checkbox "Tout sélectionner"
-        const totalCheckboxes = userCheckboxes.length;
-        selectAllCheckbox.checked = selected > 0 && selected === totalCheckboxes;
-        selectAllCheckbox.indeterminate = selected > 0 && selected < totalCheckboxes;
-      }
-
-      // Checkbox "Tout sélectionner" dans le header
-      selectAllCheckbox.addEventListener('change', function() {
-        const checked = this.checked;
-        userCheckboxes.forEach(checkbox => {
-          checkbox.checked = checked;
-        });
-        updateSelectedCount();
-        allSelected = checked;
-        selectAllButton.textContent = checked ? 'Tout désélectionner' : 'Tout sélectionner';
-      });
-
-      // Bouton "Tout sélectionner"
-      selectAllButton.addEventListener('click', function() {
-        allSelected = !allSelected;
-        userCheckboxes.forEach(checkbox => {
-          checkbox.checked = allSelected;
-        });
-        selectAllCheckbox.checked = allSelected;
-        selectAllCheckbox.indeterminate = false;
-        updateSelectedCount();
-        this.textContent = allSelected ? 'Tout désélectionner' : 'Tout sélectionner';
-      });
-
-      // Écouter les changements sur chaque checkbox individuelle
-      userCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedCount);
-      });
-
-      // Avant soumission, injecter les user_ids cochés dans le formulaire
-      deleteForm.addEventListener('submit', function(e) {
-        // Supprimer les anciens hidden inputs
-        deleteForm.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
-
-        // Ajouter un hidden input pour chaque checkbox cochée
-        document.querySelectorAll('.user-checkbox:checked').forEach(checkbox => {
-          const hidden = document.createElement('input');
-          hidden.type = 'hidden';
-          hidden.name = 'user_ids[]';
-          hidden.value = checkbox.value;
-          deleteForm.appendChild(hidden);
-        });
-      });
-
-      // Même chose pour Turbo (au cas où Turbo intercepte le submit)
-      deleteForm.addEventListener('turbo:submit-start', function(e) {
-        deleteForm.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
-
-        document.querySelectorAll('.user-checkbox:checked').forEach(checkbox => {
-          const hidden = document.createElement('input');
-          hidden.type = 'hidden';
-          hidden.name = 'user_ids[]';
-          hidden.value = checkbox.value;
-          deleteForm.appendChild(hidden);
-        });
-      });
-
-      // Initialiser le compteur
-      updateSelectedCount();
-    });
-  </script>
-
-  <!-- Section Signalements -->
-  <div class="mb-12">
-    <h2 class="text-xl font-semibold mb-4">
-      Signalements (<%= @reports.size %>)
-    </h2>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white shadow-md rounded">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-2 py-3 text-left">Article</th>
-            <th class="px-2 py-3 text-center">Signalé par</th>
-            <th class="px-2 py-3 text-center">Commentaire</th>
-            <th class="px-2 py-3 text-center">Date</th>
-            <th class="hidden px-2 py-3 text-center">Statut</th>
-            <th class="px-2 py-3 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <% @reports.each do |report| %>
-            <tr id="<%= dom_id(report) %>" class="hover:bg-gray-50">
-              <td class="px-2 py-4 max-w-xs truncate">
-                <%= link_to report.post.title, post_path(report.post) %>
-              </td>
-              <td class="px-2 py-4 text-center"><%= report.user&.username || "Anonyme" %></td>
-              <td class="px-2 py-4 text-center"><%= report.comment %></td>
-              <td class="px-2 py-4 text-center"><%= report.created_at.strftime("%d/%m/%Y") %></td>
-              <td class="px-2 py-4 text-center">
-                <%= button_to "Supprimer", 
-                    admin_report_path(report),
-                    method: :delete,
-                    class: "text-red-600 hover:text-red-800" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Section Codes événements -->
-  <div class="mb-12">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold" id="event_codes_count">
-        Codes événements (<%= @event_codes.size %>)
-      </h2>
-      <%= link_to 'Nouveau Code', new_admin_event_code_path, 
-          class: 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700',
-          data: { turbo_frame: 'event_code_form' } %>
-    </div>
-    
-    <turbo-frame id="event_code_form"></turbo-frame>
-
-    <div class="overflow-x-auto">
-      <turbo-frame id="event_codes">
-        <table class="min-w-full bg-white shadow-md rounded">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-2 py-3 text-left">Code</th>
-              <th class="px-2 py-3 text-left">Texte</th>
-              <th class="px-2 py-3 text-left">Lien</th>
-              <th class="px-2 py-3 text-left">Couleur</th>
-              <th class="px-2 py-3 text-center">Posts</th>
-              <th class="px-2 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="event_codes_tbody" class="divide-y divide-gray-200">
-            <% if @event_codes.present? %>
-              <% @event_codes.each do |event_code| %>
-                <%= render partial: 'admin/event_codes/event_code', locals: { event_code: event_code } %>
-              <% end %>
-            <% else %>
-              <tr>
-                <td colspan="5" class="px-2 py-4 text-center text-gray-500">Aucun code événement disponible.</td>
-              </tr>
+    <div class="mt-6 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <% @posts.each do |post| %>
+        <div class="group relative">
+          <%# Cover %>
+          <%= link_to post_path(post), class: "relative overflow-hidden rounded-xl bg-gray-950/[0.03] dark:bg-white/[0.03] ring-1 ring-gray-950/5 dark:ring-white/5 aspect-[4/5] flex" do %>
+            <% if post.cover.present? %>
+              <div class="size-full [&>svg]:size-full"><%= post.cover.html_safe %></div>
             <% end %>
-          </tbody>
-        </table>
-      </turbo-frame>
+            <% if post.draft %>
+              <span class="absolute top-2 left-2 rounded-md bg-gray-900/70 px-1.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-wide text-white/80">brouillon</span>
+            <% end %>
+            <% if post.reports.any? %>
+              <span class="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-[0.625rem] font-medium text-white tabular-nums"><%= post.reports.count %></span>
+            <% end %>
+          <% end %>
+
+          <%# Meta %>
+          <div class="mt-2.5">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= post.title %></p>
+            <p class="text-sm text-gray-400 dark:text-gray-500">
+              <span><%= post.user.username %></span>
+              <span class="mx-1 text-gray-300 dark:text-gray-700">&middot;</span>
+              <span class="tabular-nums"><%= post.created_at.strftime("%d.%m.%Y") %></span>
+            </p>
+          </div>
+
+          <%# Actions — appear on hover %>
+          <div class="absolute right-1.5 bottom-[3.75rem] flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <%= link_to edit_post_path(post),
+                class: "flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white",
+                aria_label: "Éditer",
+                title: "Éditer" do %>
+              <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2.5l2.5 2.5L5 13.5H2.5V11z"/></svg>
+            <% end %>
+
+            <%= link_to post_path(post),
+                data: { turbo_method: :delete, turbo_confirm: "Supprimer ce futur ?" },
+                class: "flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-400 hover:text-red-600",
+                aria_label: "Supprimer",
+                title: "Supprimer" do %>
+              <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M6 4V2.5h4V4M4.5 4v9a1 1 0 001 1h5a1 1 0 001-1V4"/></svg>
+            <% end %>
+
+            <%# Export dropdown %>
+            <div class="relative" data-controller="dropdown reel-export" data-reel-export-post-id-value="<%= post.id %>">
+              <button type="button" data-action="click->dropdown#toggle"
+                      class="flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                      aria-label="Exporter"
+                      title="Exporter">
+                <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8v5.5a1 1 0 001 1h10a1 1 0 001-1V8"/><polyline points="5 4 8 1 11 4"/><line x1="8" y1="1" x2="8" y2="10"/></svg>
+              </button>
+              <div data-dropdown-target="menu"
+                   class="hidden absolute right-0 bottom-full z-30 mb-1 w-44 origin-bottom-right rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-950/10 dark:ring-white/10 p-1 shadow-lg shadow-gray-950/5 dark:shadow-none opacity-0 scale-95 transition duration-150 ease-out data-[open]:opacity-100 data-[open]:scale-100">
+                <button type="button" data-action="click->reel-export#exportReel" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
+                  Instagram Reel
+                </button>
+                <button type="button" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
+                  Instagram Feed
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
+  </section>
+
+  <%# ── Secondary sections ── %>
+  <div class="mt-20 border-t border-gray-950/5 dark:border-white/5 pt-12">
+
+    <%# ── Users ── %>
+    <section>
+      <div class="flex items-baseline gap-4">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Utilisateurs</h2>
+        <span class="font-mono text-[0.6875rem] text-gray-400 dark:text-gray-500 tabular-nums" id="users-count"><%= @users.size %></span>
+        <div class="ml-auto flex items-center gap-2">
+          <%= form_with url: destroy_multiple_admin_users_path, method: :delete, id: "delete-users-form", class: "flex items-center gap-2" do |f| %>
+            <button type="button" id="select-all-users"
+                    class="rounded-lg px-2 py-1 text-sm text-gray-500 dark:text-gray-400 ring-1 ring-gray-950/10 dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/5">
+              Tout sélectionner
+            </button>
+            <button type="submit" id="delete-selected-btn" disabled
+                    class="rounded-lg bg-red-600 px-2.5 py-1 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    data-turbo-confirm="Supprimer les utilisateurs sélectionnés ?">
+              Supprimer (<span id="selected-count" class="tabular-nums">0</span>)
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="-mx-4 -my-2 mt-3 overflow-x-auto whitespace-nowrap sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full px-4 py-2 align-middle sm:px-6 lg:px-8">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-gray-950/10 dark:border-white/10">
+                <th class="w-10 py-2.5 pr-3 text-left">
+                  <input type="checkbox" id="select-all-checkbox" class="cursor-pointer rounded" aria-label="Tout sélectionner">
+                </th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Utilisateur</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Email</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Inscription</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Articles</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-right text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-950/5 dark:divide-white/5">
+              <% @users.each do |user| %>
+                <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                  <td class="py-2.5 pr-3">
+                    <% unless user.id == current_user.id %>
+                      <%= check_box_tag "user_ids[]", user.id, false, class: "user-checkbox cursor-pointer rounded", id: "user_#{user.id}" %>
+                    <% else %>
+                      <span class="text-gray-300 dark:text-gray-700">&mdash;</span>
+                    <% end %>
+                  </td>
+                  <td class="px-3 py-2.5 text-sm text-gray-900 dark:text-gray-100">
+                    <%= user.username %>
+                    <% if user.id == current_user.id %>
+                      <span class="ml-1 rounded-md bg-amber-400/10 px-1.5 py-0.5 text-[0.6875rem] text-amber-600 dark:text-amber-400">vous</span>
+                    <% end %>
+                  </td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400"><%= user.email %></td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums"><%= user.created_at.strftime("%d.%m.%Y") %></td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums"><%= user.posts.count %></td>
+                  <td class="px-3 py-2.5 text-right">
+                    <% unless user.id == current_user.id %>
+                      <%= link_to "Supprimer", admin_user_path(user),
+                          data: { turbo_method: :delete, turbo_confirm: "Supprimer cet utilisateur ?" },
+                          class: "text-sm text-gray-400 hover:text-red-600 dark:hover:text-red-400" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.addEventListener('turbo:load', function() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const selectAllButton = document.getElementById('select-all-users');
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+        const selectedCountSpan = document.getElementById('selected-count');
+        const deleteForm = document.getElementById('delete-users-form');
+        if (!selectAllCheckbox || !deleteForm) return;
+        let allSelected = false;
+
+        function updateSelectedCount() {
+          const selected = document.querySelectorAll('.user-checkbox:checked').length;
+          selectedCountSpan.textContent = selected;
+          deleteSelectedBtn.disabled = selected === 0;
+          const totalCheckboxes = userCheckboxes.length;
+          selectAllCheckbox.checked = selected > 0 && selected === totalCheckboxes;
+          selectAllCheckbox.indeterminate = selected > 0 && selected < totalCheckboxes;
+        }
+
+        selectAllCheckbox.addEventListener('change', function() {
+          const checked = this.checked;
+          userCheckboxes.forEach(cb => cb.checked = checked);
+          updateSelectedCount();
+          allSelected = checked;
+          selectAllButton.textContent = checked ? 'Tout désélectionner' : 'Tout sélectionner';
+        });
+
+        selectAllButton.addEventListener('click', function() {
+          allSelected = !allSelected;
+          userCheckboxes.forEach(cb => cb.checked = allSelected);
+          selectAllCheckbox.checked = allSelected;
+          selectAllCheckbox.indeterminate = false;
+          updateSelectedCount();
+          this.textContent = allSelected ? 'Tout désélectionner' : 'Tout sélectionner';
+        });
+
+        userCheckboxes.forEach(cb => cb.addEventListener('change', updateSelectedCount));
+
+        function injectUserIds() {
+          deleteForm.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
+          document.querySelectorAll('.user-checkbox:checked').forEach(cb => {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'user_ids[]';
+            hidden.value = cb.value;
+            deleteForm.appendChild(hidden);
+          });
+        }
+
+        deleteForm.addEventListener('submit', injectUserIds);
+        deleteForm.addEventListener('turbo:submit-start', injectUserIds);
+        updateSelectedCount();
+      });
+    </script>
+
+    <%# ── Reports ── %>
+    <section class="mt-14">
+      <div class="flex items-baseline gap-4">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Signalements</h2>
+        <span class="font-mono text-[0.6875rem] text-gray-400 dark:text-gray-500 tabular-nums"><%= @reports.size %></span>
+      </div>
+
+      <div class="-mx-4 -my-2 mt-3 overflow-x-auto whitespace-nowrap sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full px-4 py-2 align-middle sm:px-6 lg:px-8">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-gray-950/10 dark:border-white/10">
+                <th class="whitespace-nowrap py-2.5 pr-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Article</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Par</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Commentaire</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th class="whitespace-nowrap px-3 py-2.5 text-right text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-950/5 dark:divide-white/5">
+              <% @reports.each do |report| %>
+                <tr id="<%= dom_id(report) %>" class="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                  <td class="py-2.5 pr-3 max-w-xs text-sm">
+                    <%= link_to report.post.title, post_path(report.post), class: "text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 truncate" %>
+                  </td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400"><%= report.user&.username || "Anonyme" %></td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400 max-w-sm truncate"><%= report.comment %></td>
+                  <td class="px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400 tabular-nums"><%= report.created_at.strftime("%d.%m.%Y") %></td>
+                  <td class="px-3 py-2.5 text-right">
+                    <%= button_to "Supprimer",
+                        admin_report_path(report),
+                        method: :delete,
+                        class: "text-sm text-gray-400 hover:text-red-600 dark:hover:text-red-400 cursor-pointer" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <%# ── Event codes ── %>
+    <section class="mt-14">
+      <div class="flex items-baseline gap-4">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Codes événements</h2>
+        <span class="font-mono text-[0.6875rem] text-gray-400 dark:text-gray-500 tabular-nums" id="event_codes_count"><%= @event_codes.size %></span>
+        <%= link_to 'Nouveau code', new_admin_event_code_path,
+            class: "ml-auto rounded-lg bg-gray-900 dark:bg-white px-2.5 py-1 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200",
+            data: { turbo_frame: 'event_code_form' } %>
+      </div>
+
+      <turbo-frame id="event_code_form" class="mt-4"></turbo-frame>
+
+      <div class="-mx-4 -my-2 mt-3 overflow-x-auto whitespace-nowrap sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full px-4 py-2 align-middle sm:px-6 lg:px-8">
+          <turbo-frame id="event_codes">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-950/10 dark:border-white/10">
+                  <th class="whitespace-nowrap py-2.5 pr-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Code</th>
+                  <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Texte</th>
+                  <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Lien</th>
+                  <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Couleur</th>
+                  <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Posts</th>
+                  <th class="whitespace-nowrap px-3 py-2.5 text-right text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="event_codes_tbody" class="divide-y divide-gray-950/5 dark:divide-white/5">
+                <% if @event_codes.present? %>
+                  <% @event_codes.each do |event_code| %>
+                    <%= render partial: 'admin/event_codes/event_code', locals: { event_code: event_code } %>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="6" class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">Aucun code événement.</td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </turbo-frame>
+        </div>
+      </div>
+    </section>
+
   </div>
-</div> 
+</div>

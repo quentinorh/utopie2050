@@ -1,3 +1,4 @@
+<% content_for :navbar_transparent, true %>
 <% content_for :title, "SP 2050 - #{@post.title}" %>
 <% content_for :description, truncate(strip_tags(@post.body), length: 160) %>
 
@@ -17,65 +18,61 @@
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 
-<div data-controller="scroll cover actions svg-animation relative bookmark" 
+<div data-controller="scroll cover actions svg-animation bookmark"
      data-post-id="<%= @post.id %>"
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
-  
+
   <input type="hidden" data-cover-target="title" value="<%= @post.title %>">
   <input type="hidden" data-cover-target="patternSettings" value="<%= @post.pattern_settings %>">
-  
+
   <%= render 'shared/settingspanel' %>
-  <%= render 'shared/bottomnavbar' %>
   <%= render 'shared/actionspanel' %>
 
-  <div class="flex flex-col lg:flex-row mx-auto dark:bg-gray-800 bg-gray-100">
-    <!-- Colonne de gauche fixe -->
-    <div class="relative w-[auto] lg:fixed flex justify-center lg:mr-0">
-      <div class="relative cover opacity-0">
-        <div class="svg-container svg-full-height z-99" data-controller="coversize">
-          <%= @post.cover.html_safe %>
-        </div>
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div class="px-2 text-xl z-99 text-black w-fit max-w-[80%] text-center opacity-0" data-cover-target="titleWrapper" data-svg-animation-target="title">
-            <%= @post.title %>
-          </div>
-        </div>
-        <div class="absolute bottom-0 right-0 px-xs py-[5px] text-l z-99 text-black pointer-events-none opacity-0" data-cover-target="userName" data-svg-animation-target="userName">
-          <%= @post.user.username %>
-        </div> 
-      </div>
+  <div class="flex flex-col lg:flex-row dark:bg-gray-800 bg-gray-100">
+    <!-- Cover panel (left, fixed on desktop) -->
+    <div class="cover opacity-0">
+      <%= render 'posts/cover', post: @post, ratio: "4x5" %>
     </div>
 
-    <!-- Colonne de droite déroulante -->
-    <div class="show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-50px)] px-sm lg:px-12 xl:px-xl pb-2xl flex-1 overflow-y-auto lg:ml-[calc((100dvh-100px)*(250/350))]">
-      <!-- Intro and data -->
-      <div class="flex justify-between font-mono text-sm py-sm uppercase">
-        <div>
-          <p>Publié le</p>
-          <p data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></p>
-        </div>   
-        <div class="text-right">
-          <p>Temps de lecture</p>
-          <p><%= @post.calculate_reading_time %></p>
+    <!-- Content panel (right, scrollable) -->
+    <div class="show-content-panel bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100">
+      <!-- Metadata row -->
+      <div class="show-metadata flex w-full justify-between items-baseline font-mono uppercase tracking-wide py-sm lg:py-[18px]">
+        <div class="show-metadata__group">
+          <span>Publié le</span>
+          <span class="tabular-nums" data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></span>
+        </div>
+        <div class="show-metadata__group">
+          <span class="max-lg:hidden">Temps de lecture</span>
+          <span class="lg:hidden">Lecture</span>
+          <span class="tabular-nums"><%= @post.calculate_reading_time %></span>
         </div>
       </div>
+
+      <div class="show-separator border-t border-gray-950/10 dark:border-white/10"></div>
+
       <% if @post.event_code_details %>
-        <div class="w-1/2 font-mono text-sm">
+        <div class="w-1/2 font-mono text-xs mt-sm">
           <% if @post.event_code_details[:link].present? %>
             <%= link_to @post.event_code_details[:link],
-                        class: "text-sm", 
+                        class: "text-xs",
                         target: "_blank",
                         style: "color: #{@post.event_code_details[:color]};" do %>
               <%= @post.event_code_details[:text] %>
             <% end %>
           <% end %>
         </div>
-      <% end %>  
-      <div class="post-body" data-scroll-target="content">
-        <div class="body-content mt-lg adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
+      <% end %>
+
+      <!-- Post body -->
+      <div class="post-body"
+           data-controller="text-reveal"
+           data-text-reveal-mode-value="lines"
+           data-scroll-target="content">
+        <div class="body-content mt-[24px] lg:mt-sm adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
         <% if @post.chapters.any? %>
-          <div class="adjustable w-full  pt-0 mt lg transition-opacity duration-1000" data-scroll-target="content">
+          <div class="adjustable w-full pt-0 transition-opacity duration-1000" data-scroll-target="content">
             <% @post.chapters.each_with_index do |chapter, index| %>
               <div class="mt-lg">
                 <h2 class="chapter-title text-2xl mt-8 mb-4">
@@ -87,6 +84,11 @@
           </div>
         <% end %>
       </div>
+
+      <%# Spacer for bottom bar %>
+      <div class="h-[80px]"></div>
     </div>
   </div>
+
+  <%= render 'shared/bottomnavbar' %>
 </div>

@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
+    get 'posts/:id/reel_data', to: 'dashboard#reel_data', as: :reel_data
     resources :users do
       collection do
         delete :destroy_multiple

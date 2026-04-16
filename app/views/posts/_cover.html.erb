@@ -1,0 +1,19 @@
+<%# Cover component — supports ratio variants: "4x5" (default), "5x7", "1x1" %>
+<% ratio = local_assigns[:ratio] || "4x5" %>
+
+<div class="show-cover-panel" data-controller="coversize">
+  <div class="relative h-full min-h-0 w-full flex flex-col items-center justify-center lg:flex-1 lg:items-stretch lg:justify-stretch">
+    <div class="cover-svg" data-coversize-target="svg">
+      <%= post.cover.html_safe %>
+    </div>
+  </div>
+
+  <div class="cover-title-block">
+    <div class="cover-username" data-cover-target="userName">
+      <%= post.user.username %>
+    </div>
+    <div class="cover-title-text" data-cover-target="titleWrapper">
+      <%= post.title %>
+    </div>
+  </div>
+</div>

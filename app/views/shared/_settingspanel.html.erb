@@ -1,44 +1,90 @@
+<%# Reading settings popover — slides up from bottom-right %>
 <div data-actions-target="settingsPanel"
-     class="slide-up transition ease-bezier-fast duration-[650ms] hidden fixed grid grid-cols-2 xl:grid-cols-4 bg-white dark:bg-gray-800 text-black-900 dark:text-gray-100 justify-evenly items-center lg:w-[calc(100vw-((100dvh-100px)*(250/350)))] lg:ml-[calc((100dvh-100px)*(250/350))] z-30 w-full border-t border-gray-200 dark:border-gray-600 xl:h-navbar-height h-[calc(2*50px)]"
-     style="bottom: 50px;">
-  <div class="h-full border-b xl:border-b-0 border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
-    <button id="text-size-small" aria-label="Très petite taille de texte" class="border-2 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="small">
-      <span style="font-size: 0.6rem;">A</span>
-    </button>
-    <button id="text-size-medium" aria-label="Petite taille de texte" class="border-2 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="medium">
-      <span style="font-size: 0.8rem;">A</span>
-    </button>
-    <button id="text-size-large" aria-label="Taille de texte moyenne" class="border-2 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="large">
-      <span style="font-size: 1rem;">A</span>
-    </button>
-    <button id="text-size-xlarge" aria-label="Très grande taille de texte" class="border-2 hover:border-primary focus:outline-none w-7 h-7 flex items-center justify-center" data-action="click->actions#changeTextSize" data-actions-target="textSize" data-value="xlarge">
-      <span style="font-size: 1.2rem;">A</span>
-    </button>
-  </div>
-  <div class="h-full border-b xl:border-b-0 xl:border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
-    <button id="line-height-small" aria-label="Interligne très serré" class="border-2 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="small">
-      <%= inline_svg_tag('lineh-1.svg') %>
-    </button>
-    <button id="line-height-medium" aria-label="Interligne moyen" class="border-2 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="medium">
-      <%= inline_svg_tag('lineh-2.svg') %>
-    </button>
-    <button id="line-height-large" aria-label="Interligne espacé" class="border-2 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="large">
-      <%= inline_svg_tag('lineh-3.svg') %>
-    </button>
-    <button id="line-height-xlarge" aria-label="Interligne très espacé" class="border-2 hover:border-primary focus:outline-none w-6 h-7" data-action="click->actions#changeLineHeight" data-actions-target="lineHeight" data-value="xlarge">
-      <%= inline_svg_tag('lineh-4.svg') %>
-    </button>
-  </div>
-  <div class="h-full border-r border-gray-200 dark:border-gray-600 flex space-x-1 justify-center items-center">
-    <button id="font-sans" aria-label="Police Apfel" class="h-7 w-16 border-2 hover:border-primary focus:outline-none px-2 py-1 font-sans" data-action="click->actions#changeFont" data-actions-target="font" data-value="sans" style="font-size: 0.8rem;">Apfel</button>
-    <button id="font-lexend" aria-label="Police Lexend" class="h-7 w-16 border-2 hover:border-primary focus:outline-none px-2 py-1 font-lexend" data-action="click->actions#changeFont" data-actions-target="font" data-value="Lexend" style="font-size: 0.8rem;">Lexend</button>
-  </div>
-  <div class="flex space-x-1 justify-center items-center">
-    <button id="light-mode" aria-label="Mode clair" class="h-7 w-8 border-2 hover:border-primary focus:outline-none px-2 bg-white flex items-center justify-center text-gray-500 hover" data-action="click->actions#changePostTheme" data-actions-target="theme" data-value="light">
-      <i class="fa-solid fa-sun text-sm"></i>
-    </button>
-    <button id="dark-mode" aria-label="Mode sombre" class="h-7 w-8 border-2 hover:border-primary focus:outline-none px-2 bg-black-900 flex items-center justify-center text-gray-300 hover:text-gray-100" data-action="click->actions#changePostTheme" data-actions-target="theme" data-value="dark">
-      <i class="fa-solid fa-moon text-x"></i>
-    </button>
+     class="!hidden fixed z-50 bottom-[62px] right-4"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl shadow-lg shadow-gray-950/5 dark:shadow-none p-4 w-[280px]"
+       style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+
+    <%# Text size %>
+    <div class="mb-4">
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Taille</span>
+      <div class="flex gap-1.5 mt-2">
+        <% %w[small medium large xlarge].each_with_index do |size, i| %>
+          <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+                  data-action="click->actions#changeTextSize"
+                  data-actions-target="textSize"
+                  data-value="<%= size %>"
+                  aria-label="Taille <%= size %>">
+            <span class="text-gray-600 dark:text-gray-300" style="font-size: <%= [11, 13, 15, 17][i] %>px;">A</span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Line height %>
+    <div class="mb-4">
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Interligne</span>
+      <div class="flex gap-1.5 mt-2">
+        <% %w[small medium large xlarge].each_with_index do |lh, i| %>
+          <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+                  data-action="click->actions#changeLineHeight"
+                  data-actions-target="lineHeight"
+                  data-value="<%= lh %>"
+                  aria-label="Interligne <%= lh %>">
+            <svg class="size-4 stroke-gray-500 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="3" y1="<%= [3, 2, 1, 0.5][i] %>" x2="13" y2="<%= [3, 2, 1, 0.5][i] %>"/>
+              <line x1="3" y1="8" x2="13" y2="8"/>
+              <line x1="3" y1="<%= [13, 14, 15, 15.5][i] %>" x2="13" y2="<%= [13, 14, 15, 15.5][i] %>"/>
+            </svg>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Font %>
+    <div class="mb-4">
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Police</span>
+      <div class="flex gap-1.5 mt-2">
+        <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-sans text-gray-600 dark:text-gray-300"
+                data-action="click->actions#changeFont"
+                data-actions-target="font"
+                data-value="sans">Apfel</button>
+        <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-lexend text-gray-600 dark:text-gray-300"
+                data-action="click->actions#changeFont"
+                data-actions-target="font"
+                data-value="Lexend">Lexend</button>
+      </div>
+    </div>
+
+    <%# Theme %>
+    <div>
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Mode</span>
+      <div class="flex gap-1.5 mt-2">
+        <button class="flex-1 h-8 flex items-center justify-center gap-2 rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+                data-action="click->actions#changePostTheme"
+                data-actions-target="theme"
+                data-value="light"
+                aria-label="Mode clair">
+          <svg class="size-4 stroke-gray-500 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="8" cy="8" r="3"/>
+            <line x1="8" y1="1" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="15"/>
+            <line x1="1" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="15" y2="8"/>
+            <line x1="3.05" y1="3.05" x2="4.46" y2="4.46"/><line x1="11.54" y1="11.54" x2="12.95" y2="12.95"/>
+            <line x1="3.05" y1="12.95" x2="4.46" y2="11.54"/><line x1="11.54" y1="4.46" x2="12.95" y2="3.05"/>
+          </svg>
+          <span class="text-sm text-gray-600 dark:text-gray-300">Clair</span>
+        </button>
+        <button class="flex-1 h-8 flex items-center justify-center gap-2 rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+                data-action="click->actions#changePostTheme"
+                data-actions-target="theme"
+                data-value="dark"
+                aria-label="Mode sombre">
+          <svg class="size-4 stroke-gray-500 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 9.5A6 6 0 016.5 2 6 6 0 1014 9.5z"/>
+          </svg>
+          <span class="text-sm text-gray-600 dark:text-gray-300">Sombre</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

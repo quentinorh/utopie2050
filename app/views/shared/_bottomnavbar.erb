@@ -1,61 +1,48 @@
-<nav class="fixed bg-white bottom-0 z-[99] w-full h-navbar-height border-t border-gray-200 dark:border-gray-600 font-mono text-sm uppercase bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100">
-  <!-- Contenu pour les écrans plus petits -->
-  <div class="flex flex-1 items-center relative h-full lg:hidden">
-    <div class="absolute left-0 flex gap-sm px-sm items-center">
-      <button id="actions-button" 
-              class="flex items-center" 
-              data-action="click->actions#toggleActions"
-              aria-label="Menu des actions">
-        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
+<nav class="fixed bottom-0 left-0 z-[99] w-full lg:w-1/2 lg:left-1/2 h-[50px]"
+     style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+  <div class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 border-t border-gray-950/5 dark:border-white/10"></div>
+
+  <div class="relative flex items-center h-full px-4 lg:px-12">
+    <!-- Left: Actions toggle -->
+    <button data-action="click->actions#toggleActions"
+            class="relative group size-10 flex items-center justify-center rounded-full"
+            aria-label="Menu des actions">
+      <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+        <line x1="2" y1="4" x2="14" y2="4"/>
+        <line x1="2" y1="8" x2="14" y2="8"/>
+        <line x1="2" y1="12" x2="14" y2="12"/>
+      </svg>
+    </button>
+
+    <!-- Center: Scroll percentage -->
+    <div class="flex-1 flex justify-center">
+      <span class="font-mono text-xs tracking-wide text-gray-400 tabular-nums">
+        <span data-scroll-target="scrollPercentage">0</span><span class="text-gray-300 dark:text-gray-600">%</span>
+      </span>
+    </div>
+
+    <!-- Right: Bookmark + Settings -->
+    <div class="flex items-center gap-1">
+      <button class="relative group size-10 flex items-center justify-center rounded-full"
+              data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
+              data-action="click->bookmark#toggle"
+              data-bookmark-target="button"
+              aria-label="Marque-page">
+        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2.5h10v13L8 12l-5 3.5V2.5z"/>
+        </svg>
       </button>
-    </div>
-    <div class="flex-1 flex justify-center items-center">
-      <span class="hidden tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
-      <span class="text-gray-500"><span data-scroll-target="scrollPercentage">0</span>%</span>
-    </div>
-    <div class="absolute right-0 flex gap-sm items-center">
-      <button id="actions-button" 
-              class="flex items-center px-sm" 
-              data-action="click->actions#toggleSettings"
+
+      <button data-action="click->actions#toggleSettings"
+              class="relative group size-10 flex items-center justify-center rounded-full"
               aria-label="Paramètres d'affichage">
-        <i class="fa-solid fa-sliders text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
+        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+          <line x1="2" y1="4" x2="14" y2="4"/>
+          <line x1="2" y1="12" x2="14" y2="12"/>
+          <circle cx="5" cy="4" r="1.5" fill="currentColor" class="fill-gray-400 group-hover:fill-gray-900 dark:group-hover:fill-white"/>
+          <circle cx="11" cy="12" r="1.5" fill="currentColor" class="fill-gray-400 group-hover:fill-gray-900 dark:group-hover:fill-white"/>
+        </svg>
       </button>
-    </div>
-  </div>
-  <!-- Contenu pour les écrans plus grands -->
-  <div class="hidden lg:flex lg:flex-row mx-auto  h-full">
-    <div class="flex bg-gray-200 dark:bg-gray-700 w-[calc((100dvh-100px)*(250/350))] px-4 justify-center items-center gap-xs">
-      <button id="actions-button" 
-              class="flex items-center px-lg" 
-              data-action="click->actions#toggleActions"
-              aria-label="Menu des actions">
-        <i class="fa-solid fa-bars text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"></i>
-      </button>
-    </div>
-    <div class="flex flex-1 items-center relative">
-      <div class="absolute left-0 flex gap-sm items-center">
-        <button class="flex items-center px-sm" 
-                data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
-                data-action="click->bookmark#toggle"
-                data-bookmark-target="button"
-                aria-label="Ajouter ou supprimer un marque-page">
-          <i class="fa-regular fa-bookmark text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" 
-             title="Ajouter un marque page"></i>
-        </button>
-      </div>
-      <div class="flex-1 flex justify-center items-center">
-        <span class="hidden tw-overtitre">Lecture <%= @post.calculate_reading_time %></span>
-        <span class="text-gray-500"><span data-scroll-target="scrollPercentage">0</span>%</span>
-      </div>
-      <div class="absolute right-0 flex gap-sm items-center">
-        <button id="actions-button" 
-                class="flex items-center px-sm" 
-                data-action="click->actions#toggleSettings"
-                aria-label="Paramètres d'affichage">
-          <i class="fa-solid fa-sliders text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700" title="Barre de réglage"></i>
-        </button>
-      </div>
     </div>
   </div>
 </nav>
-

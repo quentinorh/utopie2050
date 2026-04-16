@@ -1,0 +1,115 @@
+/* ================================
+   Posts Index — title + grid layout
+   ================================ */
+
+/* Title section */
+.index-title-section {
+  padding: 14px;
+  background: #fff;
+}
+
+.index-title {
+  font-family: "Apfel", sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 1;
+  color: #000;
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
+}
+
+.index-title-count {
+  font-size: clamp(1rem, 2.5vw, 2rem);
+  letter-spacing: 0.05em;
+}
+
+/* Edge-to-edge grid: 3 cols desktop, 1 col mobile */
+.index-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card — full bleed, portrait ratio */
+.index-card {
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.index-card__cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-color: #12142C;
+  overflow: hidden;
+}
+
+.index-card__svg {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Title block overlay at bottom-left */
+.index-card__info {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (min-width: 1024px) {
+    bottom: 26px;
+    left: 26px;
+    right: 26px;
+  }
+}
+
+.index-card__username {
+  font-family: "Apfel", sans-serif;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 1.12;
+  letter-spacing: 0.67px;
+  text-transform: uppercase;
+  color: #000;
+  width: fit-content;
+  padding: 3px 5px;
+
+  @media (min-width: 1024px) {
+    font-size: 11px;
+    padding: 3px 5px;
+  }
+}
+
+.index-card__title {
+  font-family: "Apfel", sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.7rem);
+  line-height: 1.12;
+  color: #12142C;
+  padding: 10px;
+}

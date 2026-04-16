@@ -207,19 +207,23 @@ export default class extends Controller {
   }
 
   updateBookmarkIcon(isBookmarked) {
-    const button = this.buttonTarget.querySelector('i');
-    const actionsButton = this.actionsButtonTarget.querySelector('i');
-    if (isBookmarked) {
-      button.classList.remove('fa-regular');
-      button.classList.add('fa-solid'); // Changez l'icône pour indiquer un marque-page
-      actionsButton.classList.remove('fa-regular');
-      actionsButton.classList.add('fa-solid'); // Changez l'icône pour indiquer un marque-page
-    } else {
-      button.classList.remove('fa-solid');
-      button.classList.add('fa-regular'); // Changez l'icône pour indiquer aucun marque-page
-      actionsButton.classList.remove('fa-solid');
-      actionsButton.classList.add('fa-regular'); // Changez l'icône pour indiquer aucun marque-page
-    }
+    const targets = [
+      this.hasButtonTarget ? this.buttonTarget : null,
+      this.hasActionsButtonTarget ? this.actionsButtonTarget : null
+    ].filter(Boolean)
+
+    targets.forEach(target => {
+      const svg = target.querySelector('svg')
+      if (svg) {
+        if (isBookmarked) {
+          svg.setAttribute('fill', 'currentColor')
+          svg.classList.add('fill-gray-500')
+        } else {
+          svg.setAttribute('fill', 'none')
+          svg.classList.remove('fill-gray-500')
+        }
+      }
+    })
   }
 
   isBookmarkPresent() {

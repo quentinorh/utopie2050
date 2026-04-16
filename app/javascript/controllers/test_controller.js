@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl", 
@@ -88,48 +89,9 @@ export default class extends Controller {
     // pour éviter que les côtés bougent et que les mots sautent d'une ligne à l'autre
   }
 
-  // Ajuste la largeur du titre à la ligne la plus longue (évite un fond trop large sur 2+ lignes)
   fitTitleToLongestLine() {
-    if (!this.hasTitleWrapperTarget) return;
-    const wrapper = this.titleWrapperTarget;
-    if (!wrapper.isConnected) return;
-    const parent = wrapper.parentElement;
-    const maxW = parent?.offsetWidth ?? 250;
-    const cap = maxW * 0.8;
-    // Toujours mesurer avec la largeur max pour obtenir la bonne longueur de ligne
-    wrapper.style.transition = "none";
-    wrapper.style.width = `${cap}px`;
-    wrapper.offsetHeight; // force reflow
-    const textNode = wrapper.firstChild;
-    if (!textNode || !textNode.textContent.trim()) return;
-    const text = textNode.textContent;
-    const len = text.length;
-    if (len === 0) return;
-    const range = document.createRange();
-    let maxWidth = 0;
-    let lineStart = 0;
-    let lastBottom = null;
-    for (let i = 1; i <= len; i++) {
-      range.setStart(textNode, 0);
-      range.setEnd(textNode, i);
-      const rect = range.getBoundingClientRect();
-      if (lastBottom !== null && rect.bottom > lastBottom) {
-        range.setStart(textNode, lineStart);
-        range.setEnd(textNode, i - 1);
-        const lineRect = range.getBoundingClientRect();
-        maxWidth = Math.max(maxWidth, lineRect.width);
-        lineStart = i;
-      }
-      lastBottom = rect.bottom;
-    }
-    range.setStart(textNode, lineStart);
-    range.setEnd(textNode, len);
-    const lastRect = range.getBoundingClientRect();
-    maxWidth = Math.max(maxWidth, lastRect.width);
-    const style = getComputedStyle(wrapper);
-    const padding = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
-    wrapper.style.transition = "width 0.15s ease-out";
-    wrapper.style.width = `${Math.min(maxWidth + padding, cap)}px`;
+    if (!this.hasTitleWrapperTarget) return
+    fitTitleWrapperToLongestLine(this.titleWrapperTarget)
   }
 
   updateCurve() {
@@ -243,12 +205,20 @@ export default class extends Controller {
     const hue = this.colorPickerTarget.value;
     const backgroundColor = `hsl(${hue}, 50%, 13%)`;
 
-    // Ajouter un rectangle de fond
+    // Background rect fills the full SVG — placed outside the curve group
+    const svg = this.curveGroupTarget.closest('svg')
+    const oldRect = svg.querySelector('.cover-bg-rect')
+    if (oldRect) oldRect.remove()
+
     const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     backgroundRect.setAttribute('width', totalWidth);
     backgroundRect.setAttribute('height', totalHeight);
     backgroundRect.setAttribute('fill', backgroundColor);
-    this.curveGroupTarget.appendChild(backgroundRect);
+    backgroundRect.setAttribute('class', 'cover-bg-rect');
+    svg.insertBefore(backgroundRect, this.curveGroupTarget);
+
+    // Scale curve group from center (margins all around)
+    this.curveGroupTarget.setAttribute('transform', 'translate(125, 175) scale(0.8) translate(-125, -175)');
 
     // Créer une grille de motifs
     for (let row = 0; row < rows; row++) {

@@ -1,130 +1,116 @@
+<%# Share panel %>
 <div data-actions-target="sharePanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <i class="fa-solid fa-share mb-2 text-lg"></i>
-    <p>Partager</p>
-    <div class="flex mt-sm">
-      <div class="flex-1 bg-white dark:bg-gray-600 rounded-l-lg px-3 py-1 font-mono text-sm text-gray-600 dark:text-gray-300 truncate">
+     class="!hidden fixed z-[80] bottom-[62px] left-4 lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl shadow-lg shadow-gray-950/5 dark:shadow-none p-4 w-[320px]"
+       style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="flex items-center justify-between mb-3">
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400">Partager</span>
+      <button data-action="click->actions#toggleShare" class="size-6 flex items-center justify-center rounded-full hover:bg-gray-950/5 dark:hover:bg-white/5" aria-label="Fermer">
+        <svg class="size-3.5 stroke-gray-400 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg>
+      </button>
+    </div>
+    <div class="flex rounded-xl overflow-hidden border border-gray-950/5 dark:border-white/10">
+      <div class="flex-1 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 truncate font-mono bg-gray-50 dark:bg-gray-800/50">
         <%= request.original_url %>
       </div>
-      <button data-action="click->actions#copyUrl" 
-              class="bg-primary text-white px-4 rounded-r-lg flex items-center transition-colors duration-200"
-              aria-label="Copier le lien">
-        <i class="fa-solid fa-copy"></i>
+      <button data-action="click->actions#copyUrl"
+              class="px-3 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm flex items-center gap-2 shrink-0"
+              aria-label="Copier">
+        <svg class="size-4 stroke-current shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="5" width="9" height="9" rx="1"/>
+          <path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2"/>
+        </svg>
+        <span>Copier</span>
       </button>
     </div>
   </div>
-  <div class="absolute bottom-10 flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleShare">
-    <i class="fa-solid fa-close text-lg"></i>
-  </div>
 </div>
 
+<%# Bookmark confirmation %>
 <div data-actions-target="addBookmarkPanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <div class="flex mt-sm">
-      <p>Un marque-page a été ajouté</p>
-    </div>
+     class="!hidden fixed z-[80] bottom-[62px] right-4 lg:right-auto lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-gray-900 text-white px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+    <svg class="size-4 stroke-green-400 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 6.5 11.5 13 4.5"/></svg>
+    Marque-page ajouté
   </div>
 </div>
 
+<%# Report panel %>
 <div data-actions-target="reportPanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <i class="fa-solid fa-flag mb-2 text-lg"></i>
-    <p>Signaler</p>
-    <div class="flex">
-      <div class="container mx-auto px-4 max-w-2xl">
-        <%= form_with(model: [@post, @report], 
-            class: "space-y-4",
-            data: { 
-              action: "turbo:submit-end->actions#handleReportSubmit"
-            }) do |f| %>
-          <div>
-            <%= f.text_area :comment, 
-                class: "bg-gray-200 dark:bg-gray-700 w-full px-4 py-2 border rounded-md",
-                rows: 4,
-                required: true,
-                placeholder: "Peux-tu expliquer pourquoi tu souhaites signaler ce texte ?" %>
-          </div>
-
-          <%= f.submit "Envoyer", 
-              class: "px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 block mx-auto" %>
-        <% end %>
-      </div>
+     class="!hidden fixed z-[80] bottom-[62px] left-4 lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl shadow-lg shadow-gray-950/5 dark:shadow-none p-4 w-[320px]"
+       style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="flex items-center justify-between mb-3">
+      <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400">Signaler</span>
+      <button data-action="click->actions#toggleReport" class="size-6 flex items-center justify-center rounded-full hover:bg-gray-950/5 dark:hover:bg-white/5" aria-label="Fermer">
+        <svg class="size-3.5 stroke-gray-400 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg>
+      </button>
     </div>
-  </div>
-  <div class="absolute bottom-10 flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleReport">
-    <i class="fa-solid fa-close text-lg"></i>
+    <%= form_with(model: [@post, @report],
+        class: "flex flex-col gap-3",
+        data: { action: "turbo:submit-end->actions#handleReportSubmit" }) do |f| %>
+      <%= f.text_area :comment,
+          class: "w-full px-3 py-2 rounded-xl border border-gray-950/5 dark:border-white/10 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-700 dark:text-gray-200 resize-none focus:outline-none focus:ring-1 focus:ring-gray-950/10",
+          rows: 3,
+          required: true,
+          placeholder: "Explique pourquoi tu signales ce texte..." %>
+      <%= f.submit "Envoyer",
+          class: "self-end px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm rounded-xl cursor-pointer" %>
+    <% end %>
   </div>
 </div>
 
+<%# Edit confirmation %>
 <div data-actions-target="editPanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <p>Es-tu sûr de vouloir modifier ce futur ?</p>
-    <div class="flex gap-4 mt-4">
-      <%= link_to edit_post_path(@post), 
-          class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700",
-          aria_label: "Confirmer la modification" do %>
-        <i class="fa-solid fa-check mb-2 text-lg"></i>
-        <p>Oui</p>
+     class="!hidden fixed z-[80] bottom-[62px] left-4 lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl shadow-lg shadow-gray-950/5 dark:shadow-none p-4 w-[280px]"
+       style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Modifier ce futur ?</p>
+    <div class="flex gap-2">
+      <%= link_to edit_post_path(@post),
+          class: "flex-1 text-center px-3 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm rounded-xl" do %>
+        Oui, modifier
       <% end %>
-      
-      <button data-action="click->actions#toggleEdit" class="flex flex-col items-center font-mono text-sm uppercase text-lg text-red-500 hover:text-red-700">
-        <i class="fa-solid fa-xmark mb-2 text-lg"></i>
-        <p>Non</p>
+      <button data-action="click->actions#toggleEdit"
+              class="flex-1 px-3 py-2 text-sm text-gray-500 rounded-xl border border-gray-950/5 dark:border-white/10">
+        Annuler
       </button>
     </div>
   </div>
-  <div class="absolute bottom-10 flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-      data-action="click->actions#toggleEdit">
-    <i class="fa-solid fa-close text-lg"></i>
-  </div>
 </div>
 
+<%# Delete confirmation %>
 <div data-actions-target="deletePanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <i class="fa-solid fa-trash mb-2 text-lg"></i>
-    <p>Es-tu sûr de vouloir supprimer ce futur ?</p>
-    <div class="flex gap-4 mt-4">
-      <%= button_to post_path(@post), 
+     class="!hidden fixed z-[80] bottom-[62px] left-4 lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl shadow-lg shadow-gray-950/5 dark:shadow-none p-4 w-[280px]"
+       style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Supprimer ce futur ?</p>
+    <div class="flex gap-2">
+      <%= button_to post_path(@post),
           method: :delete,
           data: { turbo: true },
-          class: "flex flex-col items-center font-mono text-sm uppercase text-lg text-green-500 hover:text-green-700",
-          aria_label: "Confirmer la suppression" do %>
-        <i class="fa-solid fa-check mb-2 text-lg"></i>
-        <p>Oui</p>
+          class: "flex-1 text-center px-3 py-2 bg-red-600 text-white text-sm rounded-xl cursor-pointer" do %>
+        Supprimer
       <% end %>
-      
-      <button data-action="click->actions#toggleDelete" 
-              class="flex flex-col items-center font-mono text-sm uppercase text-lg text-red-500 hover:text-red-700"
-              aria-label="Annuler la suppression">
-        <i class="fa-solid fa-xmark mb-2 text-lg"></i>
-        <p>Non</p>
+      <button data-action="click->actions#toggleDelete"
+              class="flex-1 px-3 py-2 text-sm text-gray-500 rounded-xl border border-gray-950/5 dark:border-white/10">
+        Annuler
       </button>
     </div>
   </div>
-  <div class="absolute bottom-10 flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700"
-       data-action="click->actions#toggleDelete">
-    <i class="fa-solid fa-close text-lg"></i>
-  </div>
 </div>
 
+<%# Report confirmation toast %>
 <div data-actions-target="reportConfirmationPanel"
-     class="slide-up hidden fixed flex flex-col bg-gray-200 dark:bg-gray-700 justify-evenly items-center lg:w-[calc((100dvh-100px)*(250/350))] z-[80] w-full h-[calc(100dvh-100px)]"
-     style="bottom: 50px;">
-  <div class="flex flex-col items-center font-mono text-sm uppercase text-lg text-gray-500 dark:text-gray-300 dark:hover:text-gray-100 hover:text-gray-700">
-    <i class="fa-solid fa-check-circle mb-2 text-lg"></i>
-    <p>Merci pour ton signalement</p>
-    <p class="text-sm mt-2">Les administrateurs ont été informés</p>
+     class="!hidden fixed z-[80] bottom-[62px] right-4 lg:right-auto lg:left-[calc(50%+16px)]"
+     style="opacity: 0; transform: translateY(8px);">
+  <div class="bg-gray-900 text-white px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+    <svg class="size-4 stroke-green-400 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 6.5 11.5 13 4.5"/></svg>
+    Signalement envoyé
   </div>
 </div>

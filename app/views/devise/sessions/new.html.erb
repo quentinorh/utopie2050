@@ -1,37 +1,51 @@
 <% content_for :title, "SP 2050 - Connexion" %>
 <% content_for :description, "Connectez-vous à votre compte SP 2050 pour partager vos futurs." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :navbar_transparent, true %>
 
-<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);">
-  <div class="text-xl flex flex-col items-center w-full">
-    <div class="bg-white p-sm rounded-lg shadow md:w-[400px]">
-      <h2 class="text-center">Se connecter</h2>
+<div class="auth-page" data-controller="auth-background">
+  <!-- Animated SVG pattern background -->
+  <div class="auth-bg" data-auth-background-target="svg"></div>
+  <div class="auth-overlay"></div>
+
+  <!-- Form -->
+  <div class="auth-form-container">
+    <div class="auth-form">
+      <h2 class="auth-form__title">Se connecter</h2>
+      <p class="auth-form__subtitle">Bienvenue dans le futur</p>
+
       <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-        <div class="form-inputs">
+        <div class="auth-form__fields">
           <%= f.input :email,
                       label: "Adresse e-mail",
                       required: false,
                       autofocus: true,
-                      input_html: { autocomplete: "email", class:'tw-form-input' },
-                      label_html: { class:"tw-form-label mt-sm"} %>
+                      input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
+                      label_html: { class: "auth-label" } %>
           <%= f.input :password,
                       label: "Mot de passe",
                       required: false,
-                      input_html: { autocomplete: "current-password", class:'tw-form-input' },
-                      label_html: { class:"tw-form-label mt-sm"} %>
-          <%= f.input :remember_me,
-                      label: "Se souvenir de moi",
-                      as: :boolean,
-                      input_html: { class: 'tw-form-checkbox mt-xs' },
-                      label_html: { class: 'text-sm ml-xs' } if devise_mapping.rememberable? %>
+                      input_html: { autocomplete: "current-password", class: 'auth-input', placeholder: "••••••••" },
+                      label_html: { class: "auth-label" } %>
+          <% if devise_mapping.rememberable? %>
+            <div class="flex items-center gap-2 mt-2">
+              <%= f.input :remember_me,
+                          as: :boolean,
+                          label: "Se souvenir de moi",
+                          input_html: { class: 'tw-form-checkbox' },
+                          label_html: { class: 'text-sm text-white/70' },
+                          wrapper_html: { class: 'mb-0' } %>
+            </div>
+          <% end %>
         </div>
 
-        <div class="form-actions pb-2">
-          <%= f.button :submit, "Je me connecte", class:"tw-btn-primary w-full", data: { form_type: "other" } %>
+        <div class="auth-form__actions">
+          <%= f.button :submit, "Je me connecte", class: "auth-btn-primary", data: { form_type: "other" } %>
+          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary" %>
         </div>
-        <%= link_to "Créer un compte", new_user_registration_path, class: "text-center tw-btn-secondary w-full block" %>
+
         <div class="text-center mt-4">
-          <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "text-sm text-blue-500 hover:text-blue-700" %>
+          <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "text-sm text-white/50 hover:text-white transition-colors" %>
         </div>
       <% end %>
     </div>

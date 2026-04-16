@@ -1,63 +1,70 @@
 import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
 
+// cubic-bezier(0.625, 0.05, 0, 1)
+function coverEase(t) {
+  const x1 = 0.625, y1 = 0.05, x2 = 0, y2 = 1
+  let guess = t
+  for (let i = 0; i < 8; i++) {
+    const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx
+    const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by
+    const currentX = ((ax * guess + bx) * guess + cx) * guess
+    const currentSlope = (3 * ax * guess + 2 * bx) * guess + cx
+    if (currentSlope === 0) break
+    guess -= (currentX - t) / currentSlope
+  }
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by
+  return ((ay * guess + by) * guess + cy) * guess
+}
+
 export default class extends Controller {
   static targets = ["path", "curveGroup", "svg"]
   static values = { uniqueId: String }
 
   connect() {
-    // Nettoyer toutes les animations GSAP existantes pour éviter les conflits
     gsap.killTweensOf(this.element);
-    
-    // Réinitialiser les valeurs de l'élément immédiatement pour éviter le flash
+
     gsap.set(this.element, {
       scale: 1.25,
       opacity: 0
     });
-    
-    // Attendre que le layout soit stabilisé avant de démarrer les animations
-    // Cela évite les problèmes de décalage lors de la navigation Turbo
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // Utiliser les dimensions réelles du SVG plutôt que du conteneur
-        // Le SVG doit avoir les mêmes dimensions que son conteneur parent
         const svgElement = this.svgTarget;
         const svgRect = svgElement.getBoundingClientRect();
         const containerRect = this.element.getBoundingClientRect();
-        
-        // Utiliser les dimensions du conteneur, ou du SVG si disponibles
+
         this.totalWidth = containerRect.width || svgRect.width || window.innerWidth;
         this.totalHeight = containerRect.height || svgRect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
-        
-        // S'assurer que le SVG prend toute la hauteur disponible
+
         if (svgElement.style.height !== '100%') {
           svgElement.style.width = '100%';
           svgElement.style.height = '100%';
         }
-        
+
         this.generateParameters();
         this.updateColors()
         this.updateCurve()
         this.updateViewBox()
-        
+
         if (window.visualViewport) {
-          window.visualViewport.addEventListener('resize', this.updateViewBox.bind(this));
+          this._resizeHandler = () => this.updateViewBox();
+          window.visualViewport.addEventListener('resize', this._resizeHandler);
         } else {
-          window.addEventListener('resize', this.updateViewBox.bind(this));
+          this._resizeHandler = () => this.updateViewBox();
+          window.addEventListener('resize', this._resizeHandler);
         }
 
-        // Attendre encore un frame pour s'assurer que le SVG est complètement rendu
         requestAnimationFrame(() => {
-          // Initial scale animation
           gsap.to(this.element, {
             scale: 1,
             opacity: 1,
-            delay: 0.4,
-            duration: 1.6,
-            ease: "power4.out"
+            delay: 0.2,
+            duration: 0.8,
+            ease: coverEase
           });
 
-          // Commencer l'animation
           this.animationFrameId = null;
           this.animateParameters();
         });
@@ -66,30 +73,29 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', this.updateViewBox.bind(this));
-    } else {
-      window.removeEventListener('resize', this.updateViewBox.bind(this));
+    if (this._resizeHandler) {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', this._resizeHandler);
+      } else {
+        window.removeEventListener('resize', this._resizeHandler);
+      }
     }
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
   }
-  
+
   updateViewBox() {
     const svgElement = this.svgTarget;
-    // Utiliser les dimensions réelles du conteneur et du SVG
     const containerRect = this.element.getBoundingClientRect();
     const svgRect = svgElement.getBoundingClientRect();
-    
-    // Prioriser les dimensions du conteneur, puis du SVG
+
     const totalWidth = containerRect.width || svgRect.width || window.innerWidth;
     const totalHeight = containerRect.height || svgRect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
-    
-    // Mettre à jour les dimensions internes si elles ont changé
+
     this.totalWidth = totalWidth;
     this.totalHeight = totalHeight;
-    
+
     svgElement.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     this.updateCurve()
   }
@@ -97,35 +103,24 @@ export default class extends Controller {
   generateParameters() {
     this.modes = ['x4', 'x8', 'x16'];
     this.randomMode = this.modes[Math.floor(Math.random() * this.modes.length)];
-    // this.mode = this.randomMode;
     this.mode = 'x16';
-    // this.rows = parseInt(Math.floor(Math.random() * 3) + 2);
-    // this.columns = parseInt(Math.floor(Math.random() * 3) + 2);
     this.rows = 1;
     this.columns = 1;
     this.x = 0.7;
-    //this.y = 1 -this.x;
     this.y = 0.5;
     this.x3 = 0.9;
-    //this.y3 = 1 - this.x3;
     this.y3 = 0.9;
     this.smoothing = 0.95;
-    // Teinte fixe pour éviter la variation des couleurs
-    this.hue = 243; // Violet souhaité (#4f46e5)
-    //this.hue = parseInt(Math.floor(Math.random() * 360));
-    
-    // Initialiser les directions de changement
+    this.hue = 243;
+
     this.xDirection = Math.random() < 0.5 ? 1 : -1;
-    //this.yDirection = - this.xDirection;
     this.yDirection = Math.random() < 0.5 ? 1 : -1;
     this.x3Direction = Math.random() < 0.5 ? 1 : -1;
-    //this.y3Direction = - this.x3Direction;
     this.y3Direction = Math.random() < 0.5 ? 1 : -1;
     this.smoothingDirection = Math.random() < 0.5 ? 1 : -1;
   }
 
   updateCurve() {
-    // Utiliser les dimensions stockées ou les recalculer depuis le conteneur
     const rect = this.element.getBoundingClientRect();
     const totalWidth = this.totalWidth || rect.width || window.innerWidth;
     const totalHeight = this.totalHeight || rect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
@@ -143,18 +138,15 @@ export default class extends Controller {
     const height = totalHeight / rows;
     const startPoint = [0, height];
 
-    // Vérifier que les valeurs sont valides
     if (isNaN(width) || isNaN(height) || isNaN(x) || isNaN(y) || isNaN(x3) || isNaN(y3) || isNaN(smoothing)) {
         console.error("Invalid parameters for path construction");
         return;
     }
 
-    // Ajuster les points de contrôle pour le lissage
     const control1 = [width * x * smoothing, height * smoothing];
     const control2 = [width * smoothing, height * (1 - y * smoothing)];
     const control3 = [width * x3 * smoothing, height * (1 - y3 * smoothing)];
 
-    // Création du chemin de base
     const basePath = `
       M ${startPoint[0]},${startPoint[1]}
       C ${control1[0]},${control1[1]}
@@ -172,7 +164,6 @@ export default class extends Controller {
           'scale(1,-1) translate(-125,-175)',
           'scale(-1,-1) translate(-125,-175)'
         ]
-        
         break
       case 'x8':
         transforms = [
@@ -185,7 +176,6 @@ export default class extends Controller {
           'rotate(90) scale(1,-1) translate(-125,-175)',
           'rotate(90) scale(-1,-1) translate(-125,-175)'
         ]
-        
         break
       case 'x16':
         const translateX = -totalWidth * 0.5;
@@ -198,17 +188,8 @@ export default class extends Controller {
           `rotate(90) scale(1,1) translate(${translateX},${translateY})`,
           `rotate(90) scale(-1,1) translate(${translateX},${translateY})`,
           `rotate(90) scale(1,-1) translate(${translateX},${translateY})`,
-          `rotate(90) scale(-1,-1) translate(${translateX},${translateY})`,
-          // `rotate(45) scale(1,1) translate(${translateX},${translateY})`,
-          // `rotate(45) scale(-1,1) translate(${translateX},${translateY})`,
-          // `rotate(45) scale(1,-1) translate(${translateX},${translateY})`,
-          // `rotate(45) scale(-1,-1) translate(${translateX},${translateY})`,
-          // `rotate(135) scale(1,1) translate(${translateX},${translateY})`,
-          // `rotate(135) scale(-1,1) translate(${translateX},${translateY})`,
-          // `rotate(135) scale(1,-1) translate(${translateX},${translateY})`,
-          // `rotate(135) scale(-1,-1) translate(${translateX},${translateY})`
+          `rotate(90) scale(-1,-1) translate(${translateX},${translateY})`
         ]
-        
         break
       default:
         transforms = ['scale(1,1) translate(-200,-300)']
@@ -241,16 +222,14 @@ export default class extends Controller {
         transforms.forEach((baseTransform, index) => {
           const newPath = document.createElementNS("http://www.w3.org/2000/svg", "path")
           newPath.setAttribute('d', basePath)
-          
-          // Combiner la translation de la grille avec la transformation du motif
+
           const gridTransform = `translate(${offsetX + spacingX * col + width / 2}, ${offsetY + spacingY * row + height / 2})`
           newPath.setAttribute('transform', `${gridTransform} ${baseTransform}`)
-          
-          // Alterner les gradients
+
           const gradientIndex = (Math.floor(index / 4) % 3) + 1
           newPath.setAttribute('fill', `url(#gradient${gradientIndex}-${this.uniqueIdValue})`)
           newPath.setAttribute('stroke', 'none')
-          
+
           this.curveGroupTarget.appendChild(newPath)
         })
       }
@@ -258,25 +237,16 @@ export default class extends Controller {
   }
 
   updateColors() {
-    // Utiliser uniquement des variations de violet (#4f46e5) - T: 243°, S: 69%, L: 90%
     const baseHsl = { h: this.hue, s: 69, l: 90 };
-    // Variations très proches de la teinte de base : même teinte, variations de luminosité uniquement
-    const variation1Hsl = { ...baseHsl };
-    const variation2Hsl = { ...baseHsl };
-    const variation3Hsl = { ...baseHsl };
+    const lightVariation1Hsl = { h: baseHsl.h, s: 69, l: 95 };
+    const darkVariation1Hsl = { h: baseHsl.h, s: 69, l: 50 };
+    const lightVariation2Hsl = { h: baseHsl.h, s: 69, l: 90 };
+    const darkVariation2Hsl = { h: baseHsl.h, s: 69, l: 45 };
+    const lightVariation3Hsl = { h: baseHsl.h, s: 69, l: 92 };
+    const darkVariation3Hsl = { h: baseHsl.h, s: 69, l: 55 };
 
-    // Créer des variations avec contraste de luminosité en gardant la saturation à 69% (violet souhaité)
-    const lightVariation1Hsl = { h: variation1Hsl.h, s: 69, l: 95 }; // Très clair
-    const darkVariation1Hsl = { h: variation1Hsl.h, s: 69, l: 50 };  // Foncé
-    const lightVariation2Hsl = { h: variation2Hsl.h, s: 69, l: 90 };
-    const darkVariation2Hsl = { h: variation2Hsl.h, s: 69, l: 45 };
-    const lightVariation3Hsl = { h: variation3Hsl.h, s: 69, l: 92 };
-    const darkVariation3Hsl = { h: variation3Hsl.h, s: 69, l: 55 };
-
-    // Utilisez l'ID unique pour créer des identifiants de dégradé
     const uniqueId = this.uniqueIdValue;
 
-    // Gradients avec contraste de luminosité pour plus de visibilité
     this.updateGradient(`gradient1-${uniqueId}`, this.hslToHex(lightVariation1Hsl), this.hslToHex(darkVariation1Hsl));
     this.updateGradient(`gradient2-${uniqueId}`, this.hslToHex(lightVariation2Hsl), this.hslToHex(darkVariation2Hsl));
     this.updateGradient(`gradient3-${uniqueId}`, this.hslToHex(lightVariation3Hsl), this.hslToHex(darkVariation3Hsl));
@@ -284,7 +254,7 @@ export default class extends Controller {
 
   updateGradient(id, color1, color2) {
     const gradient = document.getElementById(id);
-    
+
     gradient.querySelector('stop:first-child').style.stopColor = color1;
     gradient.querySelector('stop:first-child').style.stopOpacity = '1';
     gradient.querySelector('stop:last-child').style.stopColor = color2;
@@ -295,17 +265,17 @@ export default class extends Controller {
     let r = parseInt(hex.slice(1,3), 16) / 255
     let g = parseInt(hex.slice(3,5), 16) / 255
     let b = parseInt(hex.slice(5,7), 16) / 255
-    
+
     let max = Math.max(r, g, b)
     let min = Math.min(r, g, b)
     let h, s, l = (max + min) / 2
-    
+
     if (max === min) {
       h = s = 0
     } else {
       let d = max - min
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-      
+
       switch(max) {
         case r: h = (g - b) / d + (g < b ? 6 : 0); break
         case g: h = (b - r) / d + 2; break
@@ -313,7 +283,7 @@ export default class extends Controller {
       }
       h /= 6
     }
-    
+
     return {
       h: Math.round(h * 360),
       s: Math.round(s * 100),
@@ -333,39 +303,22 @@ export default class extends Controller {
   }
 
   animateParameters() {
-    const speed = 0.0007; // Ajustez cette valeur pour changer la vitesse de l'animation
-
-    // Mettre à jour les paramètres progressivement
-    // gsap.to(this, {
-    //   x: `+=${this.xDirection * speed}`,
-    //   y: `+=${this.yDirection * speed}`,
-    //   x3: `+=${this.x3Direction * speed}`,
-    //   y3: `+=${this.y3Direction * speed}`,
-    //   duration: 0.0016, // Roughly one frame at 60fps
-    //   ease: "expo.out"
-    // });
+    const speed = 0.0007;
 
     this.x += this.xDirection * speed;
     this.y += this.yDirection * speed;
     this.x3 += this.x3Direction * speed;
     this.y3 += this.y3Direction * speed;
 
-    // this.smoothing += this.smoothingDirection * speed;
-    // Teinte fixe - ne plus faire varier les couleurs
-    // this.hue = (this.hue + 1) % 360; // Incrémenter la teinte pour un changement continu
-
-    // Inverser la direction si les limites sont atteintes
     if (this.x <= 0.5 || this.x >= 1) this.xDirection *= -1;
     if (this.y <= 0.3 || this.y >= 0.8) this.yDirection *= -1;
     if (this.x3 <= 0.2 || this.x3 >=0.6) this.x3Direction *= -1;
     if (this.y3 <= 0.7 || this.y3 >=1) this.y3Direction *= -1;
     if (this.smoothing <= 0.9 || this.smoothing >= 1) this.smoothingDirection *= -1;
 
-    // Mettre à jour le motif
     this.updateCurve();
 
-    // Demander la prochaine frame
     this.animationFrameId = requestAnimationFrame(this.animateParameters.bind(this));
     this.updateColors()
   }
-} 
+}

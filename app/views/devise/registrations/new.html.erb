@@ -1,96 +1,113 @@
 <% content_for :title, "SP 2050 - Créer un compte" %>
 <% content_for :description, "Rejoignez la communauté SP 2050. Créez votre compte pour partager vos visions d'un futur désirable et durable." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :navbar_transparent, true %>
 
-<div class="flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
-  <div class="flex flex-col items-center w-full md:w-[600px]">   
-    <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%# Honeypot anti-bot : champ invisible que seuls les bots remplissent %>
-      <div aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
-        <label for="user_website_url">Ne pas remplir</label>
-        <input type="text" name="user[website_url]" id="user_website_url" tabindex="-1" autocomplete="off" />
-      </div>
-      <div id="registration-steps" class="p-none p-sm md:p-base text-center">
-        <div class="step" id="step-intro" data-signup-target="step">
-          <h3 class="text-xl uppercase text-center mb-sm">Introduction</h3>
-          <p class="text-base text-center uppercase font-mono">Avant de commencer, pour mieux nous connaitre, nous allons discuter avec le toi du futur…</p>
-          <button type="button" data-action="click->signup#nextStep" data-next-step="step-username" class="tw-btn-primary w-fit mt-sm">Commencer</button>
+<div class="auth-page" data-controller="signup auth-background">
+  <!-- Animated SVG pattern background -->
+  <div class="auth-bg" data-auth-background-target="svg"></div>
+  <div class="auth-overlay"></div>
+
+  <!-- Form -->
+  <div class="auth-form-container">
+    <div class="auth-form auth-form--wide">
+      <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%# Honeypot anti-bot %>
+        <div aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+          <label for="user_website_url">Ne pas remplir</label>
+          <input type="text" name="user[website_url]" id="user_website_url" tabindex="-1" autocomplete="off" />
         </div>
 
-        <div class="step" id="step-username" style="display: none;" data-signup-target="step">
-          <h3 class="text-xl uppercase text-center">En 2050, par quel nom aimerais-tu être appelé ?</h3>
-          <%= f.input :username,
-                      required: true,
-                      label: false,
-                      wrapper_html: { class: 'mt-sm' },
-                      input_html: { class: 'tw-form-input text-center', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
-          <div class="text-red-500 text-sm" data-signup-target="usernameError"></div>
-          <div class="flex justify-between gap-sm">
-            <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" data-action="click->signup#nextStep" data-next-step="step-age" class="tw-btn-primary w-full mt-sm" data-signup-target="nextStepUsernameButton" disabled>Suivant</button>
+        <div id="registration-steps">
+          <!-- Step 1: Intro -->
+          <div class="step" id="step-intro" data-signup-target="step">
+            <h2 class="auth-form__title">Bienvenue</h2>
+            <p class="auth-form__subtitle">Avant de commencer, pour mieux nous connaitre, nous allons discuter avec le toi du futur...</p>
+            <button type="button" data-action="click->signup#nextStep" data-next-step="step-username" class="auth-btn-primary mt-6">Commencer</button>
+          </div>
+
+          <!-- Step 2: Username -->
+          <div class="step" id="step-username" style="display: none;" data-signup-target="step">
+            <h2 class="auth-form__title">En 2050, par quel nom aimerais-tu etre appele ?</h2>
+            <%= f.input :username,
+                        required: true,
+                        label: false,
+                        wrapper_html: { class: 'mt-4' },
+                        input_html: { class: 'auth-input text-center', placeholder: 'Ton pseudo', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
+            <div class="text-red-400 text-sm mt-1" data-signup-target="usernameError"></div>
+            <div class="flex gap-3 mt-6">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="auth-btn-secondary flex-1">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-age" class="auth-btn-primary flex-1" data-signup-target="nextStepUsernameButton" disabled>Suivant</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Age -->
+          <div class="step" id="step-age" style="display: none;" data-signup-target="step">
+            <h2 class="auth-form__title">Quel age auras-tu en 2050 ?</h2>
+            <%= f.input :age,
+                        required: true,
+                        label: false,
+                        wrapper_html: { class: 'mt-4' },
+                        input_html: { class: 'auth-input text-center', placeholder: 'Ton age en 2050' } %>
+            <div class="text-red-400 text-sm mt-1" data-signup-target="ageError"></div>
+            <div class="flex gap-3 mt-6">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="auth-btn-secondary flex-1">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="auth-btn-primary flex-1">Suivant</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Email + Password -->
+          <div class="step" id="step-email-password" style="display: none;" data-signup-target="step">
+            <h2 class="auth-form__title">Ton adresse email ?</h2>
+            <%= f.input :email,
+                        required: true,
+                        autofocus: true,
+                        label: false,
+                        wrapper_html: { class: 'mt-4' },
+                        input_html: { autocomplete: "email", class: 'auth-input text-center', placeholder: 'ton@email.com', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
+            <div class="text-red-400 text-sm mt-1" data-signup-target="emailError"></div>
+
+            <h3 class="auth-form__title mt-8">Ton mot de passe ?</h3>
+            <%= f.input :password,
+                        required: true,
+                        label: false,
+                        wrapper_html: { class: 'mt-4' },
+                        input_html: {
+                          autocomplete: "new-password",
+                          class: 'auth-input text-center',
+                          placeholder: '6 caracteres minimum',
+                          'data-signup-target': 'password',
+                          'data-action': 'input->signup#checkPassword'
+                        } %>
+            <div class="text-red-400 text-sm mt-1" data-signup-target="passwordError"></div>
+            <div class="flex gap-3 mt-6">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="auth-btn-secondary flex-1">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="auth-btn-primary flex-1" data-signup-target="nextStepEmailButton" disabled>Suivant</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Terms -->
+          <div class="step" id="step-terms" style="display: none;" data-signup-target="step">
+            <h2 class="auth-form__title">Conditions d'utilisation</h2>
+            <div class="auth-terms">
+              <h4>Futurs desirables</h4>
+              <p>Chaque histoire doit contribuer a imaginer un monde meilleur pour tous.tes. En publiant sur ce site tu t'engages a respecter cette ligne directrice.</p>
+              <h4>Contenus respectueux</h4>
+              <p>En 2050, nous imaginons un monde fait de diversite et de respect. Aucun contenu faisant la promotion de discrimination ne sera tolere.</p>
+              <h4>Droit d'auteur.ice</h4>
+              <p>Veuilles a ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits necessaires.</p>
+              <h4>Licence libre</h4>
+              <p>En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Creative Commons BY-NC-SA 4.0</a>.</p>
+            </div>
+            <div class="flex gap-3 mt-6">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="auth-btn-secondary flex-1">Precedent</button>
+              <%= f.button :submit, "Je m'inscris", class: "auth-btn-primary flex-1", data: { form_type: "other" } %>
+            </div>
+            <p class="text-xs text-white/40 text-center mt-4">En cliquant sur 'Je m'inscris', tu confirmes avoir accepte les conditions d'utilisation</p>
           </div>
         </div>
-
-        <div class="step" id="step-age" style="display: none;" data-signup-target="step">
-          <h3 class="text-xl uppercase text-center">Quel âge auras-tu en 2050 ?</h3>
-          <%= f.input :age,
-                      required: true,
-                      label: false,
-                      wrapper_html: { class: 'mt-sm' },
-                      input_html: { class: 'tw-form-input text-center' } %>
-          <div class="text-red-500 text-sm" data-signup-target="ageError"></div>
-          <div class="flex justify-between gap-sm">
-            <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="tw-btn-primary w-full mt-sm">Suivant</button>
-          </div>
-        </div>
-
-        <div class="step" id="step-email-password" style="display: none;" data-signup-target="step">
-          <h3 class="text-xl uppercase text-center">Quel est ton adresse email ?</h3>
-          <%= f.input :email,
-                      required: true,
-                      autofocus: true,
-                      label: false,
-                      wrapper_html: { class: 'mt-sm' },
-                      input_html: { autocomplete: "email", class: 'tw-form-input text-center', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
-          <div class="text-red-500 text-sm" data-signup-target="emailError"></div>
-          <h3 class="mt-base text-xl uppercase text-center">Ton mot de passe ?</h3>
-          <%= f.input :password,
-                      required: true,
-                      label: false,
-                      wrapper_html: { class: 'mt-sm' },
-                      input_html: { 
-                        autocomplete: "new-password", 
-                        class: 'tw-form-input text-center',
-                        'data-signup-target': 'password',
-                        'data-action': 'input->signup#checkPassword'
-                      } %>
-          <div class="text-red-500 text-sm" data-signup-target="passwordError"></div>
-          <div class="flex justify-between gap-sm">
-            <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="tw-btn-primary w-full mt-sm" data-signup-target="nextStepEmailButton" disabled>Suivant</button>
-          </div>
-        </div>
-
-
-        <div class="step" id="step-terms" style="display: none;" data-signup-target="step">
-          <h3 class="text-xl uppercase text-center">Conditions d'utilisation</h3>
-          <h3 class="mt-sm text-base uppercase text-left">Futurs désirables</h3>
-          <p class="text-sm text-left font-mono">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous.tes. En publiant sur ce site tu t'engages à respecter cette ligne directrice en partageant uniquement des futurs positifs et constructifs.</p>
-          <h3 class="mt-sm text-base uppercase text-left">Contenus respectueux</h3>
-          <p class="text-sm text-left font-mono">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination, d'offense ou de haine ne sera toléré.</p>
-          <h3 class="mt-sm text-base uppercase text-left">Droit d’auteur.ice</h3>
-          <p class="text-sm text-left font-mono">Chaque création est unique et précieuse. Veuilles à ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
-          <h3 class="mt-sm text-base uppercase text-left">Licence libre</h3>
-          <p class="text-sm text-left font-mono">En publiant sur ce site, tu acceptes que tous les contenus soient partagés sous la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons BY-NC-SA 4.0</a>. Cela signifie que les textes pourront être partagés et adaptés, à condition qu'ils ne soient pas utilisés à des fins commerciales, que l'auteur.ice soit crédité.e et que les œuvres dérivées soient publiées sous la même licence.</p>
-          <div class="flex justify-between gap-sm">
-            <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="tw-btn-secondary w-full mt-sm">Précédent</button>
-            <%= f.button :submit, "Je m'inscris", class: "tw-btn-primary w-full mt-sm", data: { form_type: "other" } %>
-          </div>
-          <p class="text-base text-center mt-sm">En cliquant sur le bouton 'Je m'inscris', tu confirmes avoir pris connaissance et accepté les conditions d'utilisation</p>
-        </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
-  <div id="flash-messages" class="w-full mb-4" data-signup-target="flashMessages"></div>
+  <div id="flash-messages" class="fixed bottom-4 left-4 right-4 z-50" data-signup-target="flashMessages"></div>
 </div>

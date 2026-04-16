@@ -8,7 +8,7 @@ export default class extends Controller {
         document.querySelector("[data-controller~='actions']"),
         "actions"
       )
-      actionsController.toggleReportConfirmationPanel()
+      actionsController.toggleReportConfirmation()
     }
   }
 } 

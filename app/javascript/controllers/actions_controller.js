@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { gsap } from "gsap"
 
 export default class extends Controller {
   static targets = [ "settingsPanel",
@@ -16,66 +17,97 @@ export default class extends Controller {
 
   connect() {
     this.loadSettings()
-    this.settingsPanelTarget.classList.toggle('hidden')
-    this.actionsPanelTarget.classList.toggle('hidden')
-    this.sharePanelTarget.classList.toggle('hidden')
-    this.addBookmarkPanelTarget.classList.toggle('hidden')
-    this.editPanelTarget.classList.toggle('hidden')
-    this.deletePanelTarget.classList.toggle('hidden')
-    this.reportPanelTarget.classList.toggle('hidden')
-    this.reportConfirmationPanelTarget.classList.toggle('hidden')
   }
+
+  // ─── Panel animation helpers ───
+
+  _showPanel(panel) {
+    panel.classList.remove('!hidden')
+    gsap.to(panel, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" })
+  }
+
+  _hidePanel(panel) {
+    gsap.to(panel, {
+      opacity: 0, y: 8, duration: 0.15, ease: "power2.in",
+      onComplete: () => panel.classList.add('!hidden')
+    })
+  }
+
+  _togglePanel(panel) {
+    if (panel.classList.contains('!hidden')) {
+      this._showPanel(panel)
+    } else {
+      this._hidePanel(panel)
+    }
+  }
+
+  _hideAll(except) {
+    const panels = [
+      this.actionsPanelTarget,
+      this.settingsPanelTarget,
+      this.sharePanelTarget,
+      this.addBookmarkPanelTarget,
+      this.editPanelTarget,
+      this.deletePanelTarget,
+      this.reportPanelTarget,
+      this.reportConfirmationPanelTarget
+    ]
+    panels.forEach(p => {
+      if (p !== except && !p.classList.contains('!hidden')) {
+        this._hidePanel(p)
+      }
+    })
+  }
+
+  // ─── Toggles ───
 
   toggleSettings() {
-    if (window.innerWidth < 1024) {
-      this.actionsPanelTarget.classList.remove('active')
-    }
-    this.settingsPanelTarget.classList.toggle('active')
-  }
-
-  toggleShare(){
-    this.sharePanelTarget.classList.toggle('active')
-  }
-
-  toggleAddBookmark() {
-    this.addBookmarkPanelTarget.classList.toggle('active')
-    setTimeout(() => {
-      this.addBookmarkPanelTarget.classList.remove('active')
-    }, 1500)
-  }
-
-  toggleEdit() {
-    this.editPanelTarget.classList.toggle('active')
-  }
-
-  toggleDelete() {
-    this.deletePanelTarget.classList.toggle('active')
-  }
-
-  toggleReport() {
-    this.reportPanelTarget.classList.toggle('active')
-  }
-
-  toggleReportConfirmation() {
-    this.reportPanelTarget.classList.remove('active')
-    this.reportConfirmationPanelTarget.classList.toggle('active')
-    setTimeout(() => {
-      this.reportConfirmationPanelTarget.classList.remove('active')
-    }, 1500)
+    this._hideAll(this.settingsPanelTarget)
+    this._togglePanel(this.settingsPanelTarget)
   }
 
   toggleActions() {
-    this.actionsPanelTarget.classList.toggle('active')
-    this.sharePanelTarget.classList.remove('active')
-    this.addBookmarkPanelTarget.classList.remove('active')
-    this.editPanelTarget.classList.remove('active')
-    this.deletePanelTarget.classList.remove('active')
-    this.reportPanelTarget.classList.remove('active')
-    this.reportConfirmationPanelTarget.classList.remove('active')
-    if (window.innerWidth < 1024) {
-      this.settingsPanelTarget.classList.remove('active')
-    }
+    this._hideAll(this.actionsPanelTarget)
+    this._togglePanel(this.actionsPanelTarget)
   }
+
+  toggleShare() {
+    this._hideAll(this.sharePanelTarget)
+    this._togglePanel(this.sharePanelTarget)
+  }
+
+  toggleAddBookmark() {
+    const panel = this.addBookmarkPanelTarget
+    this._showPanel(panel)
+    setTimeout(() => this._hidePanel(panel), 1500)
+  }
+
+  toggleEdit() {
+    this._hideAll(this.editPanelTarget)
+    this._togglePanel(this.editPanelTarget)
+  }
+
+  toggleDelete() {
+    this._hideAll(this.deletePanelTarget)
+    this._togglePanel(this.deletePanelTarget)
+  }
+
+  toggleReport() {
+    this._hideAll(this.reportPanelTarget)
+    this._togglePanel(this.reportPanelTarget)
+  }
+
+  toggleReportConfirmation() {
+    this._hidePanel(this.reportPanelTarget)
+    this._showPanel(this.reportConfirmationPanelTarget)
+    setTimeout(() => this._hidePanel(this.reportConfirmationPanelTarget), 3000)
+  }
+
+  closeActions() {
+    this._hidePanel(this.actionsPanelTarget)
+  }
+
+  // ─── Reading settings ───
 
   changeTextSize(event) {
     const size = event.currentTarget.dataset.value
@@ -101,8 +133,6 @@ export default class extends Controller {
   changePostTheme(event) {
     const theme = event.currentTarget.dataset.value
     this.setActiveButton('theme', theme)
-    
-    // Modifier le body et les éléments .show-content
     document.body.classList.toggle('dark', theme === 'dark')
     document.querySelectorAll('.show-content').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
@@ -112,17 +142,17 @@ export default class extends Controller {
 
   setActiveButton(group, value) {
     const buttons = this[group + "Targets"]
-    if (!buttons) return // Vérifie que le groupe de boutons existe
+    if (!buttons) return
 
-    // Reset the border of all buttons in the group
-    buttons.forEach(button => button.classList.remove('border-primary'))
-    buttons.forEach(button => button.classList.add('border-transparent'))
+    buttons.forEach(button => {
+      button.classList.remove('border-gray-950/10', 'dark:border-white/10', 'bg-gray-950/5', 'dark:bg-white/5')
+      button.classList.add('border-transparent')
+    })
 
-    // Trouver le bouton actif
     const activeButton = buttons.find(button => button.dataset.value === value)
     if (activeButton) {
-      activeButton.classList.add('border-primary')
       activeButton.classList.remove('border-transparent')
+      activeButton.classList.add('border-gray-950/10', 'dark:border-white/10', 'bg-gray-950/5', 'dark:bg-white/5')
     }
   }
 
@@ -133,32 +163,20 @@ export default class extends Controller {
   }
 
   getFontSize(size) {
-    return {
-      small: '14px',
-      medium: '16px',
-      large: '18px',
-      xlarge: '20px'
-    }[size]
+    return { small: '14px', medium: '16px', large: '18px', xlarge: '20px' }[size]
   }
 
   getLineHeight(height) {
-    return {
-      small: '1.2',
-      medium: '1.5',
-      large: '1.8',
-      xlarge: '2.0'
-    }[height]
+    return { small: '1.2', medium: '1.5', large: '1.8', xlarge: '2.0' }[height]
   }
 
   saveSetting(key, value) {
-    const expires = new Date();
-    expires.setFullYear(expires.getFullYear() + 1); // Expiration dans un an
-
-    document.cookie = `${key}=${value};expires=${expires.toUTCString()};path=/;SameSite=None; Secure`;
+    const expires = new Date()
+    expires.setFullYear(expires.getFullYear() + 1)
+    document.cookie = `${key}=${value};expires=${expires.toUTCString()};path=/;SameSite=None; Secure`
   }
 
   loadSettings() {
-    // Charger les paramètres depuis les cookies et appliquer les styles
     const textSize = this.getCookie('text-size') || 'medium'
     const lineHeight = this.getCookie('line-height') || 'medium'
     const font = this.getCookie('font-family') || 'sans'
@@ -172,8 +190,7 @@ export default class extends Controller {
     this.applyStyleToAdjustable('fontSize', this.getFontSize(textSize))
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(lineHeight))
     this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
-    
-    // Appliquer le thème au body et aux éléments .show-content
+
     document.body.classList.toggle('dark', theme === 'dark')
     document.querySelectorAll('.show-content').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
@@ -186,37 +203,22 @@ export default class extends Controller {
     if (parts.length === 2) return parts.pop().split(';').shift()
   }
 
-  closeActions() {
-    this.actionsPanelTarget.classList.remove('active')
-  }
-
   copyUrl(event) {
-    const url = window.location.href.replace('http://', 'https://');
-    const button = event.currentTarget;
-    
+    const url = window.location.href.replace('http://', 'https://')
+    const button = event.currentTarget
     navigator.clipboard.writeText(url).then(() => {
-      const originalIcon = button.innerHTML;
-      button.innerHTML = '<i class="fa-solid fa-check"></i>';
-      
-      setTimeout(() => {
-        button.innerHTML = originalIcon;
-      }, 2000);
-    });
+      const originalHTML = button.innerHTML
+      button.innerHTML = '<svg class="size-4 stroke-green-500 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 6.5 11.5 13 4.5"/></svg>'
+      setTimeout(() => { button.innerHTML = originalHTML }, 2000)
+    })
   }
 
   handleReportSubmit(event) {
     if (event.detail.success) {
-      // Réinitialise le formulaire
       event.target.reset()
-      
-      // Ferme le panneau de rapport et affiche la confirmation
-      this.reportPanelTarget.classList.remove('active')
-      this.reportConfirmationPanelTarget.classList.add('active')
-      
-      // Ferme automatiquement après 3 secondes
-      setTimeout(() => {
-        this.reportConfirmationPanelTarget.classList.remove('active')
-      }, 3000)
+      this._hidePanel(this.reportPanelTarget)
+      this._showPanel(this.reportConfirmationPanelTarget)
+      setTimeout(() => this._hidePanel(this.reportConfirmationPanelTarget), 3000)
     }
   }
 }

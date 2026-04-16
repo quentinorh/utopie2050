@@ -13,6 +13,21 @@ class Admin::DashboardController < ApplicationController
     end
   end
 
+  def reel_data
+    post = Post.includes(:user).find(params[:id])
+    settings = post.pattern_settings.present? ? JSON.parse(post.pattern_settings) : {}
+    hue = settings["hue"] || settings["color"] || 200
+
+    render json: {
+      title: post.title,
+      username: post.user.username,
+      body: post.body,
+      cover: post.cover,
+      pattern_settings: settings,
+      hue: hue.to_i
+    }
+  end
+
   private
 
   def authorize_admin

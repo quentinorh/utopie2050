@@ -1,31 +1,32 @@
 <% if !post.draft || current_user&.admin? || current_user == post.user %>
   <%= link_to post,
-      class: "aspect-[5/7] w-full relative group overflow-hidden",
+      class: "index-card group",
       data: {
-        staggered_animation_target: "element", 
-        stagger_count: 12,
-        turbo: false, turbo_stream: false
+        staggered_animation_target: "element",
+        stagger_count: 12
       } do %>
-    <div data-reading-time="<%= post.calculate_reading_time.to_i %>"></div>
-    <div class="w-full h-full" data-controller="cover">
-
+    <div class="index-card__cover" data-controller="cover">
       <input type="hidden" data-cover-target="title" value="<%= post.title %>">
       <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
       <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
 
-      <div class="absolute z-10 h-full inset-0 flex flex-col justify-start pointer-events-none">
-        <div class="px-xs pt-[3px] h-fit text-2l z-10 w-4/5" data-cover-target="titleWrapper">
-          <%= post.title %>
-        </div>
-        <div class="px-xs py-[5px] text-sm mt-4 z-10 w-fit" data-cover-target="userName">
+      <%# SVG cover %>
+      <div class="index-card__svg">
+        <% if post.cover.present? %>
+          <%= post.cover.html_safe %>
+        <% elsif post.cover_image.present? %>
+          <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "4:5", width: 500, class: "w-full h-full object-cover" %>
+        <% end %>
+      </div>
+
+      <%# Title block overlay %>
+      <div class="index-card__info">
+        <div class="index-card__username" data-cover-target="userName">
           <%= post.user.username %>
         </div>
-      </div>
-      <div class="absolute inset-0 w-full">
-
-        <% if post.cover_image.present? %>
-          <%= cl_image_tag post.cover_image.key, format: :webp, crop: :fill, aspect_ratio: "5:7", width: 500, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out" %>
-        <% end %>
+        <div class="index-card__title" data-cover-target="titleWrapper">
+          <%= post.title %>
+        </div>
       </div>
     </div>
   <% end %>

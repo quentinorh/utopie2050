@@ -120,7 +120,7 @@ def generer_svg_couverture(params)
     end
   end
 
-  "<svg xmlns='http://www.w3.org/2000/svg' shape-rendering='auto' viewBox='0 0 250 350' preserveAspectRatio='xMidYMid meet' data-coversize-target='svg'>#{svg_content}</svg>"
+  "<svg xmlns='http://www.w3.org/2000/svg' shape-rendering='auto' viewBox='0 0 250 350' preserveAspectRatio='xMidYMid slice' data-coversize-target='svg'>#{svg_content}</svg>"
 end
 
 # Méthode pour générer un article avec une couverture aléatoire

@@ -44,8 +44,10 @@
   </head>
 
   <body>
-    <%= render 'shared/navbar' %>
-    <%= yield %>
+    <%= render 'shared/navbar', transparent: content_for?(:navbar_transparent) %>
+    <main>
+      <%= yield %>
+    </main>
     <%= render 'shared/flashes' %>
   </body>
 </html>

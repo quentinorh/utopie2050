@@ -1,64 +1,103 @@
-<nav class="bg-white dark:bg-gray-800 border-b dark:text-gray-100 border-gray-200 dark:border-gray-600 sticky top-0 z-[99] h-navbar-height flex w-full items-center" data-controller="navbar fullscreen">
-  <div class="flex justify-between w-full px-xs sm:px-sm">
-    <div class="flex">
-      <div class="flex flex-shrink-0 items-center gap-xs">
-        <%= link_to root_path, class: "navbar-brand" do %>
-          <h1>SP 2050</h1>
-        <% end %>
-        <span class="text-sm font-mono pb-[0.15em]">|</span>
-        <%= link_to "Lire les futurs", posts_path, 
-                    class: "text-sm font-mono",
-                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs", 
-                    action: "mouseover->randomize-letter-animation#connect" } %>
-      </div>
+<% transparent = local_assigns[:transparent] || false %>
+<nav class="<%= transparent ? 'fixed' : 'sticky' %> top-0 z-[99] w-full flex items-center
+            <%= transparent ? 'bg-transparent border-transparent' : 'bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600' %>
+            dark:text-gray-100 h-[75px]"
+     data-controller="navbar fullscreen"
+     data-navbar-transparent-value="<%= transparent %>"
+     data-navbar-scroll-value="<%= content_for?(:navbar_scroll) %>">
+  <div class="flex justify-between items-center w-full px-xs sm:px-sm lg:px-[40px]">
+    <!-- Left: Logo + dot -->
+    <div class="flex items-center gap-[10px]">
+      <%= link_to root_path, class: "navbar-brand flex items-center gap-[10px]" do %>
+        <h1 class="text-[18px] leading-[16px] navbar-logo-text"><%= transparent ? 'SP2050' : 'SP 2050' %></h1>
+        <span class="navbar-dot w-[5px] h-[5px] lg:w-[3px] lg:h-[3px] rounded-full <%= transparent ? 'bg-white' : 'bg-black dark:bg-white' %>"></span>
+      <% end %>
     </div>
-    <div class="flex items-center flex-nowrap">
+
+    <!-- Center: "Lire les futurs" (desktop only) — on show pages, aligns with content panel -->
+    <div class="hidden lg:block absolute navbar-center-wrapper left-1/2 -translate-x-1/2">
+      <%= link_to "Lire les futurs", posts_path,
+                  class: "text-[14px] leading-[16px] navbar-center-link",
+                  data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs",
+                  action: "mouseover->randomize-letter-animation#connect" } %>
+    </div>
+
+    <!-- Right: Actions -->
+    <div class="flex items-center gap-[8px] flex-nowrap">
+      <!-- Fullscreen button (desktop) -->
+      <button type="button"
+              class="hidden lg:flex items-center gap-[10px] px-[17px] py-[8px] rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn"
+              data-action="click->fullscreen#toggle"
+              aria-label="Basculer en mode plein écran">
+        <span class="text-xs leading-[16px] navbar-fullscreen-text">Plein écran</span>
+        <span data-fullscreen-target="enterIcon">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
+            <path d="M1 4V1H4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11 4V1H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M1 8V11H4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11 8V11H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="hidden" data-fullscreen-target="exitIcon">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="navbar-fullscreen-icon">
+            <path d="M4 1V4H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 1V4H11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 11V8H1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 11V8H11" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </button>
+
       <% if user_signed_in? %>
-        <%= link_to 'Nouveau futur', new_post_path, 
-                      class: "max-sm:hidden tw-btn-primary p-2 text-sm flex-shrink-0",
-                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur", 
+        <!-- New post (desktop) -->
+        <%= link_to 'Nouveau futur', new_post_path,
+                    class: "max-sm:hidden inline-flex items-center px-[18px] py-[13px] rounded-full bg-primary text-white text-[14px] leading-[16px] hover:bg-indigo-500 transition-colors flex-shrink-0",
+                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur",
                     action: "mouseover->randomize-letter-animation#connect" } %>
       <% else %>
-        <div class="flex max-sm:hidden gap-2 flex-shrink-0">
-          <%= link_to "Se connecter", new_user_session_path, class: "tw-btn-secondary p-2 text-sm" %>
-          <%= link_to "Créer un compte", new_user_registration_path, class: "tw-btn-primary p-2 text-sm" %>
-        </div>
+        <!-- User icon (circle with indigo border) -->
         <div class="relative flex-shrink-0">
-          <div class="flex sm:hidden pr-2">
-            <button class="h-8 w-8 flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" 
-                 data-action="click->navbar#toogleSignin"
-                 aria-label="Menu de connexion">
-              <i class="fa fa-user text-xs text-white"></i>
-            </button>
-          </div>
+          <button class="h-[42px] w-[42px] flex items-center justify-center rounded-full border border-primary"
+               data-action="click->navbar#toogleSignin"
+               aria-label="Menu de connexion">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor" class="text-primary">
+              <circle cx="8" cy="5" r="4"/>
+              <path d="M0 18C0 14 3.6 11 8 11s8 3 8 7"/>
+            </svg>
+          </button>
           <div class="tw-dropdown-menu text-center" data-navbar-target="menuSignin">
             <%= link_to "Se connecter", new_user_session_path, class: "tw-nav-link" %>
             <div class="border-t border-gray-100 my-1"></div>
             <%= link_to "Créer un compte", new_user_registration_path, class: "tw-nav-link" %>
           </div>
         </div>
+        <!-- CTA button (desktop) -->
+        <div class="hidden sm:block">
+          <%= link_to "Créer un compte", new_user_registration_path,
+                      class: "inline-flex items-center px-[18px] py-[13px] rounded-full bg-primary text-white text-[14px] leading-[16px] hover:bg-indigo-500 transition-colors",
+                      data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Créer un compte",
+                      action: "mouseover->randomize-letter-animation#connect" } %>
+        </div>
       <% end %>
-      <!-- Profile dropdown -->
+
+      <!-- Profile dropdown (signed in) -->
       <% if user_signed_in? %>
-        <div class="ml-4 flex-shrink-0">  
+        <div class="flex-shrink-0">
           <div class="relative">
-            <div>
-              <button class="h-8 w-8 relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-                <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-[14px] font-medium" data-navbar-target="username">
-                  <%= current_user.username[0].upcase %>
-                </span>
-                <span class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none" data-navbar-target="closeMenu">
-                  <i class="text-white fa fa-close text-[14px]"></i>
-                </span>
-              </button>
-            </div>
+            <button class="h-[42px] w-[42px] relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
+              <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-[14px] font-medium" data-navbar-target="username">
+                <%= current_user.username[0].upcase %>
+              </span>
+              <span class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none" data-navbar-target="closeMenu">
+                <i class="text-white fa fa-close text-[14px]"></i>
+              </span>
+            </button>
             <div class="tw-dropdown-menu text-center" data-navbar-target="menuDesktop">
-              <%= link_to 'Nouveau futur', new_post_path, 
+              <%= link_to 'Nouveau futur', new_post_path,
                           class: "inline-block mt-1 sm:hidden tw-btn-primary p-2 text-sm",
-                          data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur", 
+                          data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur",
                           action: "mouseover->randomize-letter-animation#connect" } %>
               <div class="sm:hidden border-t border-gray-100 my-1"></div>
-
               <% if current_user&.admin? %>
                 <%= link_to "Administration", admin_dashboard_path, class: "tw-nav-link" %>
               <% end %>
@@ -66,23 +105,11 @@
               <%= link_to "Mes favoris", user_favorites_path, class: "tw-nav-link" %>
               <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
               <div class="border-t border-gray-100 my-1"></div>
-              <%= link_to "Se déconnecter", destroy_user_session_path, data: { turbo_method: :delete }, class: "tw-nav-link !text-gray-400 hover:!text-red-500" %>
+              <%= button_to "Se déconnecter", destroy_user_session_path, method: :delete, class: "tw-nav-link !text-gray-400 hover:!text-red-500 w-full text-center", form: { class: "inline" } %>
             </div>
           </div>
         </div>
       <% end %>
-      <!-- Fullscreen button -->
-      <button type="button" 
-              class="ml-3 sm:ml-4 flex-shrink-0 text-gray-400 dark:text-gray-300 hover:text-primary dark:hover:text-gray-100 focus:outline-none flex items-center justify-center transition-colors duration-200"
-              data-action="click->fullscreen#toggle"
-              aria-label="Basculer en mode plein écran">
-        <span class="block flex items-center" data-fullscreen-target="enterIcon">
-          <i class="fas fa-expand text-base"></i>
-        </span>
-        <span class="hidden flex items-center" data-fullscreen-target="exitIcon">
-          <i class="fas fa-compress text-base"></i>
-        </span>
-      </button>     
     </div>
   </div>
 </nav>
