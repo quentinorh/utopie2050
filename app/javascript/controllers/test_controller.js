@@ -2,12 +2,14 @@ import { Controller } from "@hotwired/stimulus"
 import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 
 export default class extends Controller {
-  static targets = ["path", "firstSliderControl", "secondSliderControl", 
-                   "symmetryMode", "curveGroup", "colorPicker", 
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "controlsToggleIcon"]
+  static targets = ["path", "firstSliderControl", "secondSliderControl",
+                   "symmetryMode", "curveGroup", "colorPicker",
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "controlsToggleIcon",
+                   "hueValue", "smoothingValue", "curveValue", "gridValue"]
   static values = { uniqueId: String }
 
   connect() {
+    this.renderGridLines()
     if (this.hasPatternSettingsTarget && this.patternSettingsTarget.value) {
       this.loadPatternSettings();
     } else {
@@ -17,6 +19,7 @@ export default class extends Controller {
     this.updateCurve()
     this.updateTitle()
     this.updateCursorPositions()
+    this.updateValueDisplays()
 
     // Premier recalcul immédiat pour éviter un délai au chargement
     requestAnimationFrame(() => {
@@ -29,13 +32,9 @@ export default class extends Controller {
     // Ajouter un écouteur d'événement pour les boutons de symétrie
     this.symmetryModeTargets.forEach(target => {
       target.addEventListener('click', (event) => {
-        this.symmetryModeTargets.forEach(btn => {
-          btn.classList.remove('active', 'tw-btn-primary');
-          btn.classList.add('bg-white', 'tw-btn-secondary');
-        });
-        event.currentTarget.classList.add('active', 'tw-btn-primary');
-        event.currentTarget.classList.remove('bg-white', 'tw-btn-secondary');
-        
+        this.symmetryModeTargets.forEach(btn => btn.classList.remove('is-active'));
+        event.currentTarget.classList.add('is-active');
+
         // Mettre à jour le mode de symétrie
         this.symmetryMode = event.currentTarget.dataset.value;
         this.updateCurve();
@@ -76,17 +75,64 @@ export default class extends Controller {
   updateTitle() {
     const title = this.titleInputTarget.value || "Futur titre";
 
-    const hue = this.colorPickerTarget.value;
-    const backgroundColor = `hsl(${hue}, 80%, 70%)`;
+    const hue = parseInt(this.colorPickerTarget.value, 10);
+    const titleBackground = `hsl(${hue}, 80%, 70%)`;
+    const usernameBackground = `hsl(${(hue + 120) % 360}, 80%, 70%)`;
 
     this.titleWrapperTarget.textContent = title;
-    this.titleWrapperTarget.style.boxShadow = `0 0 0 10px ${backgroundColor}`;
-    this.titleWrapperTarget.style.backgroundColor = backgroundColor;
+    this.titleWrapperTarget.style.boxShadow = "none";
+    this.titleWrapperTarget.style.backgroundColor = titleBackground;
 
-    this.userNameTarget.style.backgroundColor = backgroundColor;
+    if (this.hasUserNameTarget) {
+      this.userNameTarget.style.backgroundColor = usernameBackground;
+    }
 
     // On ne touche pas à la largeur pendant la saisie : elle est fixée au chargement et au resize
     // pour éviter que les côtés bougent et que les mots sautent d'une ligne à l'autre
+  }
+
+  updateValueDisplays() {
+    if (this.hasHueValueTarget) {
+      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}°`;
+    }
+    if (this.hasSmoothingValueTarget) {
+      this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
+    }
+    if (this.hasCurveValueTarget) {
+      const x = Math.round(parseFloat(this.firstSliderControlTarget.value) || 0);
+      const y = Math.round(parseFloat(this.secondSliderControlTarget.value) || 0);
+      this.curveValueTarget.textContent = `${x}, ${y}`;
+    }
+    if (this.hasGridValueTarget) {
+      const cols = Math.round(parseFloat(this.columnsTarget.value) || 1);
+      const rows = Math.round(parseFloat(this.rowsTarget.value) || 1);
+      this.gridValueTarget.textContent = `${cols} × ${rows}`;
+    }
+    if (this.hasColorPickerTarget) {
+      const hue = parseInt(this.colorPickerTarget.value, 10);
+      this.colorPickerTarget.style.setProperty("--slider-accent", `hsl(${hue}, 80%, 55%)`);
+    }
+  }
+
+  renderGridLines() {
+    if (!this.hasGridTarget) return;
+    this.gridTargets.forEach(grid => {
+      if (grid.dataset.linesRendered === "true") return;
+      const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
+                     grid.classList.contains("editor-grid__lines--quad");
+      const cells = isQuad ? 16 : 64;
+      const cols = isQuad ? 4 : 8;
+      grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
+      grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < cells; i++) {
+        const cell = document.createElement("span");
+        cell.className = "cc-grid__cell";
+        fragment.appendChild(cell);
+      }
+      grid.appendChild(fragment);
+      grid.dataset.linesRendered = "true";
+    });
   }
 
   fitTitleToLongestLine() {
@@ -240,6 +286,8 @@ export default class extends Controller {
         })
       }
     }
+
+    this.updateValueDisplays();
   }
 
   updateColors() {
@@ -326,7 +374,7 @@ export default class extends Controller {
     // Mettre à jour les boutons pour refléter le mode sélectionné
 
     this.updateSymmetrybutton(randomMode)
-    this.symmetryMode = this.symmetryModeTargets.find(target => target.classList.contains('active')).dataset.value
+    this.symmetryMode = randomMode
     
     // Générer des valeurs aléatoires pour les lignes et colonnes
     this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
@@ -346,13 +394,7 @@ export default class extends Controller {
 
   updateSymmetrybutton(symmetryMode) {
     this.symmetryModeTargets.forEach(target => {
-      if (target.dataset.value === symmetryMode) {
-        target.classList.add('active', 'tw-btn-primary');
-        target.classList.remove('bg-white', 'tw-btn-secondary');
-      } else {
-        target.classList.remove('active', 'tw-btn-primary');
-        target.classList.add('bg-white', 'tw-btn-secondary');
-      }
+      target.classList.toggle('is-active', target.dataset.value === symmetryMode);
     });
   }
 
@@ -364,9 +406,10 @@ export default class extends Controller {
   }
 
   savePatternSettings() {
-    const activeButton = this.symmetryModeTargets.find(target => target.classList.contains('active'));
+    const activeButton = this.symmetryModeTargets.find(target => target.classList.contains('is-active'));
+    const symmetryMode = activeButton ? activeButton.dataset.value : (this.symmetryMode || 'x4');
     const patternSettings = {
-      symmetryMode: activeButton.dataset.value,
+      symmetryMode: symmetryMode,
       color: this.colorPickerTarget.value,
       firstSliderControl: this.firstSliderControlTarget.value,
       secondSliderControl: this.secondSliderControlTarget.value,
@@ -506,16 +549,21 @@ export default class extends Controller {
     }
   }
 
-  toggleControls() {
+  toggleControls(event) {
     const editor = this.element.closest('.form-editor');
 
     // Activer les transitions uniquement pour le toggle
     editor.classList.add('is-animating');
-    editor.classList.toggle('controls-collapsed');
+    const isCollapsed = editor.classList.toggle('controls-collapsed');
+
+    // Toggle aria-expanded sur le bouton head pour l'accessibilité
+    if (event && event.currentTarget) {
+      event.currentTarget.setAttribute('aria-expanded', String(!isCollapsed));
+    }
 
     // Rotation du chevron
     if (this.hasControlsToggleIconTarget) {
-      this.controlsToggleIconTarget.classList.toggle('rotate-180');
+      this.controlsToggleIconTarget.classList.toggle('rotate-180', isCollapsed);
     }
 
     // Retirer la classe d'animation et mettre à jour le coversize après la transition
@@ -528,22 +576,17 @@ export default class extends Controller {
   toggleDraft(event) {
     const button = event.currentTarget;
     const isChecked = button.getAttribute('aria-checked') === 'true';
-    
-    // Inverser l'état du bouton
-    button.setAttribute('aria-checked', !isChecked);
-    button.querySelector('span[aria-hidden="true"]').classList.toggle('translate-x-5', !isChecked);
-    button.querySelector('span[aria-hidden="true"]').classList.toggle('translate-x-0', isChecked);
+    const nextState = !isChecked;
 
-    // Mettre à jour la classe de couleur du bouton
-    if (isChecked) {
-      button.classList.remove('bg-primary');
-      button.classList.add('bg-gray-200');
-    } else {
-      button.classList.remove('bg-gray-200');
-      button.classList.add('bg-primary');
+    button.setAttribute('aria-checked', nextState);
+    button.classList.toggle('is-on', nextState);
+
+    const thumb = button.querySelector('.editor-toggle__thumb');
+    if (thumb) {
+      thumb.classList.toggle('translate-x-full', nextState);
+      thumb.classList.toggle('translate-x-0', !nextState);
     }
 
-    // Mettre à jour le champ caché
-    this.draftTarget.value = !isChecked;
+    this.draftTarget.value = nextState;
   }
 } 

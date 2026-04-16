@@ -7,23 +7,23 @@
      class="w-full form-editor">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col min-h-screen", data: { action: "submit->test#saveSVG submit->test#savePatternSettings" } }) do |form| %>
 
-    <!-- Affichage des erreurs -->
     <% if @post.errors.any? %>
-      <div id="error_explanation">
-        <h2><%= pluralize(@post.errors.count, "erreur") %> erreurs ont empêché ce post d'être sauvegardé :</h2>
-        <ul>
+      <div class="editor-errors" role="alert">
+        <p class="editor-errors__title"><%= pluralize(@post.errors.count, "erreur") %> ont empêché ce post d'être sauvegardé</p>
+        <ul role="list" class="editor-errors__list">
           <% @post.errors.full_messages.each do |message| %>
             <li><%= message %></li>
           <% end %>
         </ul>
       </div>
     <% end %>
-    <div class="flex flex-col dark:bg-gray-800 bg-gray-100 flex-1">
-      <!-- Colonne de gauche : couverture + contrôles -->
-      <div class="form-left-panel bg-gray-800">
+
+    <div class="flex flex-col flex-1">
+      <!-- Colonne de gauche : couverture + carte de contrôles flottante -->
+      <aside class="form-left-panel">
         <div class="form-cover-wrapper">
-          <div class="form-cover-svg relative" data-controller="coversize">
-            <svg data-coversize-target="svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid slice">
+          <div class="form-cover-svg form-cover-svg--editor" data-controller="coversize">
+            <svg data-coversize-target="svg" class="cover-svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid slice">
               <defs>
                 <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
                   <stop offset="0%"/>
@@ -40,217 +40,276 @@
               </defs>
               <g data-test-target="curveGroup"></g>
             </svg>
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div class="px-2 text-l sm:text-xl z-99 text-black w-fit max-w-[80%] text-center" data-test-target="titleWrapper"></div>
+
+            <!-- Cover title block — typesetting identique à la page show -->
+            <div class="cover-title-block pointer-events-none">
+              <div class="cover-username" data-test-target="userName">
+                <%= current_user.username %>
+              </div>
+              <div class="cover-title-text" data-test-target="titleWrapper"></div>
             </div>
-            <div class="absolute bottom-0 right-0 px-xs py-[5px] text-l z-99 text-black pointer-events-none" data-test-target="userName">
-              <%= current_user.username %>
-            </div>
-            <div class="absolute bottom-4 left-4">
-              <button type="button" class="tw-btn-primary text-sm p-xs" data-action="click->test#randomize">Aléatoire</button>
-            </div>
+
+            <!-- Bouton aléatoire -->
+            <button type="button"
+                    class="editor-randomize"
+                    data-action="click->test#randomize"
+                    aria-label="Générer une couverture aléatoire">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="size-3.5" aria-hidden="true">
+                <path d="M2 5h6.5a4 4 0 014 4v2M14 11l-2-2M14 11l-2 2M14 11h-2"/>
+                <path d="M14 5L2 5M2 5l2-2M2 5l2 2"/>
+              </svg>
+              <span>Aléatoire</span>
+            </button>
           </div>
         </div>
 
-        <!-- Contrôles escamotables -->
-        <div class="form-controls bg-gray-700">
-          <!-- Barre de toggle -->
+        <!-- Carte de contrôles flottante (popover-style, skeuomorphique N&B) -->
+        <div class="cover-controls" data-test-target="controlsCard">
           <button type="button"
-                  class="w-full h-6 bg-gray-600/80 hover:bg-gray-500 flex items-center justify-center transition-colors"
-                  data-action="click->test#toggleControls">
+                  class="cover-controls__head"
+                  data-action="click->test#toggleControls"
+                  aria-expanded="true"
+                  aria-controls="cover-controls-body">
+            <span class="cover-controls__title">Paramètres de la couverture</span>
             <svg xmlns="http://www.w3.org/2000/svg"
-                 class="w-4 h-4 text-gray-300 transition-transform duration-300"
+                 class="cover-controls__chev"
                  data-test-target="controlsToggleIcon"
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                 viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <polyline points="4 10 8 6 12 10"/>
             </svg>
           </button>
-          <!-- Contenu des contrôles -->
-          <div class="h-[150px] flex items-center justify-center">
-            <div class="w-full">
-              <div class="text-l text-white">
-                <div class="flex gap-3 min-[400px]:gap-8 sm:gap-12  justify-center px-1 sm:px-sm select-none">
-                  <div class="">
-                    <div class="flex flex-col justify-center items-center gap-xs text-sm font-mono h-full">
-                      <button type="button"
-                              class="tw-btn-primary w-10 px-2 py-1 lowercase"
-                              data-test-target="symmetryMode"
-                              data-action="click->test#updateCurve"
-                              data-value="x4">
-                        x4
-                      </button>
-                      <button type="button"
-                              class="tw-btn-primary w-10 px-2 py-1 lowercase"
-                              data-test-target="symmetryMode"
-                              data-action="click->test#updateCurve"
-                              data-value="x8">
-                        x8
-                      </button>
-                      <button type="button"
-                              class="tw-btn-primary w-10 px-2 py-1 lowercase"
-                              data-test-target="symmetryMode"
-                              data-action="click->test#updateCurve"
-                              data-value="x16">
-                        x16
-                      </button>
-                    </div>
-                  </div>
 
-                  <div class="">
-                    <label class="text-sm font-mono hidden" for="colorPicker">Couleur:</label>
-                    <input
-                      class="h-[96px] w-1 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                      type="range"
-                      id="hue"
-                      data-test-target="colorPicker"
-                      data-action="input->test#updateColors input->test#updateTitle input->test#updateCurve"
-                      min="0"
-                      max="360"
-                      value="280"
-                      orient="vertical"
-                      style="background: linear-gradient(to bottom,
-                        hsl(0, 80%, 70%),
-                        hsl(60, 80%, 70%),
-                        hsl(120, 80%, 70%),
-                        hsl(180, 80%, 70%),
-                        hsl(240, 80%, 70%),
-                        hsl(300, 80%, 70%),
-                        hsl(360, 80%, 70%));"
-                    >
-                  </div>
-
-                  <div class="">
-                    <div class="relative w-24 h-24 border border-black-500" data-pattern-grid="1">
-                      <div class="absolute inset-0 grid grid-cols-8 grid-rows-8 divide-black-500/50" data-test-target="grid" data-pattern-grid="1">
-                        <% 64.times do |i| %>
-                          <span class="border-r border-t border-black-500/50"></span>
-                        <% end %>
-                      </div>
-
-                      <!-- Center circle -->
-                      <div data-test-target="anchor1" data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full cursor-grab active:cursor-grabbing touch-none"></div>
-                    </div>
-                  </div>
-
-                  <div class="">
-                    <div class="relative w-24 h-24 border border-black-500" data-pattern-grid="2">
-                      <div class="absolute inset-0 grid grid-cols-4 grid-rows-4 divide-black-500/50" data-test-target="grid" data-pattern-grid="2">
-                        <% 16.times do |i| %>
-                          <span class="border-r border-t border-black-500/50"></span>
-                        <% end %>
-                      </div>
-
-                      <!-- Center circle -->
-                      <div data-test-target="anchor2" data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full cursor-grab active:cursor-grabbing touch-none"></div>
-                    </div>
-                  </div>
-
-                  <div class="h-[96px]">
-                    <input
-                      type="range"
-                      data-test-target="smoothing"
-                      data-action="input->test#updateCurve"
-                      min="10"
-                      max="100"
-                      value="50"
-                      orient="vertical"
-                      class="h-full w-2 cursor-ns-resize appearance-none rounded-full bg-primary disabled:cursor-not-allowed"
-                    >
-                  </div>
-                </div>
-                <input type="range" data-test-target="firstSliderControl" data-action="input->test#updateCurve" class="hidden">
-                <input type="range" data-test-target="secondSliderControl" data-action="input->test#updateCurve" class="hidden">
-                <input data-test-target="rows" data-action="input->test#updateCurve" class="hidden">
-                <input data-test-target="columns" data-action="input->test#updateCurve" class="hidden">
-                <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
-                <%= form.hidden_field :cover, data: { test_target: "cover" } %>
+          <div class="cover-controls__body" id="cover-controls-body">
+            <!-- SYMÉTRIE -->
+            <div class="cc-row">
+              <span class="cc-label">Symétrie</span>
+              <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+                <button type="button"
+                        class="cc-segmented__btn"
+                        data-test-target="symmetryMode"
+                        data-action="click->test#updateCurve"
+                        data-value="x4"
+                        role="radio">×4</button>
+                <button type="button"
+                        class="cc-segmented__btn"
+                        data-test-target="symmetryMode"
+                        data-action="click->test#updateCurve"
+                        data-value="x8"
+                        role="radio">×8</button>
+                <button type="button"
+                        class="cc-segmented__btn"
+                        data-test-target="symmetryMode"
+                        data-action="click->test#updateCurve"
+                        data-value="x16"
+                        role="radio">×16</button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Colonne de droite (contenu) -->
-      <div class="form-right-panel show-content bg-gray-100 dark:bg-gray-800 text-black-900 dark:text-gray-100 min-h-[calc(100dvh-200px)] px-sm lg:px-12 xl:px-xl pt-sm lg:pt-[60px] pb-2xl flex-1 overflow-y-auto">
-        <div class="flex items-center justify-between gap-sm">
-          <!-- <span class="text-sm font-mono text-gray-500 block mb-sm">COUV_N°95,0.05,0.795,0.035</span> -->
-          <% if !@post.new_record? %>
-            <span class="text-sm font-mono text-gray-500 block mb-sm uppercase">Crée le <%= @post.created_at.strftime("%d/%m/%Y") %></span>
-          <% end %>
-        </div>
-        <!-- Titre -->
-        <%= form.text_field :title, 
-                          class: "tw-form-input text-2l p-xs p-0", 
-                          placeholder: "Futur titre", 
-                          value: @post.title, 
-                          required: true,
-                            data: { action: "input->test#updateTitle", test_target: "titleInput" } %>
-        <p class="text-red-500 text-sm mt-1 hidden" data-preview-target="titleError">Le titre est requis</p>
-        
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-sm mt-sm">
-          <!-- Code événement -->
-          <div class="flex flex-col flex-1 sm:flex-initial">
-            <p class="text-sm text-gray-600 pl-[2px]">Code événement :</p>
-            <%= form.text_field :event_code,
-                value: @post.event_code&.code,
-                class: "tw-form-input text-sm pt-1 pb-0 px-xs",
-                placeholder: "Optionnel"%>
+            <!-- TEINTE -->
+            <div class="cc-row">
+              <div class="cc-label-row">
+                <span class="cc-label">Teinte</span>
+                <span class="cc-value tabular-nums" data-test-target="hueValue">280°</span>
+              </div>
+              <input
+                type="range"
+                id="hue"
+                data-test-target="colorPicker"
+                data-action="input->test#updateColors input->test#updateTitle input->test#updateCurve input->test#updateValueDisplays"
+                min="0"
+                max="360"
+                value="280"
+                aria-label="Teinte"
+                class="cc-slider cc-slider--hue"
+              >
+            </div>
+
+            <!-- LISSAGE -->
+            <div class="cc-row">
+              <div class="cc-label-row">
+                <span class="cc-label">Lissage</span>
+                <span class="cc-value tabular-nums" data-test-target="smoothingValue">50</span>
+              </div>
+              <input
+                type="range"
+                data-test-target="smoothing"
+                data-action="input->test#updateCurve input->test#updateValueDisplays"
+                min="10"
+                max="100"
+                value="50"
+                aria-label="Lissage"
+                class="cc-slider"
+              >
+            </div>
+
+            <!-- COURBE + GRILLE (deux mini-grilles côte à côte) -->
+            <div class="cc-pair">
+              <div class="cc-row cc-row--grid">
+                <div class="cc-label-row">
+                  <span class="cc-label">Courbe</span>
+                  <span class="cc-value tabular-nums" data-test-target="curveValue">50, 50</span>
+                </div>
+                <div class="cc-grid" data-pattern-grid="1">
+                  <div class="cc-grid__lines" data-test-target="grid" data-pattern-grid="1"></div>
+                  <div class="cc-grid__handle"
+                       data-test-target="anchor1"
+                       data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
+                       aria-label="Point de contrôle de la courbe"
+                       role="slider"></div>
+                </div>
+              </div>
+
+              <div class="cc-row cc-row--grid">
+                <div class="cc-label-row">
+                  <span class="cc-label">Grille</span>
+                  <span class="cc-value tabular-nums" data-test-target="gridValue">2 × 2</span>
+                </div>
+                <div class="cc-grid" data-pattern-grid="2">
+                  <div class="cc-grid__lines cc-grid__lines--quad" data-test-target="grid" data-pattern-grid="2"></div>
+                  <div class="cc-grid__handle"
+                       data-test-target="anchor2"
+                       data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
+                       aria-label="Densité de la grille"
+                       role="slider"></div>
+                </div>
+              </div>
+            </div>
+
+            <input type="range" data-test-target="firstSliderControl" data-action="input->test#updateCurve" class="hidden">
+            <input type="range" data-test-target="secondSliderControl" data-action="input->test#updateCurve" class="hidden">
+            <input data-test-target="rows" data-action="input->test#updateCurve" class="hidden">
+            <input data-test-target="columns" data-action="input->test#updateCurve" class="hidden">
+            <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
+            <%= form.hidden_field :cover, data: { test_target: "cover" } %>
           </div>
-          
-          <!-- Toggle brouillon + Bouton submit -->
-          <div class="flex items-center gap-xs sm:gap-xs flex-wrap justify-end">
-            <div class="flex items-center gap-xs shrink-0">
-              <span class="text-sm text-nowrap pl-[2px] sm:pl-0">Brouillon</span>
+        </div>
+      </aside>
+
+      <!-- Colonne de droite : contenu -->
+      <main class="form-right-panel">
+        <div class="editor-body">
+          <!-- Titre du futur — input minimaliste, gros caractères -->
+          <div class="editor-title-field">
+            <label for="post_title" class="sr-only">Titre du futur</label>
+            <%= form.text_field :title,
+                                id: "post_title",
+                                class: "editor-title-input",
+                                placeholder: "Ton futur titre…",
+                                value: @post.title,
+                                required: true,
+                                data: { action: "input->test#updateTitle", test_target: "titleInput" } %>
+            <p class="editor-error mt-2 hidden" data-preview-target="titleError">Le titre est requis</p>
+          </div>
+
+          <!-- Code événement — discret, sous le titre -->
+          <div class="editor-meta-row">
+            <label class="editor-field">
+              <span class="editor-field__label font-mono">Code événement</span>
+              <%= form.text_field :event_code,
+                                  value: @post.event_code&.code,
+                                  class: "editor-input editor-input--compact",
+                                  placeholder: "Optionnel" %>
+            </label>
+          </div>
+
+          <!-- Corps du texte -->
+          <div class="editor-body-field">
+            <label for="post_body" class="editor-section-label font-mono">Texte d'introduction</label>
+            <%= form.text_area :body,
+                               id: "post_body",
+                               class: "editor-textarea",
+                               rows: 12,
+                               placeholder: "Écris ton futur ici…" %>
+          </div>
+
+          <!-- Chapitres -->
+          <section class="chapters" aria-labelledby="chapters-title">
+            <header class="chapters__header">
+              <div class="chapters__title-group">
+                <h2 id="chapters-title" class="chapters__title font-mono">Chapitres</h2>
+                <span class="chapters__count font-mono tabular-nums" data-chapter-target="count">00</span>
+              </div>
+              <p class="chapters__hint">Découpe ton récit en chapitres pour le rendre plus lisible.</p>
+            </header>
+
+            <div id="chapters" class="chapters__list" data-chapter-target="chapters">
+              <%= form.fields_for :chapters do |chapter_form| %>
+                <article class="chapter-card" data-chapter-target="chapter">
+                  <header class="chapter-card__header">
+                    <div class="chapter-card__index font-mono">
+                      <span aria-hidden="true">Chapitre</span>
+                      <span class="tabular-nums" data-chapter-target="chapterNumber">1</span>
+                    </div>
+                    <button type="button"
+                            class="chapter-card__delete"
+                            data-action="click->chapter#removeChapter"
+                            aria-label="Supprimer ce chapitre">
+                      <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path d="M3 3l10 10M13 3L3 13"/>
+                      </svg>
+                    </button>
+                  </header>
+                  <div class="hidden" data-chapter-target="chapterIndex">
+                    <%= chapter_form.options[:child_index] %>
+                  </div>
+
+                  <%= chapter_form.text_field :title,
+                                              class: "chapter-card__title-input",
+                                              placeholder: "Titre du chapitre" %>
+                  <%= chapter_form.text_area :body,
+                                             class: "chapter-card__body-input",
+                                             rows: 6,
+                                             placeholder: "Texte du chapitre…" %>
+
+                  <%= chapter_form.hidden_field :position %>
+                  <%= chapter_form.hidden_field :_destroy %>
+                </article>
+              <% end %>
+            </div>
+
+            <button type="button"
+                    class="chapters__add"
+                    data-action="click->chapter#addChapter">
+              <span class="chapters__add-icon" aria-hidden="true">+</span>
+              <span>Ajouter un chapitre</span>
+            </button>
+          </section>
+        </div>
+
+        <!-- Barre d'action sticky bas (vibe bottomnavbar) -->
+        <footer class="editor-actionbar">
+          <div class="editor-actionbar__inner">
+            <div class="editor-actionbar__meta font-mono">
+              <span class="editor-actionbar__type"><%= @post.new_record? ? "Nouveau futur" : "Édition" %></span>
+              <% if !@post.new_record? %>
+                <span aria-hidden="true">·</span>
+                <span class="tabular-nums">Crée le <%= @post.created_at.strftime("%d.%m.%Y") %></span>
+              <% end %>
+            </div>
+
+            <div class="editor-actionbar__actions">
               <% draft_checked = @post.draft ? 'true' : 'false' %>
-              <% translate_class = @post.draft ? 'translate-x-5' : 'translate-x-0' %>
-              <% button_color_class = @post.draft ? 'bg-primary' : 'bg-gray-200' %>
-              <button type="button" 
-                      class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent <%= button_color_class %> transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" 
-                      role="switch" 
-                      aria-checked="<%= draft_checked %>" 
-                      data-action="click->test#toggleDraft">
-                <span class="sr-only">Publier comme brouillon</span>
-                <span aria-hidden="true" class="pointer-events-none inline-block size-5 <%= translate_class %> transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-              </button>
-              <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
-            </div>
-            <% if @post.new_record? %>
-              <%= form.submit "Publier le futur", class: "tw-btn-primary shrink-0", data: { action: "click->preview#validateForm" } %>
-            <% else %>
-              <%= form.submit "Éditer le futur", class: "tw-btn-primary shrink-0", data: { action: "click->preview#validateForm" } %>
-            <% end %>
-          </div>
-        </div>
-        <!-- Texte -->
-        <%= form.text_area :body, class: "tw-form-input mt-sm p-sm", rows: 10, placeholder: "Écris ton futur ici..." %>
-
-        <!-- Chapitres -->
-        <div class="mt-6">
-          <div class="flex items-center justify-end">
-            <%= button_tag "Ajouter un chapitre", type: :button, class: "tw-btn-secondary bg-white", data: { action: "click->chapter#addChapter" } %>
-          </div>
-          <div id="chapters" data-chapter-target="chapters">
-            <%= form.fields_for :chapters do |chapter_form| %>
-              <div class="chapter-fields text-sm mt-xs" data-chapter-target="chapter">
-                <div class="hidden" data-chapter-target="chapterIndex">
-                  <%= chapter_form.options[:child_index] %>
-                </div>
-                <p class="text-sm text-gray-600 pl-[2px]">Titre du chapitre :</p>
-                <%= chapter_form.text_field :title, class: "tw-form-input" %>
-
-                <p class="text-sm text-gray-600 pl-[2px] mt-xs">Texte du chapitre :</p>
-                <%= chapter_form.text_area :body, class: "tw-form-input", rows: 5 %>
-
-                <%= chapter_form.hidden_field :position %>
-                <%= chapter_form.hidden_field :_destroy %>
-
-                <%= link_to "Supprimer ce chapitre", "#", class: "tw-btn-secondary inline-block mt-2 mb-6 bg-white", data: { action: "click->chapter#removeChapter" } %>
+              <% translate_class = @post.draft ? 'translate-x-full' : 'translate-x-0' %>
+              <% switch_state_class = @post.draft ? 'is-on' : '' %>
+              <div class="editor-toggle">
+                <span class="editor-toggle__label">Brouillon</span>
+                <button type="button"
+                        class="editor-toggle__switch <%= switch_state_class %>"
+                        role="switch"
+                        aria-checked="<%= draft_checked %>"
+                        data-action="click->test#toggleDraft">
+                  <span class="sr-only">Publier comme brouillon</span>
+                  <span aria-hidden="true" class="editor-toggle__thumb <%= translate_class %>"></span>
+                </button>
+                <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
               </div>
-            <% end %>
+
+              <% submit_label = @post.new_record? ? "Publier" : "Éditer" %>
+              <%= form.submit submit_label, class: "editor-btn editor-btn--primary", data: { action: "click->preview#validateForm" } %>
+            </div>
           </div>
-          
-        </div>
-      </div>
+        </footer>
+      </main>
     </div>
   <% end %>
 </div>
@@ -263,7 +322,7 @@
       const { scrollTop, scrollHeight, clientHeight } = textarea;
       const isAtTop = scrollTop === 0;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
-      
+
       if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
         e.preventDefault();
       } else {
