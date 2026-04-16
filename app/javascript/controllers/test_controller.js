@@ -257,14 +257,16 @@ export default class extends Controller {
     if (oldRect) oldRect.remove()
 
     const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    backgroundRect.setAttribute('width', totalWidth);
-    backgroundRect.setAttribute('height', totalHeight);
+    backgroundRect.setAttribute('x', '0');
+    backgroundRect.setAttribute('y', '0');
+    backgroundRect.setAttribute('width', '100%');
+    backgroundRect.setAttribute('height', '100%');
     backgroundRect.setAttribute('fill', backgroundColor);
     backgroundRect.setAttribute('class', 'cover-bg-rect');
     svg.insertBefore(backgroundRect, this.curveGroupTarget);
 
-    // Scale curve group from center (margins all around)
-    this.curveGroupTarget.setAttribute('transform', 'translate(125, 175) scale(0.8) translate(-125, -175)');
+    // Curve group fills the full SVG — no scale, just centered around (125,175)
+    this.curveGroupTarget.removeAttribute('transform');
 
     // Créer une grille de motifs
     for (let row = 0; row < rows; row++) {

@@ -1,5 +1,5 @@
 <% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
-<div data-controller="chapter test"
+<div data-controller="chapter test editor-reveal"
      data-preview-username-value="<%= current_user.username %>"
      data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
      data-test-unique-id-value="<%= unique_id %>"
@@ -48,139 +48,169 @@
               </div>
               <div class="cover-title-text" data-test-target="titleWrapper"></div>
             </div>
-
-            <!-- Bouton aléatoire -->
-            <button type="button"
-                    class="editor-randomize"
-                    data-action="click->test#randomize"
-                    aria-label="Générer une couverture aléatoire">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="size-3.5" aria-hidden="true">
-                <path d="M2 5h6.5a4 4 0 014 4v2M14 11l-2-2M14 11l-2 2M14 11h-2"/>
-                <path d="M14 5L2 5M2 5l2-2M2 5l2 2"/>
-              </svg>
-              <span>Aléatoire</span>
-            </button>
           </div>
-        </div>
 
-        <!-- Carte de contrôles flottante (popover-style, skeuomorphique N&B) -->
-        <div class="cover-controls" data-test-target="controlsCard">
-          <button type="button"
-                  class="cover-controls__head"
-                  data-action="click->test#toggleControls"
-                  aria-expanded="true"
-                  aria-controls="cover-controls-body">
-            <span class="cover-controls__title">Paramètres de la couverture</span>
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 class="cover-controls__chev"
-                 data-test-target="controlsToggleIcon"
-                 viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-              <polyline points="4 10 8 6 12 10"/>
-            </svg>
-          </button>
+          <!-- Toolbar haut — sibling du SVG pour ne pas être clippée
+               Paramètres (gauche) + CTA Aléatoire (droite), aligné padding navbar -->
+          <div class="cover-toolbar">
+            <!-- Carte de contrôles : header pill + body popover qui s'ouvre vers le bas -->
+            <div class="cover-controls" data-test-target="controlsCard">
+              <button type="button"
+                      class="cover-controls__head cover-pill cover-pill--reveal"
+                      data-action="click->test#toggleControls"
+                      aria-expanded="true"
+                      aria-controls="cover-controls-body">
+                <span class="cover-controls__title">Paramètres de la couverture</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="cover-controls__chev"
+                     data-test-target="controlsToggleIcon"
+                     viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                  <polyline points="4 10 8 6 12 10"/>
+                </svg>
+              </button>
 
-          <div class="cover-controls__body" id="cover-controls-body">
-            <!-- SYMÉTRIE -->
-            <div class="cc-row">
-              <span class="cc-label">Symétrie</span>
-              <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
-                <button type="button"
-                        class="cc-segmented__btn"
-                        data-test-target="symmetryMode"
-                        data-action="click->test#updateCurve"
-                        data-value="x4"
-                        role="radio">×4</button>
-                <button type="button"
-                        class="cc-segmented__btn"
-                        data-test-target="symmetryMode"
-                        data-action="click->test#updateCurve"
-                        data-value="x8"
-                        role="radio">×8</button>
-                <button type="button"
-                        class="cc-segmented__btn"
-                        data-test-target="symmetryMode"
-                        data-action="click->test#updateCurve"
-                        data-value="x16"
-                        role="radio">×16</button>
-              </div>
-            </div>
+                <div class="cover-controls__body" id="cover-controls-body">
+                  <div class="cc-stack">
+                    <!-- SYMÉTRIE -->
+                    <div class="cc-row">
+                      <span class="cc-label">Symétrie</span>
+                      <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+                        <button type="button"
+                                class="cc-segmented__btn"
+                                data-test-target="symmetryMode"
+                                data-action="click->test#updateCurve"
+                                data-value="x4"
+                                role="radio">×4</button>
+                        <button type="button"
+                                class="cc-segmented__btn"
+                                data-test-target="symmetryMode"
+                                data-action="click->test#updateCurve"
+                                data-value="x8"
+                                role="radio">×8</button>
+                        <button type="button"
+                                class="cc-segmented__btn"
+                                data-test-target="symmetryMode"
+                                data-action="click->test#updateCurve"
+                                data-value="x16"
+                                role="radio">×16</button>
+                      </div>
+                    </div>
 
-            <!-- TEINTE -->
-            <div class="cc-row">
-              <div class="cc-label-row">
-                <span class="cc-label">Teinte</span>
-                <span class="cc-value tabular-nums" data-test-target="hueValue">280°</span>
-              </div>
-              <input
-                type="range"
-                id="hue"
-                data-test-target="colorPicker"
-                data-action="input->test#updateColors input->test#updateTitle input->test#updateCurve input->test#updateValueDisplays"
-                min="0"
-                max="360"
-                value="280"
-                aria-label="Teinte"
-                class="cc-slider cc-slider--hue"
-              >
-            </div>
+                    <!-- TEINTE -->
+                    <div class="cc-row">
+                      <div class="cc-label-row">
+                        <span class="cc-label">Teinte</span>
+                        <span class="cc-value tabular-nums" data-test-target="hueValue">280°</span>
+                      </div>
+                      <input
+                        type="range"
+                        id="hue"
+                        data-test-target="colorPicker"
+                        data-action="input->test#updateColors input->test#updateTitle input->test#updateCurve input->test#updateValueDisplays"
+                        min="0"
+                        max="360"
+                        value="280"
+                        aria-label="Teinte"
+                        class="cc-slider cc-slider--hue"
+                      >
+                    </div>
 
-            <!-- LISSAGE -->
-            <div class="cc-row">
-              <div class="cc-label-row">
-                <span class="cc-label">Lissage</span>
-                <span class="cc-value tabular-nums" data-test-target="smoothingValue">50</span>
-              </div>
-              <input
-                type="range"
-                data-test-target="smoothing"
-                data-action="input->test#updateCurve input->test#updateValueDisplays"
-                min="10"
-                max="100"
-                value="50"
-                aria-label="Lissage"
-                class="cc-slider"
-              >
-            </div>
+                    <!-- LISSAGE -->
+                    <div class="cc-row">
+                      <div class="cc-label-row">
+                        <span class="cc-label">Lissage</span>
+                        <span class="cc-value tabular-nums" data-test-target="smoothingValue">50</span>
+                      </div>
+                      <input
+                        type="range"
+                        data-test-target="smoothing"
+                        data-action="input->test#updateCurve input->test#updateValueDisplays"
+                        min="10"
+                        max="100"
+                        value="50"
+                        aria-label="Lissage"
+                        class="cc-slider"
+                      >
+                    </div>
 
-            <!-- COURBE + GRILLE (deux mini-grilles côte à côte) -->
-            <div class="cc-pair">
-              <div class="cc-row cc-row--grid">
-                <div class="cc-label-row">
-                  <span class="cc-label">Courbe</span>
-                  <span class="cc-value tabular-nums" data-test-target="curveValue">50, 50</span>
+                    <!-- Courbe + Grille — paire côte à côte -->
+                    <div class="cc-pair">
+                      <div class="cc-row cc-row--grid">
+                        <div class="cc-label-row">
+                          <span class="cc-label">Courbe</span>
+                          <span class="cc-value tabular-nums" data-test-target="curveValue">50, 50</span>
+                        </div>
+                        <div class="cc-grid"
+                             data-pattern-grid="1"
+                             data-controller="tooltip"
+                             data-tooltip-text-value="Forme de la courbe du motif">
+                          <div class="cc-grid__lines" data-test-target="grid" data-pattern-grid="1"></div>
+                          <div class="cc-grid__handle"
+                               data-test-target="anchor1"
+                               data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
+                               aria-label="Point de contrôle de la courbe"
+                               role="slider"></div>
+                        </div>
+                      </div>
+
+                      <div class="cc-row cc-row--grid">
+                        <div class="cc-label-row">
+                          <span class="cc-label">Grille</span>
+                          <span class="cc-value tabular-nums" data-test-target="gridValue">2 × 2</span>
+                        </div>
+                        <div class="cc-grid"
+                             data-pattern-grid="2"
+                             data-controller="tooltip"
+                             data-tooltip-text-value="Densité de répétition du motif">
+                          <div class="cc-grid__lines cc-grid__lines--quad" data-test-target="grid" data-pattern-grid="2"></div>
+                          <div class="cc-grid__handle"
+                               data-test-target="anchor2"
+                               data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
+                               aria-label="Densité de la grille"
+                               role="slider"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <input type="range" data-test-target="firstSliderControl" data-action="input->test#updateCurve" class="hidden">
+                  <input type="range" data-test-target="secondSliderControl" data-action="input->test#updateCurve" class="hidden">
+                  <input data-test-target="rows" data-action="input->test#updateCurve" class="hidden">
+                  <input data-test-target="columns" data-action="input->test#updateCurve" class="hidden">
+                  <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
+                  <%= form.hidden_field :cover, data: { test_target: "cover" } %>
                 </div>
-                <div class="cc-grid" data-pattern-grid="1">
-                  <div class="cc-grid__lines" data-test-target="grid" data-pattern-grid="1"></div>
-                  <div class="cc-grid__handle"
-                       data-test-target="anchor1"
-                       data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
-                       aria-label="Point de contrôle de la courbe"
-                       role="slider"></div>
-                </div>
               </div>
 
-              <div class="cc-row cc-row--grid">
-                <div class="cc-label-row">
-                  <span class="cc-label">Grille</span>
-                  <span class="cc-value tabular-nums" data-test-target="gridValue">2 × 2</span>
-                </div>
-                <div class="cc-grid" data-pattern-grid="2">
-                  <div class="cc-grid__lines cc-grid__lines--quad" data-test-target="grid" data-pattern-grid="2"></div>
-                  <div class="cc-grid__handle"
-                       data-test-target="anchor2"
-                       data-action="mousedown->test#startDrag touchstart->test#startDrag mousemove->test#drag touchmove->test#drag mouseup->test#stopDrag touchend->test#stopDrag"
-                       aria-label="Densité de la grille"
-                       role="slider"></div>
-                </div>
-              </div>
+              <!-- CTA Aléatoire — pill blanc + icône dés, animation lettre du navbar
+                   Le controller randomize-letter-animation est posé sur le span text
+                   uniquement, sinon le textContent wipe efface l'icône SVG. -->
+              <button type="button"
+                      class="cover-pill cover-pill--reveal editor-randomize"
+                      data-controller="randomize-letter-animation"
+                      data-randomize-letter-animation-text-value="Aléatoire"
+                      data-action="click->test#randomize mouseover->randomize-letter-animation#connect"
+                      aria-label="Générer une couverture aléatoire">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="cover-pill__icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                  <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
+                  <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
+                  <path d="M6 18h.01"/>
+                  <path d="M10 14h.01"/>
+                  <path d="M15 6h.01"/>
+                  <path d="M18 9h.01"/>
+                </svg>
+                <span class="cover-pill__label"
+                      data-randomize-letter-animation-target="text">Aléatoire</span>
+              </button>
             </div>
-
-            <input type="range" data-test-target="firstSliderControl" data-action="input->test#updateCurve" class="hidden">
-            <input type="range" data-test-target="secondSliderControl" data-action="input->test#updateCurve" class="hidden">
-            <input data-test-target="rows" data-action="input->test#updateCurve" class="hidden">
-            <input data-test-target="columns" data-action="input->test#updateCurve" class="hidden">
-            <%= form.hidden_field :pattern_settings, data: { test_target: "patternSettings" } %>
-            <%= form.hidden_field :cover, data: { test_target: "cover" } %>
           </div>
         </div>
       </aside>
@@ -189,7 +219,7 @@
       <main class="form-right-panel">
         <div class="editor-body">
           <!-- Titre du futur — input minimaliste, gros caractères -->
-          <div class="editor-title-field">
+          <div class="editor-title-field editor-stagger">
             <label for="post_title" class="sr-only">Titre du futur</label>
             <%= form.text_field :title,
                                 id: "post_title",
@@ -202,7 +232,7 @@
           </div>
 
           <!-- Code événement — discret, sous le titre -->
-          <div class="editor-meta-row">
+          <div class="editor-meta-row editor-stagger">
             <label class="editor-field">
               <span class="editor-field__label font-mono">Code événement</span>
               <%= form.text_field :event_code,
@@ -213,8 +243,7 @@
           </div>
 
           <!-- Corps du texte -->
-          <div class="editor-body-field">
-            <label for="post_body" class="editor-section-label font-mono">Texte d'introduction</label>
+          <div class="editor-body-field editor-stagger">
             <%= form.text_area :body,
                                id: "post_body",
                                class: "editor-textarea",
@@ -223,7 +252,7 @@
           </div>
 
           <!-- Chapitres -->
-          <section class="chapters" aria-labelledby="chapters-title">
+          <section class="chapters editor-stagger" aria-labelledby="chapters-title">
             <header class="chapters__header">
               <div class="chapters__title-group">
                 <h2 id="chapters-title" class="chapters__title font-mono">Chapitres</h2>
@@ -280,32 +309,32 @@
         <footer class="editor-actionbar">
           <div class="editor-actionbar__inner">
             <div class="editor-actionbar__meta font-mono">
-              <span class="editor-actionbar__type"><%= @post.new_record? ? "Nouveau futur" : "Édition" %></span>
+              <span class="editor-actionbar__type">
+                <%= @post.new_record? ? "Le futur de #{current_user.username}" : "Édition de #{current_user.username}" %>
+              </span>
               <% if !@post.new_record? %>
                 <span aria-hidden="true">·</span>
-                <span class="tabular-nums">Crée le <%= @post.created_at.strftime("%d.%m.%Y") %></span>
+                <span class="tabular-nums">Créé le <%= @post.created_at.strftime("%d.%m.%Y") %></span>
               <% end %>
             </div>
 
             <div class="editor-actionbar__actions">
-              <% draft_checked = @post.draft ? 'true' : 'false' %>
-              <% translate_class = @post.draft ? 'translate-x-full' : 'translate-x-0' %>
-              <% switch_state_class = @post.draft ? 'is-on' : '' %>
-              <div class="editor-toggle">
-                <span class="editor-toggle__label">Brouillon</span>
-                <button type="button"
-                        class="editor-toggle__switch <%= switch_state_class %>"
-                        role="switch"
-                        aria-checked="<%= draft_checked %>"
-                        data-action="click->test#toggleDraft">
-                  <span class="sr-only">Publier comme brouillon</span>
-                  <span aria-hidden="true" class="editor-toggle__thumb <%= translate_class %>"></span>
-                </button>
-                <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
-              </div>
+              <% draft_active = @post.draft %>
+              <%# Brouillon : pill toggleable. État "on" = filled (charcoal), "off" = ghost. %>
+              <button type="button"
+                      class="cover-pill cover-pill--sm cover-pill--ghost editor-draft-pill <%= 'is-on' if draft_active %>"
+                      role="switch"
+                      aria-checked="<%= draft_active ? 'true' : 'false' %>"
+                      data-action="click->test#toggleDraft">
+                <span class="cover-pill__dot" aria-hidden="true"></span>
+                <span class="cover-pill__label">Brouillon</span>
+              </button>
+              <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
 
               <% submit_label = @post.new_record? ? "Publier" : "Éditer" %>
-              <%= form.submit submit_label, class: "editor-btn editor-btn--primary", data: { action: "click->preview#validateForm" } %>
+              <%= form.submit submit_label,
+                              class: "cover-pill cover-pill--sm cover-pill--filled",
+                              data: { action: "click->preview#validateForm" } %>
             </div>
           </div>
         </footer>

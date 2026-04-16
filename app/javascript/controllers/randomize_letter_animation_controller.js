@@ -2,10 +2,16 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = []
+  static targets = ["text"]
   static values = { text: String }
 
   connect() {
+    // Resolve which element receives textContent updates.
+    // When a `text` target exists we animate that node only — this lets
+    // the controller live on a button that also contains sibling icons
+    // (e.g. an SVG) without wiping them out.
+    const target = this.hasTextTarget ? this.textTarget : this.element;
+
     const originalText = this.textValue;
     const animationDuration = 400; // 1 second
     const refreshInterval = 60;
@@ -24,11 +30,11 @@ export default class extends Controller {
           return char;
         }).join('');
 
-        this.element.textContent = animatedText;
+        target.textContent = animatedText;
         currentIteration++;
         setTimeout(animateText, refreshInterval);
       } else {
-        this.element.textContent = originalText;
+        target.textContent = originalText;
       }
     };
 
