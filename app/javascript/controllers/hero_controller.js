@@ -18,13 +18,23 @@ function coverEase(t) {
 }
 
 export default class extends Controller {
-  static targets = ["path", "curveGroup", "svg"]
+  static targets = [
+    "path", "curveGroup", "svg", "bgLayer",
+    "firstSliderControl", "secondSliderControl", "symmetryMode",
+    "colorPicker", "rows", "columns", "smoothing",
+    "anchor1", "anchor2", "grid", "controlsToggleIcon",
+    "hueValue", "smoothingValue", "curveValue", "gridValue"
+  ]
   static values = { uniqueId: String }
 
   connect() {
-    gsap.killTweensOf(this.element);
+    this.dragPaused = false
+    this.renderGridLines()
 
-    gsap.set(this.element, {
+    const introTarget = this.hasBgLayerTarget ? this.bgLayerTarget : this.element
+    gsap.killTweensOf(introTarget);
+
+    gsap.set(introTarget, {
       scale: 1.25,
       opacity: 0
     });
@@ -33,7 +43,7 @@ export default class extends Controller {
       requestAnimationFrame(() => {
         const svgElement = this.svgTarget;
         const svgRect = svgElement.getBoundingClientRect();
-        const containerRect = this.element.getBoundingClientRect();
+        const containerRect = introTarget.getBoundingClientRect();
 
         this.totalWidth = containerRect.width || svgRect.width || window.innerWidth;
         this.totalHeight = containerRect.height || svgRect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
@@ -44,6 +54,11 @@ export default class extends Controller {
         }
 
         this.generateParameters();
+        this.syncControlsFromState();
+        this.updateSymmetrybutton(this.mode);
+        this.updateValueDisplays();
+        this.updateCursorPositions();
+
         this.updateColors()
         this.updateCurve()
         this.updateViewBox()
@@ -57,7 +72,7 @@ export default class extends Controller {
         }
 
         requestAnimationFrame(() => {
-          gsap.to(this.element, {
+          gsap.to(introTarget, {
             scale: 1,
             opacity: 1,
             delay: 0.2,
@@ -82,12 +97,15 @@ export default class extends Controller {
     }
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
     }
+    if (this.isDragging) this.stopDrag();
   }
 
   updateViewBox() {
     const svgElement = this.svgTarget;
-    const containerRect = this.element.getBoundingClientRect();
+    const refElement = this.hasBgLayerTarget ? this.bgLayerTarget : this.element;
+    const containerRect = refElement.getBoundingClientRect();
     const svgRect = svgElement.getBoundingClientRect();
 
     const totalWidth = containerRect.width || svgRect.width || window.innerWidth;
@@ -98,11 +116,11 @@ export default class extends Controller {
 
     svgElement.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     this.updateCurve()
+    this.updateCursorPositions()
   }
 
   generateParameters() {
     this.modes = ['x4', 'x8', 'x16'];
-    this.randomMode = this.modes[Math.floor(Math.random() * this.modes.length)];
     this.mode = 'x16';
     this.rows = 1;
     this.columns = 1;
@@ -117,11 +135,68 @@ export default class extends Controller {
     this.yDirection = Math.random() < 0.5 ? 1 : -1;
     this.x3Direction = Math.random() < 0.5 ? 1 : -1;
     this.y3Direction = Math.random() < 0.5 ? 1 : -1;
-    this.smoothingDirection = Math.random() < 0.5 ? 1 : -1;
+  }
+
+  // Sync interactive controls with the current internal state.
+  syncControlsFromState() {
+    if (this.hasFirstSliderControlTarget) this.firstSliderControlTarget.value = Math.round(this.x * 100);
+    if (this.hasSecondSliderControlTarget) this.secondSliderControlTarget.value = Math.round(this.x3 * 100);
+    if (this.hasSmoothingTarget) this.smoothingTarget.value = Math.round(this.smoothing * 100);
+    if (this.hasRowsTarget) this.rowsTarget.value = this.rows;
+    if (this.hasColumnsTarget) this.columnsTarget.value = this.columns;
+    if (this.hasColorPickerTarget) this.colorPickerTarget.value = this.hue;
+  }
+
+  // Apply non-animated control values to internal state. Leaves the
+  // oscillating params (x/y/x3/y3) alone so the animation can keep running
+  // from wherever it currently is — they are only updated on direct input.
+  applyStaticControlsToState() {
+    if (this.hasSmoothingTarget) {
+      this.smoothing = parseFloat(this.smoothingTarget.value) / 100;
+    }
+    if (this.hasRowsTarget) {
+      this.rows = Math.max(1, Math.round(parseFloat(this.rowsTarget.value) || 1));
+    }
+    if (this.hasColumnsTarget) {
+      this.columns = Math.max(1, Math.round(parseFloat(this.columnsTarget.value) || 1));
+    }
+    if (this.hasColorPickerTarget) {
+      this.hue = parseInt(this.colorPickerTarget.value, 10);
+    }
+  }
+
+  onControlInput(event) {
+    // When a slider moves, sync the relevant internal state from it.
+    // For the curve slider we also seed x/y (animation keeps oscillating from there).
+    const target = event && event.currentTarget;
+    if (target === this.firstSliderControlTarget) {
+      const v = parseFloat(this.firstSliderControlTarget.value) / 100;
+      this.x = v;
+      this.y = 1 - v;
+    } else if (target === this.secondSliderControlTarget) {
+      const v = parseFloat(this.secondSliderControlTarget.value) / 100;
+      this.x3 = v;
+      this.y3 = 1 - v;
+    }
+
+    this.applyStaticControlsToState();
+    this.updateColors();
+    this.updateCurve();
+    this.updateValueDisplays();
+  }
+
+  onSymmetryClick(event) {
+    const btn = event.currentTarget;
+    this.mode = btn.dataset.value;
+    this.updateSymmetrybutton(this.mode);
+    this.applyStaticControlsToState();
+    this.updateColors();
+    this.updateCurve();
   }
 
   updateCurve() {
-    const rect = this.element.getBoundingClientRect();
+    const refElement = this.hasBgLayerTarget ? this.bgLayerTarget : this.element;
+    const rect = refElement.getBoundingClientRect();
     const totalWidth = this.totalWidth || rect.width || window.innerWidth;
     const totalHeight = this.totalHeight || rect.height || (window.visualViewport?.height - 50 || window.innerHeight - 50);
 
@@ -154,32 +229,20 @@ export default class extends Controller {
       ${control2[0]},${control2[1]}
     `;
 
+    const translateX = -totalWidth * 0.5;
+    const translateY = -totalHeight * 0.5;
     let transforms = []
 
     switch(mode) {
       case 'x4':
         transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)'
+          `scale(1,1) translate(${translateX},${translateY})`,
+          `scale(-1,1) translate(${translateX},${translateY})`,
+          `scale(1,-1) translate(${translateX},${translateY})`,
+          `scale(-1,-1) translate(${translateX},${translateY})`
         ]
         break
       case 'x8':
-        transforms = [
-          'scale(1,1) translate(-125,-175)',
-          'scale(-1,1) translate(-125,-175)',
-          'scale(1,-1) translate(-125,-175)',
-          'scale(-1,-1) translate(-125,-175)',
-          'rotate(90) scale(1,1) translate(-125,-175)',
-          'rotate(90) scale(-1,1) translate(-125,-175)',
-          'rotate(90) scale(1,-1) translate(-125,-175)',
-          'rotate(90) scale(-1,-1) translate(-125,-175)'
-        ]
-        break
-      case 'x16':
-        const translateX = -totalWidth * 0.5;
-        const translateY = -totalHeight * 0.5;
         transforms = [
           `scale(1,1) translate(${translateX},${translateY})`,
           `scale(-1,1) translate(${translateX},${translateY})`,
@@ -191,32 +254,47 @@ export default class extends Controller {
           `rotate(90) scale(-1,-1) translate(${translateX},${translateY})`
         ]
         break
+      case 'x16':
+        transforms = [
+          `scale(1,1) translate(${translateX},${translateY})`,
+          `scale(-1,1) translate(${translateX},${translateY})`,
+          `scale(1,-1) translate(${translateX},${translateY})`,
+          `scale(-1,-1) translate(${translateX},${translateY})`,
+          `rotate(90) scale(1,1) translate(${translateX},${translateY})`,
+          `rotate(90) scale(-1,1) translate(${translateX},${translateY})`,
+          `rotate(90) scale(1,-1) translate(${translateX},${translateY})`,
+          `rotate(90) scale(-1,-1) translate(${translateX},${translateY})`,
+          `rotate(45) scale(1,1) translate(${translateX},${translateY})`,
+          `rotate(45) scale(-1,1) translate(${translateX},${translateY})`,
+          `rotate(45) scale(1,-1) translate(${translateX},${translateY})`,
+          `rotate(45) scale(-1,-1) translate(${translateX},${translateY})`,
+          `rotate(135) scale(1,1) translate(${translateX},${translateY})`,
+          `rotate(135) scale(-1,1) translate(${translateX},${translateY})`,
+          `rotate(135) scale(1,-1) translate(${translateX},${translateY})`,
+          `rotate(135) scale(-1,-1) translate(${translateX},${translateY})`
+        ]
+        break
       default:
         transforms = ['scale(1,1) translate(-200,-300)']
     }
 
-    // Suppression des anciens chemins
     this.curveGroupTarget.innerHTML = ''
 
-    // Calculer l'espacement
     const spacingX = totalWidth / columns
     const spacingY = totalHeight / rows
 
-    // Calculer le décalage pour centrer la grille
-    const offsetX = ((totalWidth - (spacingX * columns)) / 2)-1
-    const offsetY = ((totalHeight - (spacingY * rows)) / 2)-1
+    const offsetX = ((totalWidth - (spacingX * columns)) / 2) - 1
+    const offsetY = ((totalHeight - (spacingY * rows)) / 2) - 1
 
     const hue = this.hue;
     const backgroundColor = `hsl(${hue}, 50%, 13%)`;
 
-    // Ajouter un rectangle de fond
     const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     backgroundRect.setAttribute('width', totalWidth);
     backgroundRect.setAttribute('height', totalHeight);
     backgroundRect.setAttribute('fill', backgroundColor);
     this.curveGroupTarget.appendChild(backgroundRect);
 
-    // Créer une grille de motifs
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < columns; col++) {
         transforms.forEach((baseTransform, index) => {
@@ -254,6 +332,7 @@ export default class extends Controller {
 
   updateGradient(id, color1, color2) {
     const gradient = document.getElementById(id);
+    if (!gradient) return;
 
     gradient.querySelector('stop:first-child').style.stopColor = color1;
     gradient.querySelector('stop:first-child').style.stopOpacity = '1';
@@ -303,6 +382,13 @@ export default class extends Controller {
   }
 
   animateParameters() {
+    if (this.dragPaused) {
+      // While dragging a handle, the user drives x/y/x3/y3 directly.
+      // Skip frames but keep the RAF loop alive so it resumes on drop.
+      this.animationFrameId = requestAnimationFrame(this.animateParameters.bind(this));
+      return;
+    }
+
     const speed = 0.0007;
 
     this.x += this.xDirection * speed;
@@ -310,15 +396,242 @@ export default class extends Controller {
     this.x3 += this.x3Direction * speed;
     this.y3 += this.y3Direction * speed;
 
-    if (this.x <= 0.5 || this.x >= 1) this.xDirection *= -1;
-    if (this.y <= 0.3 || this.y >= 0.8) this.yDirection *= -1;
-    if (this.x3 <= 0.2 || this.x3 >=0.6) this.x3Direction *= -1;
-    if (this.y3 <= 0.7 || this.y3 >=1) this.y3Direction *= -1;
-    if (this.smoothing <= 0.9 || this.smoothing >= 1) this.smoothingDirection *= -1;
+    // Direction-aware clamps so user-set values outside the natural range
+    // don't get stuck flipping direction every frame.
+    if (this.x <= 0.5 && this.xDirection < 0) this.xDirection = 1;
+    else if (this.x >= 1 && this.xDirection > 0) this.xDirection = -1;
+    if (this.y <= 0.3 && this.yDirection < 0) this.yDirection = 1;
+    else if (this.y >= 0.8 && this.yDirection > 0) this.yDirection = -1;
+    if (this.x3 <= 0.2 && this.x3Direction < 0) this.x3Direction = 1;
+    else if (this.x3 >= 0.6 && this.x3Direction > 0) this.x3Direction = -1;
+    if (this.y3 <= 0.7 && this.y3Direction < 0) this.y3Direction = 1;
+    else if (this.y3 >= 1 && this.y3Direction > 0) this.y3Direction = -1;
 
     this.updateCurve();
+    this.updateColors();
 
     this.animationFrameId = requestAnimationFrame(this.animateParameters.bind(this));
-    this.updateColors()
+  }
+
+  // === Toolbar actions ===
+
+  randomize() {
+    if (this.hasColorPickerTarget) this.colorPickerTarget.value = Math.floor(Math.random() * 360);
+    if (this.hasSmoothingTarget) this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
+    if (this.hasRowsTarget) this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
+    if (this.hasColumnsTarget) this.columnsTarget.value = Math.floor(Math.random() * 4) + 1;
+
+    // Re-seed the oscillating curve params with random values.
+    this.x = 0.5 + Math.random() * 0.5;
+    this.y = 0.3 + Math.random() * 0.5;
+    this.x3 = 0.2 + Math.random() * 0.4;
+    this.y3 = 0.7 + Math.random() * 0.3;
+    if (this.hasFirstSliderControlTarget) this.firstSliderControlTarget.value = Math.round(this.x * 100);
+    if (this.hasSecondSliderControlTarget) this.secondSliderControlTarget.value = Math.round(this.x3 * 100);
+
+    const modes = ['x4', 'x8', 'x16'];
+    this.mode = modes[Math.floor(Math.random() * modes.length)];
+    this.updateSymmetrybutton(this.mode);
+
+    this.applyStaticControlsToState();
+    this.updateColors();
+    this.updateCurve();
+    this.updateValueDisplays();
+
+    requestAnimationFrame(() => this.updateCursorPositions());
+  }
+
+  toggleControls(event) {
+    const isCollapsed = this.element.classList.toggle('controls-collapsed');
+
+    if (event && event.currentTarget) {
+      event.currentTarget.setAttribute('aria-expanded', String(!isCollapsed));
+    }
+
+    if (this.hasControlsToggleIconTarget) {
+      this.controlsToggleIconTarget.classList.toggle('rotate-180', isCollapsed);
+    }
+
+    if (!isCollapsed) {
+      // On opening the panel, sync the controls to the current animation state
+      // so the user sees values that match what's on screen.
+      this.syncControlsFromState();
+      this.updateSymmetrybutton(this.mode);
+      this.updateValueDisplays();
+      requestAnimationFrame(() => this.updateCursorPositions());
+    }
+  }
+
+  updateSymmetrybutton(symmetryMode) {
+    if (!this.hasSymmetryModeTarget) return;
+    this.symmetryModeTargets.forEach(target => {
+      target.classList.toggle('is-active', target.dataset.value === symmetryMode);
+    });
+  }
+
+  updateValueDisplays() {
+    if (this.hasHueValueTarget && this.hasColorPickerTarget) {
+      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}`;
+    }
+    if (this.hasSmoothingValueTarget && this.hasSmoothingTarget) {
+      this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
+    }
+    if (this.hasCurveValueTarget && this.hasFirstSliderControlTarget && this.hasSecondSliderControlTarget) {
+      const x = Math.round(parseFloat(this.firstSliderControlTarget.value) || 0);
+      const y = Math.round(parseFloat(this.secondSliderControlTarget.value) || 0);
+      this.curveValueTarget.textContent = `${x}, ${y}`;
+    }
+    if (this.hasGridValueTarget && this.hasColumnsTarget && this.hasRowsTarget) {
+      const cols = Math.round(parseFloat(this.columnsTarget.value) || 1);
+      const rows = Math.round(parseFloat(this.rowsTarget.value) || 1);
+      this.gridValueTarget.textContent = `${cols} × ${rows}`;
+    }
+    if (this.hasColorPickerTarget) {
+      const hue = parseInt(this.colorPickerTarget.value, 10);
+      this.colorPickerTarget.style.setProperty("--slider-accent", `hsl(${hue}, 80%, 55%)`);
+    }
+  }
+
+  renderGridLines() {
+    if (!this.hasGridTarget) return;
+    this.gridTargets.forEach(grid => {
+      if (grid.dataset.linesRendered === "true") return;
+      const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
+                     grid.classList.contains("editor-grid__lines--quad");
+      const cells = isQuad ? 16 : 64;
+      const cols = isQuad ? 4 : 8;
+      grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
+      grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < cells; i++) {
+        const cell = document.createElement("span");
+        cell.className = "cc-grid__cell";
+        fragment.appendChild(cell);
+      }
+      grid.appendChild(fragment);
+      grid.dataset.linesRendered = "true";
+    });
+  }
+
+  updateCursorPositions() {
+    if (!this.hasGridTarget) return;
+    const grid1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
+    const grid2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
+
+    if (grid1 && this.hasAnchor1Target && this.hasFirstSliderControlTarget && this.hasSecondSliderControlTarget) {
+      const gridRect1 = grid1.getBoundingClientRect();
+      if (gridRect1.width > 0) {
+        const firstSliderValue = this.firstSliderControlTarget.value;
+        const secondSliderValue = this.secondSliderControlTarget.value;
+
+        const newX1 = (firstSliderValue / 100) * gridRect1.width;
+        const newY1 = (secondSliderValue / 100) * gridRect1.height;
+
+        this.anchor1Target.style.left = `${newX1}px`;
+        this.anchor1Target.style.top = `${newY1}px`;
+      }
+    }
+
+    if (grid2 && this.hasAnchor2Target && this.hasColumnsTarget && this.hasRowsTarget) {
+      const gridRect2 = grid2.getBoundingClientRect();
+      if (gridRect2.width > 0) {
+        const columnsValue = this.columnsTarget.value;
+        const rowsValue = this.rowsTarget.value;
+
+        const newX2 = ((columnsValue - 1) / 4) * gridRect2.width;
+        const newY2 = ((rowsValue - 1) / 4) * gridRect2.height;
+
+        this.anchor2Target.style.left = `${newX2}px`;
+        this.anchor2Target.style.top = `${newY2}px`;
+      }
+    }
+  }
+
+  // === Drag handles for curve/grid points ===
+
+  getEventCoordinates(event) {
+    if (event.touches && event.touches.length > 0) {
+      return {
+        clientX: event.touches[0].clientX,
+        clientY: event.touches[0].clientY
+      };
+    }
+    return {
+      clientX: event.clientX,
+      clientY: event.clientY
+    };
+  }
+
+  startDrag(event) {
+    event.preventDefault();
+    this.isDragging = true;
+    this.dragPaused = true;
+    this.dragTarget = event.currentTarget;
+
+    document.addEventListener('mousemove', this.drag);
+    document.addEventListener('mouseup', this.stopDrag);
+    document.addEventListener('mouseleave', this.stopDrag);
+
+    document.addEventListener('touchmove', this.drag, { passive: false });
+    document.addEventListener('touchend', this.stopDrag);
+    document.addEventListener('touchcancel', this.stopDrag);
+  }
+
+  drag = (event) => {
+    if (!this.isDragging) return;
+
+    event.preventDefault();
+
+    requestAnimationFrame(() => {
+      const gridParent = this.dragTarget.parentElement;
+      const gridRect = gridParent.getBoundingClientRect();
+
+      const coords = this.getEventCoordinates(event);
+      const mouseX = coords.clientX - gridRect.left;
+      const mouseY = coords.clientY - gridRect.top;
+
+      const maxX = gridRect.width;
+      const maxY = gridRect.height;
+
+      const newX = Math.min(Math.max(0, mouseX), maxX);
+      const newY = Math.min(Math.max(0, mouseY), maxY);
+
+      this.dragTarget.style.left = `${newX}px`;
+      this.dragTarget.style.top = `${newY}px`;
+
+      const percentX = (newX / maxX) * 100;
+      const percentY = (newY / maxY) * 100;
+
+      const roundedX = Math.round(percentX * 100) / 100;
+      const roundedY = Math.round(percentY * 100) / 100;
+
+      if (gridParent.dataset.patternGrid === "1") {
+        if (this.hasFirstSliderControlTarget) this.firstSliderControlTarget.value = roundedX;
+        if (this.hasSecondSliderControlTarget) this.secondSliderControlTarget.value = roundedY;
+        this.x = roundedX / 100;
+        this.y = roundedY / 100;
+      } else if (gridParent.dataset.patternGrid === "2") {
+        if (this.hasRowsTarget) this.rowsTarget.value = 1 + (roundedY / 25);
+        if (this.hasColumnsTarget) this.columnsTarget.value = 1 + (roundedX / 25);
+      }
+
+      this.applyStaticControlsToState();
+      this.updateColors();
+      this.updateCurve();
+      this.updateValueDisplays();
+    });
+  }
+
+  stopDrag = () => {
+    this.isDragging = false;
+    this.dragPaused = false;
+
+    document.removeEventListener('mousemove', this.drag);
+    document.removeEventListener('mouseup', this.stopDrag);
+    document.removeEventListener('mouseleave', this.stopDrag);
+
+    document.removeEventListener('touchmove', this.drag);
+    document.removeEventListener('touchend', this.stopDrag);
+    document.removeEventListener('touchcancel', this.stopDrag);
   }
 }

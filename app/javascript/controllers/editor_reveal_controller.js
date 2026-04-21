@@ -32,7 +32,7 @@ export default class extends Controller {
 
     this._cacheHandler = () => this._reset()
     document.addEventListener("turbo:before-cache", this._cacheHandler)
-    requestAnimationFrame(() => this._run())
+    this._run()
   }
 
   disconnect() {
@@ -106,11 +106,11 @@ export default class extends Controller {
       }, 0.7)
     }
 
-    // Le popover des paramètres flotte sous le pill head — on le révèle
-    // juste après le head pour éviter qu'il n'apparaisse en orphelin.
+    // Le popover des paramètres flotte au-dessus du pill head (toolbar bas-droite) —
+    // on le révèle juste après le head pour éviter qu'il n'apparaisse en orphelin.
     const popover = this.element.querySelector(".cover-controls__body")
     if (popover) {
-      gsap.set(popover, { opacity: 0, y: -8, scale: 0.96, transformOrigin: "top left" })
+      gsap.set(popover, { opacity: 0, y: 8, scale: 0.96, transformOrigin: "bottom right" })
       tl.to(popover, {
         opacity: 1,
         y: 0,

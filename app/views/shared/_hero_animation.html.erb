@@ -1,49 +1,200 @@
-<div class="h-[100vh] w-full relative bg-[#000000]">
-    <% unique_id = SecureRandom.uuid %>
-        <div data-controller="hero"
-            data-hero-unique-id-value="<%= unique_id %>"
-            class="w-full h-full">
-            <svg data-hero-target="svg" shape-rendering="auto" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet">
-            <defs>
-                <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                <stop offset="0%"/>
-                <stop offset="100%"/>
-                </radialGradient>
-                <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                <stop offset="0%"/>
-                <stop offset="100%"/>
-                </radialGradient>
-                <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
-                <stop offset="0%"/>
-                <stop offset="100%"/>
-                </radialGradient>
-            </defs>
-            <g data-hero-target="curveGroup"></g>
-            </svg>
+<% unique_id = SecureRandom.uuid %>
+<div data-controller="hero"
+     data-hero-unique-id-value="<%= unique_id %>"
+     class="hero-stage h-[100vh] w-full relative bg-[#000000] controls-collapsed overflow-hidden">
+  <div class="absolute inset-0" data-hero-target="bgLayer">
+    <svg data-hero-target="svg" shape-rendering="auto" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+        <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+        <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+      </defs>
+      <g data-hero-target="curveGroup"></g>
+    </svg>
+  </div>
+
+  <div data-controller="hero-animation"
+       class="h-[100vh] absolute inset-0 flex flex-col items-center justify-center">
+    <div class="hidden w-full" data-hero-animation-target="content">
+      <div class="flex flex-col justify-center mx-auto p-4 md:p-12 lg:w-3/4">
+        <h1 class="text-white text-xxl lg:text-display text-center text-balance" data-hero-animation-target="title">
+          Lire et écrire des futurs désirables
+        </h1>
+        <div class="flex flex-col md:flex-row items-center gap-sm mt-sm justify-center" data-hero-animation-target="buttons">
+          <%= link_to posts_path,
+              class: "btn-animate-chars btn-animate-chars--primary",
+              data: { controller: "stagger-chars" },
+              "aria-label": "Lire les futurs" do %>
+            <div class="btn-animate-chars__bg"></div>
+            <span data-button-animate-chars
+                  data-stagger-chars-target="text"
+                  class="btn-animate-chars__text">Lire les futurs</span>
+          <% end %>
+          <%= link_to new_post_path,
+              class: "btn-animate-chars btn-animate-chars--secondary",
+              data: { controller: "stagger-chars" },
+              "aria-label": "Écrire le futur" do %>
+            <div class="btn-animate-chars__bg"></div>
+            <span data-button-animate-chars
+                  data-stagger-chars-target="text"
+                  class="btn-animate-chars__text">Écrire le futur</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-toolbar">
+    <button type="button"
+            class="cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
+            data-action="click->hero#randomize"
+            aria-label="Générer une animation aléatoire">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="cover-pill__icon"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.8"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
+        <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
+        <path d="M6 18h.01"/>
+        <path d="M10 14h.01"/>
+        <path d="M15 6h.01"/>
+        <path d="M18 9h.01"/>
+      </svg>
+    </button>
+
+    <div class="cover-controls">
+      <button type="button"
+              class="cover-controls__head cover-pill cover-pill--reveal"
+              data-action="click->hero#toggleControls"
+              aria-expanded="false"
+              aria-controls="hero-cover-controls-body-<%= unique_id %>">
+        <span class="cover-controls__title">Paramètres de l'animation</span>
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="cover-controls__chev"
+             data-hero-target="controlsToggleIcon"
+             viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <polyline points="4 10 8 6 12 10"/>
+        </svg>
+      </button>
+
+      <div class="cover-controls__body" id="hero-cover-controls-body-<%= unique_id %>">
+        <div class="cc-stack">
+          <div class="cc-row">
+            <span class="cc-label">Symétrie</span>
+            <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+              <button type="button"
+                      class="cc-segmented__btn"
+                      data-hero-target="symmetryMode"
+                      data-action="click->hero#onSymmetryClick"
+                      data-value="x4"
+                      role="radio">×4</button>
+              <button type="button"
+                      class="cc-segmented__btn"
+                      data-hero-target="symmetryMode"
+                      data-action="click->hero#onSymmetryClick"
+                      data-value="x8"
+                      role="radio">×8</button>
+              <button type="button"
+                      class="cc-segmented__btn"
+                      data-hero-target="symmetryMode"
+                      data-action="click->hero#onSymmetryClick"
+                      data-value="x16"
+                      role="radio">×16</button>
+            </div>
+          </div>
+
+          <div class="cc-row">
+            <div class="cc-label-row">
+              <span class="cc-label">Teinte</span>
+              <span class="cc-value tabular-nums" data-hero-target="hueValue">243</span>
+            </div>
+            <input
+              type="range"
+              data-hero-target="colorPicker"
+              data-action="input->hero#onControlInput"
+              min="0"
+              max="360"
+              value="243"
+              aria-label="Teinte"
+              class="cc-slider cc-slider--hue"
+            >
+          </div>
+
+          <div class="cc-row">
+            <div class="cc-label-row">
+              <span class="cc-label">Lissage</span>
+              <span class="cc-value tabular-nums" data-hero-target="smoothingValue">95</span>
+            </div>
+            <input
+              type="range"
+              data-hero-target="smoothing"
+              data-action="input->hero#onControlInput"
+              min="10"
+              max="100"
+              value="95"
+              aria-label="Lissage"
+              class="cc-slider"
+            >
+          </div>
+
+          <div class="cc-pair">
+            <div class="cc-row cc-row--grid">
+              <div class="cc-label-row">
+                <span class="cc-label">Courbe</span>
+                <span class="cc-value tabular-nums" data-hero-target="curveValue">70, 90</span>
+              </div>
+              <div class="cc-grid"
+                   data-pattern-grid="1"
+                   data-controller="tooltip"
+                   data-tooltip-text-value="Forme de la courbe du motif">
+                <div class="cc-grid__lines" data-hero-target="grid" data-pattern-grid="1"></div>
+                <div class="cc-grid__handle"
+                     data-hero-target="anchor1"
+                     data-action="mousedown->hero#startDrag touchstart->hero#startDrag"
+                     aria-label="Point de contrôle de la courbe"
+                     role="slider"></div>
+              </div>
+            </div>
+
+            <div class="cc-row cc-row--grid">
+              <div class="cc-label-row">
+                <span class="cc-label">Grille</span>
+                <span class="cc-value tabular-nums" data-hero-target="gridValue">1 × 1</span>
+              </div>
+              <div class="cc-grid"
+                   data-pattern-grid="2"
+                   data-controller="tooltip"
+                   data-tooltip-text-value="Densité de répétition du motif">
+                <div class="cc-grid__lines cc-grid__lines--quad" data-hero-target="grid" data-pattern-grid="2"></div>
+                <div class="cc-grid__handle"
+                     data-hero-target="anchor2"
+                     data-action="mousedown->hero#startDrag touchstart->hero#startDrag"
+                     aria-label="Densité de la grille"
+                     role="slider"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-    <div data-controller="hero-animation"
-         class="h-[100vh] absolute inset-0 flex flex-col items-center justify-center">
-         
-        <div class="hidden w-full" data-hero-animation-target="content">
-            
-            <div class="flex flex-col justify-center mx-auto p-4 md:p-12 lg:w-3/4">
-                <h1 class="text-white text-xxl lg:text-display text-center text-balance" data-hero-animation-target="title">
-                    Lire et écrire des futurs désirables
-                </h1>
-                <div class="flex flex-col md:flex-row items-center gap-sm mt-sm justify-center" data-hero-animation-target="buttons">
-                    <%= link_to "Lire les futurs", posts_path, 
-                        class: "tw-btn-primary text-center max-sm:p-2 text-base w-fit", 
-                        data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs", 
-                                action: "mouseover->randomize-letter-animation#connect" } 
-                    %>
-                    <%= link_to "Écrire le futur", new_post_path, 
-                                class: "tw-btn-secondary bg-white text-center max-sm:p-2 text-base w-fit", 
-                                data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Écrire le futur",
-                                action: "mouseover->randomize-letter-animation#connect" } 
-                    %>
-                </div>
-            </div>
-        </div>
+        <input type="range" data-hero-target="firstSliderControl" value="70" min="0" max="100" class="hidden">
+        <input type="range" data-hero-target="secondSliderControl" value="90" min="0" max="100" class="hidden">
+        <input data-hero-target="rows" value="1" class="hidden">
+        <input data-hero-target="columns" value="1" class="hidden">
+      </div>
     </div>
+  </div>
 </div>

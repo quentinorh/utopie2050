@@ -15,11 +15,13 @@
                   data-actions-target="textSize"
                   data-value="<%= size %>"
                   aria-label="Taille <%= size %>">
-            <span class="text-gray-600 dark:text-gray-300" style="font-size: <%= [11, 13, 15, 17][i] %>px;">A</span>
+            <span class="text-gray-600 dark:text-gray-300" style="font-size: <%= [9, 12, 15, 18][i] %>px;">A</span>
           </button>
         <% end %>
       </div>
     </div>
+
+    <div class="border-t border-gray-950/5 dark:border-white/10 mt-0.5 mb-2"></div>
 
     <%# Line height %>
     <div class="mb-4">
@@ -31,15 +33,17 @@
                   data-actions-target="lineHeight"
                   data-value="<%= lh %>"
                   aria-label="Interligne <%= lh %>">
-            <svg class="size-4 stroke-gray-500 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
-              <line x1="3" y1="<%= [3, 2, 1, 0.5][i] %>" x2="13" y2="<%= [3, 2, 1, 0.5][i] %>"/>
+            <svg class="size-4 stroke-gray-600 dark:stroke-gray-300 shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="3" y1="<%= [5, 4.25, 3.5, 2.5][i] %>" x2="13" y2="<%= [5, 4.25, 3.5, 2.5][i] %>"/>
               <line x1="3" y1="8" x2="13" y2="8"/>
-              <line x1="3" y1="<%= [13, 14, 15, 15.5][i] %>" x2="13" y2="<%= [13, 14, 15, 15.5][i] %>"/>
+              <line x1="3" y1="<%= [11, 11.75, 12.5, 13.5][i] %>" x2="13" y2="<%= [11, 11.75, 12.5, 13.5][i] %>"/>
             </svg>
           </button>
         <% end %>
       </div>
     </div>
+
+    <div class="border-t border-gray-950/5 dark:border-white/10 mt-0.5 mb-2"></div>
 
     <%# Font %>
     <div class="mb-4">
@@ -55,6 +59,8 @@
                 data-value="Lexend">Lexend</button>
       </div>
     </div>
+
+    <div class="border-t border-gray-950/5 dark:border-white/10 mt-0.5 mb-2"></div>
 
     <%# Theme %>
     <div>

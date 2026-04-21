@@ -57,6 +57,9 @@ module.exports = {
       top: {
         ...navbarHeight
       },
+      inset: {
+        ...spacings
+      },
       fontSize: {
         'xxs': 'xxx',
         'xs': '0.65rem',

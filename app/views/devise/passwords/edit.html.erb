@@ -1,37 +1,47 @@
-<% content_for :title, "SP 2050 - Changement de mot de passe" %>
-<% content_for :description, "Changez votre mot de passe SP 2050" %>
+<% content_for :title, "SP 2050 - Nouveau mot de passe" %>
+<% content_for :description, "Choisis un nouveau mot de passe pour ton compte SP 2050." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :navbar_transparent, true %>
 
-<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);">
-  <div class="text-xl flex flex-col items-center w-full">
-    <div class="bg-white p-sm rounded-lg shadow md:w-[400px]">
-      <h2 class="text-center">Changement de mot de passe</h2>
+<div class="auth-page" data-controller="auth-background">
+  <!-- Animated SVG pattern background -->
+  <div class="auth-bg" data-auth-background-target="svg"></div>
+  <div class="auth-overlay"></div>
+
+  <!-- Form -->
+  <div class="auth-form-container">
+    <div class="auth-form">
+      <h2 class="auth-form__title">Nouveau mot de passe</h2>
+      <p class="auth-form__subtitle">Choisis ton nouveau sesame</p>
 
       <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-        <%= f.error_notification class: "text-sm bg-red-50 text-red-500 p-3 rounded-md mb-4" %>
-        <%= f.input :reset_password_token, class: "hidden", as: :hidden %>
-        <%= f.full_error :reset_password_token, class: "text-sm block text-red-500 mt-1 mb-4 text-center" %>
+        <%= f.error_notification %>
+        <%= f.input :reset_password_token, as: :hidden %>
+        <%= f.full_error :reset_password_token, class: "text-red-400 text-sm mt-2 text-center" %>
 
-        <div class="form-inputs">
+        <div class="auth-form__fields">
           <%= f.input :password,
                       label: "Nouveau mot de passe",
                       required: true,
                       autofocus: true,
-                      hint: ("#{@minimum_password_length} caractères minimum" if @minimum_password_length),
-                      hint_html: { class: "text-sm text-gray-500 mt-1 italic" },
-                      input_html: { autocomplete: "new-password", class: 'tw-form-input' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      hint: ("#{@minimum_password_length} caracteres minimum" if @minimum_password_length),
+                      hint_html: { class: "text-xs text-white/40 mt-1" },
+                      input_html: { autocomplete: "new-password", class: 'auth-input', placeholder: "••••••••" },
+                      label_html: { class: "auth-label" } %>
+
           <%= f.input :password_confirmation,
-                      label: "Confirmez le nouveau mot de passe",
+                      label: "Confirmer le mot de passe",
                       required: true,
-                      input_html: { autocomplete: "new-password", class: 'tw-form-input' },
-                      label_html: { class: "tw-form-label mt-sm" } %>
+                      input_html: { autocomplete: "new-password", class: 'auth-input', placeholder: "••••••••" },
+                      label_html: { class: "auth-label" } %>
         </div>
 
-        <div class="form-actions">
-          <%= f.button :submit, "Changer mon mot de passe", class: "tw-btn-primary w-full", data: { form_type: "other" } %>
+        <div class="auth-form__actions">
+          <%= f.button :submit, "Mettre a jour mon mot de passe", class: "auth-btn-primary", data: { form_type: "other" } %>
         </div>
       <% end %>
+
+      <%= render "devise/shared/links" %>
     </div>
   </div>
 </div>

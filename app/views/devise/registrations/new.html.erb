@@ -18,6 +18,23 @@
           <input type="text" name="user[website_url]" id="user_website_url" tabindex="-1" autocomplete="off" />
         </div>
 
+        <%# Progress indicator (hidden on the intro step) %>
+        <div class="auth-progress" data-signup-target="progress" aria-hidden="true" hidden>
+          <% [
+               { id: "step-username",       label: "Pseudo" },
+               { id: "step-age",            label: "Age" },
+               { id: "step-email-password", label: "Compte" },
+               { id: "step-terms",          label: "CGU" }
+             ].each_with_index do |step, index| %>
+            <div class="auth-progress__step"
+                 data-signup-target="progressStep"
+                 data-step-id="<%= step[:id] %>">
+              <span class="auth-progress__dot"><%= index + 1 %></span>
+              <span class="auth-progress__label"><%= step[:label] %></span>
+            </div>
+          <% end %>
+        </div>
+
         <div id="registration-steps">
           <!-- Step 1: Intro -->
           <div class="step" id="step-intro" data-signup-target="step">
@@ -28,7 +45,7 @@
 
           <!-- Step 2: Username -->
           <div class="step" id="step-username" style="display: none;" data-signup-target="step">
-            <h2 class="auth-form__title">En 2050, par quel nom aimerais-tu etre appele ?</h2>
+            <h2 class="auth-form__title">En 2050, par quel nom aimerais-tu être appelé·e&nbsp;?</h2>
             <%= f.input :username,
                         required: true,
                         label: false,
@@ -43,7 +60,7 @@
 
           <!-- Step 3: Age -->
           <div class="step" id="step-age" style="display: none;" data-signup-target="step">
-            <h2 class="auth-form__title">Quel age auras-tu en 2050 ?</h2>
+            <h2 class="auth-form__title">Quel age auras-tu en 2050&nbsp;?</h2>
             <%= f.input :age,
                         required: true,
                         label: false,
@@ -58,7 +75,7 @@
 
           <!-- Step 4: Email + Password -->
           <div class="step" id="step-email-password" style="display: none;" data-signup-target="step">
-            <h2 class="auth-form__title">Ton adresse email ?</h2>
+            <h2 class="auth-form__title">Ton adresse email&nbsp;?</h2>
             <%= f.input :email,
                         required: true,
                         autofocus: true,
@@ -67,7 +84,7 @@
                         input_html: { autocomplete: "email", class: 'auth-input text-center', placeholder: 'ton@email.com', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
             <div class="text-red-400 text-sm mt-1" data-signup-target="emailError"></div>
 
-            <h3 class="auth-form__title mt-8">Ton mot de passe ?</h3>
+            <h3 class="auth-form__title mt-8">Ton mot de passe&nbsp;?</h3>
             <%= f.input :password,
                         required: true,
                         label: false,
@@ -95,7 +112,7 @@
               <h4>Contenus respectueux</h4>
               <p>En 2050, nous imaginons un monde fait de diversite et de respect. Aucun contenu faisant la promotion de discrimination ne sera tolere.</p>
               <h4>Droit d'auteur.ice</h4>
-              <p>Veuilles a ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits necessaires.</p>
+              <p>Veuilles a ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
               <h4>Licence libre</h4>
               <p>En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Creative Commons BY-NC-SA 4.0</a>.</p>
             </div>

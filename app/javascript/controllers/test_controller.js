@@ -4,9 +4,9 @@ import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "controlsToggleIcon",
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "submitButton", "controlsToggleIcon",
                    "hueValue", "smoothingValue", "curveValue", "gridValue"]
-  static values = { uniqueId: String }
+  static values = { uniqueId: String, newRecord: Boolean }
 
   connect() {
     this.renderGridLines()
@@ -47,6 +47,7 @@ export default class extends Controller {
       window.removeEventListener("resize", this.boundFitTitle);
     }
     if (this._fitTitleTimeout) clearTimeout(this._fitTitleTimeout);
+    if (this._titleFitRaf) cancelAnimationFrame(this._titleFitRaf);
   }
 
   scheduleFitTitle() {
@@ -87,13 +88,18 @@ export default class extends Controller {
       this.userNameTarget.style.backgroundColor = usernameBackground;
     }
 
-    // On ne touche pas à la largeur pendant la saisie : elle est fixée au chargement et au resize
-    // pour éviter que les côtés bougent et que les mots sautent d'une ligne à l'autre
+    // Réajuster la largeur du fond au texte à chaque frappe (coalescé via rAF
+    // pour ne pas multiplier les mesures sur une saisie rapide)
+    if (this._titleFitRaf) cancelAnimationFrame(this._titleFitRaf);
+    this._titleFitRaf = requestAnimationFrame(() => {
+      this._titleFitRaf = null;
+      this.fitTitleToLongestLine();
+    });
   }
 
   updateValueDisplays() {
     if (this.hasHueValueTarget) {
-      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}°`;
+      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}`;
     }
     if (this.hasSmoothingValueTarget) {
       this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
@@ -590,5 +596,18 @@ export default class extends Controller {
     }
 
     this.draftTarget.value = nextState;
+    this.updateSubmitButtonLabel(nextState);
+  }
+
+  updateSubmitButtonLabel(draft) {
+    if (!this.hasSubmitButtonTarget) return
+
+    const label = draft
+      ? "Enregistrer"
+      : this.newRecordValue
+        ? "Publier"
+        : "Éditer"
+
+    this.submitButtonTarget.value = label
   }
 } 

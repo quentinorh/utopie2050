@@ -5,15 +5,35 @@ export default class extends Controller {
   static targets = ["svg"]
 
   connect() {
-    this.generatePattern()
+    this._isConnected = true
+    this._layersByNode = new WeakMap()
+    this._preloadedImage = null
+    this._preloadingPromise = null
+    this.handleStepChanged = this.reloadBackground.bind(this)
+    this.element.addEventListener("signup:step-changed", this.handleStepChanged)
+    this._svgMarkup = this.generatePattern()
     this.startRipple()
+    this._prepareNextBackground()
   }
 
   disconnect() {
-    if (this._raf) cancelAnimationFrame(this._raf)
-    if (this._gl) {
-      this._gl.getExtension('WEBGL_lose_context')?.loseContext()
+    this._isConnected = false
+    this.element.removeEventListener("signup:step-changed", this.handleStepChanged)
+    const visuals = this._getPreviousVisuals()
+    visuals.forEach(node => this._destroyLayerForNode(node))
+  }
+
+  reloadBackground() {
+    const preloadedImage = this._consumePreloadedImage()
+
+    if (preloadedImage) {
+      this._setupWebGL(preloadedImage)
+    } else {
+      this._svgMarkup = this.generatePattern()
+      this.startRipple()
     }
+
+    this._prepareNextBackground()
   }
 
   generatePattern() {
@@ -36,7 +56,7 @@ export default class extends Controller {
     const d = `M 0,${h} C ${c1[0]},${c1[1]} ${c3[0]},${c3[1]} ${c2[0]},${c2[1]}`
 
     const transforms = this.getTransforms(mode)
-    this._uid = Math.random().toString(36).slice(2, 8)
+    const uid = Math.random().toString(36).slice(2, 8)
 
     const baseHex = this.hslToHex(hue, 100, 65)
     const t1 = this.hslToHex((hue + 60) % 360, 100, 65)
@@ -51,20 +71,20 @@ export default class extends Controller {
           const gx = (W / columns) * c + w / 2
           const gy = (H / rows) * r + h / 2
           const gi = (Math.floor(i / 4) % 3) + 1
-          paths += `<path d="${d}" transform="translate(${gx},${gy}) ${tf}" fill="url(#ag${gi}-${this._uid})" stroke="none"/>`
+          paths += `<path d="${d}" transform="translate(${gx},${gy}) ${tf}" fill="url(#ag${gi}-${uid})" stroke="none"/>`
         })
       }
     }
 
-    this._svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W * 8}" height="${H * 8}">
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W * 8}" height="${H * 8}">
       <defs>
-        <linearGradient id="ag1-${this._uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="ag1-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="${baseHex}"/><stop offset="100%" stop-color="${t1}"/>
         </linearGradient>
-        <linearGradient id="ag2-${this._uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="ag2-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="${baseHex}"/><stop offset="100%" stop-color="${t2}"/>
         </linearGradient>
-        <linearGradient id="ag3-${this._uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="ag3-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="${baseHex}"/><stop offset="100%" stop-color="${t3}"/>
         </linearGradient>
       </defs>
@@ -75,6 +95,7 @@ export default class extends Controller {
 
   startRipple() {
     // Rasterize SVG to an image, then render through a WebGL ripple shader
+    if (!this._svgMarkup) return
     const blob = new Blob([this._svgMarkup], { type: 'image/svg+xml;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const img = new Image()
@@ -85,19 +106,62 @@ export default class extends Controller {
     img.src = url
   }
 
+  _prepareNextBackground() {
+    if (this._preloadingPromise) return
+
+    const nextSvgMarkup = this.generatePattern()
+    this._preloadingPromise = this._rasterizeSvg(nextSvgMarkup)
+      .then((img) => {
+        if (!this._isConnected) return
+        this._preloadedImage = img
+      })
+      .catch(() => {
+        if (!this._isConnected) return
+        this._preloadedImage = null
+      })
+      .finally(() => {
+        this._preloadingPromise = null
+      })
+  }
+
+  _consumePreloadedImage() {
+    const image = this._preloadedImage
+    this._preloadedImage = null
+    return image
+  }
+
+  _rasterizeSvg(svgMarkup) {
+    return new Promise((resolve, reject) => {
+      const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const img = new Image()
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        resolve(img)
+      }
+      img.onerror = () => {
+        URL.revokeObjectURL(url)
+        reject(new Error("Impossible de rasteriser le SVG"))
+      }
+      img.src = url
+    })
+  }
+
   _setupWebGL(sourceImg) {
+    const previousVisuals = this._getPreviousVisuals()
     const canvas = document.createElement('canvas')
     canvas.className = 'auth-bg__svg'
     canvas.style.width = '100%'
     canvas.style.height = '100%'
     canvas.style.display = 'block'
     canvas.style.opacity = '0'
-    this.svgTarget.innerHTML = ''
+    canvas.style.willChange = 'opacity'
+    canvas.style.transform = 'translateZ(0)'
     this.svgTarget.appendChild(canvas)
 
     // Size canvas to fill container
     const rect = this.svgTarget.getBoundingClientRect()
-    const dpr = Math.min(window.devicePixelRatio, 2)
+    const dpr = Math.min(window.devicePixelRatio, 1.5)
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
 
@@ -107,7 +171,6 @@ export default class extends Controller {
       this._fallbackStatic(sourceImg)
       return
     }
-    this._gl = gl
 
     // --- Shaders ---
     const vsSource = `
@@ -172,19 +235,21 @@ export default class extends Controller {
     const uRes = gl.getUniformLocation(program, 'u_resolution')
     gl.uniform2f(uRes, canvas.width, canvas.height)
 
-    // Fade in
-    gsap.to(canvas, { opacity: 1, duration: 2.5, ease: "power2.out" })
+    // Crossfade between old and new background layers
+    this._crossfadeTo(canvas, previousVisuals)
 
     // Render loop
+    const layer = { node: canvas, gl, raf: null }
+    this._layersByNode.set(canvas, layer)
     const start = performance.now()
     const render = () => {
       const t = (performance.now() - start) / 1000
       gl.uniform1f(uTime, t)
       gl.viewport(0, 0, canvas.width, canvas.height)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-      this._raf = requestAnimationFrame(render)
+      layer.raf = requestAnimationFrame(render)
     }
-    this._raf = requestAnimationFrame(render)
+    layer.raf = requestAnimationFrame(render)
   }
 
   _compileShader(gl, type, source) {
@@ -196,7 +261,7 @@ export default class extends Controller {
 
   _fallbackStatic(img) {
     // No WebGL — show SVG with CSS filter animation
-    this.svgTarget.innerHTML = ''
+    const previousVisuals = this._getPreviousVisuals()
     const svgEl = document.createElement('div')
     svgEl.innerHTML = this._svgMarkup
     const svg = svgEl.firstElementChild
@@ -204,11 +269,47 @@ export default class extends Controller {
     svg.setAttribute('class', 'auth-bg__svg')
     svg.removeAttribute('width')
     svg.removeAttribute('height')
+    svg.style.opacity = '0'
     this.svgTarget.appendChild(svg)
 
-    gsap.fromTo(this.svgTarget, { opacity: 0 }, { opacity: 1, duration: 2.5, ease: "power2.out" })
+    this._crossfadeTo(svg, previousVisuals)
     gsap.to(svg, { scale: 1.1, duration: 10, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 50%" })
     gsap.to(svg, { rotation: 5, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 50%" })
+  }
+
+  _getPreviousVisuals() {
+    return Array.from(this.svgTarget.querySelectorAll('.auth-bg__svg'))
+  }
+
+  _crossfadeTo(nextVisual, previousVisuals) {
+    previousVisuals.forEach(node => this._pauseLayerForNode(node))
+    gsap.to(nextVisual, { opacity: 1, duration: 1.2, ease: "power1.out" })
+
+    if (previousVisuals.length > 0) {
+      gsap.to(previousVisuals, {
+        opacity: 0,
+        duration: 1.2,
+        ease: "power1.out",
+        onComplete: () => previousVisuals.forEach(node => this._destroyLayerForNode(node))
+      })
+    }
+  }
+
+  _destroyLayerForNode(node) {
+    const layer = this._layersByNode.get(node)
+    if (layer?.raf) cancelAnimationFrame(layer.raf)
+    if (layer?.gl) layer.gl.getExtension('WEBGL_lose_context')?.loseContext()
+    if (node?.parentNode) node.parentNode.removeChild(node)
+    if (layer) this._layersByNode.delete(node)
+  }
+
+  _pauseLayerForNode(node) {
+    const layer = this._layersByNode.get(node)
+    if (!layer) return
+    if (layer.raf) {
+      cancelAnimationFrame(layer.raf)
+      layer.raf = null
+    }
   }
 
   getTransforms(mode) {

@@ -63,7 +63,7 @@
           </div>
 
           <%# Actions — appear on hover %>
-          <div class="absolute right-1.5 bottom-[3.75rem] flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <div class="absolute right-1.5 bottom-[2.9rem] flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <%= link_to edit_post_path(post),
                 class: "flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white",
                 aria_label: "Éditer",
@@ -88,7 +88,7 @@
                 <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8v5.5a1 1 0 001 1h10a1 1 0 001-1V8"/><polyline points="5 4 8 1 11 4"/><line x1="8" y1="1" x2="8" y2="10"/></svg>
               </button>
               <div data-dropdown-target="menu"
-                   class="hidden absolute right-0 bottom-full z-30 mb-1 w-44 origin-bottom-right rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-950/10 dark:ring-white/10 p-1 shadow-lg shadow-gray-950/5 dark:shadow-none opacity-0 scale-95 transition duration-150 ease-out data-[open]:opacity-100 data-[open]:scale-100">
+                   class="hidden absolute right-0 bottom-full z-30 mb-1 w-44 origin-bottom-right rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-950/10 dark:ring-white/10 p-1 shadow-lg shadow-gray-950/5 dark:shadow-none opacity-0 scale-95 transition duration-100 ease-out data-[open]:opacity-100 data-[open]:scale-100">
                 <button type="button" data-action="click->reel-export#exportReel" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
                   Instagram Reel
                 </button>

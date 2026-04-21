@@ -1,93 +1,159 @@
 <% content_for :title, "SP 2050 - Modifier ton profil" %>
 <% content_for :description, "Personnalise ton profil SP 2050. Mets à jour tes informations et préférences pour une meilleure expérience." %>
-
-<!-- Ajout des meta robots pour éviter l'indexation des pages personnelles -->
 <% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :navbar_transparent, true %>
 
-<div class="bg-black-100 flex flex-col items-center justify-center w-full" style="min-height: calc(100dvh - 50px);" data-controller="signup">
-  <div class="flex flex-col p-sm items-center w-full md:w-[600px]"> 
-    <div class="bg-white p-sm rounded-lg shadow">
-      <h2 class="text-center text-xl">Editer mon profil</h2>
-        <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-          <%= f.error_notification %>
+<div class="auth-page" data-controller="auth-background">
+  <!-- Animated SVG pattern background -->
+  <div class="auth-bg" data-auth-background-target="svg"></div>
+  <div class="auth-overlay"></div>
 
-          <div class="form-inputs">
-            <%= f.input :username, 
-                        required: true, 
-                        autofocus: true,
-                        autocomplete: "off",
-                        input_html: {
-                          class:'tw-form-input',
+  <!-- Form -->
+  <div class="auth-form-container">
+    <div class="auth-form auth-form--split">
+      <header class="auth-form__header">
+        <h2 class="auth-form__title">Mon profil</h2>
+        <p class="auth-form__subtitle">Mettre à jour mes informations</p>
+      </header>
+
+      <div class="auth-form__grid">
+        <%# LEFT column: main profile form %>
+        <div class="auth-form__column">
+          <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+            <%= f.error_notification %>
+
+            <div class="auth-form__fields">
+              <%= f.input :username,
+                          required: true,
+                          autofocus: true,
+                          input_html: {
+                            class: 'auth-input',
+                            placeholder: 'Ton pseudo',
+                            autocomplete: "off",
+                            "data-form-type": "other",
+                            "data-auto-fill": "false",
+                            "data-lpignore": "true",
+                            "data-1p-ignore": "true"
+                          },
+                          label: "Nom d'auteur·ice",
+                          label_html: { class: "auth-label" } %>
+
+              <%= f.input :email,
+                          required: true,
+                          input_html: {
+                            class: 'auth-input',
+                            autocomplete: "username",
+                            placeholder: "ton@email.com"
+                          },
+                          label: "Adresse e-mail",
+                          label_html: { class: "auth-label" } %>
+
+              <%= f.input :age,
+                          required: true,
                           autocomplete: "off",
-                          "data-form-type": "other",
-                          "data-auto-fill": "false",
-                          "data-lpignore": "true",
-                          "data-1p-ignore": "true"
-                        },
-                        label: "Nom d'utilisateur",
-                        label_html: { class:"tw-form-label mt-sm"}
-            %>
-            <%= f.input :email, 
-                        required: true,
-                        input_html: {
-                          class:'tw-form-input',
-                          autocomplete: "username"
-                        },
-                        label: "Email",
-                        label_html: { class:"tw-form-label mt-sm"}
-            %>
-            <%= f.input :age, 
-                        required: true,
-                        autocomplete: "off",
-                        input_html: {
-                          class: 'tw-form-input',
-                          value: resource.age
-                        },
-                        label: "Âge en 2050",
-                        label_html: { class:"tw-form-label mt-sm"}
-            %>
+                          input_html: {
+                            class: 'auth-input',
+                            value: resource.age,
+                            placeholder: "Ton age en 2050"
+                          },
+                          label: "Age en 2050",
+                          label_html: { class: "auth-label" } %>
+            </div>
 
-            <%= f.input :current_password,
-                        hint: "Nous avons besoin de ton mot de passe actuel pour confirmer les modifications",
-                        required: true,
-                        input_html: {
-                          class:'tw-form-input',
-                          autocomplete: "current-password"
-                        },
-                        label: "Mot de passe actuel",
-                        label_html: { class:"tw-form-label mt-sm"},
-                        hint_html: { class: 'text-sm text-gray-400' } %>
-          </div>
+            <%# Confirmation block — visually separated as a safeguard %>
+            <div class="auth-confirm">
+              <div class="auth-confirm__header">
+                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                </svg>
+                <span>Confirme avec ton mot de passe</span>
+              </div>
+              <%= f.input :current_password,
+                          required: true,
+                          input_html: {
+                            class: 'auth-input',
+                            autocomplete: "current-password",
+                            placeholder: "••••••••"
+                          },
+                          label: false,
+                          wrapper_html: { class: 'mt-2' } %>
+              <p class="auth-confirm__hint">Nécessaire pour valider tout changement sur ton compte.</p>
+            </div>
 
-          <div class="form-actions">
-            <button type="submit" 
-                    class="tw-btn-primary w-full mt-sm">
-              Mettre à jour
-            </button>
-          </div>
-        <% end %>
-
-        <!-- Nouvelle section pour la gestion du mot de passe -->
-        <div class="mt-8 text-center pt-6 border-t border-gray-200">
-          <h3 class="text-lg font-semibold mb-4">Changer de mot de passe</h3>
-          <p class="text-sm text-gray-600 mb-4">Clique sur ce bouton pour recevoir les instructions pour réinitialiser ton mot de passe.</p>
-          
-          <%= form_tag password_resets_path do %>
-            <%= hidden_field_tag :email, current_user.email %>
-            <%= submit_tag "Envoyer les instructions", class: "tw-btn-secondary w-full" %>
+            <div class="auth-form__actions">
+              <%= f.button :submit, "Enregistrer les modifications", class: "auth-btn-primary", data: { form_type: "other" } %>
+            </div>
           <% end %>
         </div>
 
-        <div class="text-sm mt-8 text-center">
-          <%= button_to "Supprimer le compte", 
-                        registration_path(resource_name), 
-                        data: { confirm: "Es-tu sûr?", turbo_confirm: "Es-tu sûr?" }, 
-                        method: :delete, 
-                        class: "tw-btn-danger uppercase border border-red-500" %>
+        <%# RIGHT column: profile summary + secondary actions %>
+        <div class="auth-form__column auth-form__column--side">
+          <%# Profile summary card %>
+          <div class="auth-card auth-card--profile">
+            <div class="auth-avatar" aria-hidden="true">
+              <span><%= current_user.username.to_s.first.to_s.upcase.presence || "?" %></span>
+            </div>
+            <div class="auth-card__identity">
+              <h3 class="auth-card__name"><%= current_user.username %></h3>
+              <p class="auth-card__meta"><%= current_user.email %></p>
+            </div>
+            <div class="auth-card__stats">
+              <div class="auth-stat">
+                <span class="auth-stat__value"><%= current_user.posts.count %></span>
+                <span class="auth-stat__label">Publications</span>
+              </div>
+              <div class="auth-stat">
+                <span class="auth-stat__value"><%= current_user.age %></span>
+                <span class="auth-stat__label">Age 2050</span>
+              </div>
+              <div class="auth-stat">
+                <span class="auth-stat__value"><%= I18n.l(current_user.created_at, format: "%m/%y") rescue current_user.created_at.strftime("%m/%y") %></span>
+                <span class="auth-stat__label">Depuis</span>
+              </div>
+            </div>
+          </div>
+
+          <%# Password reset card %>
+          <div class="auth-card">
+            <div class="auth-card__header">
+              <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h12"></path>
+                <path d="M4 12h8"></path>
+                <path d="M4 17h6"></path>
+                <circle cx="18" cy="16" r="3"></circle>
+                <path d="M18 13v-2a3 3 0 0 1 6 0"></path>
+              </svg>
+              <h3 class="auth-card__title">Changer de mot de passe</h3>
+            </div>
+            <p class="auth-card__text">On t'envoie un lien par email pour choisir un nouveau mot de passe en toute securite.</p>
+
+            <%= form_tag password_resets_path do %>
+              <%= hidden_field_tag :email, current_user.email %>
+              <%= submit_tag "Recevoir le lien par email", class: "auth-btn-secondary" %>
+            <% end %>
+          </div>
+
+          <%# Danger zone card %>
+          <div class="auth-card auth-card--danger">
+            <div class="auth-card__header">
+              <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3 2 20h20L12 3z"></path>
+                <path d="M12 10v5"></path>
+                <circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle>
+              </svg>
+              <h3 class="auth-card__title">Supprimer mon compte</h3>
+            </div>
+            <p class="auth-card__text">Action irréversible. Ton compte, tes publications et tes favoris seront définitivement supprimés.</p>
+
+            <%= button_to "Supprimer definitivement",
+                          registration_path(resource_name),
+                          data: { confirm: "Es-tu sûr ? Cette action est irréversible.", turbo_confirm: "Es-tu sûr ? Cette action est irréversible." },
+                          method: :delete,
+                          class: "auth-btn-danger" %>
+          </div>
         </div>
+      </div>
     </div>
   </div>
 </div>
-
-
-
