@@ -20,9 +20,11 @@ export default class extends Controller {
 
   show() {
     this.menuTarget.classList.remove("hidden")
-    requestAnimationFrame(() => {
-      this.menuTarget.dataset.open = ""
-    })
+    // Force a reflow so the browser registers the initial (opacity-0/scale-95)
+    // state before we flip data-open — otherwise the transition is skipped
+    // and the menu appears to "pop" after a delay instead of animating in.
+    void this.menuTarget.offsetWidth
+    this.menuTarget.dataset.open = ""
   }
 
   hide() {

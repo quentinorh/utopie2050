@@ -1,44 +1,71 @@
 /**
  * Ajuste la largeur du bloc titre à la ligne la plus longue (fond pas trop large sur 2+ lignes).
+ *
+ * La mesure se fait dans un clone invisible pour éviter tout flicker visuel
+ * (largeur qui "saute" puis revient à la normale) lors d'un resize ou d'un
+ * toggle du panneau de paramètres.
+ *
  * @param {HTMLElement} wrapper — élément dont le premier enfant est un nœud texte
  */
 export function fitTitleWrapperToLongestLine(wrapper) {
   if (!wrapper || !wrapper.isConnected) return
   const parent = wrapper.parentElement
-  const maxW = parent?.offsetWidth ?? 250
-  const cap = maxW * 0.8
-  wrapper.style.transition = "none"
-  wrapper.style.width = `${cap}px`
-  wrapper.offsetHeight
-  const textNode = wrapper.firstChild
-  if (!textNode || textNode.nodeType !== Node.TEXT_NODE || !textNode.textContent.trim()) return
-  const text = textNode.textContent
-  const len = text.length
-  if (len === 0) return
-  const range = document.createRange()
-  let maxWidth = 0
-  let lineStart = 0
-  let lastBottom = null
-  for (let i = 1; i <= len; i++) {
-    range.setStart(textNode, 0)
-    range.setEnd(textNode, i)
-    const rect = range.getBoundingClientRect()
-    if (lastBottom !== null && rect.bottom > lastBottom) {
-      range.setStart(textNode, lineStart)
-      range.setEnd(textNode, i - 1)
-      const lineRect = range.getBoundingClientRect()
-      maxWidth = Math.max(maxWidth, lineRect.width)
-      lineStart = i
-    }
-    lastBottom = rect.bottom
+  if (!parent) return
+
+  const text = wrapper.textContent
+  if (!text || !text.trim()) {
+    wrapper.style.width = ""
+    return
   }
-  range.setStart(textNode, lineStart)
-  range.setEnd(textNode, len)
-  const lastRect = range.getBoundingClientRect()
-  maxWidth = Math.max(maxWidth, lastRect.width)
-  const style = getComputedStyle(wrapper)
-  const padding =
-    (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0)
-  wrapper.style.transition = "width 0.15s ease-out"
-  wrapper.style.width = `${Math.min(maxWidth + padding, cap)}px`
+
+  const clone = wrapper.cloneNode(false)
+  clone.textContent = text
+  clone.removeAttribute("data-test-target")
+  clone.removeAttribute("data-cover-target")
+  clone.setAttribute("aria-hidden", "true")
+  clone.style.position = "absolute"
+  clone.style.visibility = "hidden"
+  clone.style.pointerEvents = "none"
+  clone.style.left = "0"
+  clone.style.top = "0"
+  clone.style.width = ""
+  clone.style.transition = "none"
+  parent.appendChild(clone)
+
+  try {
+    const textNode = clone.firstChild
+    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return
+
+    const range = document.createRange()
+    const len = text.length
+    let maxWidth = 0
+    let lineStart = 0
+    let lastBottom = null
+
+    for (let i = 1; i <= len; i++) {
+      range.setStart(textNode, 0)
+      range.setEnd(textNode, i)
+      const rect = range.getBoundingClientRect()
+      if (lastBottom !== null && rect.bottom > lastBottom) {
+        range.setStart(textNode, lineStart)
+        range.setEnd(textNode, i - 1)
+        maxWidth = Math.max(maxWidth, range.getBoundingClientRect().width)
+        lineStart = i
+      }
+      lastBottom = rect.bottom
+    }
+    range.setStart(textNode, lineStart)
+    range.setEnd(textNode, len)
+    maxWidth = Math.max(maxWidth, range.getBoundingClientRect().width)
+
+    const style = getComputedStyle(clone)
+    const padding =
+      (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0)
+
+    const finalWidth = Math.ceil(maxWidth) + padding
+    wrapper.style.transition = "none"
+    wrapper.style.width = `${finalWidth}px`
+  } finally {
+    parent.removeChild(clone)
+  }
 }

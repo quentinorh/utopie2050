@@ -29,12 +29,24 @@ function coverEase(t) {
   return ((ay * guess + by) * guess + cy) * guess
 }
 
+// Overshoot easing — used for the dynamic title/username reveal.
+function easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2)
+}
+
 function lerp(a, b, t) { return a + (b - a) * t }
 
 const W = 1080
 const H = 1920
 const FPS = 60
-const DURATION = 6
+// Phase 1 (cover): 0 → SVG_MORPH_END (SVG only) → COVER_END (title/username reveal)
+// Phase 2 (scroll): COVER_END → TEXT_END
+// Phase 3 (outro):  TEXT_END → DURATION
+const SVG_MORPH_END = 3.0
+const COVER_END = 5.0
+const TEXT_END = 15.0
+const DURATION = 17
 const TOTAL_FRAMES = FPS * DURATION
 const DARK = "#12142C"
 
@@ -58,11 +70,15 @@ export default class extends Controller {
       const ctx = canvas.getContext("2d")
 
       const accent = `hsl(${data.hue}, 80%, 70%)`
+      const usernameBg = `hsl(${(data.hue + 120) % 360}, 80%, 70%)`
       const svgBg = `hsl(${data.hue}, 50%, 13%)`
 
-      // Pre-render SVG morph frames (1.5s × 60fps = 90 frames)
+      // Pre-render SVG morph frames — stretched over SVG_MORPH_END (3s).
+      // 120 frames ≈ 1 new morph image every 2 video frames at 60fps,
+      // smooth enough for the gradual path interpolation without the memory
+      // cost of rendering a full 180-frame sequence.
       btn.textContent = "SVG 0%"
-      const svgFrames = await this._preRenderSvgFrames(data, 90, btn)
+      const svgFrames = await this._preRenderSvgFrames(data, 120, btn)
 
       // Initialize H.264 encoder (pure WASM, no WebCodecs needed)
       btn.textContent = "Encodeur..."
@@ -76,7 +92,7 @@ export default class extends Controller {
 
       // Render + encode every frame
       for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
-        this._renderFrame(ctx, data, svgFrames, accent, svgBg, frame)
+        this._renderFrame(ctx, data, svgFrames, accent, usernameBg, svgBg, frame)
         encoder.addFrameRgba(ctx.getImageData(0, 0, W, H).data)
 
         if (frame % 15 === 0) {
@@ -109,19 +125,19 @@ export default class extends Controller {
   }
 
   // ── Render a single frame to canvas ──
-  _renderFrame(ctx, data, svgFrames, accent, svgBg, frame) {
+  _renderFrame(ctx, data, svgFrames, accent, usernameBg, svgBg, frame) {
     const t = frame / FPS
 
-    if (t < 2.0) {
-      this._drawCover(ctx, data, svgFrames, accent, svgBg, t)
-    } else if (t < 4.0) {
-      const fadeT = Math.min((t - 2.0) / 0.3, 1)
+    if (t < COVER_END) {
+      this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, t)
+    } else if (t < TEXT_END) {
+      const fadeT = Math.min((t - COVER_END) / 0.3, 1)
       if (fadeT < 1) {
-        this._drawCover(ctx, data, svgFrames, accent, svgBg, 2.0)
-        ctx.fillStyle = `rgba(18, 20, 44, ${fadeT})`
+        this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, COVER_END)
+        ctx.fillStyle = `hsla(${data.hue}, 50%, 13%, ${fadeT})`
         ctx.fillRect(0, 0, W, H)
       }
-      this._drawText(ctx, data, t, fadeT)
+      this._drawText(ctx, data, t, fadeT, svgBg)
     } else {
       this._drawBlink(ctx, data, accent, t)
     }
@@ -260,101 +276,114 @@ export default class extends Controller {
     }
   }
 
-  // ── Phase 1: Cover (0–2.0s) ──
-  _drawCover(ctx, data, svgFrames, accent, svgBg, t) {
+  // ── Phase 1: Cover ──
+  //   Step A (0 → SVG_MORPH_END): SVG morph, full frame, no radial reveal.
+  //   Step B (SVG_MORPH_END → COVER_END): title + username dynamic reveal.
+  _drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, t) {
     ctx.fillStyle = DARK
     ctx.fillRect(0, 0, W, H)
 
-    const clipProgress = t < 1.5 ? coverEase(t / 1.5) : 1
-    const maxRadius = Math.hypot(W, H) / 2
-    const radius = clipProgress * maxRadius
-
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(W / 2, H / 2, radius, 0, Math.PI * 2)
-    ctx.clip()
-
+    // SVG morph plays across the whole of Step A (and freezes on the final
+    // frame during Step B). No radial clip — SVG fills the frame immediately.
     if (svgFrames.length > 0) {
-      const frameIdx = Math.min(Math.floor((Math.min(t, 1.5) / 1.5) * (svgFrames.length - 1)), svgFrames.length - 1)
+      const morphT = Math.min(t, SVG_MORPH_END) / SVG_MORPH_END
+      const frameIdx = Math.min(
+        Math.floor(morphT * (svgFrames.length - 1)),
+        svgFrames.length - 1
+      )
       ctx.drawImage(svgFrames[frameIdx], 0, 0, W, H)
     } else {
       ctx.fillStyle = svgBg
       ctx.fillRect(0, 0, W, H)
     }
-    ctx.restore()
 
-    if (t >= 0.3) {
-      const words = data.title.split(/\s+/)
-      const fontSize = 72
-      ctx.font = `bold ${fontSize}px Apfel, sans-serif`
-      ctx.textBaseline = "top"
+    // Title + username only appear in Step B.
+    if (t < SVG_MORPH_END) return
 
-      const maxWidth = W - 160
-      const lines = this._wrapText(ctx, words, maxWidth)
+    // Title typography (matches .cover-title-text: color #12142C on accent bg)
+    const titleFontSize = 72
+    const titleLineHeight = titleFontSize * 1.3
+    const titlePad = 10
+    const leftX = 80
+    const maxWidth = W - 160
 
-      const lineHeight = fontSize * 1.3
-      const blockHeight = lines.length * lineHeight
-      const startY = H / 2 - blockHeight / 2 + 200
+    ctx.font = `bold ${titleFontSize}px Apfel, sans-serif`
+    ctx.textBaseline = "top"
+    const words = data.title.split(/\s+/)
+    const lines = this._wrapText(ctx, words, maxWidth)
+    const blockHeight = lines.length * titleLineHeight
 
-      const wordDelay = 0.08
-      let wordIndex = 0
+    // Username typography (matches .cover-username: color #000 on triade bg)
+    const userFontSize = 36
+    const userPadX = 10
+    const userPadY = 6
+    const userBoxH = userFontSize + userPadY * 2
+    const gapUserTitle = 24
+    const bottomMargin = 260
+
+    // Title block is bottom-anchored; username sits ABOVE the title block.
+    const titleStartY = H - bottomMargin - blockHeight
+    const userY = titleStartY - userBoxH - gapUserTitle
+
+    // Reveal phase clock — 0 at SVG_MORPH_END, 1 at COVER_END.
+    const revealT = t - SVG_MORPH_END
+    const slideDistance = 80 // px of upward slide (from below) with overshoot
+
+    // — Username (appears first) —
+    const userDuration = 0.5
+    const userProgress = Math.max(0, Math.min(1, revealT / userDuration))
+    if (userProgress > 0) {
+      const easedU = easeOutBack(userProgress)
+      const yOffset = (1 - easedU) * slideDistance
+      ctx.globalAlpha = Math.min(1, userProgress * 1.5)
+      ctx.font = `bold ${userFontSize}px Apfel, sans-serif`
+      const uText = `@${data.username}`.toUpperCase()
+      const uWidth = ctx.measureText(uText).width
+
+      ctx.fillStyle = usernameBg
+      ctx.fillRect(leftX - userPadX, userY + yOffset, uWidth + userPadX * 2, userBoxH)
+      ctx.fillStyle = DARK
+      ctx.fillText(uText, leftX, userY + userPadY + yOffset)
+      ctx.globalAlpha = 1
+    }
+
+    // — Title (whole block slides in with overshoot, all at once) —
+    ctx.font = `bold ${titleFontSize}px Apfel, sans-serif`
+    const titleStart = 0.25 // slight delay after username starts
+    const titleDuration = 0.55
+    const titleT = revealT - titleStart
+    const titleProgress = Math.max(0, Math.min(1, titleT / titleDuration))
+
+    if (titleProgress > 0) {
+      const easedTitle = easeOutBack(titleProgress)
+      const yOffset = (1 - easedTitle) * slideDistance
+      ctx.globalAlpha = Math.min(1, titleProgress * 1.6)
 
       lines.forEach((line, lineIdx) => {
-        const lineWords = line.split(/\s+/)
-        let lineX = 80
-
-        lineWords.forEach((word) => {
-          const wordT = (t - 0.3 - wordIndex * wordDelay)
-          const wordProgress = Math.max(0, Math.min(1, wordT / 0.3))
-
-          if (wordProgress > 0) {
-            const easedProgress = coverEase(wordProgress)
-            const wordWidth = ctx.measureText(word).width
-            const pad = 10
-
-            ctx.globalAlpha = easedProgress
-            ctx.fillStyle = accent
-            ctx.fillRect(lineX - pad, startY + lineIdx * lineHeight - pad / 2, wordWidth + pad * 2, fontSize + pad)
-
-            ctx.fillStyle = "#FFFFFF"
-            ctx.fillText(word, lineX, startY + lineIdx * lineHeight)
-            ctx.globalAlpha = 1
-          }
-
-          lineX += ctx.measureText(word + " ").width
-          wordIndex++
-        })
-      })
-
-      const usernameT = t - 0.4
-      const usernameProgress = Math.max(0, Math.min(1, usernameT / 0.4))
-      if (usernameProgress > 0) {
-        const easedU = coverEase(usernameProgress)
-        ctx.globalAlpha = easedU
-        ctx.font = `500 36px Apfel, sans-serif`
-        const uText = `@${data.username}`
-        const uWidth = ctx.measureText(uText).width
-        const uY = startY + lines.length * lineHeight + 20
+        const lineWidth = ctx.measureText(line).width
+        const baseY = titleStartY + lineIdx * titleLineHeight + yOffset
 
         ctx.fillStyle = accent
-        ctx.fillRect(80 - 8, uY - 4, uWidth + 16, 44)
-        ctx.fillStyle = "#FFFFFF"
-        ctx.fillText(uText, 80, uY)
-        ctx.globalAlpha = 1
-      }
+        ctx.fillRect(leftX - titlePad, baseY - titlePad / 2, lineWidth + titlePad * 2, titleFontSize + titlePad)
+
+        ctx.fillStyle = DARK
+        ctx.fillText(line, leftX, baseY)
+      })
+
+      ctx.globalAlpha = 1
     }
   }
 
-  // ── Phase 3: Text scene (2.0–4.0s) ──
-  _drawText(ctx, data, t, fadeT) {
+  // ── Phase 2: Text scene (COVER_END → TEXT_END) ──
+  _drawText(ctx, data, t, fadeT, svgBg) {
     if (fadeT >= 1) {
-      ctx.fillStyle = DARK
+      ctx.fillStyle = svgBg
       ctx.fillRect(0, 0, W, H)
     }
 
     if (!data.body) return
 
-    const fontSize = 42
+    const fontSize = 126
     ctx.font = `400 ${fontSize}px Apfel, sans-serif`
     ctx.textBaseline = "top"
     ctx.fillStyle = "#FFFFFF"
@@ -362,12 +391,15 @@ export default class extends Controller {
     const maxWidth = W - 160
     const words = data.body.split(/\s+/)
     const lines = this._wrapText(ctx, words, maxWidth)
-    const lineHeight = fontSize * 1.6
+    const lineHeight = fontSize * 1.2
 
-    const scrollProgress = (t - 2.0) / 2.0
-    const totalTextHeight = lines.length * lineHeight
-    const scrollRange = Math.max(0, totalTextHeight - H + 400)
-    const scrollY = -scrollProgress * scrollRange + 300
+    // Fixed scroll speed in px/s — independent of text length.
+    // Text starts just off the bottom edge and scrolls upward through the
+    // visible area. Only what traverses during the phase is shown (the rest
+    // is clipped by the top/bottom gradient masks); the goal is readability.
+    const SCROLL_PX_PER_SEC = 135
+    const scrollElapsed = t - COVER_END
+    const scrollY = H - scrollElapsed * SCROLL_PX_PER_SEC
 
     ctx.save()
     ctx.globalAlpha = Math.min(fadeT, 1)
@@ -380,41 +412,98 @@ export default class extends Controller {
       }
     })
 
-    const gradH = 200
+    // Gradient masks use the cover background color (svgBg / hsla hue-tinted).
+    // Accentuated: taller band + mid-stop keeps the fade opaque much longer
+    // before going transparent, producing a stronger "tunnel" effect.
+    const gradH = 560
+    const solid = `hsla(${data.hue}, 50%, 13%, 1)`
+    const mid = `hsla(${data.hue}, 50%, 13%, 0.88)`
+    const fade = `hsla(${data.hue}, 50%, 13%, 0)`
+
     const topGrad = ctx.createLinearGradient(0, 0, 0, gradH)
-    topGrad.addColorStop(0, DARK)
-    topGrad.addColorStop(1, "rgba(18, 20, 44, 0)")
+    topGrad.addColorStop(0, solid)
+    topGrad.addColorStop(0.55, mid)
+    topGrad.addColorStop(1, fade)
     ctx.fillStyle = topGrad
     ctx.fillRect(0, 0, W, gradH)
 
     const botGrad = ctx.createLinearGradient(0, H - gradH, 0, H)
-    botGrad.addColorStop(0, "rgba(18, 20, 44, 0)")
-    botGrad.addColorStop(1, DARK)
+    botGrad.addColorStop(0, fade)
+    botGrad.addColorStop(0.45, mid)
+    botGrad.addColorStop(1, solid)
     ctx.fillStyle = botGrad
     ctx.fillRect(0, H - gradH, W, gradH)
 
     ctx.restore()
   }
 
-  // ── Phase 4: Branded blink (4.0–6.0s) ──
+  // ── Phase 3: Branded outro (TEXT_END → DURATION) ──
+  // Blinks by inverting both the page background and the box/text colors
+  // each cycle. Both texts ("Lire la suite" and "SP2050.org") share the
+  // same cover-title treatment: coloured box + contrasting text.
   _drawBlink(ctx, data, accent, t) {
-    const blinkT = t - 4.0
-    const cycle = Math.floor(blinkT / 0.35)
-    const isAccent = cycle % 2 === 0
+    // Single, slow inversion: stay in the default state, flash inverted once
+    // for ~0.8s around the middle of the phase, then return to default.
+    const blinkT = t - TEXT_END
+    const flashStart = 0.5
+    const flashEnd = 1.3
+    const inverted = blinkT >= flashStart && blinkT < flashEnd
 
-    ctx.fillStyle = isAccent ? accent : DARK
+    // On inverted cycles: page bg, box bg and text color all swap.
+    const pageBg = inverted ? accent : DARK
+    const boxBg = inverted ? DARK : accent
+    const textColor = inverted ? accent : DARK
+
+    ctx.fillStyle = pageBg
     ctx.fillRect(0, 0, W, H)
 
-    const textColor = isAccent ? DARK : accent
+    // Whole outro text block is tilted around the center of the canvas.
+    const tiltRad = (-3 * Math.PI) / 180
+    ctx.save()
+    ctx.translate(W / 2, H / 2)
+    ctx.rotate(tiltRad)
+    ctx.translate(-W / 2, -H / 2)
 
-    ctx.font = `bold 64px Apfel, sans-serif`
-    ctx.fillStyle = textColor
     ctx.textAlign = "center"
-    ctx.textBaseline = "middle"
-    ctx.fillText("Lire la suite", W / 2, H / 2 - 50)
+    ctx.textBaseline = "alphabetic"
 
-    ctx.font = `500 48px Apfel, sans-serif`
-    ctx.fillText("SP2050.org", W / 2, H / 2 + 50)
+    // "Lire la suite" — cover title style (box + contrasting text)
+    const lireSize = 72
+    ctx.font = `bold ${lireSize}px Apfel, sans-serif`
+    const lireText = "Lire la suite"
+    const lireWidth = ctx.measureText(lireText).width
+    const lirePadX = 16
+    const lirePadY = 10
+    const lireBaselineY = H / 2 - 110
+    const lireBoxX = W / 2 - lireWidth / 2 - lirePadX
+    const lireBoxY = lireBaselineY - lireSize + lirePadY
+    const lireBoxW = lireWidth + lirePadX * 2
+    const lireBoxH = lireSize + lirePadY
+
+    ctx.fillStyle = boxBg
+    ctx.fillRect(lireBoxX, lireBoxY, lireBoxW, lireBoxH)
+    ctx.fillStyle = textColor
+    ctx.fillText(lireText, W / 2, lireBaselineY)
+
+    // "SP2050.org" — same treatment, 3× bigger
+    const spSize = 144
+    ctx.font = `bold ${spSize}px Apfel, sans-serif`
+    const spText = "SP2050.org"
+    const spWidth = ctx.measureText(spText).width
+    const spPadX = 20
+    const spPadY = 16
+    const spBaselineY = H / 2 + 110
+    const spBoxX = W / 2 - spWidth / 2 - spPadX
+    const spBoxY = spBaselineY - spSize + spPadY
+    const spBoxW = spWidth + spPadX * 2
+    const spBoxH = spSize + spPadY
+
+    ctx.fillStyle = boxBg
+    ctx.fillRect(spBoxX, spBoxY, spBoxW, spBoxH)
+    ctx.fillStyle = textColor
+    ctx.fillText(spText, W / 2, spBaselineY)
+
+    ctx.restore()
 
     ctx.textAlign = "start"
     ctx.textBaseline = "top"

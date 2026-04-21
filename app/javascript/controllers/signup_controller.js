@@ -2,13 +2,37 @@ import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 
 export default class extends Controller {
-  static targets = ["step", "flashMessages", "username", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton"];
+  static targets = ["step", "flashMessages", "username", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton", "progress", "progressStep"];
 
   connect() {
     this.usernameUnique = false
     this.emailUnique = false
     this.passwordValid = false
     document.addEventListener('keydown', this.handleKeydown.bind(this))
+    this.updateProgress(this.currentStepId())
+  }
+
+  currentStepId() {
+    const current = this.stepTargets.find(step => step.style.display !== 'none')
+    return current ? current.id : null
+  }
+
+  updateProgress(activeStepId) {
+    if (!this.hasProgressTarget) return
+
+    const trackedIds = this.progressStepTargets.map(el => el.dataset.stepId)
+    const activeIndex = trackedIds.indexOf(activeStepId)
+
+    if (activeIndex === -1) {
+      this.progressTarget.hidden = true
+      return
+    }
+
+    this.progressTarget.hidden = false
+    this.progressStepTargets.forEach((el, index) => {
+      el.classList.toggle('auth-progress__step--completed', index < activeIndex)
+      el.classList.toggle('auth-progress__step--active', index === activeIndex)
+    })
   }
 
   disconnect() {
@@ -80,9 +104,19 @@ export default class extends Controller {
       onComplete: () => {
         currentStep.style.display = 'none';
         nextStep.style.display = 'block';
+        this.updateProgress(nextStepId);
         gsap.fromTo(nextStep, 
           { opacity: 0 },
-          { opacity: 1, duration: 0.3 }
+          {
+            opacity: 1,
+            duration: 0.3,
+            onComplete: () => {
+              this.element.dispatchEvent(new CustomEvent("signup:step-changed", {
+                bubbles: true,
+                detail: { from: currentStepId, to: nextStepId }
+              }))
+            }
+          }
         );
       }
     });

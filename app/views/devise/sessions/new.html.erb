@@ -44,8 +44,11 @@
           <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary" %>
         </div>
 
-        <div class="text-center mt-4">
-          <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "text-sm text-white/50 hover:text-white transition-colors" %>
+        <div class="auth-form__footer">
+          <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "auth-link" %>
+          <% if devise_mapping.confirmable? %>
+            <%= link_to "Renvoyer le lien de confirmation", new_confirmation_path(resource_name), class: "auth-link" %>
+          <% end %>
         </div>
       <% end %>
     </div>

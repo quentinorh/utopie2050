@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
 
-  static targets = ["avatar", "menuDesktop", "menuSignin", "username", "closeMenu", "signin"]
+  static targets = ["avatar", "menuDesktop", "username", "closeMenu"]
 
   static values = {
     transparent: { type: Boolean, default: false },
@@ -47,19 +47,6 @@ export default class extends Controller {
     this.menuDesktopTarget.classList.toggle('is-open')
     this.usernameTarget.classList.toggle('hidden')
     this.closeMenuTarget.classList.toggle('hidden')
-
-    if (this.hasMenuSigninTarget) {
-      this.menuSigninTarget.classList.remove('is-open')
-    }
-  }
-
-  toogleSignin(event) {
-    event.stopPropagation()
-    this.menuSigninTarget.classList.toggle('is-open')
-
-    if (this.hasMenuDesktopTarget) {
-      this.menuDesktopTarget.classList.remove('is-open')
-    }
   }
 
   handleClickOutside(event) {
@@ -68,12 +55,6 @@ export default class extends Controller {
         this.menuDesktopTarget.classList.remove('is-open')
         this.usernameTarget.classList.remove('hidden')
         this.closeMenuTarget.classList.add('hidden')
-      }
-    }
-
-    if (this.hasMenuSigninTarget && this.menuSigninTarget.classList.contains('is-open')) {
-      if (!this.menuSigninTarget.contains(event.target)) {
-        this.menuSigninTarget.classList.remove('is-open')
       }
     }
   }

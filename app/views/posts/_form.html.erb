@@ -3,8 +3,9 @@
      data-preview-username-value="<%= current_user.username %>"
      data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
      data-test-unique-id-value="<%= unique_id %>"
+     data-test-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
      data-test-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
-     class="w-full form-editor">
+     class="w-full form-editor is-revealing">
   <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col min-h-screen", data: { action: "submit->test#saveSVG submit->test#savePatternSettings" } }) do |form| %>
 
     <% if @post.errors.any? %>
@@ -42,7 +43,7 @@
             </svg>
 
             <!-- Cover title block — typesetting identique à la page show -->
-            <div class="cover-title-block pointer-events-none">
+            <div class="cover-title-block pointer-events-none left-xs sm:left-sm lg:left-[40px] bottom-xs sm:bottom-sm lg:bottom-[40px]">
               <div class="cover-username" data-test-target="userName">
                 <%= current_user.username %>
               </div>
@@ -50,10 +51,32 @@
             </div>
           </div>
 
-          <!-- Toolbar haut — sibling du SVG pour ne pas être clippée
-               Paramètres (gauche) + CTA Aléatoire (droite), aligné padding navbar -->
+          <!-- Toolbar bas-droite — sibling du SVG pour ne pas être clippée
+               CTA Aléatoire (gauche) + Paramètres (droite), ancrée au coin bas-droit -->
           <div class="cover-toolbar">
-            <!-- Carte de contrôles : header pill + body popover qui s'ouvre vers le bas -->
+            <button type="button"
+                    class="cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
+                    data-action="click->test#randomize"
+                    aria-label="Générer une couverture aléatoire">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   class="cover-pill__icon"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="1.8"
+                   stroke-linecap="round"
+                   stroke-linejoin="round"
+                   aria-hidden="true">
+                <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
+                <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
+                <path d="M6 18h.01"/>
+                <path d="M10 14h.01"/>
+                <path d="M15 6h.01"/>
+                <path d="M18 9h.01"/>
+              </svg>
+            </button>
+
+            <!-- Carte de contrôles : header pill + body popover qui s'ouvre vers le haut -->
             <div class="cover-controls" data-test-target="controlsCard">
               <button type="button"
                       class="cover-controls__head cover-pill cover-pill--reveal"
@@ -100,7 +123,7 @@
                     <div class="cc-row">
                       <div class="cc-label-row">
                         <span class="cc-label">Teinte</span>
-                        <span class="cc-value tabular-nums" data-test-target="hueValue">280°</span>
+                        <span class="cc-value tabular-nums" data-test-target="hueValue">280</span>
                       </div>
                       <input
                         type="range"
@@ -170,6 +193,7 @@
                                role="slider"></div>
                         </div>
                       </div>
+
                     </div>
                   </div>
 
@@ -181,35 +205,6 @@
                   <%= form.hidden_field :cover, data: { test_target: "cover" } %>
                 </div>
               </div>
-
-              <!-- CTA Aléatoire — pill blanc + icône dés, animation lettre du navbar
-                   Le controller randomize-letter-animation est posé sur le span text
-                   uniquement, sinon le textContent wipe efface l'icône SVG. -->
-              <button type="button"
-                      class="cover-pill cover-pill--reveal editor-randomize"
-                      data-controller="randomize-letter-animation"
-                      data-randomize-letter-animation-text-value="Aléatoire"
-                      data-action="click->test#randomize mouseover->randomize-letter-animation#connect"
-                      aria-label="Générer une couverture aléatoire">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="cover-pill__icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="1.8"
-                     stroke-linecap="round"
-                     stroke-linejoin="round"
-                     aria-hidden="true">
-                  <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
-                  <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
-                  <path d="M6 18h.01"/>
-                  <path d="M10 14h.01"/>
-                  <path d="M15 6h.01"/>
-                  <path d="M18 9h.01"/>
-                </svg>
-                <span class="cover-pill__label"
-                      data-randomize-letter-animation-target="text">Aléatoire</span>
-              </button>
             </div>
           </div>
         </div>
@@ -231,15 +226,37 @@
             <p class="editor-error mt-2 hidden" data-preview-target="titleError">Le titre est requis</p>
           </div>
 
-          <!-- Code événement — discret, sous le titre -->
-          <div class="editor-meta-row editor-stagger">
-            <label class="editor-field">
-              <span class="editor-field__label font-mono">Code événement</span>
-              <%= form.text_field :event_code,
-                                  value: @post.event_code&.code,
-                                  class: "editor-input editor-input--compact",
-                                  placeholder: "Optionnel" %>
-            </label>
+          <!-- Code événement — optionnel, révélé par un switch -->
+          <% event_code_str = @post.event_code&.code.to_s %>
+          <% event_code_active = event_code_str.present? %>
+          <div class="editor-meta-row editor-stagger flex w-full flex-col gap-3"
+               data-controller="event-code-field">
+            <div class="flex w-full max-w-lg flex-wrap items-center justify-between gap-3">
+              <span id="post-event-code-switch-label" class="editor-field__label font-mono">Code événement</span>
+              <button type="button"
+                      class="cover-pill cover-pill--sm cover-pill--ghost editor-draft-pill <%= 'is-on' if event_code_active %>"
+                      role="switch"
+                      aria-checked="<%= event_code_active ? 'true' : 'false' %>"
+                      aria-labelledby="post-event-code-switch-label"
+                      aria-controls="post-event-code-panel"
+                      data-event-code-field-target="switch"
+                      data-action="click->event-code-field#toggle">
+                <span class="cover-pill__dot" aria-hidden="true"></span>
+                <span class="cover-pill__label">Renseigner un code</span>
+              </button>
+            </div>
+            <div id="post-event-code-panel"
+                 class="w-full max-w-lg <%= 'hidden' unless event_code_active %>"
+                 data-event-code-field-target="panel">
+              <label class="editor-field">
+                <span class="editor-field__label font-mono sr-only">Code événement</span>
+                <%= form.text_field :event_code,
+                                    value: event_code_str.presence,
+                                    class: "editor-input editor-input--compact",
+                                    placeholder: "Code de l’événement",
+                                    data: { event_code_field_target: "input" } %>
+              </label>
+            </div>
           </div>
 
           <!-- Corps du texte -->
@@ -310,7 +327,7 @@
           <div class="editor-actionbar__inner">
             <div class="editor-actionbar__meta font-mono">
               <span class="editor-actionbar__type">
-                <%= @post.new_record? ? "Le futur de #{current_user.username}" : "Édition de #{current_user.username}" %>
+                <%= @post.new_record? ? "Le futur de #{current_user.username}" : "Futur de #{current_user.username}" %>
               </span>
               <% if !@post.new_record? %>
                 <span aria-hidden="true">·</span>
@@ -331,10 +348,17 @@
               </button>
               <%= form.hidden_field :draft, value: @post.draft, data: { test_target: "draft" } %>
 
-              <% submit_label = @post.new_record? ? "Publier" : "Éditer" %>
+              <% submit_label =
+                   if draft_active
+                     "Enregistrer"
+                   elsif @post.new_record?
+                     "Publier"
+                   else
+                     "Éditer"
+                   end %>
               <%= form.submit submit_label,
                               class: "cover-pill cover-pill--sm cover-pill--filled",
-                              data: { action: "click->preview#validateForm" } %>
+                              data: { test_target: "submitButton", action: "click->preview#validateForm" } %>
             </div>
           </div>
         </footer>

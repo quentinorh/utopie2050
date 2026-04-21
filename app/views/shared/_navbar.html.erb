@@ -1,32 +1,63 @@
 <% transparent = local_assigns[:transparent] || false %>
-<nav class="<%= transparent ? 'fixed' : 'sticky' %> top-0 z-[99] w-full flex items-center
+<% show_post_page = controller_name == "posts" && %w[show edit new].include?(action_name) %>
+<nav class="<%= transparent ? 'fixed navbar--transparent' : 'sticky' %> <%= show_post_page ? 'navbar--show-page' : '' %> top-0 z-[99] w-full flex items-center
             <%= transparent ? 'bg-transparent border-transparent' : 'bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600' %>
             dark:text-gray-100 h-[75px]"
      data-controller="navbar fullscreen"
      data-navbar-transparent-value="<%= transparent %>"
-     data-navbar-scroll-value="<%= content_for?(:navbar_scroll) %>">
-  <div class="flex justify-between items-center w-full px-xs sm:px-sm lg:px-[40px]">
-    <!-- Left: Logo + dot -->
-    <div class="flex items-center gap-[10px]">
-      <%= link_to root_path, class: "navbar-brand flex items-center gap-[10px]" do %>
+     data-navbar-scroll-value="<%= content_for?(:navbar_scroll) || show_post_page %>">
+  <% if show_post_page %>
+    <div class="navbar-show-right-mask <%= action_name == "show" ? "navbar-show-right-mask--show" : "navbar-show-right-mask--form" %>"
+         aria-hidden="true"></div>
+  <% end %>
+  <div class="relative z-10 flex justify-between items-center w-full px-xs sm:px-sm lg:px-[40px]">
+    <!-- Left: logo ; show/edit/new mobile : point + « Lire le futur » (même opacity) -->
+    <div class="flex min-w-0 items-center gap-[10px]">
+      <%= link_to root_path, class: "navbar-brand flex shrink-0 items-center gap-[10px]" do %>
         <h1 class="text-[18px] leading-[16px] navbar-logo-text"><%= transparent ? 'SP2050' : 'SP 2050' %></h1>
-        <span class="navbar-dot w-[5px] h-[5px] lg:w-[3px] lg:h-[3px] rounded-full <%= transparent ? 'bg-white' : 'bg-black dark:bg-white' %>"></span>
+        <% unless show_post_page %>
+          <span class="navbar-dot w-[5px] h-[5px] rounded-full lg:w-[3px] lg:h-[3px]"></span>
+        <% end %>
+      <% end %>
+
+      <% if show_post_page %>
+        <div class="navbar-center-wrapper navbar-center-wrapper--show-mobile flex min-w-0 items-center gap-[10px] lg:hidden">
+          <span class="navbar-dot h-[5px] w-[5px] shrink-0 rounded-full lg:h-[3px] lg:w-[3px]"
+                aria-hidden="true"></span>
+          <%= link_to posts_path,
+                      class: "navbar-center-link navbar-center-link--show min-w-0 whitespace-nowrap text-[14px] leading-[16px]" do %>
+            <span data-controller="randomize-letter-animation"
+                  data-randomize-letter-animation-text-value="Lire le futur"
+                  data-action="mouseover->randomize-letter-animation#connect">Lire le futur</span>
+          <% end %>
+        </div>
+      <% else %>
+        <div>
+          <%= link_to "Lire les futurs", posts_path,
+                      class: "navbar-center-link text-[14px] leading-[16px]",
+                      data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs",
+                      action: "mouseover->randomize-letter-animation#connect" } %>
+        </div>
       <% end %>
     </div>
 
-    <!-- Center: "Lire les futurs" (desktop only) — on show pages, aligns with content panel -->
-    <div class="hidden lg:block absolute navbar-center-wrapper left-1/2 -translate-x-1/2">
-      <%= link_to "Lire les futurs", posts_path,
-                  class: "text-[14px] leading-[16px] navbar-center-link",
-                  data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs",
-                  action: "mouseover->randomize-letter-animation#connect" } %>
-    </div>
+    <% if show_post_page %>
+      <%# Desktop (≥ lg) : « Lire les futurs » aligné sur le panneau contenu droit %>
+      <div class="navbar-center-wrapper navbar-center-wrapper--show-desktop">
+        <%= link_to posts_path,
+                    class: "navbar-center-link navbar-center-link--show text-[14px] leading-[16px]" do %>
+          <span data-controller="randomize-letter-animation"
+                data-randomize-letter-animation-text-value="Lire les futurs"
+                data-action="mouseover->randomize-letter-animation#connect">Lire les futurs</span>
+        <% end %>
+      </div>
+    <% end %>
 
     <!-- Right: Actions -->
     <div class="flex items-center gap-[8px] flex-nowrap">
       <!-- Fullscreen button (desktop) -->
       <button type="button"
-              class="hidden lg:flex items-center gap-[10px] px-[17px] py-[8px] rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn"
+              class="hidden items-center gap-[10px] px-[17px] py-[8px] rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn"
               data-action="click->fullscreen#toggle"
               aria-label="Basculer en mode plein écran">
         <span class="text-xs leading-[16px] navbar-fullscreen-text">Plein écran</span>
@@ -50,33 +81,38 @@
 
       <% if user_signed_in? %>
         <!-- New post (desktop) -->
-        <%= link_to 'Nouveau futur', new_post_path,
-                    class: "max-sm:hidden inline-flex items-center px-[18px] py-[13px] rounded-full bg-primary text-white text-[14px] leading-[16px] hover:bg-indigo-500 transition-colors flex-shrink-0",
-                    data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur",
-                    action: "mouseover->randomize-letter-animation#connect" } %>
+        <%= link_to new_post_path,
+                    class: "max-sm:hidden btn-animate-chars btn-animate-chars--primary text-[14px] flex-shrink-0",
+                    data: { controller: "stagger-chars" },
+                    "aria-label": "Nouveau futur" do %>
+          <div class="btn-animate-chars__bg"></div>
+          <span data-button-animate-chars
+                data-stagger-chars-target="text"
+                class="btn-animate-chars__text">Nouveau futur</span>
+        <% end %>
       <% else %>
         <!-- User icon (circle with indigo border) -->
-        <div class="relative flex-shrink-0">
-          <button class="h-[42px] w-[42px] flex items-center justify-center rounded-full border border-primary"
-               data-action="click->navbar#toogleSignin"
-               aria-label="Menu de connexion">
+        <div class="flex-shrink-0">
+          <%= link_to new_user_session_path,
+                      class: "h-[42px] w-[42px] flex items-center justify-center rounded-full border border-primary",
+                      aria: { label: "Se connecter" } do %>
             <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor" class="text-primary">
               <circle cx="8" cy="5" r="4"/>
               <path d="M0 18C0 14 3.6 11 8 11s8 3 8 7"/>
             </svg>
-          </button>
-          <div class="tw-dropdown-menu text-center" data-navbar-target="menuSignin">
-            <%= link_to "Se connecter", new_user_session_path, class: "tw-nav-link" %>
-            <div class="border-t border-gray-100 my-1"></div>
-            <%= link_to "Créer un compte", new_user_registration_path, class: "tw-nav-link" %>
-          </div>
+          <% end %>
         </div>
         <!-- CTA button (desktop) -->
         <div class="hidden sm:block">
-          <%= link_to "Créer un compte", new_user_registration_path,
-                      class: "inline-flex items-center px-[18px] py-[13px] rounded-full bg-primary text-white text-[14px] leading-[16px] hover:bg-indigo-500 transition-colors",
-                      data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Créer un compte",
-                      action: "mouseover->randomize-letter-animation#connect" } %>
+          <%= link_to new_user_registration_path,
+                      class: "btn-animate-chars btn-animate-chars--primary text-[14px]",
+                      data: { controller: "stagger-chars" },
+                      "aria-label": "Créer un compte" do %>
+            <div class="btn-animate-chars__bg"></div>
+            <span data-button-animate-chars
+                  data-stagger-chars-target="text"
+                  class="btn-animate-chars__text">Créer un compte</span>
+          <% end %>
         </div>
       <% end %>
 
@@ -93,18 +129,23 @@
               </span>
             </button>
             <div class="tw-dropdown-menu text-center" data-navbar-target="menuDesktop">
-              <%= link_to 'Nouveau futur', new_post_path,
-                          class: "inline-block mt-1 sm:hidden tw-btn-primary p-2 text-sm",
-                          data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Nouveau futur",
-                          action: "mouseover->randomize-letter-animation#connect" } %>
-              <div class="sm:hidden border-t border-gray-100 my-1"></div>
+              <%= link_to new_post_path,
+                          class: "inline-block mt-1 sm:hidden btn-animate-chars btn-animate-chars--primary text-sm",
+                          data: { controller: "stagger-chars" },
+                          "aria-label": "Nouveau futur" do %>
+                <div class="btn-animate-chars__bg"></div>
+                <span data-button-animate-chars
+                      data-stagger-chars-target="text"
+                      class="btn-animate-chars__text">Nouveau futur</span>
+              <% end %>
+              <div class="sm:hidden border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
               <% if current_user&.admin? %>
                 <%= link_to "Administration", admin_dashboard_path, class: "tw-nav-link" %>
               <% end %>
               <%= link_to "Mes futurs", user_posts_path, class: "tw-nav-link" %>
               <%= link_to "Mes favoris", user_favorites_path, class: "tw-nav-link" %>
               <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
-              <div class="border-t border-gray-100 my-1"></div>
+              <div class="border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
               <%= button_to "Se déconnecter", destroy_user_session_path, method: :delete, class: "tw-nav-link !text-gray-400 hover:!text-red-500 w-full text-center", form: { class: "inline" } %>
             </div>
           </div>

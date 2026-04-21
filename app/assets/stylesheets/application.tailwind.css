@@ -5,12 +5,12 @@
 @layer components {
 
   .tw-btn-primary{
-    @apply rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm uppercase font-mono text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+    @apply inline-flex items-center flex-shrink-0 rounded-full bg-primary px-[18px] py-[13px] text-[14px] leading-[16px] text-white hover:bg-indigo-500 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
   }
   
 
   .tw-btn-secondary{
-    @apply rounded-md bg-transparent px-3.5 py-2.5 text-sm uppercase font-mono  border-indigo-500 text-sm text-indigo-600 shadow-sm hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+    @apply inline-flex items-center flex-shrink-0 rounded-full bg-transparent border border-primary px-[18px] py-[13px] text-[14px] leading-[16px] text-primary hover:bg-indigo-100 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
   }
 
   .tw-btn-danger {
@@ -26,7 +26,13 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     right: 16px;
-    top: 75px;
+    top: calc(75px + 16px);
+  }
+
+  @screen lg {
+    .tw-dropdown-menu {
+      right: 40px;
+    }
   }
 
   .tw-dropdown-menu.is-open {
@@ -112,3 +118,74 @@
     }
   }
 }
+
+/* Staggered character button animation */
+.btn-animate-chars {
+  cursor: pointer;
+  border-radius: 9999px;
+  flex-grow: 0;
+  justify-content: center;
+  align-items: center;
+  padding: 0.9em 1.4em;
+  font-size: 1em;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  position: relative;
+  background-color: transparent;
+}
+
+.btn-animate-chars__text {
+  white-space: nowrap;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-animate-chars [data-button-animate-chars] {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.btn-animate-chars [data-button-animate-chars] span {
+  display: inline-block;
+  position: relative;
+  text-shadow: 0px 1.3em currentColor;
+  transform: translateY(0em) rotate(0.001deg);
+  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover [data-button-animate-chars] span {
+  transform: translateY(-1.3em) rotate(0.001deg);
+}
+
+.btn-animate-chars__bg {
+  border-radius: 9999px;
+  position: absolute;
+  inset: 0;
+  transition: inset 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover .btn-animate-chars__bg {
+  inset: 0.2em;
+}
+
+/* Primary variant: indigo fill on black hero bg, reveals a black ring on hover */
+.btn-animate-chars--primary {
+  color: #ffffff;
+}
+
+.btn-animate-chars--primary .btn-animate-chars__bg {
+  background-color: theme('colors.primary');
+}
+
+/* Secondary variant: white fill with indigo text */
+.btn-animate-chars--secondary {
+  color: theme('colors.primary');
+}
+
+.btn-animate-chars--secondary .btn-animate-chars__bg {
+  background-color: #ffffff;
+}
+

@@ -2,13 +2,13 @@
 <% ratio = local_assigns[:ratio] || "4x5" %>
 
 <div class="show-cover-panel" data-controller="coversize">
-  <div class="relative h-full min-h-0 w-full flex flex-col items-center justify-center lg:flex-1 lg:items-stretch lg:justify-stretch">
+  <div class="relative h-full min-h-0 w-full flex flex-col items-center justify-center lg:flex-1">
     <div class="cover-svg" data-coversize-target="svg">
       <%= post.cover.html_safe %>
     </div>
   </div>
 
-  <div class="cover-title-block">
+  <div class="cover-title-block left-xs sm:left-sm lg:left-[40px] bottom-xs sm:bottom-sm lg:bottom-[40px]">
     <div class="cover-username" data-cover-target="userName">
       <%= post.user.username %>
     </div>
