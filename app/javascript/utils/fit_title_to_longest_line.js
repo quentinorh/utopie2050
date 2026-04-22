@@ -20,7 +20,7 @@ export function fitTitleWrapperToLongestLine(wrapper) {
 
   const clone = wrapper.cloneNode(false)
   clone.textContent = text
-  clone.removeAttribute("data-test-target")
+  clone.removeAttribute("data-cover-editor-target")
   clone.removeAttribute("data-cover-target")
   clone.setAttribute("aria-hidden", "true")
   clone.style.position = "absolute"
