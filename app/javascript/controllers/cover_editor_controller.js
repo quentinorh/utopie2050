@@ -1,6 +1,18 @@
 import { Controller } from "@hotwired/stimulus"
 import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 
+// Facteurs d'échelle appliqués aux motifs (autour du centre du SVG 250x350).
+// Une valeur < 1 resserre les motifs dans le cadre et laisse apparaître
+// le fond sur les bords. Le fond couvre toujours l'intégralité du SVG.
+// X et Y sont indépendants pour pouvoir resserrer différemment en largeur
+// et en hauteur.
+const PATTERN_SCALE_X = 0.5
+const PATTERN_SCALE_Y = 0.6
+
+// Dimensions du viewBox SVG (centre / scale des motifs).
+const SVG_WIDTH = 250
+const SVG_HEIGHT = 350
+
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
@@ -271,8 +283,14 @@ export default class extends Controller {
     backgroundRect.setAttribute('class', 'cover-bg-rect');
     svg.insertBefore(backgroundRect, this.curveGroupTarget);
 
-    // Curve group fills the full SVG — no scale, just centered around (125,175)
-    this.curveGroupTarget.removeAttribute('transform');
+    // Resserrer les motifs dans le cadre (scale X/Y indépendants autour
+    // du centre du SVG) tout en laissant le fond remplir la totalité.
+    const cx = SVG_WIDTH / 2
+    const cy = SVG_HEIGHT / 2
+    this.curveGroupTarget.setAttribute(
+      'transform',
+      `translate(${cx}, ${cy}) scale(${PATTERN_SCALE_X}, ${PATTERN_SCALE_Y}) translate(${-cx}, ${-cy})`
+    );
 
     // Créer une grille de motifs
     for (let row = 0; row < rows; row++) {
@@ -610,4 +628,4 @@ export default class extends Controller {
 
     this.submitButtonTarget.value = label
   }
-} 
+}
