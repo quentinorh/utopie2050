@@ -23,16 +23,10 @@
     @apply bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl;
     @apply shadow-lg shadow-gray-950/5 dark:shadow-none;
     @apply opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out;
+    @apply right-[16px] lg:right-[40px];
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    right: 16px;
     top: calc(75px + 16px);
-  }
-
-  @screen lg {
-    .tw-dropdown-menu {
-      right: 40px;
-    }
   }
 
   .tw-dropdown-menu.is-open {

@@ -119,23 +119,6 @@
 
           <div class="cc-row">
             <div class="cc-label-row">
-              <span class="cc-label">Teinte</span>
-              <span class="cc-value tabular-nums" data-hero-target="hueValue">243</span>
-            </div>
-            <input
-              type="range"
-              data-hero-target="colorPicker"
-              data-action="input->hero#onControlInput"
-              min="0"
-              max="360"
-              value="243"
-              aria-label="Teinte"
-              class="cc-slider cc-slider--hue"
-            >
-          </div>
-
-          <div class="cc-row">
-            <div class="cc-label-row">
               <span class="cc-label">Lissage</span>
               <span class="cc-value tabular-nums" data-hero-target="smoothingValue">95</span>
             </div>
@@ -160,7 +143,7 @@
               <div class="cc-grid"
                    data-pattern-grid="1"
                    data-controller="tooltip"
-                   data-tooltip-text-value="Forme de la courbe du motif">
+                   data-tooltip-text-value="Forme du motif">
                 <div class="cc-grid__lines" data-hero-target="grid" data-pattern-grid="1"></div>
                 <div class="cc-grid__handle"
                      data-hero-target="anchor1"
@@ -178,7 +161,7 @@
               <div class="cc-grid"
                    data-pattern-grid="2"
                    data-controller="tooltip"
-                   data-tooltip-text-value="Densité de répétition du motif">
+                   data-tooltip-text-value="Répétition du motif">
                 <div class="cc-grid__lines cc-grid__lines--quad" data-hero-target="grid" data-pattern-grid="2"></div>
                 <div class="cc-grid__handle"
                      data-hero-target="anchor2"
@@ -190,6 +173,7 @@
           </div>
         </div>
 
+        <input type="range" data-hero-target="colorPicker" data-action="input->hero#onControlInput" min="0" max="360" value="243" class="hidden" aria-hidden="true" tabindex="-1">
         <input type="range" data-hero-target="firstSliderControl" value="70" min="0" max="100" class="hidden">
         <input type="range" data-hero-target="secondSliderControl" value="90" min="0" max="100" class="hidden">
         <input data-hero-target="rows" value="1" class="hidden">
