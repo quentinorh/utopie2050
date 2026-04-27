@@ -44,8 +44,12 @@ export default class extends Controller {
 
   connect() {
     this.tweens = []
+    this._boundOnTypography = () => this.scheduleReflow("typography")
+    this._boundOnResize = () => this.scheduleReflow("resize")
     if (this.modeValue === "lines") {
-      requestAnimationFrame(() => this.animateLines())
+      document.addEventListener("reading:typography-changed", this._boundOnTypography)
+      window.addEventListener("resize", this._boundOnResize)
+      requestAnimationFrame(() => this.rebuildLineLayout({ initial: true }))
     } else if (this.modeValue === "paragraphs") {
       this.animateParagraphs()
     } else {
@@ -54,6 +58,12 @@ export default class extends Controller {
   }
 
   disconnect() {
+    document.removeEventListener("reading:typography-changed", this._boundOnTypography)
+    window.removeEventListener("resize", this._boundOnResize)
+    this.clearTweens()
+  }
+
+  clearTweens() {
     this.tweens?.forEach((t) => {
       t.scrollTrigger?.kill()
       t.kill()
@@ -61,18 +71,62 @@ export default class extends Controller {
     this.tweens = []
   }
 
+  /** Sauvegarde le texte brut de chaque bloc (avant découpe) pour refaire la mesure plus tard. */
+  ensureSourceCaptured(el) {
+    if (!this.sourceByEl) this.sourceByEl = new WeakMap()
+    if (!this.sourceByEl.has(el)) {
+      this.sourceByEl.set(el, el.textContent || "")
+    }
+  }
+
+  scheduleReflow() {
+    if (this.modeValue !== "lines") return
+    if (this._reflowDebounce) clearTimeout(this._reflowDebounce)
+    this._reflowDebounce = setTimeout(() => {
+      this._reflowDebounce = null
+      const run = () => this.rebuildLineLayout({ initial: false })
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => run())
+      } else {
+        run()
+      }
+    }, 50)
+  }
+
   /**
-   * Lines mode: detect visual lines by measuring word positions,
-   * wrap each in a mask (overflow:hidden), animate yPercent slide-up.
-   * Replicates GSAP SplitText mask:"lines" behavior.
+   * Reconstruit les masques de lignes. Après le premier affichage, on évite de rejouer
+   * l’anim sur les blocs déjà “révélés” (scroll passé le seuil).
    */
-  animateLines() {
+  rebuildLineLayout({ initial = false } = {}) {
     const targets = this.element.querySelectorAll(".body-content, .chapter-content")
     const blocks = targets.length > 0 ? Array.from(targets) : [this.element]
 
     blocks.forEach((el) => {
-      const raw = el.textContent || ""
-      if (!raw.trim()) return
+      this.ensureSourceCaptured(el)
+      const source = this.sourceByEl.get(el) || ""
+      if (!String(source).trim()) return
+      el.textContent = source
+    })
+    this.clearTweens()
+    this.animateLines({ initial })
+    scrollTrigger.refresh()
+  }
+
+  /**
+   * Lines mode: detect visual lines by measuring word positions,
+   * wrap each in a mask (overflow:hidden), animate yPercent slide-up.
+   * Replicates GSAP SplitText mask:"lines" behavior.
+   * @param {{ initial?: boolean }} opts — initial: première entrée = animation scroll ; reflow = pas de rejeu inutile
+   */
+  animateLines(opts = {}) {
+    const initial = opts.initial !== false
+    const targets = this.element.querySelectorAll(".body-content, .chapter-content")
+    const blocks = targets.length > 0 ? Array.from(targets) : [this.element]
+
+    blocks.forEach((el) => {
+      this.ensureSourceCaptured(el)
+      const raw = (this.sourceByEl.get(el) || el.textContent || "")
+      if (!String(raw).trim()) return
 
       // Split by paragraphs (double newline)
       const paragraphs = raw.split(/\n\s*\n/)
@@ -159,6 +213,13 @@ export default class extends Controller {
       // Animate all lines within this block
       const lineEls = el.querySelectorAll(".text-reveal-line")
       if (!lineEls.length) return
+
+      const inRevealZone = el.getBoundingClientRect().top < window.innerHeight * 0.85
+
+      if (!initial && inRevealZone) {
+        gsap.set(lineEls, { opacity: 1 })
+        return
+      }
 
       const tween = gsap.from(lineEls, {
         opacity: 0,

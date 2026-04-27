@@ -17,6 +17,12 @@ export default class extends Controller {
 
   connect() {
     this.loadSettings()
+    this._onPointerDownOutside = this._handlePointerDownOutside.bind(this)
+    document.addEventListener("pointerdown", this._onPointerDownOutside)
+  }
+
+  disconnect() {
+    document.removeEventListener("pointerdown", this._onPointerDownOutside)
   }
 
   // ─── Panel animation helpers ───
@@ -27,10 +33,30 @@ export default class extends Controller {
   }
 
   _hidePanel(panel) {
+    if (panel.classList.contains('!hidden')) return
     gsap.to(panel, {
       opacity: 0, y: 8, duration: 0.15, ease: "power2.in",
       onComplete: () => panel.classList.add('!hidden')
     })
+  }
+
+  /** Ferme menu actions + paramètres au clic extérieur (sans toucher aux autres overlays). */
+  _handlePointerDownOutside(event) {
+    if (!this.hasActionsPanelTarget || !this.hasSettingsPanelTarget) return
+
+    const actionsOpen = !this.actionsPanelTarget.classList.contains('!hidden')
+    const settingsOpen = !this.settingsPanelTarget.classList.contains('!hidden')
+    if (!actionsOpen && !settingsOpen) return
+
+    const t = event.target
+    if (this.actionsPanelTarget.contains(t) || this.settingsPanelTarget.contains(t)) return
+
+    // Même barre que les toggles : on ignore pour laisser click->toggle gérer ouvrir/fermer
+    if (t.closest('button[data-action*="toggleActions"]') ||
+        t.closest('button[data-action*="toggleSettings"]')) return
+
+    this._hidePanel(this.actionsPanelTarget)
+    this._hidePanel(this.settingsPanelTarget)
   }
 
   _togglePanel(panel) {
@@ -114,6 +140,7 @@ export default class extends Controller {
     this.setActiveButton('textSize', size)
     this.applyStyleToAdjustable('fontSize', this.getFontSize(size))
     this.saveSetting('text-size', size)
+    this.dispatchReadingTypographyChanged()
   }
 
   changeLineHeight(event) {
@@ -121,6 +148,7 @@ export default class extends Controller {
     this.setActiveButton('lineHeight', height)
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(height))
     this.saveSetting('line-height', height)
+    this.dispatchReadingTypographyChanged()
   }
 
   changeFont(event) {
@@ -128,6 +156,7 @@ export default class extends Controller {
     this.setActiveButton('font', font)
     this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
     this.saveSetting('font-family', font)
+    this.dispatchReadingTypographyChanged()
   }
 
   changePostTheme(event) {
@@ -160,6 +189,10 @@ export default class extends Controller {
     document.querySelectorAll('.adjustable').forEach(el => {
       el.style[property] = value
     })
+  }
+
+  dispatchReadingTypographyChanged() {
+    document.dispatchEvent(new CustomEvent("reading:typography-changed", { bubbles: true }))
   }
 
   getFontSize(size) {

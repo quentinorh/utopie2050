@@ -23,7 +23,7 @@ export default class extends Controller {
     "firstSliderControl", "secondSliderControl", "symmetryMode",
     "colorPicker", "rows", "columns", "smoothing",
     "anchor1", "anchor2", "grid", "controlsToggleIcon",
-    "hueValue", "smoothingValue", "curveValue", "gridValue"
+    "smoothingValue", "curveValue", "gridValue"
   ]
   static values = { uniqueId: String }
 
@@ -416,7 +416,6 @@ export default class extends Controller {
   // === Toolbar actions ===
 
   randomize() {
-    if (this.hasColorPickerTarget) this.colorPickerTarget.value = Math.floor(Math.random() * 360);
     if (this.hasSmoothingTarget) this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
     if (this.hasRowsTarget) this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
     if (this.hasColumnsTarget) this.columnsTarget.value = Math.floor(Math.random() * 4) + 1;
@@ -470,9 +469,6 @@ export default class extends Controller {
   }
 
   updateValueDisplays() {
-    if (this.hasHueValueTarget && this.hasColorPickerTarget) {
-      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}`;
-    }
     if (this.hasSmoothingValueTarget && this.hasSmoothingTarget) {
       this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
     }
