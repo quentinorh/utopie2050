@@ -3,9 +3,10 @@
       class: "index-card group",
       data: {
         staggered_animation_target: "element",
-        stagger_count: 12
+        stagger_count: 12,
+        cursor_marquee_text: "Lire"
       } do %>
-    <div class="index-card__cover" data-controller="cover">
+    <div class="index-card__cover" data-controller="cover card-hover">
       <input type="hidden" data-cover-target="title" value="<%= post.title %>">
       <input type="hidden" data-cover-target="patternSettings" value="<%= post.pattern_settings %>">
       <input type="hidden" data-cover-target="postColor" value="<%= post.color %>">
