@@ -1,0 +1,262 @@
+/* ================================
+   Navbar — transparent / scrolled states
+   ================================ */
+
+.navbar-dot {
+  background-color: #000;
+}
+
+.dark .navbar-dot {
+  background-color: #fff;
+}
+
+.navbar--transparent {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+
+  .navbar-logo-text {
+    color: #fff;
+    transition: color 0.4s ease;
+  }
+
+  .navbar-dot {
+    background-color: #fff !important;
+    transition: background-color 0.4s ease;
+  }
+
+  .navbar-center-link {
+    color: #fff;
+    transition: color 0.4s ease;
+  }
+
+  .navbar-fullscreen-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+    transition: border-color 0.4s ease;
+  }
+
+  .navbar-fullscreen-text {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.4s ease;
+  }
+
+  .navbar-fullscreen-icon {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.4s ease;
+  }
+}
+
+.navbar--transparent.navbar--scrolled {
+  background-color: #fff !important;
+  border-color: #E5E7EB !important;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+
+  .navbar-logo-text {
+    color: #000;
+  }
+
+  .navbar-dot {
+    background-color: #000 !important;
+  }
+
+  .navbar-center-link {
+    color: #000;
+  }
+
+  .navbar-fullscreen-btn {
+    border-color: #D1D5DB;
+  }
+
+  .navbar-fullscreen-text {
+    color: #000;
+  }
+
+  .navbar-fullscreen-icon {
+    color: #000;
+  }
+}
+
+.dark .navbar--transparent .navbar-center-link {
+  color: #fff;
+}
+
+/* Dark mode overrides for scrolled state */
+.dark .navbar--transparent.navbar--scrolled {
+  background-color: #141b2a !important;
+  border-color: #4B5563 !important;
+
+  .navbar-logo-text {
+    color: #F3F4F6;
+  }
+
+  .navbar-dot {
+    background-color: #F3F4F6 !important;
+  }
+
+  .navbar-center-link {
+    color: #F3F4F6;
+  }
+
+  .navbar-fullscreen-text {
+    color: #F3F4F6;
+  }
+
+  .navbar-fullscreen-icon {
+    color: #F3F4F6;
+  }
+}
+
+/* Show/edit/new — mobile : point + « Lire le futur » (même opacity, masqués avant scroll) */
+.navbar-center-wrapper--show-mobile {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.navbar--scrolled .navbar-center-wrapper--show-mobile {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Desktop : « Lire les futurs » sur la moitié droite, aligné avec le panneau contenu */
+.navbar-center-wrapper--show-desktop {
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    transform: translate(0, -50%);
+    padding-left: 40px;
+    pointer-events: auto;
+  }
+
+  @media (min-width: 1440px) {
+    left: 40%;
+  }
+
+  @media (min-width: 1920px) {
+    padding-left: calc(40px * 2);
+  }
+}
+
+.navbar--show-page.navbar--transparent .navbar-center-wrapper--show-desktop {
+  @media (min-width: 1024px) {
+    left: 50% !important;
+    transform: translate(0, -50%) !important;
+  }
+
+  @media (min-width: 1440px) {
+    left: 40% !important;
+  }
+}
+
+/* Lisibilité sur fond clair du panneau droit (show / form) */
+.navbar-center-wrapper--show-desktop .navbar-center-link--show {
+  @media (min-width: 1024px) {
+    color: #000 !important;
+  }
+}
+
+.dark .navbar-center-wrapper--show-desktop .navbar-center-link--show {
+  @media (min-width: 1024px) {
+    color: #f3f4f6 !important;
+  }
+}
+
+/* Mobile show/edit/new : couleur du lien centre quand la barre passe en fond blanc (évite tout héritage gris/blanc) */
+@media (max-width: 1023px) {
+  .navbar--show-page.navbar--transparent.navbar--scrolled .navbar-center-link--show {
+    color: #000;
+  }
+
+  .dark .navbar--show-page.navbar--transparent.navbar--scrolled .navbar-center-link--show {
+    color: #f3f4f6;
+  }
+}
+
+/* Show/edit/new pages — scroll-to-white is mobile-only.
+   On desktop (≥1024px) the navbar must stay transparent over the fixed cover,
+   so we neutralise the generic .navbar--transparent.navbar--scrolled rules. */
+@media (min-width: 1024px) {
+  .navbar--show-page.navbar--transparent.navbar--scrolled {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    border-bottom-width: 0 !important;
+
+    .navbar-logo-text { color: #fff; }
+    .navbar-dot { background-color: #fff !important; }
+    .navbar-fullscreen-btn { border-color: rgba(255, 255, 255, 0.3); }
+    .navbar-fullscreen-text { color: rgba(255, 255, 255, 0.7); }
+    .navbar-fullscreen-icon { color: rgba(255, 255, 255, 0.7); }
+  }
+}
+
+.dark .navbar--show-page.navbar--transparent.navbar--scrolled {
+  @media (min-width: 1024px) {
+    background-color: transparent !important;
+    border-color: transparent !important;
+
+    .navbar-logo-text { color: #fff; }
+    .navbar-dot { background-color: #fff !important; }
+    .navbar-fullscreen-text { color: rgba(255, 255, 255, 0.7); }
+    .navbar-fullscreen-icon { color: rgba(255, 255, 255, 0.7); }
+  }
+}
+
+/* Laisse dépasser le fondu sous la navbar (moitié droite uniquement) */
+.navbar--show-page {
+  @media (min-width: 1024px) {
+    overflow: visible;
+  }
+}
+
+/* Show/edit/new — desktop: masque le texte qui scroll sous la partie droite de la barre
+   (aligné sur le bord 50% / panneau contenu), tout en laissant la moitié gauche transparente sur la cover. */
+.navbar-show-right-mask {
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 50%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @media (min-width: 1440px) {
+    left: 40%;
+  }
+}
+
+/* Même teinte que .show-content-panel (bg-gray-100) ; le dégradé est sous la barre (::after) */
+.navbar-show-right-mask--show {
+  @media (min-width: 1024px) {
+    background-color: #fdfdfd;
+  }
+}
+
+.dark .navbar-show-right-mask--show {
+  @media (min-width: 1024px) {
+    background-color: #141b2a;
+  }
+}
+
+/* Même teinte que .form-editor (--editor-bg) */
+.navbar-show-right-mask--form {
+  @media (min-width: 1024px) {
+    background-color: #fefefe;
+  }
+}
+
+.dark .navbar-show-right-mask--form {
+  @media (min-width: 1024px) {
+    background-color: #1f2937;
+  }
+}

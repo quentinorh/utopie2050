@@ -1,12 +1,17 @@
 @import "form_legend_clear";
 @import "general";
 //@import "micro_interactions";
-@import "cover";
+
+/* Navbar site, cover show/form, barre d’action éditeur */
+@import "navbar";
+@import "show_cover";
+@import "form_editor";
+@import "editor_actionbar";
 //@import "hero";
 //@import "posts_grid";
 //@import "typo_scroll";
 @import "cursor_marquee";
 //@import "stacking_cards";
 //@import "footer_parallax";
-@import "bookmark";
+//@import "bookmark";
 @import "slider";

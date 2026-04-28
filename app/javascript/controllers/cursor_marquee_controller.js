@@ -1,12 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
 
-// Osmo "Cursor with Marquee" — adapted to Stimulus.
-//
-// Mounted on <body> so it follows the pointer everywhere; the marquee
-// card stays hidden until the pointer is over an element carrying
-// `[data-cursor-marquee-text="…"]`. The label is whatever string that
-// attribute holds (we use "Lire" on post cards).
+// Pilule + libellé statique au survol de `[data-cursor-marquee-text]`.
+// Monté sur <body> pour suivre le pointeur ; pas d’animation de défilement.
 //
 // We disable on touch / coarse pointers because the visual is purely
 // cursor-driven.
@@ -14,9 +10,7 @@ export default class extends Controller {
   static targets = ["cursor", "text"]
 
   static values = {
-    hoverOutDelay:   { type: Number, default: 0.4 },
-    followDuration:  { type: Number, default: 0.4 },
-    speedMultiplier: { type: Number, default: 5 }
+    followDuration: { type: Number, default: 0.4 }
   }
 
   connect() {
@@ -77,11 +71,8 @@ export default class extends Controller {
     if (!el) return
     if (this._pauseTimeout) clearTimeout(this._pauseTimeout)
     const text = el.getAttribute("data-cursor-marquee-text") || ""
-    const sec  = (text.length || 1) / this.speedMultiplierValue
     this.textTargets.forEach(t => {
       t.textContent = text
-      t.style.animationPlayState = "running"
-      t.style.animationDuration = sec + "s"
     })
     this.cursorTarget.setAttribute("data-cursor-marquee-status", "active")
     this._activeEl = el
@@ -90,11 +81,6 @@ export default class extends Controller {
   _pauseLater() {
     this.cursorTarget.setAttribute("data-cursor-marquee-status", "not-active")
     if (this._pauseTimeout) clearTimeout(this._pauseTimeout)
-    this._pauseTimeout = setTimeout(() => {
-      this.textTargets.forEach(t => {
-        t.style.animationPlayState = "paused"
-      })
-    }, this.hoverOutDelayValue * 1000)
     this._activeEl = null
   }
 }

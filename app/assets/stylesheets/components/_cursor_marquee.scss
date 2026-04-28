@@ -1,6 +1,5 @@
-// Osmo "Cursor with Marquee" — pill that follows the cursor and shows a
-// scrolling word (e.g. "Lire") whenever the pointer enters an element
-// carrying [data-cursor-marquee-text].
+// Pilule qui suit le curseur et affiche un libellé statique (ex. « Lire »)
+// au survol des éléments avec [data-cursor-marquee-text] — sans défilement.
 //
 // JS lives in cursor_marquee_controller.js (controller is mounted on
 // <body> so it's always available, but stays opaque-empty until a
@@ -34,25 +33,22 @@
   opacity: 0;
 }
 
+// Seul l'état "active" (survol d'un [data-cursor-marquee-text]) affiche la
+// pilule — en "not-active" on reste totalement invisible pour éviter le
+// point qui suivait le curseur partout.
 [data-cursor-marquee-status="active"] .cursor-marquee__card {
   clip-path: inset(0 round 50em);
   transform: translateY(-25%) rotate(0.001deg);
-}
-
-[data-cursor-marquee-status="not-active"] .cursor-marquee__card,
-[data-cursor-marquee-status="active"] .cursor-marquee__card {
   opacity: 1;
 }
 
-@keyframes translateXCursor {
-  to {
-    transform: translateX(-100%);
-  }
+[data-cursor-marquee-status="not-active"] .cursor-marquee__card {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .cursor-marquee__text-span {
   white-space: nowrap;
-  transform-origin: 0;
   padding: .5em 1em;
   font-family: "Apfel", sans-serif;
   font-size: 1.05em;
@@ -62,7 +58,6 @@
   line-height: 1;
   display: block;
   position: relative;
-  animation: translateXCursor 10s linear infinite paused;
   transition: opacity 0.15s ease-in-out 0.25s;
   opacity: 0;
 }
@@ -70,12 +65,6 @@
 [data-cursor-marquee-status="active"] .cursor-marquee__text-span {
   transition: opacity 0.15s ease-in-out 0s;
   opacity: 1;
-}
-
-.cursor-marquee__text-span.is--duplicate {
-  position: absolute;
-  left: 100%;
-  top: 0;
 }
 
 // Disable on touch / coarse pointers — the cursor visual makes no sense

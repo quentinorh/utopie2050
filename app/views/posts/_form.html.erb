@@ -1,7 +1,5 @@
 <% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
 <div data-controller="chapter cover-editor editor-reveal"
-     data-preview-username-value="<%= current_user.username %>"
-     data-preview-initial-hue-value="<%= @post.pattern_settings.try(:[], 'hue') || rand(360) %>"
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
      data-cover-editor-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
@@ -43,7 +41,7 @@
             </svg>
 
             <!-- Cover title block — typesetting identique à la page show -->
-            <div class="cover-title-block pointer-events-none left-xs sm:left-sm lg:left-[40px] bottom-xs sm:bottom-sm lg:bottom-[40px]">
+            <div class="cover-title-block pointer-events-none">
               <div class="cover-username" data-cover-editor-target="userName">
                 <%= current_user.username %>
               </div>
@@ -223,7 +221,7 @@
                                 value: @post.title,
                                 required: true,
                                 data: { action: "input->cover-editor#updateTitle", "cover-editor-target": "titleInput" } %>
-            <p class="editor-error mt-2 hidden" data-preview-target="titleError">Le titre est requis</p>
+            <p class="editor-error mt-2 hidden" data-cover-editor-target="titleError">Le titre est requis</p>
           </div>
 
           <!-- Code événement — optionnel, révélé par un switch -->
@@ -358,7 +356,7 @@
                    end %>
               <%= form.submit submit_label,
                               class: "cover-pill cover-pill--sm cover-pill--filled",
-                              data: { "cover-editor-target": "submitButton", action: "click->preview#validateForm" } %>
+                              data: { "cover-editor-target": "submitButton", action: "click->cover-editor#validateBeforeSubmit" } %>
             </div>
           </div>
         </footer>

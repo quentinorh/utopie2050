@@ -12,8 +12,8 @@ import { gsap } from "gsap"
 // `d` / `transform` attributes back so the card looks identical to
 // its at-rest state.
 //
-// The CSS in `_posts_index.scss` already handles the SVG scale on
-// hover; this controller adds the path-morph layer on top.
+// The CSS in `_posts_index.scss` handles a light SVG scale on hover;
+// this controller morphs the paths (Perlin) for stronger shape motion.
 export default class extends Controller {
   connect() {
     this._link = this.element.closest(".index-card") || this.element
@@ -74,12 +74,11 @@ export default class extends Controller {
       second: Math.random() * 1000,
       smoothing: Math.random() * 1000
     }
-    // Faster than the hero — hover is a short interaction so we want
-    // the morph to read quickly without waiting seconds.
+    // Vitesses plus élevées = formes qui bougent davantage au survol.
     this._noiseSpeeds = {
-      first: 0.45,
-      second: 0.55,
-      smoothing: 0.30
+      first: 0.78,
+      second: 0.92,
+      smoothing: 0.52
     }
   }
 
@@ -173,15 +172,14 @@ export default class extends Controller {
     const t = (performance.now() - this._hoverStart) / 1000
     const env = this._envelope?.v ?? 0
 
-    // Perlin perturbations around the original target values, scaled
-    // by the envelope so enter/exit feel breathing rather than abrupt.
+    // Perturbations Perlin plus amples = courbes qui « respirent » plus.
     const params = {
       firstSliderControl: this._target1 +
-        env * 22 * this._perlin1D(this._noiseOffsets.first + t * this._noiseSpeeds.first, this._noise.first),
+        env * 40 * this._perlin1D(this._noiseOffsets.first + t * this._noiseSpeeds.first, this._noise.first),
       secondSliderControl: this._target2 +
-        env * 22 * this._perlin1D(this._noiseOffsets.second + t * this._noiseSpeeds.second, this._noise.second),
+        env * 40 * this._perlin1D(this._noiseOffsets.second + t * this._noiseSpeeds.second, this._noise.second),
       smoothing: Math.max(5,
-        this._targetSm + env * 14 *
+        this._targetSm + env * 24 *
         this._perlin1D(this._noiseOffsets.smoothing + t * this._noiseSpeeds.smoothing, this._noise.smoothing)),
       rows: this._rows,
       columns: this._columns,

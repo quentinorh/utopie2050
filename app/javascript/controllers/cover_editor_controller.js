@@ -17,7 +17,7 @@ export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
                    "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "submitButton", "controlsToggleIcon",
-                   "hueValue", "smoothingValue", "curveValue", "gridValue"]
+                   "hueValue", "smoothingValue", "curveValue", "gridValue", "titleError"]
   static values = { uniqueId: String, newRecord: Boolean }
 
   connect() {
@@ -86,7 +86,13 @@ export default class extends Controller {
   }
 
   updateTitle() {
-    const title = this.titleInputTarget.value || "Futur titre";
+    const raw = this.titleInputTarget.value
+    if (raw.trim()) {
+      this.titleInputTarget.classList.remove("border-red-500")
+      if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden")
+    }
+
+    const title = raw || "Futur titre"
 
     const hue = parseInt(this.colorPickerTarget.value, 10);
     const titleBackground = `hsl(${hue}, 80%, 70%)`;
@@ -429,6 +435,18 @@ export default class extends Controller {
     const svgText = new XMLSerializer().serializeToString(svgElement);
     const coverField = this.coverTarget;
     coverField.value = svgText;
+  }
+
+  /** Clic sur « Publier » / « Enregistrer » : bloque la soumission si le titre est vide (HTML required peut être contourné). */
+  validateBeforeSubmit(event) {
+    if (!this.titleInputTarget.value.trim()) {
+      event.preventDefault();
+      this.titleInputTarget.classList.add("border-red-500");
+      if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.remove("hidden");
+      return;
+    }
+    this.titleInputTarget.classList.remove("border-red-500");
+    if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden");
   }
 
   savePatternSettings() {

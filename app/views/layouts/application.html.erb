@@ -50,15 +50,13 @@
     </main>
     <%= render 'shared/flashes' %>
 
-    <%# Pointer-following marquee pill (Osmo cursor-marquee). Hidden on
-        touch devices via media query in _cursor_marquee.scss. %>
+    <%# Pilule « Lire » qui suit le curseur (libellé statique). %>
     <div class="cursor-marquee"
          data-cursor-marquee-target="cursor"
          data-cursor-marquee-status=""
          aria-hidden="true">
       <div class="cursor-marquee__card">
         <span class="cursor-marquee__text-span" data-cursor-marquee-target="text">Lire</span>
-        <span class="cursor-marquee__text-span is--duplicate" data-cursor-marquee-target="text">Lire</span>
       </div>
     </div>
   </body>

@@ -37,6 +37,30 @@ function easeOutBack(t) {
 
 function lerp(a, b, t) { return a + (b - a) * t }
 
+// Matches CSS hsl() — h in degrees, s/l as percentages (e.g. 50, 13).
+function hslToRgbBytes(h, sPct, lPct) {
+  const s = sPct / 100
+  const l = lPct / 100
+  const a = s * Math.min(l, 1 - l)
+  const f = (n) => {
+    const k = (n + h / 30) % 12
+    return l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)))
+  }
+  return {
+    r: Math.round(255 * f(0)),
+    g: Math.round(255 * f(8)),
+    b: Math.round(255 * f(4))
+  }
+}
+
+// 4×4 Bayer matrix / 15 — centered noise for ordered dither on alpha ramps.
+const BAYER4 = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5]
+]
+
 const W = 1080
 const H = 1920
 const FPS = 60
@@ -374,6 +398,43 @@ export default class extends Controller {
     }
   }
 
+  // Top/bottom masks: source-over blend per pixel (same as hsla fillRect) so
+  // transparency stays correct; ordered dither breaks 8-bit banding. Scaling
+  // transparent bitmaps with drawImage often flattens the bottom fade.
+  _compositeTextGradientBands(ctx, hue) {
+    const gradH = 560
+    const ga = ctx.globalAlpha
+    const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, 50, 13)
+    const alphaTop = (u) =>
+      u <= 0.55 ? lerp(1, 0.88, u / 0.55) : lerp(0.88, 0, (u - 0.55) / 0.45)
+    const alphaBot = (u) =>
+      u <= 0.45 ? lerp(0, 0.88, u / 0.45) : lerp(0.88, 1, (u - 0.45) / 0.55)
+    const DITHER = 0.04
+
+    const blendBand = (destY, alphaFn) => {
+      const img = ctx.getImageData(0, destY, W, gradH)
+      const d = img.data
+      const denom = gradH > 1 ? gradH - 1 : 1
+      for (let y = 0; y < gradH; y++) {
+        const u = y / denom
+        let a = alphaFn(u)
+        for (let x = 0; x < W; x++) {
+          const di = (BAYER4[y & 3][x & 3] / 15 - 0.5) * DITHER
+          const am = Math.min(1, Math.max(0, a + di)) * ga
+          const inv = 1 - am
+          const i = (y * W + x) * 4
+          d[i] = br * am + d[i] * inv
+          d[i + 1] = bg * am + d[i + 1] * inv
+          d[i + 2] = bb * am + d[i + 2] * inv
+        }
+      }
+      ctx.putImageData(img, 0, destY)
+    }
+
+    blendBand(0, alphaTop)
+    blendBand(H - gradH, alphaBot)
+  }
+
   // ── Phase 2: Text scene (COVER_END → TEXT_END) ──
   _drawText(ctx, data, t, fadeT, svgBg) {
     if (fadeT >= 1) {
@@ -397,7 +458,7 @@ export default class extends Controller {
     // Text starts just off the bottom edge and scrolls upward through the
     // visible area. Only what traverses during the phase is shown (the rest
     // is clipped by the top/bottom gradient masks); the goal is readability.
-    const SCROLL_PX_PER_SEC = 135
+    const SCROLL_PX_PER_SEC = 135 * 1.5 * 1.5
     const scrollElapsed = t - COVER_END
     const scrollY = H - scrollElapsed * SCROLL_PX_PER_SEC
 
@@ -412,27 +473,7 @@ export default class extends Controller {
       }
     })
 
-    // Gradient masks use the cover background color (svgBg / hsla hue-tinted).
-    // Accentuated: taller band + mid-stop keeps the fade opaque much longer
-    // before going transparent, producing a stronger "tunnel" effect.
-    const gradH = 560
-    const solid = `hsla(${data.hue}, 50%, 13%, 1)`
-    const mid = `hsla(${data.hue}, 50%, 13%, 0.88)`
-    const fade = `hsla(${data.hue}, 50%, 13%, 0)`
-
-    const topGrad = ctx.createLinearGradient(0, 0, 0, gradH)
-    topGrad.addColorStop(0, solid)
-    topGrad.addColorStop(0.55, mid)
-    topGrad.addColorStop(1, fade)
-    ctx.fillStyle = topGrad
-    ctx.fillRect(0, 0, W, gradH)
-
-    const botGrad = ctx.createLinearGradient(0, H - gradH, 0, H)
-    botGrad.addColorStop(0, fade)
-    botGrad.addColorStop(0.45, mid)
-    botGrad.addColorStop(1, solid)
-    ctx.fillStyle = botGrad
-    ctx.fillRect(0, H - gradH, W, gradH)
+    this._compositeTextGradientBands(ctx, data.hue)
 
     ctx.restore()
   }
@@ -445,8 +486,8 @@ export default class extends Controller {
     // Single, slow inversion: stay in the default state, flash inverted once
     // for ~0.8s around the middle of the phase, then return to default.
     const blinkT = t - TEXT_END
-    const flashStart = 0.5
-    const flashEnd = 1.3
+    const flashStart = 0.3
+    const flashEnd = 0.6
     const inverted = blinkT >= flashStart && blinkT < flashEnd
 
     // On inverted cycles: page bg, box bg and text color all swap.

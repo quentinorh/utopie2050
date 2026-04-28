@@ -15,7 +15,7 @@
     </div>
 
     <div class="m-auto justify-center p-xs pt-0">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-xs grow justify-center" data-controller="staggered-animation">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xs grow justify-center" data-controller="staggered-animation">
         <% if @favorite_posts.any? %>
           <% @favorite_posts.each do |post| %>
             <%= render "posts/post", post: post %>
