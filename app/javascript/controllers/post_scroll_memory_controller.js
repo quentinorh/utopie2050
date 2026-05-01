@@ -2,6 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 const COOKIE_MAX_AGE_SEC = 60 * 60 * 24 * 30
 
+/** Sous cette distance du haut, on considère que c’est encore « en tête » d’article
+ * (évite les micro-décalaages dûs au cookie + changements de scrollHeight après layout/fonts). */
+const NEAR_TOP_PX = 56
+
 /**
  * Mémorise la position de lecture (ratio de scroll) dans un cookie par article,
  * pour retrouver la même zone après rechargement. Attend text-reveal:lines-ready
@@ -59,8 +63,12 @@ export default class extends Controller {
     const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
     if (max < 16) return
     const y = window.scrollY
+    if (y < NEAR_TOP_PX) {
+      this._clearReadingCookie()
+      return
+    }
+
     const ratio = y / max
-    if (ratio < 0.002 && y < 24) return
 
     const expires = new Date()
     expires.setTime(expires.getTime() + COOKIE_MAX_AGE_SEC * 1000)
@@ -76,7 +84,22 @@ export default class extends Controller {
     if (max <= 0) return
 
     const top = Math.max(0, Math.min(max, ratio * max))
+    if (top === 0) {
+      window.scrollTo(0, 0)
+      return
+    }
+    if (top < NEAR_TOP_PX) {
+      window.scrollTo(0, 0)
+      this._clearReadingCookie()
+      return
+    }
     window.scrollTo(0, top)
+  }
+
+  _clearReadingCookie() {
+    const secure = typeof window.isSecureContext === "boolean" && window.isSecureContext ? ";Secure" : ""
+    document.cookie = `${this.cookieName()}=;path=/;max-age=0;expires=Thu, 01 Jan 1970 00:00:00 GMT;SameSite=Lax${secure}`
+    this._ratioFromCookie = null
   }
 
   _getCookie(name) {
