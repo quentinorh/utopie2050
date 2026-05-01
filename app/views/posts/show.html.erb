@@ -18,8 +18,9 @@
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 
-<div data-controller="scroll cover actions svg-animation bookmark"
+<div data-controller="scroll cover actions svg-animation bookmark post-scroll-memory"
      data-post-id="<%= @post.id %>"
+     data-post-scroll-memory-post-id-value="<%= @post.id %>"
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
 

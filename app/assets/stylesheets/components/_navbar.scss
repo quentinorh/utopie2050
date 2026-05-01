@@ -1,6 +1,42 @@
 /* ================================
+   Surface partagée des barres
+   - Top navbar (état opaque / scrolled) + masque droit du show/edit/new
+   - Barre de lecture (bottom navbar)
+   - Barre d'action de l'éditeur
+   Référence visuelle : .editor-actionbar (fond translucide + flou).
+   ================================ */
+:root {
+  --bar-surface: rgba(255, 255, 255, 0.82);
+  --bar-border: rgba(0, 0, 0, 0.05);
+  --bar-blur: 20px;
+}
+
+.dark {
+  --bar-surface: rgba(20, 27, 42, 0.82);
+  --bar-border: rgba(255, 255, 255, 0.08);
+}
+
+/* L'éditeur garde son ambiance "papier" même si .dark est actif sur le root */
+.form-editor {
+  --bar-surface: rgba(255, 255, 255, 0.82);
+  --bar-border: rgba(0, 0, 0, 0.05);
+}
+
+@mixin bar-frosted {
+  background: var(--bar-surface);
+  backdrop-filter: blur(var(--bar-blur));
+  -webkit-backdrop-filter: blur(var(--bar-blur));
+}
+
+/* ================================
    Navbar — transparent / scrolled states
    ================================ */
+
+/* État opaque par défaut (pages "classiques") */
+.navbar--solid {
+  @include bar-frosted;
+  border-bottom: 1px solid var(--bar-border);
+}
 
 .navbar-dot {
   background-color: #000;
@@ -13,7 +49,13 @@
 .navbar--transparent {
   background-color: transparent !important;
   border-color: transparent !important;
-  transition: background-color 0.4s ease, border-color 0.4s ease;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    backdrop-filter 0.4s ease,
+    -webkit-backdrop-filter 0.4s ease;
 
   .navbar-logo-text {
     color: #fff;
@@ -47,10 +89,12 @@
 }
 
 .navbar--transparent.navbar--scrolled {
-  background-color: #fff !important;
-  border-color: #E5E7EB !important;
+  background: var(--bar-surface) !important;
+  border-color: var(--bar-border) !important;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+  backdrop-filter: blur(var(--bar-blur));
+  -webkit-backdrop-filter: blur(var(--bar-blur));
 
   .navbar-logo-text {
     color: #000;
@@ -81,11 +125,9 @@
   color: #fff;
 }
 
-/* Dark mode overrides for scrolled state */
+/* Dark mode overrides for scrolled state — la surface/border passent
+   automatiquement au token .dark, on ne redéfinit que le contraste interne. */
 .dark .navbar--transparent.navbar--scrolled {
-  background-color: #141b2a !important;
-  border-color: #4B5563 !important;
-
   .navbar-logo-text {
     color: #F3F4F6;
   }
@@ -179,13 +221,16 @@
 }
 
 /* Show/edit/new pages — scroll-to-white is mobile-only.
-   On desktop (≥1024px) the navbar must stay transparent over the fixed cover,
-   so we neutralise the generic .navbar--transparent.navbar--scrolled rules. */
+   On desktop (≥1024px) the navbar must stay transparent over la cover fixe,
+   so we neutralise the generic .navbar--transparent.navbar--scrolled rules.
+   La surface gelée déménage sur .navbar-show-right-mask. */
 @media (min-width: 1024px) {
   .navbar--show-page.navbar--transparent.navbar--scrolled {
     background-color: transparent !important;
     border-color: transparent !important;
     border-bottom-width: 0 !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 
     .navbar-logo-text { color: #fff; }
     .navbar-dot { background-color: #fff !important; }
@@ -197,9 +242,6 @@
 
 .dark .navbar--show-page.navbar--transparent.navbar--scrolled {
   @media (min-width: 1024px) {
-    background-color: transparent !important;
-    border-color: transparent !important;
-
     .navbar-logo-text { color: #fff; }
     .navbar-dot { background-color: #fff !important; }
     .navbar-fullscreen-text { color: rgba(255, 255, 255, 0.7); }
@@ -207,15 +249,12 @@
   }
 }
 
-/* Laisse dépasser le fondu sous la navbar (moitié droite uniquement) */
-.navbar--show-page {
-  @media (min-width: 1024px) {
-    overflow: visible;
-  }
-}
-
-/* Show/edit/new — desktop: masque le texte qui scroll sous la partie droite de la barre
-   (aligné sur le bord 50% / panneau contenu), tout en laissant la moitié gauche transparente sur la cover. */
+/* Show/edit/new — desktop : masque la moitié droite de la barre (aligné sur le
+   panneau de contenu), tout en laissant la moitié gauche transparente sur la cover.
+   La surface gelée vit ici (et plus sur la nav globale) pour rester invisible
+   côté cover. Les variantes --show / --form ne sont plus nécessaires : la
+   surface translucide se fond dans n'importe quelle couleur de panneau
+   (gray-100, FAFAF9, …) via blur/backdrop. */
 .navbar-show-right-mask {
   display: none;
 
@@ -228,6 +267,8 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
+    @include bar-frosted;
+    border-bottom: 1px solid var(--bar-border);
   }
 
   @media (min-width: 1440px) {
@@ -235,28 +276,11 @@
   }
 }
 
-/* Même teinte que .show-content-panel (bg-gray-100) ; le dégradé est sous la barre (::after) */
-.navbar-show-right-mask--show {
-  @media (min-width: 1024px) {
-    background-color: #fdfdfd;
-  }
-}
-
-.dark .navbar-show-right-mask--show {
-  @media (min-width: 1024px) {
-    background-color: #141b2a;
-  }
-}
-
-/* Même teinte que .form-editor (--editor-bg) */
-.navbar-show-right-mask--form {
-  @media (min-width: 1024px) {
-    background-color: #fefefe;
-  }
-}
-
-.dark .navbar-show-right-mask--form {
-  @media (min-width: 1024px) {
-    background-color: #1f2937;
-  }
+/* ================================
+   Bottom navbar — barre de lecture (show/edit/new)
+   Même surface gelée que .editor-actionbar mais ancrée en bas.
+   ================================ */
+.bottom-navbar {
+  @include bar-frosted;
+  border-top: 1px solid var(--bar-border);
 }

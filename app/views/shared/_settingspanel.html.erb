@@ -10,7 +10,7 @@
       <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Taille</span>
       <div class="flex gap-1.5 mt-2">
         <% %w[small medium large xlarge].each_with_index do |size, i| %>
-          <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+          <button type="button" class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
                   data-action="click->actions#changeTextSize"
                   data-actions-target="textSize"
                   data-value="<%= size %>"
@@ -28,7 +28,7 @@
       <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Interligne</span>
       <div class="flex gap-1.5 mt-2">
         <% %w[small medium large xlarge].each_with_index do |lh, i| %>
-          <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
+          <button type="button" class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5"
                   data-action="click->actions#changeLineHeight"
                   data-actions-target="lineHeight"
                   data-value="<%= lh %>"
@@ -49,11 +49,11 @@
     <div class="mb-4">
       <span class="font-mono text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Police</span>
       <div class="flex gap-1.5 mt-2">
-        <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-sans text-gray-600 dark:text-gray-300"
+        <button type="button" class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-sans text-gray-600 dark:text-gray-300"
                 data-action="click->actions#changeFont"
                 data-actions-target="font"
                 data-value="sans">Apfel</button>
-        <button class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-lexend text-gray-600 dark:text-gray-300"
+        <button type="button" class="flex-1 h-8 flex items-center justify-center rounded-lg border border-transparent hover:bg-gray-950/5 dark:hover:bg-white/5 text-sm font-lexend text-gray-600 dark:text-gray-300"
                 data-action="click->actions#changeFont"
                 data-actions-target="font"
                 data-value="Lexend">Lexend</button>

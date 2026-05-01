@@ -1,8 +1,23 @@
 // To use a font file (.woff) uncomment following lines
 @font-face {
   font-family: "Apfel";
-  font-weight: regular;
+  font-style: normal;
+  font-weight: 400;
   src: font-url('ApfelGrotezk-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: "Apfel";
+  font-style: normal;
+  font-weight: 500;
+  src: font-url('ApfelGrotezk-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: "Apfel";
+  font-style: normal;
+  font-weight: 700;
+  src: font-url('ApfelGrotezk-Bold.woff2') format('woff2');
 }
 
 @font-face {

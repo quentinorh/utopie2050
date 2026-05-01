@@ -37,6 +37,25 @@ function easeOutBack(t) {
 
 function lerp(a, b, t) { return a + (b - a) * t }
 
+/** Letter-spacing canvas (équivalent CSS `letter-spacing` sur le pseudo). */
+function measureTextWithLetterSpacing(ctx, text, letterSpacingPx) {
+  if (!text.length) return 0
+  let w = 0
+  for (let i = 0; i < text.length; i++) {
+    w += ctx.measureText(text[i]).width
+    if (i < text.length - 1) w += letterSpacingPx
+  }
+  return w
+}
+
+function fillTextWithLetterSpacing(ctx, text, x, y, letterSpacingPx) {
+  let xPos = x
+  for (let i = 0; i < text.length; i++) {
+    ctx.fillText(text[i], xPos, y)
+    xPos += ctx.measureText(text[i]).width + (i < text.length - 1 ? letterSpacingPx : 0)
+  }
+}
+
 // Matches CSS hsl() — h in degrees, s/l as percentages (e.g. 50, 13).
 function hslToRgbBytes(h, sPct, lPct) {
   const s = sPct / 100
@@ -61,18 +80,96 @@ const BAYER4 = [
   [15, 7, 13, 5]
 ]
 
-const W = 1080
-const H = 1920
-const FPS = 60
-// Phase 1 (cover): 0 → SVG_MORPH_END (SVG only) → COVER_END (title/username reveal)
-// Phase 2 (scroll): COVER_END → TEXT_END
-// Phase 3 (outro):  TEXT_END → DURATION
-const SVG_MORPH_END = 3.0
-const COVER_END = 5.0
-const TEXT_END = 15.0
-const DURATION = 17
-const TOTAL_FRAMES = FPS * DURATION
-const DARK = "#12142C"
+// ═══════════════════════════════════════════════════════════════════════════
+// Reel export — paramètres (durées, défilement, typo, encodeur…)
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// Timeline (t = secondes depuis le début) :
+//   phase 1a  : 0 → REEL_SVG_MORPH_END     (morph SVG seul)
+//   phase 1b  : → REEL_COVER_END            (titre + pseudo)
+//   phase 1c  : fondu cover (REEL_PHASE1_FADE_OUT) puis fond uni (REEL_PHASE2_GAP_AFTER_FADE)
+//   phase 2   : REEL_SCROLL_START → REEL_TEXT_END   (scroll corps, vitesse = REEL_BODY_SCROLL_PX_PER_SEC)
+//   phase 3   : → REEL_DURATION            (outro)
+//
+const REEL_W = 1080
+const REEL_H = 1920
+const REEL_FPS = 60
+
+const REEL_SVG_MORPH_END = 3.0
+const REEL_COVER_END = 5.0
+const REEL_PHASE1_FADE_OUT = 0.35
+const REEL_PHASE2_GAP_AFTER_FADE = 0.12
+/** Durée du scroll une fois REEL_SCROLL_START atteint (vitesse px/s inchangée → plus de texte défilé). */
+const REEL_PHASE2_SCROLL_DURATION = 14.0
+const REEL_OUTRO_DURATION = 2.0
+
+const REEL_SCROLL_START = REEL_COVER_END + REEL_PHASE1_FADE_OUT + REEL_PHASE2_GAP_AFTER_FADE
+const REEL_TEXT_END = REEL_SCROLL_START + REEL_PHASE2_SCROLL_DURATION
+const REEL_DURATION = REEL_TEXT_END + REEL_OUTRO_DURATION
+const REEL_TOTAL_FRAMES = REEL_FPS * REEL_DURATION
+
+const REEL_ENCODER_QP = 18
+const REEL_SVG_MORPH_FRAME_COUNT = 120
+
+const REEL_DARK = "#12142C"
+const REEL_SVG_BG_HSL_S = 50
+const REEL_SVG_BG_HSL_L = 13
+
+// Phase 1 — cover (titre, pseudo, révélation)
+const REEL_COVER_TITLE_PX = 144
+/** Aligné sur .cover-title-text : line-height 100 % */
+const REEL_COVER_TITLE_LINE_HEIGHT_MULT = 1.0
+const REEL_COVER_TITLE_PAD_PX = 10
+/** Marge verticale en plus du pad « site » (haut + bas). */
+const REEL_COVER_TITLE_VPAD_EXTRA_PX = 10
+/** Descente fine du texte dans le bloc titre (centrage optique). */
+const REEL_COVER_TITLE_TEXT_OPTICAL_NUDGE_MULT = 0.04
+/** Extension du fond titre vers la droite (padding visuel). */
+const REEL_COVER_TITLE_BG_EXTRA_RIGHT_PX = 5
+const REEL_COVER_SIDE_INSET_PX = 80
+/** Réf. site .cover-username font-size 14px ; pads 7px / 3px mis à l’échelle. */
+const REEL_COVER_USERNAME_REF_PX = 14
+const REEL_COVER_USER_PX = 48
+const REEL_COVER_USER_PAD_X = Math.round((7 * REEL_COVER_USER_PX) / REEL_COVER_USERNAME_REF_PX)
+const REEL_COVER_USER_PAD_Y = Math.round((3 * REEL_COVER_USER_PX) / REEL_COVER_USERNAME_REF_PX)
+const REEL_COVER_USER_LINE_HEIGHT_MULT = 1.12
+/** Descente fine : `middle` + caps + bold = centre géométrique trop haut visuellement. */
+const REEL_COVER_USER_TEXT_OPTICAL_NUDGE_MULT = 0.072
+const REEL_COVER_GAP_USER_TITLE_PX = 42
+const REEL_COVER_REVEAL_SLIDE_PX = 80
+const REEL_COVER_USER_REVEAL_S = 0.5
+const REEL_COVER_TITLE_DELAY_AFTER_USER_S = 0.25
+const REEL_COVER_TITLE_REVEAL_S = 0.55
+const REEL_COVER_USER_ALPHA_RAMP = 1.5
+const REEL_COVER_TITLE_ALPHA_RAMP = 1.6
+
+// Phase 2 — corps du post
+const REEL_BODY_FONT_PX = 86
+const REEL_BODY_LINE_HEIGHT_MULT = 1.2
+const REEL_BODY_SCROLL_PX_PER_SEC = 135 * 1.5 * 1.5
+
+const REEL_TEXT_GRAD_BAND_HEIGHT_PX = 560
+const REEL_TEXT_GRAD_DITHER = 0.04
+
+// Phase 3 — outro
+const REEL_OUTRO_FLASH_START = 0.3
+const REEL_OUTRO_FLASH_END = 0.6
+const REEL_OUTRO_TILT_DEG = -3
+const REEL_OUTRO_LIRE_PX = 72
+const REEL_OUTRO_LIRE_PAD_X = 16
+const REEL_OUTRO_LIRE_PAD_Y = 10
+const REEL_OUTRO_LIRE_BASELINE_OFFSET_Y = -68
+const REEL_OUTRO_SP_PX = 144
+const REEL_OUTRO_SP_PAD_X = 20
+const REEL_OUTRO_SP_PAD_Y = 16
+const REEL_OUTRO_SP_BASELINE_OFFSET_Y = 68
+
+const W = REEL_W
+const H = REEL_H
+const FPS = REEL_FPS
+const DARK = REEL_DARK
+const COVER_USERNAME_COLOR = "#000000"
+const TOTAL_FRAMES = REEL_TOTAL_FRAMES
 
 export default class extends Controller {
   static values = { postId: Number }
@@ -95,23 +192,22 @@ export default class extends Controller {
 
       const accent = `hsl(${data.hue}, 80%, 70%)`
       const usernameBg = `hsl(${(data.hue + 120) % 360}, 80%, 70%)`
-      const svgBg = `hsl(${data.hue}, 50%, 13%)`
+      const svgBg = `hsl(${data.hue}, ${REEL_SVG_BG_HSL_S}%, ${REEL_SVG_BG_HSL_L}%)`
 
-      // Pre-render SVG morph frames — stretched over SVG_MORPH_END (3s).
-      // 120 frames ≈ 1 new morph image every 2 video frames at 60fps,
-      // smooth enough for the gradual path interpolation without the memory
-      // cost of rendering a full 180-frame sequence.
+      await this._ensureApfelCoverFontsLoaded()
+
+      // Pre-render SVG morph frames — étalés sur REEL_SVG_MORPH_END.
+      // ~1 nouvelle image tous les 2 frames vidéo à 60 fps : compromis lisse / mémoire.
       btn.textContent = "SVG 0%"
-      const svgFrames = await this._preRenderSvgFrames(data, 120, btn)
+      const svgFrames = await this._preRenderSvgFrames(data, REEL_SVG_MORPH_FRAME_COUNT, btn)
 
-      // Initialize H.264 encoder (pure WASM, no WebCodecs needed)
       btn.textContent = "Encodeur..."
       const HME = await loadHME()
       const encoder = await HME.createH264MP4Encoder()
       encoder.width = W
       encoder.height = H
       encoder.frameRate = FPS
-      encoder.quantizationParameter = 18 // quality: 10=best, 51=worst
+      encoder.quantizationParameter = REEL_ENCODER_QP
       encoder.initialize()
 
       // Render + encode every frame
@@ -148,20 +244,37 @@ export default class extends Controller {
     }
   }
 
+  /** Charge Apfel Regular + Bold pour le canvas (évite le fallback avant rendu). */
+  async _ensureApfelCoverFontsLoaded() {
+    if (!document.fonts?.load) return
+    await Promise.all([
+      document.fonts.load(`400 ${REEL_COVER_TITLE_PX}px Apfel, sans-serif`),
+      document.fonts.load(`700 ${REEL_COVER_USER_PX}px Apfel, sans-serif`),
+      document.fonts.load(`400 ${REEL_BODY_FONT_PX}px Apfel, sans-serif`),
+      document.fonts.load(`400 ${REEL_OUTRO_LIRE_PX}px Apfel, sans-serif`),
+      document.fonts.load(`400 ${REEL_OUTRO_SP_PX}px Apfel, sans-serif`)
+    ])
+  }
+
   // ── Render a single frame to canvas ──
   _renderFrame(ctx, data, svgFrames, accent, usernameBg, svgBg, frame) {
     const t = frame / FPS
 
-    if (t < COVER_END) {
+    if (t < REEL_COVER_END) {
       this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, t)
-    } else if (t < TEXT_END) {
-      const fadeT = Math.min((t - COVER_END) / 0.3, 1)
-      if (fadeT < 1) {
-        this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, COVER_END)
-        ctx.fillStyle = `hsla(${data.hue}, 50%, 13%, ${fadeT})`
+    } else if (t < REEL_TEXT_END) {
+      const fadeEnd = REEL_COVER_END + REEL_PHASE1_FADE_OUT
+      if (t < fadeEnd) {
+        const fadeT = (t - REEL_COVER_END) / REEL_PHASE1_FADE_OUT
+        this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, REEL_COVER_END)
+        ctx.fillStyle = `hsla(${data.hue}, ${REEL_SVG_BG_HSL_S}%, ${REEL_SVG_BG_HSL_L}%, ${fadeT})`
         ctx.fillRect(0, 0, W, H)
+      } else if (t < REEL_SCROLL_START) {
+        ctx.fillStyle = svgBg
+        ctx.fillRect(0, 0, W, H)
+      } else {
+        this._drawText(ctx, data, t, svgBg)
       }
-      this._drawText(ctx, data, t, fadeT, svgBg)
     } else {
       this._drawBlink(ctx, data, accent, t)
     }
@@ -301,8 +414,8 @@ export default class extends Controller {
   }
 
   // ── Phase 1: Cover ──
-  //   Step A (0 → SVG_MORPH_END): SVG morph, full frame, no radial reveal.
-  //   Step B (SVG_MORPH_END → COVER_END): title + username dynamic reveal.
+  //   Step A (0 → REEL_SVG_MORPH_END): SVG morph, full frame, no radial reveal.
+  //   Step B (REEL_SVG_MORPH_END → REEL_COVER_END): title + username dynamic reveal.
   _drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, t) {
     ctx.fillStyle = DARK
     ctx.fillRect(0, 0, W, H)
@@ -310,7 +423,7 @@ export default class extends Controller {
     // SVG morph plays across the whole of Step A (and freezes on the final
     // frame during Step B). No radial clip — SVG fills the frame immediately.
     if (svgFrames.length > 0) {
-      const morphT = Math.min(t, SVG_MORPH_END) / SVG_MORPH_END
+      const morphT = Math.min(t, REEL_SVG_MORPH_END) / REEL_SVG_MORPH_END
       const frameIdx = Math.min(
         Math.floor(morphT * (svgFrames.length - 1)),
         svgFrames.length - 1
@@ -322,76 +435,99 @@ export default class extends Controller {
     }
 
     // Title + username only appear in Step B.
-    if (t < SVG_MORPH_END) return
+    if (t < REEL_SVG_MORPH_END) return
 
-    // Title typography (matches .cover-title-text: color #12142C on accent bg)
-    const titleFontSize = 72
-    const titleLineHeight = titleFontSize * 1.3
-    const titlePad = 10
-    const leftX = 80
-    const maxWidth = W - 160
+    // Title (.cover-title-text) — pas de bold, line-height 100 %, #12142C sur fond accent
+    const titleFontSize = REEL_COVER_TITLE_PX
+    const titleLineHeight = titleFontSize * REEL_COVER_TITLE_LINE_HEIGHT_MULT
+    const titlePad = REEL_COVER_TITLE_PAD_PX
+    const titleVPadExtra = REEL_COVER_TITLE_VPAD_EXTRA_PX
+    const inset = REEL_COVER_SIDE_INSET_PX
+    const leftX = inset
+    const maxWidth = W - inset * 2
 
-    ctx.font = `bold ${titleFontSize}px Apfel, sans-serif`
+    ctx.font = `400 ${titleFontSize}px Apfel, sans-serif`
     ctx.textBaseline = "top"
     const words = data.title.split(/\s+/)
     const lines = this._wrapText(ctx, words, maxWidth)
-    const blockHeight = lines.length * titleLineHeight
+    const titleTextNudge = Math.round(titleFontSize * REEL_COVER_TITLE_TEXT_OPTICAL_NUDGE_MULT)
+    const titlePillOverhangBottom = titlePad / 2 + titleVPadExtra + titleTextNudge
+    const blockHeight = lines.length * titleLineHeight + titlePillOverhangBottom
 
-    // Username typography (matches .cover-username: color #000 on triade bg)
-    const userFontSize = 36
-    const userPadX = 10
-    const userPadY = 6
-    const userBoxH = userFontSize + userPadY * 2
-    const gapUserTitle = 24
-    const bottomMargin = 260
+    // Username (.cover-username) — bold, uppercase, letter-spacing, #000 sur triade
+    const userFontSize = REEL_COVER_USER_PX
+    const userPadX = REEL_COVER_USER_PAD_X
+    const userPadY = REEL_COVER_USER_PAD_Y
+    const userBoxH = Math.ceil(userFontSize * REEL_COVER_USER_LINE_HEIGHT_MULT) + userPadY * 2
+    const gapUserTitle = REEL_COVER_GAP_USER_TITLE_PX
+    const userLetterSp = (0.67 * userFontSize) / REEL_COVER_USERNAME_REF_PX
+    const coverOuterPad = Math.max(titlePad, userPadX)
+    const coverBlockLeft = leftX - coverOuterPad
 
-    // Title block is bottom-anchored; username sits ABOVE the title block.
-    const titleStartY = H - bottomMargin - blockHeight
+    // Bloc titre + auteur calé en bas à gauche : même retrait bas que à gauche
+    const titleStartY = H - inset - blockHeight
     const userY = titleStartY - userBoxH - gapUserTitle
 
-    // Reveal phase clock — 0 at SVG_MORPH_END, 1 at COVER_END.
-    const revealT = t - SVG_MORPH_END
-    const slideDistance = 80 // px of upward slide (from below) with overshoot
+    // Reveal phase clock — 0 at REEL_SVG_MORPH_END, 1 at REEL_COVER_END.
+    const revealT = t - REEL_SVG_MORPH_END
+    const slideDistance = REEL_COVER_REVEAL_SLIDE_PX
 
     // — Username (appears first) —
-    const userDuration = 0.5
+    const userDuration = REEL_COVER_USER_REVEAL_S
     const userProgress = Math.max(0, Math.min(1, revealT / userDuration))
     if (userProgress > 0) {
       const easedU = easeOutBack(userProgress)
       const yOffset = (1 - easedU) * slideDistance
-      ctx.globalAlpha = Math.min(1, userProgress * 1.5)
-      ctx.font = `bold ${userFontSize}px Apfel, sans-serif`
-      const uText = `@${data.username}`.toUpperCase()
-      const uWidth = ctx.measureText(uText).width
+      ctx.globalAlpha = Math.min(1, userProgress * REEL_COVER_USER_ALPHA_RAMP)
+      ctx.font = `700 ${userFontSize}px Apfel, sans-serif`
+      const uText = `${data.username}`.toUpperCase()
+      const uWidth = measureTextWithLetterSpacing(ctx, uText, userLetterSp)
 
+      const userBarW = (leftX + uWidth + userPadX) - coverBlockLeft
       ctx.fillStyle = usernameBg
-      ctx.fillRect(leftX - userPadX, userY + yOffset, uWidth + userPadX * 2, userBoxH)
-      ctx.fillStyle = DARK
-      ctx.fillText(uText, leftX, userY + userPadY + yOffset)
+      ctx.fillRect(coverBlockLeft, userY + yOffset, userBarW, userBoxH)
+      ctx.fillStyle = COVER_USERNAME_COLOR
+      ctx.textBaseline = "middle"
+      const userTextCenterY =
+        userY + userBoxH / 2 + yOffset + Math.round(userFontSize * REEL_COVER_USER_TEXT_OPTICAL_NUDGE_MULT)
+      fillTextWithLetterSpacing(ctx, uText, leftX, userTextCenterY, userLetterSp)
+      ctx.textBaseline = "top"
       ctx.globalAlpha = 1
     }
 
     // — Title (whole block slides in with overshoot, all at once) —
-    ctx.font = `bold ${titleFontSize}px Apfel, sans-serif`
-    const titleStart = 0.25 // slight delay after username starts
-    const titleDuration = 0.55
+    ctx.font = `400 ${titleFontSize}px Apfel, sans-serif`
+    const titleStart = REEL_COVER_TITLE_DELAY_AFTER_USER_S
+    const titleDuration = REEL_COVER_TITLE_REVEAL_S
     const titleT = revealT - titleStart
     const titleProgress = Math.max(0, Math.min(1, titleT / titleDuration))
 
     if (titleProgress > 0) {
       const easedTitle = easeOutBack(titleProgress)
       const yOffset = (1 - easedTitle) * slideDistance
-      ctx.globalAlpha = Math.min(1, titleProgress * 1.6)
+      ctx.globalAlpha = Math.min(1, titleProgress * REEL_COVER_TITLE_ALPHA_RAMP)
 
+      let maxLineWidth = 0
+      lines.forEach((line) => {
+        maxLineWidth = Math.max(maxLineWidth, ctx.measureText(line).width)
+      })
+      const titleBlockTop = titleStartY - titlePad / 2 - titleVPadExtra + yOffset
+      const titleBlockH =
+        (lines.length - 1) * titleLineHeight +
+        titleFontSize +
+        titlePad +
+        titleVPadExtra * 2 +
+        titleTextNudge
+      const titleBlockW =
+        (leftX + maxLineWidth + titlePad) - coverBlockLeft + REEL_COVER_TITLE_BG_EXTRA_RIGHT_PX
+
+      ctx.fillStyle = accent
+      ctx.fillRect(coverBlockLeft, titleBlockTop, titleBlockW, titleBlockH)
+
+      ctx.fillStyle = DARK
       lines.forEach((line, lineIdx) => {
-        const lineWidth = ctx.measureText(line).width
         const baseY = titleStartY + lineIdx * titleLineHeight + yOffset
-
-        ctx.fillStyle = accent
-        ctx.fillRect(leftX - titlePad, baseY - titlePad / 2, lineWidth + titlePad * 2, titleFontSize + titlePad)
-
-        ctx.fillStyle = DARK
-        ctx.fillText(line, leftX, baseY)
+        ctx.fillText(line, leftX, baseY + titleTextNudge)
       })
 
       ctx.globalAlpha = 1
@@ -402,14 +538,14 @@ export default class extends Controller {
   // transparency stays correct; ordered dither breaks 8-bit banding. Scaling
   // transparent bitmaps with drawImage often flattens the bottom fade.
   _compositeTextGradientBands(ctx, hue) {
-    const gradH = 560
+    const gradH = REEL_TEXT_GRAD_BAND_HEIGHT_PX
     const ga = ctx.globalAlpha
-    const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, 50, 13)
+    const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, REEL_SVG_BG_HSL_S, REEL_SVG_BG_HSL_L)
     const alphaTop = (u) =>
       u <= 0.55 ? lerp(1, 0.88, u / 0.55) : lerp(0.88, 0, (u - 0.55) / 0.45)
     const alphaBot = (u) =>
       u <= 0.45 ? lerp(0, 0.88, u / 0.45) : lerp(0.88, 1, (u - 0.45) / 0.55)
-    const DITHER = 0.04
+    const DITHER = REEL_TEXT_GRAD_DITHER
 
     const blendBand = (destY, alphaFn) => {
       const img = ctx.getImageData(0, destY, W, gradH)
@@ -435,41 +571,35 @@ export default class extends Controller {
     blendBand(H - gradH, alphaBot)
   }
 
-  // ── Phase 2: Text scene (COVER_END → TEXT_END) ──
-  _drawText(ctx, data, t, fadeT, svgBg) {
-    if (fadeT >= 1) {
-      ctx.fillStyle = svgBg
-      ctx.fillRect(0, 0, W, H)
-    }
+  // ── Phase 2: Text scene (REEL_SCROLL_START → REEL_TEXT_END) ──
+  _drawText(ctx, data, t, svgBg) {
+    ctx.fillStyle = svgBg
+    ctx.fillRect(0, 0, W, H)
 
     if (!data.body) return
 
-    const fontSize = 126
+    const fontSize = REEL_BODY_FONT_PX
     ctx.font = `400 ${fontSize}px Apfel, sans-serif`
     ctx.textBaseline = "top"
     ctx.fillStyle = "#FFFFFF"
 
-    const maxWidth = W - 160
+    const maxWidth = W - REEL_COVER_SIDE_INSET_PX * 2
     const words = data.body.split(/\s+/)
     const lines = this._wrapText(ctx, words, maxWidth)
-    const lineHeight = fontSize * 1.2
+    const lineHeight = fontSize * REEL_BODY_LINE_HEIGHT_MULT
 
     // Fixed scroll speed in px/s — independent of text length.
-    // Text starts just off the bottom edge and scrolls upward through the
-    // visible area. Only what traverses during the phase is shown (the rest
-    // is clipped by the top/bottom gradient masks); the goal is readability.
-    const SCROLL_PX_PER_SEC = 135 * 1.5 * 1.5
-    const scrollElapsed = t - COVER_END
-    const scrollY = H - scrollElapsed * SCROLL_PX_PER_SEC
+    const scrollElapsed = t - REEL_SCROLL_START
+    const scrollY = H - scrollElapsed * REEL_BODY_SCROLL_PX_PER_SEC
 
     ctx.save()
-    ctx.globalAlpha = Math.min(fadeT, 1)
+    ctx.globalAlpha = 1
 
     lines.forEach((line, i) => {
       const y = scrollY + i * lineHeight
       if (y > -lineHeight && y < H + lineHeight) {
         ctx.fillStyle = "#FFFFFF"
-        ctx.fillText(line, 80, y)
+        ctx.fillText(line, REEL_COVER_SIDE_INSET_PX, y)
       }
     })
 
@@ -478,16 +608,12 @@ export default class extends Controller {
     ctx.restore()
   }
 
-  // ── Phase 3: Branded outro (TEXT_END → DURATION) ──
-  // Blinks by inverting both the page background and the box/text colors
-  // each cycle. Both texts ("Lire la suite" and "SP2050.org") share the
-  // same cover-title treatment: coloured box + contrasting text.
+  // ── Phase 3: Branded outro (REEL_TEXT_END → REEL_DURATION) ──
+  // Une inversion courte au milieu de la phase ; mêmes styles que la cover.
   _drawBlink(ctx, data, accent, t) {
-    // Single, slow inversion: stay in the default state, flash inverted once
-    // for ~0.8s around the middle of the phase, then return to default.
-    const blinkT = t - TEXT_END
-    const flashStart = 0.3
-    const flashEnd = 0.6
+    const blinkT = t - REEL_TEXT_END
+    const flashStart = REEL_OUTRO_FLASH_START
+    const flashEnd = REEL_OUTRO_FLASH_END
     const inverted = blinkT >= flashStart && blinkT < flashEnd
 
     // On inverted cycles: page bg, box bg and text color all swap.
@@ -498,8 +624,7 @@ export default class extends Controller {
     ctx.fillStyle = pageBg
     ctx.fillRect(0, 0, W, H)
 
-    // Whole outro text block is tilted around the center of the canvas.
-    const tiltRad = (-3 * Math.PI) / 180
+    const tiltRad = (REEL_OUTRO_TILT_DEG * Math.PI) / 180
     ctx.save()
     ctx.translate(W / 2, H / 2)
     ctx.rotate(tiltRad)
@@ -508,14 +633,13 @@ export default class extends Controller {
     ctx.textAlign = "center"
     ctx.textBaseline = "alphabetic"
 
-    // "Lire la suite" — cover title style (box + contrasting text)
-    const lireSize = 72
-    ctx.font = `bold ${lireSize}px Apfel, sans-serif`
+    const lireSize = REEL_OUTRO_LIRE_PX
+    ctx.font = `400 ${lireSize}px Apfel, sans-serif`
     const lireText = "Lire la suite"
     const lireWidth = ctx.measureText(lireText).width
-    const lirePadX = 16
-    const lirePadY = 10
-    const lireBaselineY = H / 2 - 110
+    const lirePadX = REEL_OUTRO_LIRE_PAD_X
+    const lirePadY = REEL_OUTRO_LIRE_PAD_Y
+    const lireBaselineY = H / 2 + REEL_OUTRO_LIRE_BASELINE_OFFSET_Y
     const lireBoxX = W / 2 - lireWidth / 2 - lirePadX
     const lireBoxY = lireBaselineY - lireSize + lirePadY
     const lireBoxW = lireWidth + lirePadX * 2
@@ -526,14 +650,13 @@ export default class extends Controller {
     ctx.fillStyle = textColor
     ctx.fillText(lireText, W / 2, lireBaselineY)
 
-    // "SP2050.org" — same treatment, 3× bigger
-    const spSize = 144
-    ctx.font = `bold ${spSize}px Apfel, sans-serif`
+    const spSize = REEL_OUTRO_SP_PX
+    ctx.font = `400 ${spSize}px Apfel, sans-serif`
     const spText = "SP2050.org"
     const spWidth = ctx.measureText(spText).width
-    const spPadX = 20
-    const spPadY = 16
-    const spBaselineY = H / 2 + 110
+    const spPadX = REEL_OUTRO_SP_PAD_X
+    const spPadY = REEL_OUTRO_SP_PAD_Y
+    const spBaselineY = H / 2 + REEL_OUTRO_SP_BASELINE_OFFSET_Y
     const spBoxX = W / 2 - spWidth / 2 - spPadX
     const spBoxY = spBaselineY - spSize + spPadY
     const spBoxW = spWidth + spPadX * 2

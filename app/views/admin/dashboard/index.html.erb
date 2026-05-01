@@ -80,7 +80,7 @@
             <% end %>
 
             <%# Export dropdown %>
-            <div class="relative" data-controller="dropdown reel-export" data-reel-export-post-id-value="<%= post.id %>">
+            <div class="relative" data-controller="dropdown reel-export carousel-export" data-reel-export-post-id-value="<%= post.id %>" data-carousel-export-post-id-value="<%= post.id %>">
               <button type="button" data-action="click->dropdown#toggle"
                       class="flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white"
                       aria-label="Exporter"
@@ -92,8 +92,8 @@
                 <button type="button" data-action="click->reel-export#exportReel" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
                   Instagram Reel
                 </button>
-                <button type="button" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
-                  Instagram Feed
+                <button type="button" data-action="click->carousel-export#exportCarousel" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-950/5 dark:hover:bg-white/5">
+                  Carrousel Instagram (4:5)
                 </button>
               </div>
             </div>

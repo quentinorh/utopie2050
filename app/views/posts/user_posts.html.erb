@@ -19,7 +19,7 @@
         <% if @user_posts.any? %>
           <% @user_posts.order(created_at: :desc).each do |post| %>
             <div class="relative">
-              <%= render "posts/post", post: post %>
+              <%= render "posts/post", post: post, disable_cursor_marquee: true %>
               <div class="absolute inset-0 pointer-events-none z-10">
                 <div class="absolute top-2 right-2 pointer-events-auto">
                   <% if post.draft? %>

@@ -31,28 +31,9 @@
   z-index: 30;
   width: 100%;
   height: var(--actionbar-height);
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--bar-border);
   margin-top: auto;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 100%;
-    height: 26px;
-    pointer-events: none;
-    background: linear-gradient(
-      to top,
-      #fafaf9 0%,
-      #fafaf9 14%,
-      rgba(250, 250, 249, 0.22) 56%,
-      rgba(250, 250, 249, 0) 100%
-    );
-  }
+  @include bar-frosted;
 }
 
 .editor-actionbar__inner {
@@ -95,14 +76,28 @@
   gap: 16px;
 }
 
-.editor-actionbar .cover-pill--ghost,
-.editor-body .cover-pill--ghost {
+/* contour en box-shadow au lieu d’une vraie bordure :
+   évite la frange claire (surtout visible en bas) quand la pilule ghost
+   — fond transparent puis surface au hover — se superpose à la barre floutée */
+.editor-actionbar .cover-pill--ghost:not(.is-on),
+.editor-body .cover-pill--ghost:not(.is-on) {
   color: var(--editor-ink-muted);
-  border-color: var(--editor-border);
+  border-color: transparent;
+  box-shadow: 0 0 0 1px var(--bar-border);
 
   &:hover {
     background: var(--editor-surface-soft);
     color: var(--editor-ink);
+    box-shadow: 0 0 0 1px var(--bar-border);
+
+    .cover-pill__dot {
+      opacity: 1;
+      background: #000;
+    }
+  }
+
+  &:active {
+    box-shadow: 0 0 0 1px var(--bar-border);
   }
 }
 

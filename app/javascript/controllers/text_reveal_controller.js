@@ -3,6 +3,9 @@ import gsap from "gsap"
 import scrollTrigger from "gsap/scrollTrigger"
 import Splitting from "splitting"
 
+/** Blocs de texte à découper (ordre document = ordre d’animation). */
+const LINE_BLOCK_SELECTOR = ".body-content, h2.chapter-title, .chapter-content"
+
 gsap.registerPlugin(scrollTrigger)
 
 // cubic-bezier(0.625, 0.05, 0, 1)
@@ -52,8 +55,10 @@ export default class extends Controller {
       requestAnimationFrame(() => this.rebuildLineLayout({ initial: true }))
     } else if (this.modeValue === "paragraphs") {
       this.animateParagraphs()
+      this._dispatchLinesReady()
     } else {
       this.animateWords()
+      this._dispatchLinesReady()
     }
   }
 
@@ -79,6 +84,12 @@ export default class extends Controller {
     }
   }
 
+  _dispatchLinesReady() {
+    requestAnimationFrame(() => {
+      document.dispatchEvent(new CustomEvent("text-reveal:lines-ready", { bubbles: true }))
+    })
+  }
+
   scheduleReflow() {
     if (this.modeValue !== "lines") return
     if (this._reflowDebounce) clearTimeout(this._reflowDebounce)
@@ -98,7 +109,16 @@ export default class extends Controller {
    * l’anim sur les blocs déjà “révélés” (scroll passé le seuil).
    */
   rebuildLineLayout({ initial = false } = {}) {
-    const targets = this.element.querySelectorAll(".body-content, .chapter-content")
+    /** Avant toute mutation : le layout qui suit réduit la hauteur et le navigateur peut clamp le scroll à 0 avant refresh(). */
+    let scrollY0 = null
+    let anchorDocY0 = null
+    if (!initial) {
+      scrollY0 = window.scrollY
+      const anchor = this.element.querySelector(".body-content") || this.element
+      anchorDocY0 = anchor.getBoundingClientRect().top + scrollY0
+    }
+
+    const targets = this.element.querySelectorAll(LINE_BLOCK_SELECTOR)
     const blocks = targets.length > 0 ? Array.from(targets) : [this.element]
 
     blocks.forEach((el) => {
@@ -109,7 +129,40 @@ export default class extends Controller {
     })
     this.clearTweens()
     this.animateLines({ initial })
-    scrollTrigger.refresh()
+    if (!initial && scrollY0 !== null && anchorDocY0 !== null) {
+      this._applyReadingScrollRestore(scrollY0, anchorDocY0)
+      const restore = () => this._applyReadingScrollRestore(scrollY0, anchorDocY0)
+      const onRefresh = () => {
+        scrollTrigger.removeEventListener("refresh", onRefresh)
+        restore()
+      }
+      scrollTrigger.addEventListener("refresh", onRefresh)
+      scrollTrigger.refresh()
+      restore()
+      requestAnimationFrame(() => {
+        restore()
+        requestAnimationFrame(restore)
+      })
+    } else {
+      scrollTrigger.refresh()
+    }
+
+    if (initial) {
+      requestAnimationFrame(() => {
+        document.dispatchEvent(new CustomEvent("text-reveal:lines-ready", { bubbles: true }))
+      })
+    }
+  }
+
+  /**
+   * Conserve la position visuelle du début du corps (scroll doc + déplacement de l’ancre après reflow).
+   */
+  _applyReadingScrollRestore(scrollY0, anchorDocY0) {
+    const anchor = this.element.querySelector(".body-content") || this.element
+    const anchorDocY1 = anchor.getBoundingClientRect().top + window.scrollY
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+    const top = Math.max(0, Math.min(maxScroll, scrollY0 + (anchorDocY1 - anchorDocY0)))
+    window.scrollTo(0, top)
   }
 
   /**
@@ -120,13 +173,15 @@ export default class extends Controller {
    */
   animateLines(opts = {}) {
     const initial = opts.initial !== false
-    const targets = this.element.querySelectorAll(".body-content, .chapter-content")
+    const targets = this.element.querySelectorAll(LINE_BLOCK_SELECTOR)
     const blocks = targets.length > 0 ? Array.from(targets) : [this.element]
 
     blocks.forEach((el) => {
       this.ensureSourceCaptured(el)
       const raw = (this.sourceByEl.get(el) || el.textContent || "")
       if (!String(raw).trim()) return
+
+      const shell = /^H[1-6]$/.test(el.tagName) ? "span" : "div"
 
       // Split by paragraphs (double newline)
       const paragraphs = raw.split(/\n\s*\n/)
@@ -136,10 +191,10 @@ export default class extends Controller {
         const text = para.trim()
         if (!text) return
 
-        // Create paragraph container with spacing between paragraphs
-        const p = document.createElement("div")
+        const p = document.createElement(shell)
         p.className = "text-reveal-block"
-        p.style.marginBottom = "1em"
+        p.style.display = "block"
+        p.style.marginBottom = shell === "span" ? "0" : "1em"
         el.appendChild(p)
 
         // Handle explicit line breaks within the paragraph
@@ -147,15 +202,15 @@ export default class extends Controller {
 
         explicitLines.forEach((lineText, lineIdx) => {
           if (!lineText.trim()) {
-            // Empty line — spacer
-            const spacer = document.createElement("div")
+            const spacer = document.createElement(shell)
+            spacer.style.display = "block"
             spacer.style.height = "0.5em"
             p.appendChild(spacer)
             return
           }
 
-          // Wrap each word in a measurable span
-          const measurer = document.createElement("div")
+          const measurer = document.createElement(shell)
+          measurer.style.display = "block"
           measurer.style.whiteSpace = "normal"
           const words = lineText.trim().split(/(\s+)/).filter(w => w.length > 0)
           const wordSpans = []
@@ -176,7 +231,6 @@ export default class extends Controller {
 
           if (!wordSpans.length) return
 
-          // Detect visual lines by comparing vertical positions
           const visualLines = []
           let currentLine = [wordSpans[0]]
           let currentTop = wordSpans[0].getBoundingClientRect().top
@@ -193,55 +247,56 @@ export default class extends Controller {
           }
           visualLines.push(currentLine)
 
-          // Replace measurer with masked line wrappers
           measurer.remove()
 
           visualLines.forEach((spans) => {
-            const mask = document.createElement("div")
+            const mask = document.createElement(shell)
             mask.className = "text-reveal-mask"
             mask.style.overflow = "hidden"
+            mask.style.display = "block"
 
-            const inner = document.createElement("div")
+            const inner = document.createElement(shell)
             inner.className = "text-reveal-line"
+            inner.style.display = "block"
             inner.textContent = spans.map(s => s.textContent).join(" ")
             mask.appendChild(inner)
             p.appendChild(mask)
           })
         })
       })
-
-      // Animate all lines within this block
-      const lineEls = el.querySelectorAll(".text-reveal-line")
-      if (!lineEls.length) return
-
-      const inRevealZone = el.getBoundingClientRect().top < window.innerHeight * 0.85
-
-      if (!initial && inRevealZone) {
-        gsap.set(lineEls, { opacity: 1 })
-        return
-      }
-
-      const tween = gsap.from(lineEls, {
-        opacity: 0,
-        duration: 0.35,
-        stagger: 0.04,
-        delay: 0.8,
-        ease: textBlockEase,
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-          once: true
-        }
-      })
-      this.tweens.push(tween)
     })
+
+    // Un seul déclencheur pour tout le corps + chapitres : même vague de révélation DOM (pas par bloc).
+    const allLineEls = this.element.querySelectorAll(".text-reveal-line")
+    if (!allLineEls.length) return
+
+    const inRevealZone = this.element.getBoundingClientRect().top < window.innerHeight * 0.85
+
+    if (!initial && inRevealZone) {
+      gsap.set(allLineEls, { opacity: 1 })
+      return
+    }
+
+    const tween = gsap.from(allLineEls, {
+      opacity: 0,
+      duration: 0.35,
+      stagger: 0.04,
+      delay: 0.8,
+      ease: textBlockEase,
+      scrollTrigger: {
+        trigger: this.element,
+        start: "top 85%",
+        once: true
+      }
+    })
+    this.tweens.push(tween)
   }
 
   /**
    * Paragraphs mode: wrap each paragraph, animate on scroll.
    */
   animateParagraphs() {
-    const targets = this.element.querySelectorAll(".body-content, .chapter-content")
+    const targets = this.element.querySelectorAll(LINE_BLOCK_SELECTOR)
     const blocks = targets.length > 0 ? Array.from(targets) : [this.element]
 
     blocks.forEach((el) => {
