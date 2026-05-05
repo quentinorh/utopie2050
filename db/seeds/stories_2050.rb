@@ -141,7 +141,7 @@ def generate_svg(params, unique_id: nil)
     end
   end
 
-  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{total_width} #{total_height}' preserveAspectRatio='xMidYMid slice' data-coversize-target='svg'>" \
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{total_width} #{total_height}' preserveAspectRatio='xMidYMid slice'>" \
     "#{defs}" \
     "<rect width='#{total_width}' height='#{total_height}' fill='#{bg_color}'/>" \
     "#{paths}" \

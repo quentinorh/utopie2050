@@ -610,7 +610,7 @@ export default class extends Controller {
       this.controlsToggleIconTarget.classList.toggle('rotate-180', isCollapsed);
     }
 
-    // Retirer la classe d'animation et mettre à jour le coversize après la transition
+    // Retirer la classe d'animation et déclencher un resize pour recalculer le titre (boundFitTitle)
     setTimeout(() => {
       editor.classList.remove('is-animating');
       window.dispatchEvent(new Event('resize'));

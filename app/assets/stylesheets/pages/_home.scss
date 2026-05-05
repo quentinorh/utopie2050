@@ -1,1 +1,40 @@
-// Specific CSS for your home-page
+// Homepage — derniers futurs : masquer les cartes qui laisseraient une ligne incomplète
+// (multiples de 2 à partir de 640px, multiples de 3 à partir de 1024px).
+// Si le nombre de posts est inférieur au nombre de colonnes, tout reste visible
+// (une dernière ligne courte est acceptée dans ce cas).
+
+@function home-posts-row-complete-count($total, $cols) {
+  @if $total < $cols {
+    @return $total;
+  }
+  @return floor($total / $cols) * $cols;
+}
+
+.home-last-futures {
+  @for $n from 1 through 10 {
+    &[data-post-count="#{$n}"] {
+      $visible-md: home-posts-row-complete-count($n, 2);
+      $visible-lg: home-posts-row-complete-count($n, 3);
+
+      @media (min-width: 640px) and (max-width: 1023px) {
+        @if $visible-md < $n {
+          @for $k from ($visible-md + 1) through $n {
+            .index-grid .index-card:nth-child(#{$k}) {
+              display: none !important;
+            }
+          }
+        }
+      }
+
+      @media (min-width: 1024px) {
+        @if $visible-lg < $n {
+          @for $k from ($visible-lg + 1) through $n {
+            .index-grid .index-card:nth-child(#{$k}) {
+              display: none !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}

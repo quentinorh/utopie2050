@@ -6,39 +6,50 @@
 <!-- Ajoutez ceci juste avant votre div hero -->
 <%= render 'shared/hero_animation' %>
 
-<div class="flex items-center">
-  <div class="flex flex-col py-base md:py-xl pl-2 pr-sm md:px-base lg:px-2xl 2xl:px-[400px] h-full">
-    <div class="border-l-6 md:border-l-8 border-primary pl-2 md:pl-8" data-controller="paragraph-reveal">
-      <p class="text-l md:text-2l pb-4">
-        Dérèglement climatique, effondrement de la biodiversité, montée des eaux, menace nucléaire…
+<div class="px-xs py-base sm:px-sm md:py-xl lg:px-[40px] 2xl:mx-auto 2xl:max-w-[1680px]">
+  <section class="grid grid-cols-1 gap-xs sm:gap-sm md:gap-8 lg:grid-cols-2 lg:items-center lg:gap-x-base xl:gap-x-12">
+    <h2 class="max-w-[22ch] font-sans text-[clamp(1.75rem,4vw+1rem,68px)] font-bold uppercase leading-[1.05] tracking-tight text-balance sm:max-w-none min-w-0">
+      Nos imaginaires sont en panne
+    </h2>
+    <div class="min-w-0" data-controller="paragraph-reveal">
+      <p class="text-l pb-4 last:pb-0">
+        Dérèglement climatique, effondrement de la biodiversité, intelligence artificielle, guerre nucléaire…
       </p>
-      <p class="text-l md:text-2l pb-4">
+      <p class="text-l pb-4 last:pb-0">
         La liste des nouveaux sujets de société est longue et anxiogène. Face à ces bouleversements et ces trajectoires accablantes, SP2050 propose un espace pour se ressourcer, s’inspirer, et créer de nouveaux imaginaires.
       </p>
-      <p class="text-l md:text-2l pb-4">
+      <p class="text-l pb-4 last:pb-0">
         Les imaginaires sont puissants et trop souvent dictés par des intérêts économiques ou électoralistes, ici il s’agit de donner ce pouvoir à toutes et tous, et particulièrement à celles et ceux qui n’ont pas l’habitude de l’avoir.
       </p>
-      <p class="text-l md:text-2l pb-4">
-        Une seule consigne, essayer d'écrire des futurs positifs et désirables, sinon aucune limite pour imaginer les mondes de demain ! Tout est possible, alors essayons d'imaginer le meilleur de ce qui pourrait advenir en 2050.
+    </div>
+  </section>
+
+  <section class="mt-base grid grid-cols-1 gap-xs sm:gap-sm md:mt-xl md:gap-8 lg:mt-2xl lg:grid-cols-2 lg:items-center lg:gap-x-base xl:gap-x-12">
+    <h2 class="max-w-[22ch] font-sans text-[clamp(1.75rem,4vw+1rem,68px)] font-bold uppercase leading-[1.05] tracking-tight text-balance sm:max-w-none lg:col-start-2 lg:row-start-1 min-w-0">
+      Un espace pour inventer le monde de demain
+    </h2>
+    <div class="min-w-0 lg:col-start-1 lg:row-start-1" data-controller="paragraph-reveal">
+      <p class="text-l pb-4 last:pb-0">
+        Une seule consigne, essayer d'écrire des futurs positifs et désirables, sinon aucune limite pour inventer les mondes de demain ! Tout est possible, alors essayons d'imaginer le meilleur de ce qui pourrait advenir en 2050.
       </p>
-      <p class="text-l md:text-2l pb-4">
+      <p class="text-l pb-4 last:pb-0">
         Écrire le futur c’est commencer à le rendre possible, le faire exister.
       </p>
-      <p class="text-l md:text-2l">
+      <p class="text-l pb-4 last:pb-0">
         Dans quelques mois, en fonction des retours, nous réflechirons sur la manière de poursuivre cette expérience : une édition, un festival, un podcast… qui sait ce que l’avenir nous réserve !
       </p>
     </div>
-  </div>
+  </section>
 </div>
 
 <% if @posts.any? %>
-  <div class="">
-    <div class="text-xxlish md:text-display uppercase ml-xs">
+  <% home_posts = @posts.order(created_at: :desc).limit(10) %>
+  <div class="home-last-futures" data-post-count="<%= home_posts.size %>">
+    <div class="font-sans text-[clamp(1.75rem,4vw+1rem,68px)] font-bold uppercase leading-[1.05] tracking-tight text-balance ml-xs">
       <span>Les derniers futurs</span>
     </div>
-      <div class="m-auto justify-center p-xs pt-0">
-        <%= render partial: "posts/posts", locals: { posts: @posts.order(created_at: :desc).limit(10) } %>
-      </div>
+    <div class="m-auto justify-center p-xs pt-0">
+      <%= render partial: "posts/posts", locals: { posts: home_posts } %>
     </div>
   </div>
 <% end %>

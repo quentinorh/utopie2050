@@ -1,9 +1,9 @@
 <%# Cover component — supports ratio variants: "4x5" (default), "5x7", "1x1" %>
 <% ratio = local_assigns[:ratio] || "4x5" %>
 
-<div class="show-cover-panel" data-controller="coversize">
+<div class="show-cover-panel">
   <div class="relative h-full min-h-0 w-full flex flex-col items-center justify-center lg:flex-1">
-    <div class="cover-svg" data-coversize-target="svg">
+    <div class="cover-svg">
       <%= post.cover.html_safe %>
     </div>
   </div>

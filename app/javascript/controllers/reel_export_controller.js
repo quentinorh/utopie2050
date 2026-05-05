@@ -96,12 +96,12 @@ const REEL_H = 1920
 const REEL_FPS = 60
 
 const REEL_SVG_MORPH_END = 3.0
-const REEL_COVER_END = 5.0
+const REEL_COVER_END = 4.0
 const REEL_PHASE1_FADE_OUT = 0.35
 const REEL_PHASE2_GAP_AFTER_FADE = 0.12
 /** Durée du scroll une fois REEL_SCROLL_START atteint (vitesse px/s inchangée → plus de texte défilé). */
-const REEL_PHASE2_SCROLL_DURATION = 14.0
-const REEL_OUTRO_DURATION = 2.0
+const REEL_PHASE2_SCROLL_DURATION = 13.0
+const REEL_OUTRO_DURATION = 3.0
 
 const REEL_SCROLL_START = REEL_COVER_END + REEL_PHASE1_FADE_OUT + REEL_PHASE2_GAP_AFTER_FADE
 const REEL_TEXT_END = REEL_SCROLL_START + REEL_PHASE2_SCROLL_DURATION
@@ -144,16 +144,26 @@ const REEL_COVER_USER_ALPHA_RAMP = 1.5
 const REEL_COVER_TITLE_ALPHA_RAMP = 1.6
 
 // Phase 2 — corps du post
-const REEL_BODY_FONT_PX = 86
-const REEL_BODY_LINE_HEIGHT_MULT = 1.2
-const REEL_BODY_SCROLL_PX_PER_SEC = 135 * 1.5 * 1.5
+const REEL_BODY_FONT_PX = 50
+const REEL_BODY_LINE_HEIGHT_MULT = 1.3
+const REEL_BODY_SCROLL_PX_PER_SEC = 55 * 1.5 * 1.5
 
-const REEL_TEXT_GRAD_BAND_HEIGHT_PX = 560
+/** Hauteur des bandes dégradées haut/bas en phase 2 (−30 % par rapport à 560 px). */
+const REEL_TEXT_GRAD_BAND_HEIGHT_PX = 280
 const REEL_TEXT_GRAD_DITHER = 0.04
 
+// Phase 2 — bandeau d'en-tête (titre + auteur, hors zone de scroll).
+// Le dégradé du haut démarre à `REEL_PHASE2_HEADER_HEIGHT_PX` ; au-dessus,
+// le fond est rempli en aplat pour masquer le texte qui défile.
+const REEL_PHASE2_HEADER_HEIGHT_PX = 400
+const REEL_PHASE2_HEADER_FONT_PX = 40
+const REEL_PHASE2_HEADER_LINE_HEIGHT_MULT = 1.3
+const REEL_PHASE2_HEADER_FONT_FAMILY = '"Roboto Mono", monospace'
+const REEL_PHASE2_HEADER_ALPHA = 0.6
+
 // Phase 3 — outro
-const REEL_OUTRO_FLASH_START = 0.3
-const REEL_OUTRO_FLASH_END = 0.6
+const REEL_OUTRO_FLASH_START = 0.7
+const REEL_OUTRO_FLASH_END = 1.5
 const REEL_OUTRO_TILT_DEG = -3
 const REEL_OUTRO_LIRE_PX = 72
 const REEL_OUTRO_LIRE_PAD_X = 16
@@ -244,7 +254,7 @@ export default class extends Controller {
     }
   }
 
-  /** Charge Apfel Regular + Bold pour le canvas (évite le fallback avant rendu). */
+  /** Charge Apfel Regular + Bold + Roboto Mono pour le canvas (évite le fallback avant rendu). */
   async _ensureApfelCoverFontsLoaded() {
     if (!document.fonts?.load) return
     await Promise.all([
@@ -252,12 +262,21 @@ export default class extends Controller {
       document.fonts.load(`700 ${REEL_COVER_USER_PX}px Apfel, sans-serif`),
       document.fonts.load(`400 ${REEL_BODY_FONT_PX}px Apfel, sans-serif`),
       document.fonts.load(`400 ${REEL_OUTRO_LIRE_PX}px Apfel, sans-serif`),
-      document.fonts.load(`400 ${REEL_OUTRO_SP_PX}px Apfel, sans-serif`)
+      document.fonts.load(`400 ${REEL_OUTRO_SP_PX}px Apfel, sans-serif`),
+      document.fonts.load(`400 ${REEL_PHASE2_HEADER_FONT_PX}px ${REEL_PHASE2_HEADER_FONT_FAMILY}`)
     ])
   }
 
   // ── Render a single frame to canvas ──
   _renderFrame(ctx, data, svgFrames, accent, usernameBg, svgBg, frame) {
+    // Frame 0 = poster statique (couverture finale, titre + auteur visibles).
+    // Sert de miniature sur les réseaux sociaux ; le flash de 1/60 s avant le
+    // début de l'animation morph est imperceptible à la lecture.
+    if (frame === 0) {
+      this._drawCover(ctx, data, svgFrames, accent, usernameBg, svgBg, REEL_COVER_END)
+      return
+    }
+
     const t = frame / FPS
 
     if (t < REEL_COVER_END) {
@@ -537,7 +556,9 @@ export default class extends Controller {
   // Top/bottom masks: source-over blend per pixel (same as hsla fillRect) so
   // transparency stays correct; ordered dither breaks 8-bit banding. Scaling
   // transparent bitmaps with drawImage often flattens the bottom fade.
-  _compositeTextGradientBands(ctx, hue) {
+  // `topY` shifts the top fading band downwards (in px) ; la zone 0..topY
+  // est repeinte en aplat pour masquer proprement le contenu qui défile.
+  _compositeTextGradientBands(ctx, hue, topY = 0) {
     const gradH = REEL_TEXT_GRAD_BAND_HEIGHT_PX
     const ga = ctx.globalAlpha
     const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, REEL_SVG_BG_HSL_S, REEL_SVG_BG_HSL_L)
@@ -567,7 +588,11 @@ export default class extends Controller {
       ctx.putImageData(img, 0, destY)
     }
 
-    blendBand(0, alphaTop)
+    if (topY > 0) {
+      ctx.fillStyle = `hsl(${hue}, ${REEL_SVG_BG_HSL_S}%, ${REEL_SVG_BG_HSL_L}%)`
+      ctx.fillRect(0, 0, W, topY)
+    }
+    blendBand(topY, alphaTop)
     blendBand(H - gradH, alphaBot)
   }
 
@@ -603,8 +628,31 @@ export default class extends Controller {
       }
     })
 
-    this._compositeTextGradientBands(ctx, data.hue)
+    this._compositeTextGradientBands(ctx, data.hue, REEL_PHASE2_HEADER_HEIGHT_PX)
+    this._drawPhase2Header(ctx, data)
 
+    ctx.restore()
+  }
+
+  // ── Phase 2 header — titre (ligne 1) + auteur (ligne 2) ──
+  // Roboto Mono Regular 40px, alignés à gauche, centrés verticalement dans
+  // les `REEL_PHASE2_HEADER_HEIGHT_PX` du haut. Dessiné après le compositing
+  // pour flotter au-dessus du dégradé (opacité partielle).
+  _drawPhase2Header(ctx, data) {
+    const fontPx = REEL_PHASE2_HEADER_FONT_PX
+    const lineHeight = fontPx * REEL_PHASE2_HEADER_LINE_HEIGHT_MULT
+    const blockHeight = lineHeight * 2
+    const blockTop = (REEL_PHASE2_HEADER_HEIGHT_PX - blockHeight) / 2
+    const titleLine = `${data.title || ""}`.toUpperCase()
+    const authorLine = `${data.username || ""}`.toUpperCase()
+
+    ctx.save()
+    ctx.globalAlpha = REEL_PHASE2_HEADER_ALPHA
+    ctx.font = `400 ${fontPx}px ${REEL_PHASE2_HEADER_FONT_FAMILY}`
+    ctx.textBaseline = "top"
+    ctx.fillStyle = "#FFFFFF"
+    ctx.fillText(titleLine, REEL_COVER_SIDE_INSET_PX, blockTop)
+    ctx.fillText(authorLine, REEL_COVER_SIDE_INSET_PX, blockTop + lineHeight)
     ctx.restore()
   }
 

@@ -100,7 +100,6 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    gap: 21px;
     z-index: 10;
     pointer-events: none;
 
@@ -326,14 +325,13 @@
     }
   }
 
-  /* Variante compacte pour la barre d'action */
+  /* Variante compacte pour la barre d'action — la taille de l'icône (20px)
+     est déjà celle du défaut, on ne redéclare donc rien ici. */
   &--sm {
     padding: 6px 12px;
     font-size: 12px;
     line-height: 14px;
     gap: 6px;
-
-    .cover-pill__icon { width: 20px; height: 20px; }
   }
 
   /* Variante icône seule — utilisée par le CTA aléatoire */
@@ -373,10 +371,8 @@
   }
 }
 
-/* CTA Aléatoire — étend .cover-pill, garde l'icône dés à gauche */
-.editor-randomize {
-  /* Hérite déjà de .cover-pill — on garde un hook pour des futurs ajustements */
-}
+/* CTA Aléatoire — pas de styles propres (hérite intégralement de .cover-pill).
+   Le hook .editor-randomize reste utilisé côté markup et JS si besoin futur. */
 
 /* ===========================
    Cover controls — header pill + body popover
@@ -409,25 +405,24 @@
   text-transform: inherit;
 }
 
+/* Toolbar ancrée en bas-droite : le popover s'ouvre vers le haut.
+   Chevron par défaut (panneau ouvert) pointe vers le bas (rotate 180),
+   et pointe vers le haut quand fermé (rotate 0 = invite à ouvrir vers le haut). */
 .cover-controls__chev {
   width: 12px;
   height: 12px;
   color: currentColor;
   opacity: 0.55;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Toolbar ancrée en bas-droite : le popover s'ouvre vers le haut.
-   Chevron par défaut (panneau ouvert) pointe vers le bas (rotate 180),
-   et pointe vers le haut quand fermé (rotate 0 = invite à ouvrir vers le haut). */
-.cover-controls__chev {
   transform: rotate(180deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .controls-collapsed .cover-controls__chev {
   transform: rotate(0deg);
 }
 
-/* Body popover — ancré au-dessus du head, aligné à droite, ne décale pas la toolbar */
+/* Body popover — ancré au-dessus du head, aligné à droite, ne décale pas la toolbar.
+   La transition est volontairement absente ici : elle est gated par .is-animating
+   (cf. plus bas) pour ne pas se déclencher sur les resizes navigateur. */
 .cover-controls__body {
   position: absolute;
   bottom: calc(100% + 10px);
@@ -447,9 +442,6 @@
   transform-origin: bottom right;
   transform: translateY(0) scale(1);
   opacity: 1;
-  transition:
-    opacity 0.18s ease,
-    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .controls-collapsed .cover-controls__body {

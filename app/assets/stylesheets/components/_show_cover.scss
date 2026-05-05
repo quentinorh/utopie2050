@@ -2,44 +2,46 @@
    Cover pour la page show
    ================================ */
 
-/* Cover panel — fixed left half on desktop, static full-width on mobile */
+/* Cover panel — fixed left half on desktop, static full-width on mobile.
+   Le layout flex (panel → .relative → .cover-svg) est commun aux deux ranges ;
+   seules les dimensions et le positionnement changent entre mobile et desktop. */
 .show-cover-panel {
   background-color: #12142C;
   position: relative;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+
+  & > .relative {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .cover-svg {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+  }
 
   /* Mobile / tablette : hauteur = viewport − barre basse fixe (h-[50px] sur .bottom-navbar) */
   @media (max-width: 1023px) {
     height: calc(100dvh - 50px);
     min-height: calc(100dvh - 50px);
     max-height: calc(100dvh - 50px);
-    display: flex;
-    flex-direction: column;
-
-    & > .relative {
-      flex: 1 1 0;
-      min-height: 0;
-      width: 100%;
-    }
-
-    .cover-svg {
-      flex: 1 1 0;
-      min-height: 0;
-      min-width: 0;
-      width: 100%;
-      height: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      svg {
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-      }
-    }
   }
 
   @media (min-width: 1024px) {
@@ -50,32 +52,6 @@
     height: 100dvh;
     min-height: 100dvh;
     max-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-
-    & > .relative {
-      flex: 1 1 0;
-      min-height: 0;
-      width: 100%;
-    }
-
-    .cover-svg {
-      flex: 1 1 0;
-      min-height: 0;
-      min-width: 0;
-      width: 100%;
-      height: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      svg {
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-      }
-    }
   }
 
   @media (min-width: 1440px) {
@@ -102,7 +78,6 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 21px;
   z-index: 10;
   left: 10px;
   right: 10px;
@@ -155,7 +130,6 @@
 
   @media (min-width: 1024px) {
     font-size: clamp(2.5rem, 4.5vw, 4.1rem);
-    padding: 10px;
   }
 }
 
@@ -195,7 +169,6 @@
   opacity: 0.4;
 
   @media (min-width: 1024px) {
-    margin-top: 100px;
     margin-top: 16px;
     opacity: 0.5;
   }
