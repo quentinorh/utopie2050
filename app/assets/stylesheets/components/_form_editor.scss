@@ -888,12 +888,18 @@
   &:nth-child(-n+8) { border-top: 0; }
 }
 
+/* Grille de répétition du motif : 5×5 (classe historique `--quad`). */
 .cc-grid__lines--quad {
   .cc-grid__cell {
-    &:nth-child(8n) { border-right: 1px solid rgba(0, 0, 0, 0.025); }
-    &:nth-child(-n+8) { border-top: 1px solid rgba(0, 0, 0, 0.025); }
-    &:nth-child(4n) { border-right: 0; }
-    &:nth-child(-n+4) { border-top: 0; }
+    /* La base `.cc-grid__cell` suppose 8 colonnes — rétablit les séparateurs internes puis 5n / -n+5 pour les bords. */
+    &:nth-child(8n),
+    &:nth-child(-n+8) {
+      border-right: 1px solid rgba(0, 0, 0, 0.025);
+      border-top: 1px solid rgba(0, 0, 0, 0.025);
+    }
+
+    &:nth-child(5n) { border-right: 0; }
+    &:nth-child(-n+5) { border-top: 0; }
   }
 }
 
@@ -902,7 +908,8 @@
  *    (aspect-ratio 1), l’échelle reste uniforme ; épaisseur en unités utilisateur (~0.05 ≈ ~1 px). --- */
 /* stylelint-disable function-url-quotes — data-URI brute */
 $cc-cover-grid-lines-8-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%208%208' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.05' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V8M2%200V8M3%200V8M4%200V8M5%200V8M6%200V8M7%200V8M0%201H8M0%202H8M0%203H8M0%204H8M0%205H8M0%206H8M0%207H8'/%3E%3C/g%3E%3C/svg%3E");
-$cc-cover-grid-lines-4-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%204%204' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.025' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V4M2%200V4M3%200V4M0%201H4M0%202H4M0%203H4'/%3E%3C/g%3E%3C/svg%3E");
+/* Répétition du motif — 5×5 (voir renderGridLines isQuad dans cover_editor_controller / hero_controller). */
+$cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%205%205' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.04' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V5M2%200V5M3%200V5M4%200V5M0%201H5M0%202H5M0%203H5M0%204H5'/%3E%3C/g%3E%3C/svg%3E");
 
 .cover-controls .cover-controls__body {
   .cc-grid__lines .cc-grid__cell {
@@ -927,7 +934,7 @@ $cc-cover-grid-lines-4-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='h
   }
 
   .cc-grid__lines--quad::before {
-    background-image: $cc-cover-grid-lines-4-bg;
+    background-image: $cc-cover-grid-lines-repeat-bg;
   }
 }
 

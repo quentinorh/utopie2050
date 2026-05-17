@@ -417,8 +417,8 @@ export default class extends Controller {
 
   randomize() {
     if (this.hasSmoothingTarget) this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
-    if (this.hasRowsTarget) this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
-    if (this.hasColumnsTarget) this.columnsTarget.value = Math.floor(Math.random() * 4) + 1;
+    if (this.hasRowsTarget) this.rowsTarget.value = Math.floor(Math.random() * 5) + 1;
+    if (this.hasColumnsTarget) this.columnsTarget.value = Math.floor(Math.random() * 5) + 1;
 
     // Re-seed the oscillating curve params with random values.
     this.x = 0.5 + Math.random() * 0.5;
@@ -494,8 +494,8 @@ export default class extends Controller {
       if (grid.dataset.linesRendered === "true") return;
       const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
                      grid.classList.contains("editor-grid__lines--quad");
-      const cells = isQuad ? 16 : 64;
-      const cols = isQuad ? 4 : 8;
+      const cells = isQuad ? 25 : 64;
+      const cols = isQuad ? 5 : 8;
       grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
       grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
       const fragment = document.createDocumentFragment();

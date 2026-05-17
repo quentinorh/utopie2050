@@ -149,8 +149,8 @@ export default class extends Controller {
       if (grid.dataset.linesRendered === "true") return;
       const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
                      grid.classList.contains("editor-grid__lines--quad");
-      const cells = isQuad ? 16 : 64;
-      const cols = isQuad ? 4 : 8;
+      const cells = isQuad ? 25 : 64;
+      const cols = isQuad ? 5 : 8;
       grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
       grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
       const fragment = document.createDocumentFragment();
@@ -414,8 +414,8 @@ export default class extends Controller {
     this.symmetryMode = randomMode
     
     // Générer des valeurs aléatoires pour les lignes et colonnes
-    this.rowsTarget.value = Math.floor(Math.random() * 4) + 1;
-    this.columnsTarget.value = Math.floor(Math.random() * 4) + 1;
+    this.rowsTarget.value = Math.floor(Math.random() * 5) + 1;
+    this.columnsTarget.value = Math.floor(Math.random() * 5) + 1;
 
     // Générer une valeur aléatoire pour le lissage
     this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
