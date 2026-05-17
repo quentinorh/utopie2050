@@ -482,20 +482,85 @@
   width: 320px;
   max-width: calc(100vw - 18px);
   padding: 12px 14px 14px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  isolation: isolate;
+  /* Effet vitré type « liquid glass » (backdrop + reflets inset) */
+  background: rgba(45, 45, 45, 0.58);
+  backdrop-filter: blur(2px) saturate(180%);
+  -webkit-backdrop-filter: blur(4px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 14px;
   box-shadow:
-    0 18px 42px -12px rgba(0, 0, 0, 0.55),
-    0 6px 18px -6px rgba(0, 0, 0, 0.28),
-    0 1px 2px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+    0 8px 32px rgba(255, 255, 255, 0.1),
+    inset 0 4px 20px rgba(255, 255, 255, 0.1);
   transform-origin: bottom right;
   transform: translateY(0) scale(1);
   opacity: 1;
   /* Évite le scroll-chaining vers le document si le panneau défile (petits écrans). */
   overscroll-behavior: contain;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    box-shadow:
+      inset -10px -8px 0 -11px rgba(255, 255, 255, 0.7),
+      inset 0 -9px 0 -8px rgba(255, 255, 255, 0.7);
+    opacity: 0.3;
+    z-index: 0;
+    filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+  }
+
+  /* Pseudo « gloss » sous le contenu interactif sans z-index -1 peu fiable selon UA */
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Typo lisible sur panneau glass */
+  .cc-label {
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .cc-value {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Segmented & grilles sans fond opaque — laisse voir le flou dessous */
+  .cc-segmented {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .cc-segmented__btn {
+    color: rgba(255, 255, 255, 0.62);
+
+    &:hover:not(.is-active) {
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.82);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Mini-grilles : cadre lisible sur fond vitré (contour lumineux + relief doux),
+     tout en gardant overflow visible pour les cc-tip du tooltip_controller. */
+  .cc-grid {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 16px rgba(15, 23, 42, 0.2),
+      0 2px 6px rgba(0, 0, 0, 0.12),
+      inset 0 1px 2px rgba(255, 255, 255, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
 }
 
 /* Très étroit : tirer parti de toute la largeur disponible au lieu du plafond 320px */
@@ -573,7 +638,8 @@
 /* === Segmented control (×4 / ×8 / ×16) — pill skeuomorphic === */
 .cc-segmented {
   display: inline-flex;
-  background: var(--editor-surface-soft);
+  gap: 4px;
+  background: #F5F5F421 !important;
   border-radius: 7px;
   padding: 2px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
@@ -584,7 +650,6 @@
   flex: 1;
   appearance: none;
   border: 0;
-  background: transparent;
   color: var(--editor-ink-muted);
   font-family: "Roboto Mono", monospace;
   font-size: 10px;
@@ -594,15 +659,19 @@
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.05s ease;
 
-  &:hover { color: var(--editor-ink); }
+  &:hover:not(.is-active) {
+    background: rgba(255, 255, 255, 0.38);
+    color: var(--editor-ink);
+  }
+
   &:active { transform: translateY(0.5px); }
 
   &.is-active {
-    background: var(--editor-ink);
-    color: #FFF;
+    background: rgba(255, 255, 255, 0.7);
+    color: #000;
     box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.25),
-      0 2px 6px rgba(0, 0, 0, 0.18);
+      0 1px 2px rgba(255, 255, 255, 0.25),
+      0 2px 6px rgba(255, 255, 255, 0.18);
   }
 
   &:focus-visible {
@@ -612,44 +681,47 @@
 }
 
 /* === Style unifié des curseurs (thumbs de sliders + handles de grilles) ===
-   box-sizing: border-box pour que la bordure blanche (1.5px) ne s'ajoute pas
-   à la taille — sinon le rendu diffère entre les pseudo-éléments ::-moz/-webkit
-   et le <div> .cc-grid__handle selon le défaut box-sizing du navigateur. */
+   box-sizing: border-box pour que la bordure (~1.5px) ne s’ajoute pas à la taille —
+   sinon le rendu diffère entre ::-moz/-webkit et le <div> .cc-grid__handle selon box-sizing natif du navigateur. */
 @mixin cc-thumb-base {
   box-sizing: border-box;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #2A2A2A 0%, var(--editor-ink) 100%);
-  border: 1.5px solid #FFFFFF;
+  background: linear-gradient(
+    180deg,
+    rgb(255, 255, 255) 0%,
+    rgb(249, 248, 247) 100%
+  );
+  border: 1.5px solid rgba(31, 31, 31, 0.18);
   box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.32),
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 2px 6px rgba(0, 0, 0, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
 }
 
 @mixin cc-thumb-hover-shadow {
   box-shadow:
-    0 3px 9px rgba(0, 0, 0, 0.4),
-    0 1px 3px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.12),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
 }
 
 @mixin cc-thumb-active-shadow {
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 1px 3px rgba(0, 0, 0, 0.22),
+    inset 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 @mixin cc-thumb-focus-shadow {
   box-shadow:
-    0 0 0 3px rgba(31, 31, 31, 0.18),
-    0 2px 5px rgba(0, 0, 0, 0.32),
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 0 0 3px rgba(31, 31, 31, 0.14),
+    0 2px 6px rgba(0, 0, 0, 0.16),
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
-/* === Slider — track creux + thumb noir bombé ===
+/* === Slider — track creux + thumb blanc léger contour anthracite ===
    Firefox Android applique un min-height pour le tap (~30px) et fait hériter
    le font-size de la page, ce qui « gonfle » visuellement le range natif et
    son thumb par rapport au <div> .cc-grid__handle (cf. paire Courbe/Grille).
@@ -761,10 +833,14 @@
   width: 100%;
   aspect-ratio: 1;
   background: var(--editor-surface-soft);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 12px;
   box-shadow:
-    inset 0 1px 3px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    0 4px 14px rgba(15, 23, 42, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28);
   /* overflow: visible — laisse le tooltip qui suit la souris déborder. */
   overflow: visible;
 }
@@ -798,7 +874,8 @@
 
 .cc-grid__lines {
   position: absolute;
-  inset: 4px;
+  inset: 0;
+  border-radius: inherit;
   display: grid;
   pointer-events: none;
 }
@@ -817,6 +894,40 @@
     &:nth-child(-n+8) { border-top: 1px solid rgba(0, 0, 0, 0.05); }
     &:nth-child(4n) { border-right: 0; }
     &:nth-child(-n+4) { border-top: 0; }
+  }
+}
+
+/* --- SVG quadrillage (popover glass) : `preserveAspectRatio=none` + traits SVG = étirement X/Y
+ *    différent → traits épaissis façon « gros blocs ». En `meet` + viewBox carré comme .cc-grid
+ *    (aspect-ratio 1), l’échelle reste uniforme ; épaisseur en unités utilisateur (~0.05 ≈ ~1 px). --- */
+/* stylelint-disable function-url-quotes — data-URI brute */
+$cc-cover-grid-lines-8-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%208%208' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.05' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V8M2%200V8M3%200V8M4%200V8M5%200V8M6%200V8M7%200V8M0%201H8M0%202H8M0%203H8M0%204H8M0%205H8M0%206H8M0%207H8'/%3E%3C/g%3E%3C/svg%3E");
+$cc-cover-grid-lines-4-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%204%204' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.025' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V4M2%200V4M3%200V4M0%201H4M0%202H4M0%203H4'/%3E%3C/g%3E%3C/svg%3E");
+
+.cover-controls .cover-controls__body {
+  .cc-grid__lines .cc-grid__cell {
+    border: 0;
+  }
+
+  .cc-grid__lines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: inherit;
+  }
+
+  .cc-grid__lines:not(.cc-grid__lines--quad)::before {
+    background-image: $cc-cover-grid-lines-8-bg;
+  }
+
+  .cc-grid__lines--quad::before {
+    background-image: $cc-cover-grid-lines-4-bg;
   }
 }
 
