@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export PATH="${HOME}/.local/bin:${PATH}"
+
+if [[ -n "${NGROK_DOMAIN:-}" ]]; then
+  exec ngrok http 3000 --url="https://${NGROK_DOMAIN}"
+else
+  exec ngrok http 3000
+fi

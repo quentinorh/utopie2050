@@ -19,7 +19,7 @@
 
   /* Dropdown menu container */
   .tw-dropdown-menu {
-    @apply fixed z-50 min-w-[180px] p-2 flex flex-col gap-0.5;
+    @apply fixed z-50 min-w-[160px] p-2 flex flex-col items-center gap-0.5;
     @apply bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl;
     @apply shadow-lg shadow-gray-950/5 dark:shadow-none;
     @apply opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out;
@@ -35,7 +35,7 @@
 
   /* Navigation links inside dropdown */
   .tw-nav-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left;
+    @apply flex items-center justify-center gap-3 px-3 py-2.5 rounded-xl w-full text-center;
     @apply text-sm text-gray-600 dark:text-gray-300;
     @apply hover:bg-gray-950/5 dark:hover:bg-white/5;
     @apply hover:text-gray-900 dark:hover:text-white;
@@ -163,6 +163,14 @@
 
 .btn-animate-chars:hover .btn-animate-chars__bg {
   inset: 0.2em;
+}
+
+/* Hero CTA : même style que `.btn-animate-chars`, plus compact sous le breakpoint sm */
+@media not all and (min-width: 640px) {
+  .btn-animate-chars--hero-mobile {
+    padding: 0.55em 1em;
+    font-size: 0.8125rem;
+  }
 }
 
 /* Primary variant: indigo fill on black hero bg, reveals a black ring on hover */

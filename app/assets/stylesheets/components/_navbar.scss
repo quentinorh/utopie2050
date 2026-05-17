@@ -6,19 +6,19 @@
    Référence visuelle : .editor-actionbar (fond translucide + flou).
    ================================ */
 :root {
-  --bar-surface: rgba(255, 255, 255, 0.82);
+  --bar-surface: rgba(255, 255, 255, 0.60);
   --bar-border: rgba(0, 0, 0, 0.05);
   --bar-blur: 20px;
 }
 
 .dark {
-  --bar-surface: rgba(20, 27, 42, 0.82);
+  --bar-surface: rgba(20, 27, 42, 0.70);
   --bar-border: rgba(255, 255, 255, 0.08);
 }
 
 /* L'éditeur garde son ambiance "papier" même si .dark est actif sur le root */
 .form-editor {
-  --bar-surface: rgba(255, 255, 255, 0.82);
+  --bar-surface: rgba(255, 255, 255, 0.60);
   --bar-border: rgba(0, 0, 0, 0.05);
 }
 
@@ -211,6 +211,19 @@
 
 /* Mobile show/edit/new : couleur du lien centre quand la barre passe en fond blanc (évite tout héritage gris/blanc) */
 @media (max-width: 1023px) {
+  /* Scroll horizontal global (souvent induit par la colonne cover ou des éléments larges) :
+     sans overflow sur .form-editor, qui est un ancêtre du footer sticky d’édition.
+     La nav n’ancêtre pas le contenu de l’éditeur — clip local OK. */
+  .navbar--show-page {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  .navbar--show-page > div.relative.z-10 {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .navbar--show-page.navbar--transparent.navbar--scrolled .navbar-center-link--show {
     color: #000;
   }
@@ -269,6 +282,9 @@
     pointer-events: none;
     @include bar-frosted;
     border-bottom: 1px solid var(--bar-border);
+    transition:
+      background 0.4s ease,
+      border-color 0.4s ease;
   }
 
   @media (min-width: 1440px) {
@@ -283,4 +299,14 @@
 .bottom-navbar {
   @include bar-frosted;
   border-top: 1px solid var(--bar-border);
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease;
+}
+
+/* Mobile : navbar h-[56px] sm:h-[75px] — position du menu profil alignée sous la barre */
+@media (max-width: 639px) {
+  .tw-dropdown-menu {
+    top: calc(56px + 16px);
+  }
 }

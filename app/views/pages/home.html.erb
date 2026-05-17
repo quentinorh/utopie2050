@@ -43,12 +43,12 @@
 </div>
 
 <% if @posts.any? %>
-  <% home_posts = @posts.order(created_at: :desc).limit(10) %>
+  <% home_posts = @posts.order(created_at: :desc).limit(6) %>
   <div class="home-last-futures" data-post-count="<%= home_posts.size %>">
-    <div class="font-sans text-[clamp(1.75rem,4vw+1rem,68px)] font-bold uppercase leading-[1.05] tracking-tight text-balance ml-xs">
+    <div class="home-last-futures__title font-sans text-[clamp(1.75rem,4vw+1rem,68px)] font-bold uppercase leading-[1.05] tracking-tight text-balance">
       <span>Les derniers futurs</span>
     </div>
-    <div class="m-auto justify-center p-xs pt-0">
+    <div class="m-auto justify-center pt-0">
       <%= render partial: "posts/posts", locals: { posts: home_posts } %>
     </div>
   </div>
@@ -57,7 +57,7 @@
 <div class="h-[100vh] flex items-center justify-center">
   <div class="text-center">
     <div class="flex flex-col md:px-xl lg:px-2xl justify-center items-center h-full">
-      <p class="text-2xl md:text-xl base:text-xxlish text-balance leading-normal" data-controller="text-reveal">
+      <p class="text-2xl px-xs md:text-xl base:text-xxlish text-balance leading-normal" data-controller="text-reveal">
         Le solarpunk est un mouvement artistique et politique qui propose une vision optimiste d'un avenir durable, interconnecté avec la nature et la communauté ... à l'égard du changement climatique, de la pollution, des inégalités, des intolérances et discriminations sociales.
       </p>
       <p class="mt-base text-l md:text-2xl text-primary base:text-xxlish text-balance" data-controller="text-reveal">

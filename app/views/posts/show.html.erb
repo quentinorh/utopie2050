@@ -30,7 +30,7 @@
   <%= render 'shared/settingspanel' %>
   <%= render 'shared/actionspanel' %>
 
-  <div class="flex flex-col lg:flex-row dark:bg-gray-800 bg-gray-100">
+  <div class="post-show-layout flex flex-col lg:flex-row dark:bg-gray-800 bg-gray-100">
     <!-- Cover panel (left, fixed on desktop) -->
     <div class="cover opacity-0">
       <%= render 'posts/cover', post: @post, ratio: "4x5" %>
@@ -42,7 +42,7 @@
       <div class="show-metadata flex w-full justify-between items-baseline font-mono uppercase tracking-wide py-sm lg:py-[18px]">
         <div class="show-metadata__group">
           <span>Publié le</span>
-          <span class="tabular-nums" data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @post.created_at.strftime("%d.%m.%Y") %>"><%= @post.created_at.strftime("%d.%m.%Y") %></span>
+          <span class="tabular-nums"><%= @post.created_at.strftime("%d.%m.%Y") %></span>
         </div>
         <div class="show-metadata__group">
           <span class="max-lg:hidden">Temps de lecture</span>
@@ -54,7 +54,7 @@
       <div class="show-separator border-t border-gray-950/10 dark:border-white/10"></div>
 
       <% if @post.event_code_details %>
-        <div class="w-1/2 font-mono text-xs mt-sm">
+        <div class="show-event-code font-mono text-xs mt-sm">
           <% if @post.event_code_details[:link].present? %>
             <%= link_to @post.event_code_details[:link],
                         class: "text-xs",
@@ -70,6 +70,7 @@
       <div class="post-body"
            data-controller="text-reveal"
            data-text-reveal-mode-value="lines"
+           data-text-reveal-post-id-value="<%= @post.id %>"
            data-scroll-target="content">
         <div class="body-content mt-[24px] lg:mt-sm adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
         <% if @post.chapters.any? %>

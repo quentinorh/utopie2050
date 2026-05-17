@@ -16,7 +16,7 @@
 /* Animated SVG pattern background */
 .auth-bg {
   position: absolute;
-  inset: -10%;
+  inset: 0;
   z-index: 0;
   overflow: hidden;
   background:
@@ -48,11 +48,15 @@
   z-index: 2;
   width: 100%;
   max-width: 460px;
-  padding: 20px;
+  padding: 12px;
+
+  @media (min-width: 640px) {
+    padding: 20px;
+  }
 }
 
 .auth-form {
-  padding: 40px;
+  padding: 20px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
@@ -425,13 +429,17 @@
 .auth-input {
   display: block;
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 12px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #fff;
   font-size: 16px;
   font-family: "Apfel", sans-serif;
   transition: border-color 0.2s ease;
+
+  @media (min-width: 640px) {
+    padding: 14px 16px;
+  }
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.25);
@@ -452,21 +460,64 @@
   gap: 12px;
 }
 
+/* Précédent / Suivant ou équivalent sur une même ligne (inscription) */
+.auth-form__actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  align-items: stretch;
+
+  @media (min-width: 640px) {
+    gap: 12px;
+  }
+
+  > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .auth-btn-primary,
+  .auth-btn-secondary {
+    width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    line-height: 1.25;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+
+    @media (min-width: 640px) {
+      padding: 16px 24px;
+      font-size: 16px;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
 .auth-btn-primary {
   display: block;
   width: 100%;
-  padding: 16px 24px;
+  padding: 14px 16px;
   background: #fff;
   color: #12142C;
   font-family: "Apfel", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+
+  @media (min-width: 640px) {
+    padding: 16px 24px;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+  }
 
   &:hover {
     background: #f0f0f0;
@@ -485,17 +536,23 @@
 .auth-btn-secondary {
   display: block;
   width: 100%;
-  padding: 16px 24px;
+  padding: 14px 16px;
   background: transparent;
   color: #fff;
   font-family: "Apfel", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
+
+  @media (min-width: 640px) {
+    padding: 16px 24px;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+  }
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.5);
@@ -506,17 +563,23 @@
 .auth-btn-danger {
   display: block;
   width: 100%;
-  padding: 16px 24px;
+  padding: 14px 16px;
   background: transparent;
   color: #ff7a7a;
   font-family: "Apfel", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   border: 1px solid rgba(239, 68, 68, 0.4);
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+
+  @media (min-width: 640px) {
+    padding: 16px 24px;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+  }
 
   &:hover {
     border-color: rgba(239, 68, 68, 0.8);

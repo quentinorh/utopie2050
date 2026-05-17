@@ -7,9 +7,6 @@
     <h1 class="index-title"><%= @filters_active ? "Futurs trouvés" : "Tous les futurs" %><span class="index-title-count font-mono">[<span data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @posts.count %>"><%= @posts.count %></span>]</span></h1>
   </div>
 
-  <!-- Separator -->
-  <div class="border-t border-black"></div>
-
   <!-- Posts grid -->
   <div id="posts-grid">
     <div class="index-grid" data-controller="staggered-animation">

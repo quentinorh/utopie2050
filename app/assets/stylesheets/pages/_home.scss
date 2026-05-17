@@ -11,6 +11,24 @@
 }
 
 .home-last-futures {
+  // Padding gauche / bas alignés avec .index-title-section (valeurs responsive identiques).
+  &__title {
+    @media (max-width: 639px) {
+      padding-left: 10px;
+      padding-bottom: 5px;
+    }
+
+    @media (min-width: 640px) and (max-width: 1023px) {
+      padding-left: 20px;
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 1024px) {
+      padding-left: 40px;
+      padding-bottom: 10px;
+    }
+  }
+
   @for $n from 1 through 10 {
     &[data-post-count="#{$n}"] {
       $visible-md: home-posts-row-complete-count($n, 2);

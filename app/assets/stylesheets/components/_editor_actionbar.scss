@@ -9,7 +9,10 @@
 }
 
 .editor-body {
-  padding: calc(var(--navbar-height) + 24px) 24px 32px;
+  /* overflow sur la colonne contenu uniquement : un overflow-x sur un ancêtre
+     de .editor-actionbar casse position:sticky en bas du viewport. */
+  overflow-x: clip;
+  padding: 24px 24px 32px;
   max-width: 760px;
   width: 100%;
   margin: 0 auto;
@@ -42,12 +45,23 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 20px;
-  max-width: 760px;
+  padding-top: 0;
+  padding-bottom: 0;
   margin: 0 auto;
 
+  @media (max-width: 639px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
   @media (min-width: 1024px) {
-    padding: 0 48px;
+    padding-left: 40px;
+    padding-right: 40px;
   }
 }
 
@@ -100,7 +114,7 @@
     box-shadow: 0 0 0 1px var(--bar-border);
   }
 }
-
 .form-editor.is-revealing .editor-actionbar {
   transform: translateY(100%);
 }
+

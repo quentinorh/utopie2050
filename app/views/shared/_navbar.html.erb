@@ -1,6 +1,6 @@
 <% transparent = local_assigns[:transparent] || false %>
 <% show_post_page = controller_name == "posts" && %w[show edit new].include?(action_name) %>
-<nav class="<%= transparent ? 'fixed navbar--transparent' : 'sticky navbar--solid' %> <%= show_post_page ? 'navbar--show-page' : '' %> top-0 z-[99] w-full flex items-center dark:text-gray-100 h-[75px]"
+<nav class="<%= transparent ? 'fixed navbar--transparent' : 'sticky navbar--solid' %> <%= show_post_page ? 'navbar--show-page' : '' %> top-0 z-[99] w-full flex items-center dark:text-gray-100 h-[56px] sm:h-[75px]"
      data-controller="navbar fullscreen"
      data-navbar-transparent-value="<%= transparent %>"
      data-navbar-scroll-value="<%= content_for?(:navbar_scroll) || show_post_page %>">
@@ -91,9 +91,9 @@
         <!-- User icon (circle with indigo border) -->
         <div class="flex-shrink-0">
           <%= link_to new_user_session_path,
-                      class: "h-[42px] w-[42px] flex items-center justify-center rounded-full border border-primary",
+                      class: "h-9 w-9 sm:h-[42px] sm:w-[42px] flex items-center justify-center rounded-full border border-primary",
                       aria: { label: "Se connecter" } do %>
-            <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor" class="text-primary">
+            <svg viewBox="0 0 16 18" fill="currentColor" class="w-[14px] h-[15.75px] sm:w-4 sm:h-[18px] text-primary shrink-0" aria-hidden="true">
               <circle cx="8" cy="5" r="4"/>
               <path d="M0 18C0 14 3.6 11 8 11s8 3 8 7"/>
             </svg>
@@ -117,8 +117,8 @@
       <% if user_signed_in? %>
         <div class="flex-shrink-0">
           <div class="relative">
-            <button class="h-[42px] w-[42px] relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
-              <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-[14px] font-medium" data-navbar-target="username">
+            <button class="h-9 w-9 sm:h-[42px] sm:w-[42px] relative flex items-center justify-center rounded-full bg-primary focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" data-action="click->navbar#toogleMenu">
+              <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none text-white text-xs sm:text-[14px] font-medium" data-navbar-target="username">
                 <%= current_user.username[0].upcase %>
               </span>
               <span class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 leading-none" data-navbar-target="closeMenu">
@@ -127,7 +127,7 @@
             </button>
             <div class="tw-dropdown-menu text-center" data-navbar-target="menuDesktop">
               <%= link_to new_post_path,
-                          class: "inline-block mt-1 sm:hidden btn-animate-chars btn-animate-chars--primary text-sm",
+                          class: "inline-flex shrink-0 mt-1 sm:hidden btn-animate-chars btn-animate-chars--primary btn-animate-chars--hero-mobile",
                           data: { controller: "stagger-chars" },
                           "aria-label": "Nouveau futur" do %>
                 <div class="btn-animate-chars__bg"></div>
@@ -135,15 +135,15 @@
                       data-stagger-chars-target="text"
                       class="btn-animate-chars__text">Nouveau futur</span>
               <% end %>
-              <div class="sm:hidden border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
+              <div class="w-full sm:hidden border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
               <% if current_user&.admin? %>
                 <%= link_to "Administration", admin_dashboard_path, class: "tw-nav-link" %>
               <% end %>
               <%= link_to "Mes futurs", user_posts_path, class: "tw-nav-link" %>
               <%= link_to "Mes favoris", user_favorites_path, class: "tw-nav-link" %>
               <%= link_to "Editer mon profil", edit_user_registration_path, class: "tw-nav-link" %>
-              <div class="border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
-              <%= button_to "Se déconnecter", destroy_user_session_path, method: :delete, class: "tw-nav-link !text-gray-400 hover:!text-red-500 w-full text-center", form: { class: "inline" } %>
+              <div class="w-full border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
+              <%= button_to "Se déconnecter", destroy_user_session_path, method: :delete, class: "tw-nav-link !text-gray-400 hover:!text-red-500 w-full", form: { class: "w-full" } %>
             </div>
           </div>
         </div>

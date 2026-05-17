@@ -1,0 +1,17 @@
+// Footer — padding horizontal aligné avec .index-title-section / .home-last-futures__title
+.site-footer {
+  @media (max-width: 639px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  @media (min-width: 1024px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}

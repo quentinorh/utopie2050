@@ -21,7 +21,6 @@ export default class extends Controller {
   connect() {
     this._cacheHandler = () => {
       if (this._mainTl) this._mainTl.kill()
-      this._breatheTweens?.forEach(t => t.kill())
 
       const cover = this.element.querySelector('.cover')
       if (cover) {
@@ -29,6 +28,8 @@ export default class extends Controller {
         cover.style.opacity = '0'
         cover.classList.add('opacity-0')
       }
+      const shapes = this.element.querySelector('.cover-svg')
+      shapes?.classList.remove('cover-svg--idle-drift')
       const svg = this.element.querySelector('.cover-svg svg') || this.element.querySelector('.cover-svg')?.firstElementChild
       if (svg) gsap.killTweensOf(svg)
       // Reset title
@@ -49,6 +50,8 @@ export default class extends Controller {
       // Reset metadata & separator
       const metadata = this.element.querySelector('.show-metadata')
       if (metadata) metadata.style.opacity = ''
+      const eventCode = this.element.querySelector('.show-event-code')
+      if (eventCode) eventCode.style.opacity = ''
       const separator = this.element.querySelector('.show-separator')
       if (separator) { separator.style.transform = ''; separator.style.transformOrigin = '' }
     }
@@ -59,7 +62,6 @@ export default class extends Controller {
   disconnect() {
     document.removeEventListener('turbo:before-cache', this._cacheHandler)
     if (this._mainTl) this._mainTl.kill()
-    this._breatheTweens?.forEach(t => t.kill())
   }
 
   _getPatternSettings() {
@@ -153,7 +155,6 @@ export default class extends Controller {
     const settings = this._getPatternSettings()
     const tl = gsap.timeline()
     this._mainTl = tl
-    this._breatheTweens = []
 
     // ─── 1. Cover appears instantly, no circle zoom ───
     gsap.set(cover, { opacity: 1 })
@@ -179,36 +180,30 @@ export default class extends Controller {
       // Render the starting state immediately
       this._regeneratePaths(svg, params)
 
-      // Long dramatic morph to final values
+      const finalParams = {
+        firstSliderControl: target1,
+        secondSliderControl: target2,
+        smoothing: targetSmoothing,
+        rows,
+        columns,
+        symmetryMode
+      }
+
+      // Long dramatic morph to final values — paths figés après (plus de regenerate en boucle)
       tl.to(params, {
         firstSliderControl: target1,
         secondSliderControl: target2,
         smoothing: targetSmoothing,
         duration: 2.4,
         ease: coverEase,
-        onUpdate: () => this._regeneratePaths(svg, params)
+        onUpdate: () => this._regeneratePaths(svg, params),
+        onComplete: () => {
+          this._regeneratePaths(svg, finalParams)
+          shapes?.classList.add('cover-svg--idle-drift')
+        }
       }, 0)
-
-      // Breathing after morph settles
-      const breatheParams = {
-        firstSliderControl: target1,
-        secondSliderControl: target2,
-        smoothing: targetSmoothing,
-        rows, columns, symmetryMode
-      }
-
-      const breathe1 = gsap.to(breatheParams, {
-        firstSliderControl: target1 + (Math.random() - 0.5) * 8,
-        secondSliderControl: target2 + (Math.random() - 0.5) * 8,
-        smoothing: targetSmoothing + (Math.random() - 0.5) * 5,
-        duration: 4 + Math.random() * 2,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: 2.6,
-        onUpdate: () => this._regeneratePaths(svg, breatheParams)
-      })
-      this._breatheTweens.push(breathe1)
+    } else {
+      shapes?.classList.add('cover-svg--idle-drift')
     }
 
     // ─── 3. Title — single div, clip-path wipe left → right ───
@@ -245,6 +240,11 @@ export default class extends Controller {
     if (metadata) {
       gsap.set(metadata, { opacity: 0 })
       tl.to(metadata, { opacity: 0.4, duration: 0.8, ease: coverEase }, 1.2)
+    }
+    const eventCode = this.element.querySelector('.show-event-code')
+    if (eventCode) {
+      gsap.set(eventCode, { opacity: 0 })
+      tl.to(eventCode, { opacity: 1, duration: 0.8, ease: coverEase }, 1.2)
     }
     if (separator) {
       gsap.set(separator, { scaleX: 0, transformOrigin: 'left center' })

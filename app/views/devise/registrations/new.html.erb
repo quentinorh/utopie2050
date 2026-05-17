@@ -52,9 +52,9 @@
                         wrapper_html: { class: 'mt-4' },
                         input_html: { class: 'auth-input text-center', placeholder: 'Ton pseudo', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
             <div class="text-red-400 text-sm mt-1" data-signup-target="usernameError"></div>
-            <div class="flex gap-3 mt-6">
-              <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="auth-btn-secondary flex-1">Precedent</button>
-              <button type="button" data-action="click->signup#nextStep" data-next-step="step-age" class="auth-btn-primary flex-1" data-signup-target="nextStepUsernameButton" disabled>Suivant</button>
+            <div class="auth-form__actions-row">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-intro" class="auth-btn-secondary">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-age" class="auth-btn-primary" data-signup-target="nextStepUsernameButton" disabled>Suivant</button>
             </div>
           </div>
 
@@ -67,9 +67,9 @@
                         wrapper_html: { class: 'mt-4' },
                         input_html: { class: 'auth-input text-center', placeholder: 'Ton age en 2050' } %>
             <div class="text-red-400 text-sm mt-1" data-signup-target="ageError"></div>
-            <div class="flex gap-3 mt-6">
-              <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="auth-btn-secondary flex-1">Precedent</button>
-              <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="auth-btn-primary flex-1">Suivant</button>
+            <div class="auth-form__actions-row">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="auth-btn-secondary">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-email-password" class="auth-btn-primary">Suivant</button>
             </div>
           </div>
 
@@ -97,9 +97,9 @@
                           'data-action': 'input->signup#checkPassword'
                         } %>
             <div class="text-red-400 text-sm mt-1" data-signup-target="passwordError"></div>
-            <div class="flex gap-3 mt-6">
-              <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="auth-btn-secondary flex-1">Precedent</button>
-              <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="auth-btn-primary flex-1" data-signup-target="nextStepEmailButton" disabled>Suivant</button>
+            <div class="auth-form__actions-row">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-age" class="auth-btn-secondary">Precedent</button>
+              <button type="button" data-action="click->signup#nextStep" data-next-step="step-terms" class="auth-btn-primary" data-signup-target="nextStepEmailButton" disabled>Suivant</button>
             </div>
           </div>
 
@@ -116,9 +116,10 @@
               <h4>Licence libre</h4>
               <p>En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Creative Commons BY-NC-SA 4.0</a>.</p>
             </div>
-            <div class="flex gap-3 mt-6">
-              <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="auth-btn-secondary flex-1">Precedent</button>
-              <%= f.button :submit, "Je m'inscris", class: "auth-btn-primary flex-1", data: { form_type: "other" } %>
+            <div class="auth-form__actions-row">
+              <button type="button" data-action="click->signup#previousStep" data-step-id="step-email-password" class="auth-btn-secondary">Precedent</button>
+              <%# <button> et non <input type="submit"> : sur mobile, l'autofill remplace souvent value="" par l'email. %>
+              <button type="submit" class="auth-btn-primary" data-form-type="other">Je m'inscris</button>
             </div>
             <p class="text-xs text-white/40 text-center mt-4">En cliquant sur 'Je m'inscris', tu confirmes avoir accepte les conditions d'utilisation</p>
           </div>

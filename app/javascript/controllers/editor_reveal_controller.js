@@ -94,16 +94,35 @@ export default class extends Controller {
       tl.to(title, { clipPath: "inset(0 0% 0 0)", duration: 0.8, ease: coverEase }, 0.45)
     }
 
-    const pills = this.element.querySelectorAll(".cover-pill--reveal")
-    if (pills.length) {
-      gsap.set(pills, { clipPath: "inset(0 100% 0 0)", opacity: 0 })
-      tl.to(pills, {
-        clipPath: "inset(0 0% 0 0)",
-        opacity: 1,
-        duration: 0.6,
-        ease: coverEase,
-        stagger: 0.08
-      }, 0.7)
+    const allRevealPills = this.element.querySelectorAll(".cover-pill--reveal")
+    const toolbarRevealPills = this.element.querySelectorAll(".cover-toolbar .cover-pill--reveal")
+    if (allRevealPills.length) {
+      const toolbarSet = new Set(toolbarRevealPills)
+      const wipePills = Array.from(allRevealPills).filter((el) => !toolbarSet.has(el))
+
+      // Toolbar : opacité + léger slide (y) — ne pas combiner translateY en CSS + clip GSAP
+      // (le SCSS ne met plus de translate pendant .is-revealing, le y est entièrement tween ici).
+      if (toolbarRevealPills.length) {
+        gsap.set(toolbarRevealPills, { opacity: 0, y: 10 })
+        tl.to(toolbarRevealPills, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: coverEase,
+          stagger: 0.08
+        }, 0.7)
+      }
+
+      if (wipePills.length) {
+        gsap.set(wipePills, { clipPath: "inset(0 100% 0 0)", opacity: 0 })
+        tl.to(wipePills, {
+          clipPath: "inset(0 0% 0 0)",
+          opacity: 1,
+          duration: 0.6,
+          ease: coverEase,
+          stagger: 0.08
+        }, 0.7)
+      }
     }
 
     // Le popover des paramètres flotte au-dessus du pill head (toolbar bas-droite) —

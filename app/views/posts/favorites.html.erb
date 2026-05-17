@@ -4,17 +4,11 @@
 
 <div class="flex flex-col min-h-screen">
   <div class="w-full grow min-w-0">
-    <div class="flex flex-row justify-between items-center p-xs sticky top-[theme('top.navbar-height')] z-20 bg-white">
-      <h1 class="text-2l lg:text-display items-center flex">Mes favoris
-        <div class="font-mono text-base md:text-2xl inline-flex items-center ml-xxs">
-          <span>[</span>
-          <div data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @favorite_posts.count %>"><%= @favorite_posts.count %></div>
-          <span>]</span>
-        </div>
-      </h1>
+    <div class="index-title-section">
+      <h1 class="index-title">Mes favoris<span class="index-title-count font-mono">[<span data-controller="randomize-letter-animation" data-randomize-letter-animation-text-value="<%= @favorite_posts.count %>"><%= @favorite_posts.count %></span>]</span></h1>
     </div>
 
-    <div class="m-auto justify-center p-xs pt-0">
+    <div class="m-auto justify-center pt-0">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-xs grow justify-center" data-controller="staggered-animation">
         <% if @favorite_posts.any? %>
           <% @favorite_posts.each do |post| %>

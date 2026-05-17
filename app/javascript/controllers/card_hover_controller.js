@@ -3,17 +3,12 @@ import { gsap } from "gsap"
 
 // Index-card hover animation.
 //
-// On `mouseenter` of the parent `.index-card` link, this controller
-// starts a forward-only Perlin-driven path morph using the same
-// `_regeneratePaths` math as `svg_animation_controller`. Because the
-// drift is Perlin (not yoyo), the curves never play-and-reverse —
-// they just keep evolving organically while the cursor stays on the
-// card. On `mouseleave` we cancel the loop and write the original
-// `d` / `transform` attributes back so the card looks identical to
-// its at-rest state.
+// On devices with hover: `mouseenter` on `.index-card` starts a forward-only
+// Perlin-driven path morph (same `_regeneratePaths` math as `svg_animation_controller`).
+// On `mouseleave` we cancel and restore original `d` / `transform`.
 //
-// The CSS in `_posts_index.scss` handles a light SVG scale on hover;
-// this controller morphs the paths (Perlin) for stronger shape motion.
+// Sans survol réel (ex. tactile) : un IntersectionObserver avec une bande
+// horizontale au centre du viewport déclenche / arrête la même animation au scroll.
 export default class extends Controller {
   connect() {
     this._link = this.element.closest(".index-card") || this.element
@@ -33,19 +28,32 @@ export default class extends Controller {
 
     this._buildNoise()
 
-    this._onEnter = this._startHover.bind(this)
-    this._onLeave = this._endHover.bind(this)
-    this._link.addEventListener("mouseenter", this._onEnter)
-    this._link.addEventListener("mouseleave", this._onLeave)
+    // Mobile / tactile : pas de vrai survol — on déclenche quand la couverture
+    // croise une bande horizontale au centre du viewport.
+    this._useViewportCenter = !window.matchMedia("(hover: hover)").matches
+
+    if (this._useViewportCenter) {
+      this._setupViewportCenterObserver()
+    } else {
+      this._onEnter = this._startHover.bind(this)
+      this._onLeave = this._endHover.bind(this)
+      this._link.addEventListener("mouseenter", this._onEnter)
+      this._link.addEventListener("mouseleave", this._onLeave)
+    }
   }
 
   disconnect() {
-    if (this._link) {
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect()
+      this._intersectionObserver = null
+    }
+    if (this._link && this._useViewportCenter === false) {
       this._link.removeEventListener("mouseenter", this._onEnter)
       this._link.removeEventListener("mouseleave", this._onLeave)
     }
     this._stopRaf()
     if (this._enterTween) this._enterTween.kill()
+    if (this._exitTween) this._exitTween.kill()
   }
 
   // --- pattern settings -------------------------------------------
@@ -80,6 +88,27 @@ export default class extends Controller {
       second: 0.92,
       smoothing: 0.52
     }
+  }
+
+  _setupViewportCenterObserver() {
+    this._onIntersect = (entries) => {
+      for (const entry of entries) {
+        if (entry.target !== this.element) continue
+        if (entry.isIntersecting) {
+          this._startHover()
+        } else {
+          this._endHover()
+        }
+      }
+    }
+    // Rétrécit la zone d’intersection à ~10 % de la hauteur du viewport,
+    // centrée verticalement : l’animation part quand la carte coupe le milieu de l’écran.
+    this._intersectionObserver = new IntersectionObserver(this._onIntersect, {
+      root: null,
+      rootMargin: "-45% 0px -45% 0px",
+      threshold: 0
+    })
+    this._intersectionObserver.observe(this.element)
   }
 
   _perlin1D(t, gradients) {

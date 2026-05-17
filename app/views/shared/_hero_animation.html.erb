@@ -30,22 +30,22 @@
       <div class="mb-2 flex flex-col justify-center mx-auto p-4 md:p-12 lg:w-3/4">
         <% pc = @published_posts_count %>
         <% ac = @published_authors_count %>
-        <p class="mb-xs max-w-[min(100vw-2rem,32rem)] self-center text-center font-mono text-md uppercase leading-snug tracking-wide text-white">
+        <p class="mb-xs max-w-[min(100vw-2rem,32rem)] self-center text-center font-mono text-xs uppercase leading-snug tracking-wide text-white sm:text-sm md:text-base">
           <%= number_with_delimiter(pc) %>
           <%= pc == 1 ? "récit publié" : "récits publiés" %>
           par
           <%= number_with_delimiter(ac) %>
           <%= ac == 1 ? "auteur" : "auteur·ices" %>
         </p>
-        <h1 class="text-white text-xxl lg:text-display text-center text-balance" data-hero-animation-target="title">
-          Explorer le monde en 2050
+        <h1 class="text-center text-balance text-3xl leading-none text-white sm:text-xxl sm:leading-none lg:text-display lg:leading-none">
+          <span data-hero-animation-target="title">Explorer le monde en 2050</span>
         </h1>
-        <p class="max-w-[min(100vw-2rem,40rem)] self-center text-center font-sans text-l text-balance leading-snug text-white md:text-2l">
+        <p class="max-w-[min(100vw-2rem,40rem)] self-center text-center font-sans text-base text-balance leading-snug text-white sm:text-l md:text-2l">
           Lire et écrire des futurs désirables
         </p>
-        <div class="flex flex-row items-center gap-sm mt-sm justify-center" data-hero-animation-target="buttons">
+        <div class="mt-sm flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-sm" data-hero-animation-target="buttons">
           <%= link_to posts_path,
-              class: "btn-animate-chars btn-animate-chars--primary",
+              class: "btn-animate-chars btn-animate-chars--primary btn-animate-chars--hero-mobile",
               data: { controller: "stagger-chars" },
               "aria-label": "Lire les futurs" do %>
             <div class="btn-animate-chars__bg"></div>
@@ -54,7 +54,7 @@
                   class="btn-animate-chars__text">Lire les futurs</span>
           <% end %>
           <%= link_to new_post_path,
-              class: "btn-animate-chars btn-animate-chars--secondary",
+              class: "btn-animate-chars btn-animate-chars--secondary btn-animate-chars--hero-mobile",
               data: { controller: "stagger-chars" },
               "aria-label": "Écrire le futur" do %>
             <div class="btn-animate-chars__bg"></div>
@@ -74,8 +74,9 @@
   </div>
 
   <div class="cover-toolbar">
+    <%# .cover-pill force display:inline-flex en SCSS → !hidden pour masquer (comme .cover-controls ci-dessous). %>
     <button type="button"
-            class="cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
+            class="!hidden cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
             data-action="click->hero#randomize"
             aria-label="Générer une animation aléatoire">
       <svg xmlns="http://www.w3.org/2000/svg"

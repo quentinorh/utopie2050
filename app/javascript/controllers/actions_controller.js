@@ -135,11 +135,17 @@ export default class extends Controller {
 
   // ─── Reading settings ───
 
+  _resizeLenisIfPresent() {
+    const lenis = typeof window !== "undefined" ? window.lenis : null
+    if (lenis && typeof lenis.resize === "function") lenis.resize()
+  }
+
   changeTextSize(event) {
     const size = event.currentTarget.dataset.value
     this.setActiveButton('textSize', size)
     this.applyStyleToAdjustable('fontSize', this.getFontSize(size))
     this.saveSetting('text-size', size)
+    this._resizeLenisIfPresent()
     this.dispatchReadingTypographyChanged()
   }
 
@@ -148,6 +154,7 @@ export default class extends Controller {
     this.setActiveButton('lineHeight', height)
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(height))
     this.saveSetting('line-height', height)
+    this._resizeLenisIfPresent()
     this.dispatchReadingTypographyChanged()
   }
 
@@ -156,6 +163,7 @@ export default class extends Controller {
     this.setActiveButton('font', font)
     this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
     this.saveSetting('font-family', font)
+    this._resizeLenisIfPresent()
     this.dispatchReadingTypographyChanged()
   }
 
@@ -163,7 +171,7 @@ export default class extends Controller {
     const theme = event.currentTarget.dataset.value
     this.setActiveButton('theme', theme)
     document.body.classList.toggle('dark', theme === 'dark')
-    document.querySelectorAll('.show-content').forEach(el => {
+    document.querySelectorAll('.show-content-panel').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
     })
     this.saveSetting('post-theme', theme)
@@ -224,8 +232,10 @@ export default class extends Controller {
     this.applyStyleToAdjustable('lineHeight', this.getLineHeight(lineHeight))
     this.applyStyleToAdjustable('fontFamily', font === 'sans' ? 'Apfel' : 'Lexend')
 
+    this._resizeLenisIfPresent()
+
     document.body.classList.toggle('dark', theme === 'dark')
-    document.querySelectorAll('.show-content').forEach(el => {
+    document.querySelectorAll('.show-content-panel').forEach(el => {
       el.classList.toggle('dark', theme === 'dark')
     })
   }

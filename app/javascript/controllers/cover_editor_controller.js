@@ -13,6 +13,11 @@ const PATTERN_SCALE_Y = 0.6
 const SVG_WIDTH = 250
 const SVG_HEIGHT = 350
 
+// Marge intérieure pour le centre des poignées .cc-grid__handle (thumb 16px → rayon 8px, + halo
+// ::after inset -6px ≈ 14px depuis le centre). Sans ça le drag au bord dépasse du .cc-grid
+// (overflow: visible), élargit parfois le document (scrollbars / reflow : navbar, actionbar).
+const GRID_DRAG_INSET = 14
+
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
@@ -482,6 +487,31 @@ export default class extends Controller {
     };
   }
 
+  /**
+   * Centre du thumb dans les limites du conteneur .cc-grid, avec pourcentages 0–100
+   * sur la zone utile (entre les marges GRID_DRAG_INSET).
+   */
+  clampGridPointer(mouseX, mouseY, rectW, rectH) {
+    const inset = GRID_DRAG_INSET
+    const innerW = rectW - 2 * inset
+    const innerH = rectH - 2 * inset
+
+    if (innerW <= 0 || innerH <= 0) {
+      const cx = rectW / 2
+      const cy = rectH / 2
+      return { clampedX: cx, clampedY: cy, percentX: 50, percentY: 50 }
+    }
+
+    const clampedX = Math.min(Math.max(inset, mouseX), rectW - inset)
+    const clampedY = Math.min(Math.max(inset, mouseY), rectH - inset)
+    return {
+      clampedX,
+      clampedY,
+      percentX: ((clampedX - inset) / innerW) * 100,
+      percentY: ((clampedY - inset) / innerH) * 100
+    }
+  }
+
   startDrag(event) {
     event.preventDefault(); // Empêcher le scroll sur mobile
     this.isDragging = true;
@@ -515,20 +545,13 @@ export default class extends Controller {
       const mouseX = coords.clientX - gridRect.left;
       const mouseY = coords.clientY - gridRect.top;
 
-      // Contraindre la position dans les limites de la grille
       const maxX = gridRect.width;
       const maxY = gridRect.height;
 
-      const newX = Math.min(Math.max(0, mouseX), maxX);
-      const newY = Math.min(Math.max(0, mouseY), maxY);
+      const { clampedX, clampedY, percentX, percentY } = this.clampGridPointer(mouseX, mouseY, maxX, maxY);
 
-      // Mettre à jour la position de la cible
-      this.dragTarget.style.left = `${newX}px`;
-      this.dragTarget.style.top = `${newY}px`;
-
-      // Calculer les coordonnées en pourcentage
-      const percentX = (newX / maxX) * 100;
-      const percentY = (newY / maxY) * 100;
+      this.dragTarget.style.left = `${clampedX}px`;
+      this.dragTarget.style.top = `${clampedY}px`;
 
       // Arrondir à 2 décimales pour un affichage plus propre
       const roundedX = Math.round(percentX * 100) / 100;
@@ -564,29 +587,47 @@ export default class extends Controller {
   }
 
   updateCursorPositions() {
-    const grid1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
-    const grid2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
+    const gridLines1 = this.gridTargets.find(grid => grid.dataset.patternGrid === "1");
+    const gridLines2 = this.gridTargets.find(grid => grid.dataset.patternGrid === "2");
+    const grid1 = gridLines1?.parentElement;
+    const grid2 = gridLines2?.parentElement;
+    const inset = GRID_DRAG_INSET
 
     if (grid1 && this.hasAnchor1Target) {
-      const gridRect1 = grid1.getBoundingClientRect();
-      const firstSliderValue = this.firstSliderControlTarget.value;
-      const secondSliderValue = this.secondSliderControlTarget.value;
+      const rect = grid1.getBoundingClientRect();
+      const innerW = Math.max(0, rect.width - 2 * inset);
+      const innerH = Math.max(0, rect.height - 2 * inset);
+      const firstSliderValue = parseFloat(this.firstSliderControlTarget.value);
+      const secondSliderValue = parseFloat(this.secondSliderControlTarget.value);
 
-      const newX1 = (firstSliderValue / 100) * gridRect1.width;
-      const newY1 = (secondSliderValue / 100) * gridRect1.height;
+      let newX1, newY1;
+      if (innerW <= 0 || innerH <= 0) {
+        newX1 = rect.width / 2;
+        newY1 = rect.height / 2;
+      } else {
+        newX1 = inset + (firstSliderValue / 100) * innerW;
+        newY1 = inset + (secondSliderValue / 100) * innerH;
+      }
 
       this.anchor1Target.style.left = `${newX1}px`;
       this.anchor1Target.style.top = `${newY1}px`;
     }
 
     if (grid2 && this.hasAnchor2Target) {
-      const gridRect2 = grid2.getBoundingClientRect();
-      const columnsValue = this.columnsTarget.value;
-      const rowsValue = this.rowsTarget.value;
+      const rect = grid2.getBoundingClientRect();
+      const innerW = Math.max(0, rect.width - 2 * inset);
+      const innerH = Math.max(0, rect.height - 2 * inset);
+      const columnsValue = parseFloat(this.columnsTarget.value);
+      const rowsValue = parseFloat(this.rowsTarget.value);
 
-      // Inverser les calculs pour la deuxième grille
-      const newX2 = ((columnsValue - 1) / 4) * gridRect2.width;
-      const newY2 = ((rowsValue - 1) / 4) * gridRect2.height;
+      let newX2, newY2;
+      if (innerW <= 0 || innerH <= 0) {
+        newX2 = rect.width / 2;
+        newY2 = rect.height / 2;
+      } else {
+        newX2 = inset + innerW * ((columnsValue - 1) / 4);
+        newY2 = inset + innerH * ((rowsValue - 1) / 4);
+      }
 
       this.anchor2Target.style.left = `${newX2}px`;
       this.anchor2Target.style.top = `${newY2}px`;

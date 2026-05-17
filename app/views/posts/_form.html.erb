@@ -3,8 +3,8 @@
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
      data-cover-editor-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
-     class="w-full form-editor is-revealing">
-  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex flex-col min-h-screen", data: { action: "submit->cover-editor#saveSVG submit->cover-editor#savePatternSettings" } }) do |form| %>
+     class="w-full min-w-0 max-w-full form-editor is-revealing">
+  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#saveSVG submit->cover-editor#savePatternSettings" } }) do |form| %>
 
     <% if @post.errors.any? %>
       <div class="editor-errors" role="alert">
@@ -17,7 +17,7 @@
       </div>
     <% end %>
 
-    <div class="flex flex-col flex-1">
+    <div class="flex min-w-0 flex-1 flex-col">
       <!-- Colonne de gauche : couverture + carte de contrôles flottante -->
       <aside class="form-left-panel">
         <div class="form-cover-wrapper">
@@ -80,7 +80,27 @@
                       class="cover-controls__head cover-pill cover-pill--reveal"
                       data-action="click->cover-editor#toggleControls"
                       aria-expanded="true"
-                      aria-controls="cover-controls-body">
+                      aria-controls="cover-controls-body"
+                      aria-label="Paramètres de la couverture">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="cover-pill__icon cover-controls__settings-icon"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                  <line x1="21" x2="14" y1="4" y2="4"/>
+                  <line x1="10" x2="3" y1="4" y2="4"/>
+                  <line x1="21" x2="12" y1="12" y2="12"/>
+                  <line x1="8" x2="3" y1="12" y2="12"/>
+                  <line x1="21" x2="16" y1="20" y2="20"/>
+                  <line x1="12" x2="3" y1="20" y2="20"/>
+                  <line x1="14" x2="14" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="10" y2="14"/>
+                  <line x1="16" x2="16" y1="18" y2="22"/>
+                </svg>
                 <span class="cover-controls__title">Paramètres de la couverture</span>
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="cover-controls__chev"

@@ -1,11 +1,6 @@
 import { Turbo } from "@hotwired/turbo-rails"
+import { lenis } from "lenis_init"
 import "controllers"
-import Lenis from '@studio-freight/lenis';
-
-const lenis = new Lenis({
-  lerp: 0.1,
-  wheelMultiplier: 1
-})
 
 function raf(time) {
   lenis.raf(time)
