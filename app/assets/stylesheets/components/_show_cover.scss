@@ -181,26 +181,30 @@ $post-theme-ease: ease;
     background-color $post-theme-duration $post-theme-ease,
     color $post-theme-duration $post-theme-ease;
   min-height: 100dvh;
-  padding: 40px 24px;
+  padding: 10px 24px;
   box-sizing: border-box;
 
   @media (min-width: 640px) {
     padding: 60px;
+    padding-top: 10px;
   }
 
   @media (min-width: 1024px) {
     margin-left: 50%;
     width: 50%;
+    padding-top: 60px;
   }
 
   @media (min-width: 1440px) {
     margin-left: 40%;
     width: 60%;
+    padding-top: 60px;
   }
 
   @media (min-width: 1920px) {
     padding-left: calc(60px * 2);
     padding-right: calc(60px * 2);
+    padding-top: 60px;
   }
 }
 
