@@ -40,7 +40,7 @@
       <% @posts.each do |post| %>
         <div class="group relative">
           <%# Cover %>
-          <%= link_to post_path(post), class: "relative overflow-hidden rounded-xl bg-gray-950/[0.03] dark:bg-white/[0.03] ring-1 ring-gray-950/5 dark:ring-white/5 aspect-[4/5] flex" do %>
+          <%= link_to post_path(post), class: "relative overflow-hidden rounded-xl bg-gray-950/[0.03] dark:bg-white/[0.03] ring-1 ring-gray-950/5 dark:ring-white/5 aspect-[3/4] flex" do %>
             <% if post.cover.present? %>
               <div class="size-full [&>svg]:size-full"><%= post.cover.html_safe %></div>
             <% end %>
