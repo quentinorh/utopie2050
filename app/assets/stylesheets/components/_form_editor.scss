@@ -523,7 +523,7 @@
 
   /* Typo lisible sur panneau glass */
   .cc-label {
-    color: rgba(255, 255, 255, 0.96);
+    color: rgba(255, 255, 255, 1);
   }
 
   .cc-value {
@@ -553,13 +553,13 @@
      tout en gardant overflow visible pour les cc-tip du tooltip_controller. */
   .cc-grid {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 12px;
     box-shadow:
       0 4px 16px rgba(15, 23, 42, 0.2),
       0 2px 6px rgba(0, 0, 0, 0.12),
-      inset 0 1px 2px rgba(255, 255, 255, 0.45),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      inset 0 1px 2px rgba(255, 255, 255, 0.225),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -751,15 +751,15 @@
 
   &::-webkit-slider-runnable-track {
     height: 4px;
-    background: var(--editor-surface-soft);
+    background: rgba(245, 245, 244, 0.7);
     border-radius: 999px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   }
   &::-moz-range-track {
     height: 4px;
-    background: var(--editor-surface-soft);
+    background: rgba(245, 245, 244, 0.7);
     border-radius: 999px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
     border: none;
   }
 
@@ -833,14 +833,14 @@
   width: 100%;
   aspect-ratio: 1;
   background: var(--editor-surface-soft);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   box-shadow:
     0 4px 14px rgba(15, 23, 42, 0.12),
     0 2px 6px rgba(0, 0, 0, 0.08),
-    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 1px 2px rgba(255, 255, 255, 0.275),
     inset 0 -1px 2px rgba(0, 0, 0, 0.08),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14);
   /* overflow: visible — laisse le tooltip qui suit la souris déborder. */
   overflow: visible;
 }
@@ -881,8 +881,8 @@
 }
 
 .cc-grid__cell {
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.025);
+  border-top: 1px solid rgba(0, 0, 0, 0.025);
 
   &:nth-child(8n) { border-right: 0; }
   &:nth-child(-n+8) { border-top: 0; }
@@ -890,8 +890,8 @@
 
 .cc-grid__lines--quad {
   .cc-grid__cell {
-    &:nth-child(8n) { border-right: 1px solid rgba(0, 0, 0, 0.05); }
-    &:nth-child(-n+8) { border-top: 1px solid rgba(0, 0, 0, 0.05); }
+    &:nth-child(8n) { border-right: 1px solid rgba(0, 0, 0, 0.025); }
+    &:nth-child(-n+8) { border-top: 1px solid rgba(0, 0, 0, 0.025); }
     &:nth-child(4n) { border-right: 0; }
     &:nth-child(-n+4) { border-top: 0; }
   }
@@ -901,8 +901,8 @@
  *    différent → traits épaissis façon « gros blocs ». En `meet` + viewBox carré comme .cc-grid
  *    (aspect-ratio 1), l’échelle reste uniforme ; épaisseur en unités utilisateur (~0.05 ≈ ~1 px). --- */
 /* stylelint-disable function-url-quotes — data-URI brute */
-$cc-cover-grid-lines-8-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%208%208' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.05' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V8M2%200V8M3%200V8M4%200V8M5%200V8M6%200V8M7%200V8M0%201H8M0%202H8M0%203H8M0%204H8M0%205H8M0%206H8M0%207H8'/%3E%3C/g%3E%3C/svg%3E");
-$cc-cover-grid-lines-4-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%204%204' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.025' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V4M2%200V4M3%200V4M0%201H4M0%202H4M0%203H4'/%3E%3C/g%3E%3C/svg%3E");
+$cc-cover-grid-lines-8-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%208%208' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.05' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V8M2%200V8M3%200V8M4%200V8M5%200V8M6%200V8M7%200V8M0%201H8M0%202H8M0%203H8M0%204H8M0%205H8M0%206H8M0%207H8'/%3E%3C/g%3E%3C/svg%3E");
+$cc-cover-grid-lines-4-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%204%204' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.025' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V4M2%200V4M3%200V4M0%201H4M0%202H4M0%203H4'/%3E%3C/g%3E%3C/svg%3E");
 
 .cover-controls .cover-controls__body {
   .cc-grid__lines .cc-grid__cell {
