@@ -884,16 +884,16 @@
   border-right: 1px solid rgba(0, 0, 0, 0.025);
   border-top: 1px solid rgba(0, 0, 0, 0.025);
 
-  &:nth-child(8n) { border-right: 0; }
-  &:nth-child(-n+8) { border-top: 0; }
+  &:nth-child(10n) { border-right: 0; }
+  &:nth-child(-n+10) { border-top: 0; }
 }
 
 /* Grille de répétition du motif : 5×5 (classe historique `--quad`). */
 .cc-grid__lines--quad {
   .cc-grid__cell {
-    /* La base `.cc-grid__cell` suppose 8 colonnes — rétablit les séparateurs internes puis 5n / -n+5 pour les bords. */
-    &:nth-child(8n),
-    &:nth-child(-n+8) {
+    /* La base suppose 10 colonnes (grille courbe). Rétablit les traits puis 5n / -n+5 pour cette grille-là. */
+    &:nth-child(10n),
+    &:nth-child(-n+10) {
       border-right: 1px solid rgba(0, 0, 0, 0.025);
       border-top: 1px solid rgba(0, 0, 0, 0.025);
     }
@@ -903,11 +903,11 @@
   }
 }
 
-/* --- SVG quadrillage (popover glass) : `preserveAspectRatio=none` + traits SVG = étirement X/Y
- *    différent → traits épaissis façon « gros blocs ». En `meet` + viewBox carré comme .cc-grid
- *    (aspect-ratio 1), l’échelle reste uniforme ; épaisseur en unités utilisateur (~0.05 ≈ ~1 px). --- */
+/* --- SVG sous les grilles (popover glass) : viewBox réguliers + preserveAspectRatio meet,
+ *    même échelle horizontale/verticale que .cc-grid (aspect-ratio 1). --- */
 /* stylelint-disable function-url-quotes — data-URI brute */
-$cc-cover-grid-lines-8-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%208%208' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.05' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V8M2%200V8M3%200V8M4%200V8M5%200V8M6%200V8M7%200V8M0%201H8M0%202H8M0%203H8M0%204H8M0%205H8M0%206H8M0%207H8'/%3E%3C/g%3E%3C/svg%3E");
+/* Grille courbe dans le volet glass — 10×10 (voir renderGridLines hors isQuad). */
+$cc-cover-grid-lines-curve-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%2010%2010' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.04' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V10M2%200V10M3%200V10M4%200V10M5%200V10M6%200V10M7%200V10M8%200V10M9%200V10M0%201H10M0%202H10M0%203H10M0%204H10M0%205H10M0%206H10M0%207H10M0%208H10M0%209H10'/%3E%3C/g%3E%3C/svg%3E");
 /* Répétition du motif — 5×5 (voir renderGridLines isQuad dans cover_editor_controller / hero_controller). */
 $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%205%205' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.04' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V5M2%200V5M3%200V5M4%200V5M0%201H5M0%202H5M0%203H5M0%204H5'/%3E%3C/g%3E%3C/svg%3E");
 
@@ -930,7 +930,7 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   }
 
   .cc-grid__lines:not(.cc-grid__lines--quad)::before {
-    background-image: $cc-cover-grid-lines-8-bg;
+    background-image: $cc-cover-grid-lines-curve-bg;
   }
 
   .cc-grid__lines--quad::before {

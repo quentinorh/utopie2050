@@ -494,8 +494,8 @@ export default class extends Controller {
       if (grid.dataset.linesRendered === "true") return;
       const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
                      grid.classList.contains("editor-grid__lines--quad");
-      const cells = isQuad ? 25 : 64;
-      const cols = isQuad ? 5 : 8;
+      const cells = isQuad ? 25 : 100;
+      const cols = isQuad ? 5 : 10;
       grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
       grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
       const fragment = document.createDocumentFragment();

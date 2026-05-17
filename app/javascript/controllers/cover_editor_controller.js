@@ -7,7 +7,7 @@ import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 // X et Y sont indépendants pour pouvoir resserrer différemment en largeur
 // et en hauteur.
 const PATTERN_SCALE_X = 0.5
-const PATTERN_SCALE_Y = 0.6
+const PATTERN_SCALE_Y = 0.5
 
 // Dimensions du viewBox SVG (centre / scale des motifs).
 const SVG_WIDTH = 250
@@ -149,8 +149,8 @@ export default class extends Controller {
       if (grid.dataset.linesRendered === "true") return;
       const isQuad = grid.classList.contains("cc-grid__lines--quad") ||
                      grid.classList.contains("editor-grid__lines--quad");
-      const cells = isQuad ? 25 : 64;
-      const cols = isQuad ? 5 : 8;
+      const cells = isQuad ? 25 : 100;
+      const cols = isQuad ? 5 : 10;
       grid.style.setProperty("grid-template-columns", `repeat(${cols}, 1fr)`);
       grid.style.setProperty("grid-template-rows", `repeat(${cols}, 1fr)`);
       const fragment = document.createDocumentFragment();
