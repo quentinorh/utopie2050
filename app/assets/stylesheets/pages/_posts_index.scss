@@ -113,7 +113,8 @@
   // morph Perlin (card-hover) ; ici on ne touche qu'à l’échelle.
   transition: transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
   transform-origin: 50% 50%;
-  will-change: transform;
+  // will-change uniquement au survol : sur toutes les cartes ça saturait le
+  // budget Chrome (surface × coef) et le navigateur ignorait puis l’hint.
   transform: scale(1);
 
   svg {
@@ -133,8 +134,13 @@
   transform: scale(1.14);
 }
 
-// Specular sweep only on real hover devices.
+// Specular sweep + hint compositing seulement sur vrai hover (évite will-change
+// « collé » au tap sur tactile et limite le budget Chrome au survol effectif).
 @media (hover: hover) and (pointer: fine) {
+  .index-card:hover .index-card__svg {
+    will-change: transform;
+  }
+
   .index-card:hover .index-card__cover::after {
     transform: translateX(120%);
     opacity: 1;
@@ -147,6 +153,7 @@
     transition: none !important;
   }
   .index-card:hover .index-card__svg {
+    will-change: auto;
     transform: none;
   }
   .index-card:hover .index-card__cover::after {

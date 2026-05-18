@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
-import scrollTrigger from "gsap/scrollTrigger"
+import { ScrollTrigger } from "gsap/scrollTrigger"
 import Splitting from "splitting"
 
 /**
@@ -41,7 +41,7 @@ function releaseScrollFreeze() {
   delete body.dataset._srPrevWidth
 }
 
-gsap.registerPlugin(scrollTrigger)
+gsap.registerPlugin(ScrollTrigger)
 
 /** Blocs de lecture (même ordre que text_reveal). */
 const READING_LINE_BLOCKS_SELECTOR = ".body-content, h2.chapter-title, .chapter-content"
@@ -508,11 +508,11 @@ export default class extends Controller {
         )
       restore()
       const onRefresh = () => {
-        scrollTrigger.removeEventListener("refresh", onRefresh)
+        ScrollTrigger.removeEventListener("refresh", onRefresh)
         restore()
       }
-      scrollTrigger.addEventListener("refresh", onRefresh)
-      scrollTrigger.refresh()
+      ScrollTrigger.addEventListener("refresh", onRefresh)
+      ScrollTrigger.refresh()
       restore()
       requestAnimationFrame(() => {
         restore()
@@ -523,7 +523,7 @@ export default class extends Controller {
       })
     } else {
       mutateAndAnimate()
-      scrollTrigger.refresh()
+      ScrollTrigger.refresh()
     }
 
     if (initial) {

@@ -2,9 +2,9 @@
 import { Controller } from "@hotwired/stimulus";
 import Splitting from "splitting";
 import gsap from "gsap";
-import scrollTrigger from "gsap/scrollTrigger";
+import { ScrollTrigger } from "gsap/scrollTrigger";
 
-gsap.registerPlugin(scrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
 export default class extends Controller {
   static targets = ["content", "scrollPercentage"];

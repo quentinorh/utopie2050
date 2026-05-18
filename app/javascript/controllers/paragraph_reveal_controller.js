@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
-import scrollTrigger from "gsap/scrollTrigger"
+import { ScrollTrigger } from "gsap/scrollTrigger"
 
-gsap.registerPlugin(scrollTrigger)
+gsap.registerPlugin(ScrollTrigger)
 
 // cubic-bezier(0.625, 0.05, 0, 1) — même easing que coverEase utilisé sur
 // le post show / l'éditeur, pour homogénéiser la sensation des révélations.
@@ -43,7 +43,7 @@ export default class extends Controller {
     const rect = this.element.getBoundingClientRect()
     const alreadyVisible = rect.top < window.innerHeight * 0.5
 
-    gsap.set(items, { opacity: 0, y: this.yValue, willChange: "transform, opacity" })
+    gsap.set(items, { opacity: 0, y: this.yValue })
 
     this.tween = gsap.to(items, {
       opacity: 1,
@@ -52,7 +52,6 @@ export default class extends Controller {
       stagger: this.staggerValue,
       delay: this.delayValue,
       ease: coverEase,
-      clearProps: "willChange",
       scrollTrigger: alreadyVisible ? undefined : {
         trigger: this.element,
         start: this.startValue,

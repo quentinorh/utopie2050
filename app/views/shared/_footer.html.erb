@@ -14,8 +14,20 @@
             <span>sp2050_org</span>
         <% end %>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Apfel Grotesk</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Quentin Orhant</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">& SuperSerif</p>
+        <%= link_to "https://quentino.io/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            class: "block text-l sm:text-2xl md:text-xl md:mb-xs",
+            "aria-label": "Site de Quentin Orhant" do %>
+            Quentin Orhant
+        <% end %>
+        <%= link_to "https://superserif.studio/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            class: "block text-l sm:text-2xl md:text-xl md:mb-xs",
+            "aria-label": "SuperSerif studio" do %>
+            & SuperSerif
+        <% end %>
     </div>
     <div class="col-span-6 h-[4px] bg-gray-900">
     </div>
