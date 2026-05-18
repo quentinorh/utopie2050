@@ -1,4 +1,6 @@
 <% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
+<%# Auteur du récit (pas l’éditeur connecté — ex. admin qui modifie le post d’un·e auteur·ice) %>
+<% post_author_username = @post.user&.username.presence || current_user.username %>
 <div data-controller="chapter cover-editor editor-reveal"
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
@@ -43,7 +45,7 @@
             <!-- Cover title block — typesetting identique à la page show -->
             <div class="cover-title-block pointer-events-none">
               <div class="cover-username" data-cover-editor-target="userName">
-                <%= current_user.username %>
+                <%= post_author_username %>
               </div>
               <div class="cover-title-text" data-cover-editor-target="titleWrapper"></div>
             </div>
@@ -351,7 +353,7 @@
           <div class="editor-actionbar__inner">
             <div class="editor-actionbar__meta font-mono">
               <span class="editor-actionbar__type">
-                <%= @post.new_record? ? "Le futur de #{current_user.username}" : "Futur de #{current_user.username}" %>
+                <%= @post.new_record? ? "Le futur de #{post_author_username}" : "Futur de #{post_author_username}" %>
               </span>
               <% if !@post.new_record? %>
                 <span aria-hidden="true">·</span>
