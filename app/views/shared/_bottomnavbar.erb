@@ -18,18 +18,8 @@
       </span>
     </div>
 
-    <!-- Right: Bookmark + Settings -->
+    <!-- Right: Settings -->
     <div class="flex items-center gap-1">
-      <button class="relative group hidden size-10 flex items-center justify-center rounded-full"
-              data-bookmark-position="<%= @bookmark&.character_position || 0 %>"
-              data-action="click->bookmark#toggle"
-              data-bookmark-target="button"
-              aria-label="Marque-page">
-        <svg class="size-4 stroke-gray-400 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 2.5h10v13L8 12l-5 3.5V2.5z"/>
-        </svg>
-      </button>
-
       <button data-action="click->actions#toggleSettings"
               class="relative group size-10 flex items-center justify-center rounded-full"
               aria-label="Paramètres d'affichage">

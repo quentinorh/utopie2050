@@ -2,18 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
 import scrollTrigger from "gsap/scrollTrigger"
 import Splitting from "splitting"
-import {
-  parseReadingCookieValue,
-  cookieIndicatesDeepReading,
-  readRawReadingScrollCookie,
-  zoneMidProgressFromScroll,
-  scrollYFromZoneMidProgress
-} from "utils/reading_scroll_cookie"
-import {
-  READING_LINE_BLOCKS_SELECTOR,
-  captureTextReadingAnchor,
-  measureScrollDeltaToCenterReadingAnchor
-} from "utils/reading_scroll_anchor"
 
 /**
  * Pendant la reconstruction (texte brut → plus rien → lignes), la page rétrécit et Lenis / le navigateur
@@ -55,13 +43,179 @@ function releaseScrollFreeze() {
 
 gsap.registerPlugin(scrollTrigger)
 
+/** Blocs de lecture (même ordre que text_reveal). */
+const READING_LINE_BLOCKS_SELECTOR = ".body-content, h2.chapter-title, .chapter-content"
+
+function caretRangeFromViewportCenter() {
+  const margin = 12
+  const x = Math.min(Math.max(margin, window.innerWidth / 2), window.innerWidth - margin)
+  const y = Math.min(Math.max(margin, window.innerHeight / 2), window.innerHeight - margin)
+  if (document.caretRangeFromPoint) {
+    try {
+      return document.caretRangeFromPoint(x, y)
+    } catch {
+      return null
+    }
+  }
+  if (document.caretPositionFromPoint) {
+    const p = document.caretPositionFromPoint(x, y)
+    if (!p?.offsetNode) return null
+    const r = document.createRange()
+    const node = p.offsetNode
+    const maxOff = node.nodeType === Node.TEXT_NODE ? node.nodeValue.length : 0
+    const off = Math.min(Math.max(0, p.offset), maxOff)
+    try {
+      r.setStart(node, off)
+      r.collapse(true)
+      return r
+    } catch {
+      return null
+    }
+  }
+  return null
+}
+
+function closestReadingBlock(startContainer, postBodyRoot) {
+  let el = startContainer.nodeType === Node.TEXT_NODE ? startContainer.parentElement : startContainer
+  while (el && postBodyRoot.contains(el)) {
+    if (
+      el.matches?.(".body-content") ||
+      el.matches?.("h2.chapter-title") ||
+      el.matches?.(".chapter-content")
+    ) {
+      return el
+    }
+    el = el.parentElement
+  }
+  return null
+}
+
+function snapCharOffsetToWordStart(blockPlainText, offset) {
+  const o = Math.max(0, Math.min(offset, blockPlainText.length))
+  if (o === 0) return 0
+  const before = blockPlainText.slice(0, o)
+  const m = before.match(/[\p{L}\p{N}_'-]+$/u)
+  if (!m) return o
+  return o - m[0].length
+}
+
+function captureTextReadingAnchor(postBodyRoot) {
+  if (!postBodyRoot) return null
+  const rng = caretRangeFromViewportCenter()
+  if (!rng?.startContainer) return null
+
+  let block = closestReadingBlock(rng.startContainer, postBodyRoot)
+  if (!block) {
+    const margin = 12
+    const x = Math.min(Math.max(margin, window.innerWidth / 2), window.innerWidth - margin)
+    const y = Math.min(Math.max(margin, window.innerHeight / 2), window.innerHeight - margin)
+    const hit = document.elementFromPoint(x, y)
+    if (hit) block = closestReadingBlock(hit, postBodyRoot)
+  }
+  if (!block) return null
+
+  const blocks = Array.from(postBodyRoot.querySelectorAll(READING_LINE_BLOCKS_SELECTOR))
+  const blockIndex = blocks.indexOf(block)
+  if (blockIndex < 0) return null
+
+  let charOffset = 0
+  try {
+    const pre = document.createRange()
+    pre.selectNodeContents(block)
+    pre.setEnd(rng.startContainer, rng.startOffset)
+    charOffset = pre.toString().length
+  } catch {
+    return null
+  }
+
+  const plain = block.textContent ?? ""
+  charOffset = snapCharOffsetToWordStart(plain, charOffset)
+
+  return { blockIndex, charOffset }
+}
+
+function rangeCaretRect(range) {
+  const rects = range.getClientRects()
+  if (rects.length > 0) return rects[rects.length - 1]
+  const br = range.getBoundingClientRect()
+  if (br.width > 0 || br.height > 0) return br
+  return null
+}
+
+function getCaretRectForReadingAnchor(postBodyRoot, anchor) {
+  if (!postBodyRoot || !anchor) return null
+  const blocks = Array.from(postBodyRoot.querySelectorAll(READING_LINE_BLOCKS_SELECTOR))
+  const block = blocks[anchor.blockIndex]
+  if (!block) return null
+
+  let remaining = Math.max(0, anchor.charOffset)
+  const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT, null)
+  let node
+  while ((node = walker.nextNode())) {
+    const len = node.nodeValue.length
+    if (remaining <= len) {
+      const r = document.createRange()
+      const off = Math.min(remaining, len)
+      try {
+        r.setStart(node, off)
+        r.collapse(true)
+      } catch {
+        return null
+      }
+      const rect = rangeCaretRect(r)
+      if (rect && (rect.height > 0 || rect.width > 0)) return rect
+      const parent = node.parentElement
+      if (parent) return parent.getBoundingClientRect()
+      return null
+    }
+    remaining -= len
+  }
+
+  try {
+    const r = document.createRange()
+    r.selectNodeContents(block)
+    r.collapse(false)
+    const rect = rangeCaretRect(r)
+    if (rect) return rect
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
+function measureScrollDeltaToCenterReadingAnchor(postBodyRoot, anchor) {
+  const rect = getCaretRectForReadingAnchor(postBodyRoot, anchor)
+  if (!rect) return null
+  const cy = window.innerHeight / 2
+  return rect.top + rect.height / 2 - cy
+}
+
+function zoneMidProgressFromScroll(yPx, vhPx, zoneEl) {
+  if (!zoneEl || zoneEl.scrollHeight < 24) return null
+  const zr = zoneEl.getBoundingClientRect()
+  const zoneTopDoc = zr.top + yPx
+  const centerDoc = yPx + vhPx / 2
+  const zh = Math.max(1, zoneEl.scrollHeight)
+  const prog = (centerDoc - zoneTopDoc) / zh
+  return Math.min(1, Math.max(0, prog))
+}
+
+function scrollYFromZoneMidProgress(progress, vhPx, zoneEl, maxScrollPx, currentScrollYPx) {
+  if (!zoneEl || zoneEl.scrollHeight < 24) return null
+  const zr = zoneEl.getBoundingClientRect()
+  const zoneTopDoc = zr.top + currentScrollYPx
+  const centerTarget = zoneTopDoc + progress * Math.max(1, zoneEl.scrollHeight)
+  const y = centerTarget - vhPx / 2
+  return Math.max(0, Math.min(maxScrollPx, y))
+}
+
 function documentScrollY() {
   const lenis = typeof window !== "undefined" ? window.lenis : null
   if (lenis && lenis.scroll != null && Number.isFinite(Number(lenis.scroll))) return Number(lenis.scroll)
   return window.scrollY
 }
 
-/** Même calcul que post_scroll_memory : critical pour clamp cohérent avec Lenis. */
+/** Limite scroll (Lenis.limit si présent). */
 function maxScrollYPx() {
   const lenis = typeof window !== "undefined" ? window.lenis : null
   if (lenis && typeof lenis.limit === "number" && Number.isFinite(lenis.limit)) {
@@ -223,14 +377,11 @@ function visualLinesFromTokens(words, probe, refH) {
 
 export default class extends Controller {
   static values = {
-    mode: { type: String, default: "words" },
-    /** Si renseigné + cookie reading_scroll_* : chemin rapide sans découpe lignes / GSAP */
-    postId: { type: String, default: "" }
+    mode: { type: String, default: "words" }
   }
 
   connect() {
     this.tweens = []
-    this._skippedLineRevealForResume = false
     this._boundOnTypography = () => this.scheduleReflow("typography")
     /* La césure des lignes ne dépend que de la largeur. Sur mobile, un scroll fait
      * souvent varier la hauteur du viewport (barre d’URL) → resize → reflow complet
@@ -243,11 +394,6 @@ export default class extends Controller {
       this.scheduleReflow("resize")
     }
     if (this.modeValue === "lines") {
-      if (this._shouldSkipLineRevealForReadingResume()) {
-        this._skippedLineRevealForResume = true
-        this._dispatchLinesReady()
-        return
-      }
       document.addEventListener("reading:typography-changed", this._boundOnTypography)
       window.addEventListener("resize", this._boundOnResize)
       const runInitialLayout = () => {
@@ -275,20 +421,6 @@ export default class extends Controller {
     this.clearTweens()
   }
 
-  /**
-   * Cookie partagé avec post_scroll_memory : reprise de lecture → pas de découpe ligne
-   * (instantané sur les très longs textes).
-   */
-  _shouldSkipLineRevealForReadingResume() {
-    if (!this.postIdValue) return false
-    const value = readRawReadingScrollCookie(this.postIdValue)
-    if (value == null || value === "") return false
-    const parsed = parseReadingCookieValue(value)
-    if (!parsed) return false
-    const docH = document.documentElement.scrollHeight || 1
-    return cookieIndicatesDeepReading(parsed, docH, window.innerHeight)
-  }
-
   clearTweens() {
     this.tweens?.forEach((t) => {
       t.scrollTrigger?.kill()
@@ -313,7 +445,6 @@ export default class extends Controller {
 
   scheduleReflow(source = "resize") {
     if (this.modeValue !== "lines") return
-    if (this._skippedLineRevealForResume) return
     if (this._reflowDebounce) clearTimeout(this._reflowDebounce)
     const delayMs = source === "typography" ? 0 : 50
     this._reflowDebounce = setTimeout(() => {

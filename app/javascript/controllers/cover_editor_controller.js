@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
+import { patternSmoothingFactorFromSlider } from "utils/pattern_smoothing"
 
 // Facteurs d'échelle appliqués aux motifs (autour du centre du SVG 250x350).
 // Une valeur < 1 resserre les motifs dans le cadre et laisse apparaître
@@ -191,8 +192,8 @@ export default class extends Controller {
     const x3 = this.secondSliderControlTarget.value / 100
     const y3 = 1 - this.secondSliderControlTarget.value / 100
 
-    // Récupérer la valeur de lissage
-    const smoothing = this.smoothingTarget.value / 100
+    // Récupérer la valeur de lissage (curseur jusqu'à 100 ; rendu plafonné, voir utils/pattern_smoothing)
+    const smoothing = patternSmoothingFactorFromSlider(this.smoothingTarget.value)
 
     // Ajuster les points de contrôle pour le lissage
     const control1 = [

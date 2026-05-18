@@ -4,7 +4,6 @@ class Post < ApplicationRecord
   has_one_attached :cover_image
   has_many :chapters, -> { order(position: :asc) }, dependent: :destroy
   has_many :post_themes, dependent: :destroy
-  has_many :bookmarks, dependent: :destroy
   has_many :themes, through: :post_themes
   has_many :favorites, dependent: :destroy
   has_many :favorited_by, through: :favorites, source: :user

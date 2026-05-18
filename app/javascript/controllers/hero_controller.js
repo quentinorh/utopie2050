@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import gsap from "gsap"
+import { clampPatternSmoothingFactor } from "utils/pattern_smoothing"
 
 // cubic-bezier(0.625, 0.05, 0, 1)
 function coverEase(t) {
@@ -207,7 +208,7 @@ export default class extends Controller {
     const y = this.y;
     const x3 = this.x3;
     const y3 = this.y3;
-    const smoothing = this.smoothing;
+    const smoothing = clampPatternSmoothingFactor(this.smoothing);
 
     const width = totalWidth / columns;
     const height = totalHeight / rows;

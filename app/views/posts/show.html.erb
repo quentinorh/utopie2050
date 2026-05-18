@@ -18,9 +18,8 @@
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 
-<div data-controller="scroll cover actions svg-animation bookmark post-scroll-memory"
+<div data-controller="scroll cover actions svg-animation"
      data-post-id="<%= @post.id %>"
-     data-post-scroll-memory-post-id-value="<%= @post.id %>"
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">
 
@@ -70,7 +69,6 @@
       <div class="post-body"
            data-controller="text-reveal"
            data-text-reveal-mode-value="lines"
-           data-text-reveal-post-id-value="<%= @post.id %>"
            data-scroll-target="content">
         <div class="body-content mt-[24px] lg:mt-sm adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
         <% if @post.chapters.any? %>

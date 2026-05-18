@@ -203,7 +203,6 @@ end
 
 Report.destroy_all
 User.destroy_all
-Bookmark.destroy_all
 Post.destroy_all
 Chapter.destroy_all
 

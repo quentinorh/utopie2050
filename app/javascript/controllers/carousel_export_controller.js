@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { patternSmoothingFactorFromSlider } from "utils/pattern_smoothing"
 
 function easeOutBack(t) {
   const c1 = 1.70158, c3 = c1 + 1
@@ -247,7 +248,7 @@ export default class extends Controller {
     const y = 1 - firstSliderControl / 100
     const x3 = secondSliderControl / 100
     const y3 = 1 - secondSliderControl / 100
-    const sm = smoothing / 100
+    const sm = patternSmoothingFactorFromSlider(smoothing)
 
     const control1 = [(width * x * sm).toFixed(2), (height * sm).toFixed(2)]
     const control2 = [(width * sm).toFixed(2), (height * (1 - y * sm)).toFixed(2)]

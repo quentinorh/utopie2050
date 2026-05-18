@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = [ "settingsPanel",
                      "actionsPanel",
                      "sharePanel",
-                     "addBookmarkPanel",
                      "editPanel",
                      "deletePanel",
                      "reportPanel",
@@ -72,7 +71,6 @@ export default class extends Controller {
       this.actionsPanelTarget,
       this.settingsPanelTarget,
       this.sharePanelTarget,
-      this.addBookmarkPanelTarget,
       this.editPanelTarget,
       this.deletePanelTarget,
       this.reportPanelTarget,
@@ -100,12 +98,6 @@ export default class extends Controller {
   toggleShare() {
     this._hideAll(this.sharePanelTarget)
     this._togglePanel(this.sharePanelTarget)
-  }
-
-  toggleAddBookmark() {
-    const panel = this.addBookmarkPanelTarget
-    this._showPanel(panel)
-    setTimeout(() => this._hidePanel(panel), 1500)
   }
 
   toggleEdit() {

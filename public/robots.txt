@@ -11,7 +11,6 @@ Allow: /futurs/*
 Disallow: /admin/
 Disallow: /users/
 Disallow: /favorites
-Disallow: /bookmarks
 Disallow: /reports
 Disallow: /deleted
 

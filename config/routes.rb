@@ -14,7 +14,6 @@ Rails.application.routes.draw do
       post 'favorite'
       delete 'unfavorite'
     end
-    resource :bookmark, only: [:create, :destroy, :show]
     resources :reports, only: [:new, :create]
   end
 

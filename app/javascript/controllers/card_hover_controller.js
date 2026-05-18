@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
+import { patternSmoothingFactorFromSlider } from "utils/pattern_smoothing"
 
 // Index-card hover animation.
 //
@@ -234,7 +235,7 @@ export default class extends Controller {
     const x3 = secondSliderControl / 100
     const y3 = 1 - secondSliderControl / 100
 
-    const sm = smoothing / 100
+    const sm = patternSmoothingFactorFromSlider(smoothing)
 
     const control1 = [(width * x * sm).toFixed(2), (height * sm).toFixed(2)]
     const control2 = [(width * sm).toFixed(2), (height * (1 - y * sm)).toFixed(2)]
