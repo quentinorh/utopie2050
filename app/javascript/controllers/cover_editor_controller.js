@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { fitTitleWrapperToLongestLine } from "utils/fit_title_to_longest_line"
 import { patternSmoothingFactorFromSlider } from "utils/pattern_smoothing"
+import { renderCoverShareJpegBlob } from "utils/cover_slide_canvas"
 
 // Facteurs d'échelle appliqués aux motifs (autour du centre du SVG 250x350).
 // Une valeur < 1 resserre les motifs dans le cadre et laisse apparaître
@@ -19,11 +20,15 @@ const SVG_HEIGHT = 350
 // (overflow: visible), élargit parfois le document (scrollbars / reflow : navbar, actionbar).
 const GRID_DRAG_INSET = 14
 
+/** Résolution alignée sur Post#social_image_url (Cloudinary fill 1000×1400). */
+const SOCIAL_COVER_W = 1000
+const SOCIAL_COVER_H = 1400
+
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
                    "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "submitButton", "controlsToggleIcon",
-                   "hueValue", "smoothingValue", "curveValue", "gridValue", "titleError"]
+                   "hueValue", "smoothingValue", "curveValue", "gridValue", "titleError", "coverImageFile"]
   static values = { uniqueId: String, newRecord: Boolean }
 
   connect() {
@@ -443,16 +448,63 @@ export default class extends Controller {
     coverField.value = svgText;
   }
 
-  /** Clic sur « Publier » / « Enregistrer » : bloque la soumission si le titre est vide (HTML required peut être contourné). */
-  validateBeforeSubmit(event) {
+  /**
+   * Génère une JPEG « carte de partage » (motif + titre + auteur) puis soumet le formulaire.
+   * Sans fichier raster, AttachCoverImageJob retombe sur le SVG seul.
+   */
+  async handleFormSubmit(event) {
+    if (this._allowNativeFormSubmit) return
+
+    event.preventDefault()
+
     if (!this.titleInputTarget.value.trim()) {
-      event.preventDefault();
-      this.titleInputTarget.classList.add("border-red-500");
-      if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.remove("hidden");
-      return;
+      this.titleInputTarget.classList.add("border-red-500")
+      if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.remove("hidden")
+      return
     }
-    this.titleInputTarget.classList.remove("border-red-500");
-    if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden");
+    this.titleInputTarget.classList.remove("border-red-500")
+    if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden")
+
+    this.saveSVG()
+    this.savePatternSettings()
+
+    const submitBtn = this.hasSubmitButtonTarget ? this.submitButtonTarget : null
+    if (submitBtn) submitBtn.disabled = true
+
+    try {
+      if (this.hasCoverImageFileTarget && this.coverTarget.value) {
+        try {
+          await this.attachSocialCoverRaster()
+        } catch (err) {
+          console.warn("Couverture réseau non générée (repli SVG)", err)
+        }
+      }
+
+      this._allowNativeFormSubmit = true
+      event.target.requestSubmit()
+    } finally {
+      if (submitBtn) submitBtn.disabled = false
+      queueMicrotask(() => {
+        this._allowNativeFormSubmit = false
+      })
+    }
+  }
+
+  async attachSocialCoverRaster() {
+    const settings = JSON.parse(this.patternSettingsTarget.value || "{}");
+    const hue = parseInt(settings.hue ?? settings.color ?? this.colorPickerTarget.value, 10);
+    const payload = {
+      title: this.titleInputTarget.value.trim(),
+      username: (this.userNameTarget.textContent || "").trim(),
+      hue: Number.isFinite(hue) ? hue : 280,
+      pattern_settings: settings,
+      cover: this.coverTarget.value
+    };
+    const blob = await renderCoverShareJpegBlob(payload, SOCIAL_COVER_W, SOCIAL_COVER_H);
+    const file = new File([blob], `cover-share-${Date.now()}.jpg`, { type: "image/jpeg" });
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    this.coverImageFileTarget.files = dt.files;
   }
 
   savePatternSettings() {

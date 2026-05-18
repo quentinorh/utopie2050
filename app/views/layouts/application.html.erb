@@ -34,7 +34,10 @@
     <!-- Meta tags pour le partage social -->
     <meta property="og:site_name" content="SP2050">
     <meta property="og:locale" content="fr_FR">
+    <% og_image_url = content_for?(:open_graph_image) ? yield(:open_graph_image).to_s.strip : default_open_graph_image_url %>
+    <meta property="og:image" content="<%= og_image_url %>">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="<%= og_image_url %>">
     
     <!-- Meta tags spécifiques aux articles -->
     <% if content_for?(:article_meta) %>

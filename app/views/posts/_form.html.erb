@@ -4,7 +4,7 @@
      data-cover-editor-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
      data-cover-editor-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
      class="w-full min-w-0 max-w-full form-editor is-revealing">
-  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#saveSVG submit->cover-editor#savePatternSettings" } }) do |form| %>
+  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#handleFormSubmit" } }) do |form| %>
 
     <% if @post.errors.any? %>
       <div class="editor-errors" role="alert">
@@ -221,6 +221,12 @@
                   <input data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve" class="hidden">
                   <%= form.hidden_field :pattern_settings, data: { "cover-editor-target": "patternSettings" } %>
                   <%= form.hidden_field :cover, data: { "cover-editor-target": "cover" } %>
+                  <%= form.file_field :cover_image,
+                                      accept: "image/jpeg,image/png",
+                                      class: "sr-only",
+                                      tabindex: -1,
+                                      aria: { hidden: true },
+                                      data: { "cover-editor-target": "coverImageFile" } %>
                 </div>
               </div>
             </div>
@@ -376,7 +382,7 @@
                    end %>
               <%= form.submit submit_label,
                               class: "cover-pill cover-pill--sm cover-pill--filled",
-                              data: { "cover-editor-target": "submitButton", action: "click->cover-editor#validateBeforeSubmit" } %>
+                              data: { "cover-editor-target": "submitButton" } %>
             </div>
           </div>
         </footer>

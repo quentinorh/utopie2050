@@ -1,9 +1,17 @@
 class AttachCoverImageJob < ApplicationJob
   queue_as :default
 
+  RASTER_CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
+
   def perform(post_id)
     post = Post.find(post_id)
     return unless post.cover.present?
+
+    # JPEG/PNG généré côté client (titre + auteur sur le motif) pour les réseaux — ne pas écraser.
+    if post.cover_image.attached?
+      ct = post.cover_image.blob&.content_type.to_s
+      return if RASTER_CONTENT_TYPES.include?(ct)
+    end
 
     post.cover_image.attach(
       io: StringIO.new(post.cover),

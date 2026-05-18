@@ -1,4 +1,10 @@
 module ApplicationHelper
+  # Image utilisée par défaut pour og:image / LinkedIn quand aucune page ne définit :open_graph_image.
+  # Format idéal pour les réseaux : ~1200×630 px (PNG/JPEG), voir app/assets/images/.
+  def default_open_graph_image_url
+    image_url("og-share.png")
+  end
+
   def hue_to_feColorMatrix(hue)
     rgb = hsv_to_rgb(hue / 360.0, 1, 1)
     r, g, b = rgb.map { |c| c / 255.0 }
