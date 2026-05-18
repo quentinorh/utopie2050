@@ -216,16 +216,17 @@
 
                     </div>
                   </div>
+                </div>
 
+                <div class="sr-only">
                   <input type="range" data-cover-editor-target="firstSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
                   <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
-                  <input data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve" class="hidden">
-                  <input data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve" class="hidden">
+                  <input type="hidden" data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve">
+                  <input type="hidden" data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve">
                   <%= form.hidden_field :pattern_settings, data: { "cover-editor-target": "patternSettings" } %>
                   <%= form.hidden_field :cover, data: { "cover-editor-target": "cover" } %>
                   <%= form.file_field :cover_image,
                                       accept: "image/jpeg,image/png",
-                                      class: "sr-only",
                                       tabindex: -1,
                                       aria: { hidden: true },
                                       data: { "cover-editor-target": "coverImageFile" } %>
