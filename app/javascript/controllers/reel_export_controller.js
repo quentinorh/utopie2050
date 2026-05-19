@@ -156,7 +156,9 @@ const REEL_TEXT_GRAD_DITHER = 0.04
 // Phase 2 — bandeau d'en-tête (titre + auteur, hors zone de scroll).
 // Le dégradé du haut démarre à `REEL_PHASE2_HEADER_HEIGHT_PX` ; au-dessus,
 // le fond est rempli en aplat pour masquer le texte qui défile.
-const REEL_PHASE2_HEADER_HEIGHT_PX = 400
+const REEL_PHASE2_HEADER_HEIGHT_PX = 330
+const REEL_PHASE2_TEXT_LIFT_PX = 70
+const REEL_PHASE2_TOP_GRAD_LIFT_PX = 70
 const REEL_PHASE2_HEADER_FONT_PX = 40
 const REEL_PHASE2_HEADER_LINE_HEIGHT_MULT = 1.3
 const REEL_PHASE2_HEADER_FONT_FAMILY = '"Roboto Mono", monospace'
@@ -557,9 +559,9 @@ export default class extends Controller {
   // Top/bottom masks: source-over blend per pixel (same as hsla fillRect) so
   // transparency stays correct; ordered dither breaks 8-bit banding. Scaling
   // transparent bitmaps with drawImage often flattens the bottom fade.
-  // `topY` shifts the top fading band downwards (in px) ; la zone 0..topY
-  // est repeinte en aplat pour masquer proprement le contenu qui défile.
-  _compositeTextGradientBands(ctx, hue, topY = 0) {
+  // `maskTopY` : aplat 0..maskTopY ; `gradTopY` : début du dégradé haut (peut être
+  // plus haut que le masque pour remonter la transition).
+  _compositeTextGradientBands(ctx, hue, maskTopY = 0, gradTopY = maskTopY) {
     const gradH = REEL_TEXT_GRAD_BAND_HEIGHT_PX
     const ga = ctx.globalAlpha
     const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, REEL_SVG_BG_HSL_S, REEL_SVG_BG_HSL_L)
@@ -589,11 +591,11 @@ export default class extends Controller {
       ctx.putImageData(img, 0, destY)
     }
 
-    if (topY > 0) {
+    if (maskTopY > 0) {
       ctx.fillStyle = `hsl(${hue}, ${REEL_SVG_BG_HSL_S}%, ${REEL_SVG_BG_HSL_L}%)`
-      ctx.fillRect(0, 0, W, topY)
+      ctx.fillRect(0, 0, W, maskTopY)
     }
-    blendBand(topY, alphaTop)
+    blendBand(gradTopY, alphaTop)
     blendBand(H - gradH, alphaBot)
   }
 
@@ -616,7 +618,7 @@ export default class extends Controller {
 
     // Fixed scroll speed in px/s — independent of text length.
     const scrollElapsed = t - REEL_SCROLL_START
-    const scrollY = H - scrollElapsed * REEL_BODY_SCROLL_PX_PER_SEC
+    const scrollY = H - scrollElapsed * REEL_BODY_SCROLL_PX_PER_SEC - REEL_PHASE2_TEXT_LIFT_PX
 
     ctx.save()
     ctx.globalAlpha = 1
@@ -629,7 +631,12 @@ export default class extends Controller {
       }
     })
 
-    this._compositeTextGradientBands(ctx, data.hue, REEL_PHASE2_HEADER_HEIGHT_PX)
+    this._compositeTextGradientBands(
+      ctx,
+      data.hue,
+      REEL_PHASE2_HEADER_HEIGHT_PX,
+      REEL_PHASE2_HEADER_HEIGHT_PX - REEL_PHASE2_TOP_GRAD_LIFT_PX
+    )
     this._drawPhase2Header(ctx, data)
 
     ctx.restore()
@@ -643,7 +650,7 @@ export default class extends Controller {
     const fontPx = REEL_PHASE2_HEADER_FONT_PX
     const lineHeight = fontPx * REEL_PHASE2_HEADER_LINE_HEIGHT_MULT
     const blockHeight = lineHeight * 2
-    const blockTop = (REEL_PHASE2_HEADER_HEIGHT_PX - blockHeight) / 2
+    const blockTop = (REEL_PHASE2_HEADER_HEIGHT_PX - blockHeight) / 2 + 15
     const titleLine = `${data.title || ""}`.toUpperCase()
     const authorLine = `${data.username || ""}`.toUpperCase()
 
