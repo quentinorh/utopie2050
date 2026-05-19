@@ -46,6 +46,17 @@ const CAROUSEL_EXCERPT_BOTTOM_GRAD_PX = REEL_TEXT_GRAD_BAND_HEIGHT_PX / 2
 const REEL_TEXT_GRAD_DITHER = 0.04
 const EXCERPT_MAX_CHARS = 900
 
+// Bandeau d'en-tête extrait — aligné sur reel phase 2, mis à l'échelle 1350 px.
+const REEL_H_REF = 1920
+const CAROUSEL_SCALE = CAROUSEL_H / REEL_H_REF
+const EXCERPT_HEADER_HEIGHT_PX = Math.round(400 * CAROUSEL_SCALE)
+const EXCERPT_HEADER_FONT_PX = Math.round(40 * CAROUSEL_SCALE)
+const EXCERPT_HEADER_LINE_HEIGHT_MULT = 1.3
+const EXCERPT_HEADER_FONT_FAMILY = '"Roboto Mono", monospace'
+const EXCERPT_HEADER_ALPHA = 0.6
+const EXCERPT_TEXT_LIFT_PX = 50
+const EXCERPT_TEXT_TOP_PAD = 12
+
 const COVER_SIDE_INSET_PX = 72
 
 const OUTRO_TILT_DEG = -3
@@ -111,15 +122,34 @@ export default class extends Controller {
       ensureApfelCoverFontsLoaded(CAROUSEL_W),
       document.fonts.load(`400 ${EXCERPT_FONT_PX}px Apfel, sans-serif`),
       document.fonts.load(`400 ${OUTRO_LIRE_PX}px Apfel, sans-serif`),
-      document.fonts.load(`400 ${OUTRO_SP_PX}px Apfel, sans-serif`)
+      document.fonts.load(`400 ${OUTRO_SP_PX}px Apfel, sans-serif`),
+      document.fonts.load(`400 ${EXCERPT_HEADER_FONT_PX}px ${EXCERPT_HEADER_FONT_FAMILY}`)
     ])
   }
 
   _plainBody(body) {
     if (!body) return ""
     const d = document.createElement("div")
-    d.innerHTML = body
-    return (d.textContent || d.innerText || "").replace(/\s+/g, " ").trim()
+    d.innerHTML = body.replace(/<br\s*\/?>/gi, "\n")
+    let text = d.textContent || d.innerText || ""
+    text = text.replace(/\r\n?/g, "\n")
+    text = text.replace(/[^\S\n]+/g, " ")
+    text = text.replace(/ +(\n|$)/g, "$1")
+    return text.trim()
+  }
+
+  _wrapExcerptLines(ctx, text, maxWidth) {
+    const lines = []
+    text.split("\n").forEach((paragraph) => {
+      const trimmed = paragraph.trim()
+      if (trimmed) {
+        const words = trimmed.split(/\s+/)
+        lines.push(...wrapCoverLines(ctx, words, maxWidth))
+      } else {
+        lines.push("")
+      }
+    })
+    return lines
   }
 
   _excerptText(data) {
@@ -155,20 +185,25 @@ export default class extends Controller {
     })
   }
 
-  _compositeExcerptBottomGradient(ctx, hue) {
+  _compositeExcerptGradientBands(ctx, hue, topY = 0) {
     const W = CAROUSEL_W
     const H = CAROUSEL_H
-    const gradH = CAROUSEL_EXCERPT_BOTTOM_GRAD_PX
+    const bottomGradH = CAROUSEL_EXCERPT_BOTTOM_GRAD_PX
     const ga = ctx.globalAlpha
     const { r: br, g: bg, b: bb } = hslToRgbBytes(hue, REEL_SVG_BG_HSL_S, REEL_SVG_BG_HSL_L)
     const alphaBot = (u) =>
       u <= 0.45 ? lerp(0, 0.88, u / 0.45) : lerp(0.88, 1, (u - 0.45) / 0.55)
     const DITHER = REEL_TEXT_GRAD_DITHER
 
-    const img = ctx.getImageData(0, H - gradH, W, gradH)
+    if (topY > 0) {
+      ctx.fillStyle = `hsl(${hue}, ${REEL_SVG_BG_HSL_S}%, ${REEL_SVG_BG_HSL_L}%)`
+      ctx.fillRect(0, 0, W, topY)
+    }
+
+    const img = ctx.getImageData(0, H - bottomGradH, W, bottomGradH)
     const d = img.data
-    const denom = gradH > 1 ? gradH - 1 : 1
-    for (let y = 0; y < gradH; y++) {
+    const denom = bottomGradH > 1 ? bottomGradH - 1 : 1
+    for (let y = 0; y < bottomGradH; y++) {
       const u = y / denom
       let a = alphaBot(u)
       for (let x = 0; x < W; x++) {
@@ -181,7 +216,25 @@ export default class extends Controller {
         d[i + 2] = bb * am + d[i + 2] * inv
       }
     }
-    ctx.putImageData(img, 0, H - gradH)
+    ctx.putImageData(img, 0, H - bottomGradH)
+  }
+
+  _drawExcerptHeader(ctx, data) {
+    const fontPx = EXCERPT_HEADER_FONT_PX
+    const lineHeight = fontPx * EXCERPT_HEADER_LINE_HEIGHT_MULT
+    const blockHeight = lineHeight * 2
+    const blockTop = (EXCERPT_HEADER_HEIGHT_PX - blockHeight) / 2 + 15
+    const titleLine = `${data.title || ""}`.toUpperCase()
+    const authorLine = `${data.username || ""}`.toUpperCase()
+
+    ctx.save()
+    ctx.globalAlpha = EXCERPT_HEADER_ALPHA
+    ctx.font = `400 ${fontPx}px ${EXCERPT_HEADER_FONT_FAMILY}`
+    ctx.textBaseline = "top"
+    ctx.fillStyle = "#FFFFFF"
+    ctx.fillText(titleLine, COVER_SIDE_INSET_PX, blockTop)
+    ctx.fillText(authorLine, COVER_SIDE_INSET_PX, blockTop + lineHeight)
+    ctx.restore()
   }
 
   _drawExcerptSlide(ctx, data, svgBg) {
@@ -195,17 +248,24 @@ export default class extends Controller {
     ctx.fillStyle = "#FFFFFF"
 
     const maxWidth = CAROUSEL_W - COVER_SIDE_INSET_PX * 2
-    const words = excerpt.split(/\s+/)
-    const lines = wrapCoverLines(ctx, words, maxWidth)
+    const lines = this._wrapExcerptLines(ctx, excerpt, maxWidth)
     const lineHeight = fontSize * EXCERPT_LINE_HEIGHT_MULT
     const blockHeight = lines.length * lineHeight
-    const startY = Math.max(64, (CAROUSEL_H - blockHeight) / 2)
+    const contentTop = EXCERPT_HEADER_HEIGHT_PX
+    const contentBottom = CAROUSEL_H - CAROUSEL_EXCERPT_BOTTOM_GRAD_PX
+    const minTextY = contentTop + EXCERPT_TEXT_TOP_PAD
+    const centeredY = contentTop + Math.max(EXCERPT_TEXT_TOP_PAD, (contentBottom - contentTop - blockHeight) / 2)
+    const startY = Math.max(minTextY, centeredY - EXCERPT_TEXT_LIFT_PX)
 
     lines.forEach((line, i) => {
-      ctx.fillText(line, COVER_SIDE_INSET_PX, startY + i * lineHeight)
+      const y = startY + i * lineHeight
+      if (y >= minTextY) {
+        ctx.fillText(line, COVER_SIDE_INSET_PX, y)
+      }
     })
 
-    this._compositeExcerptBottomGradient(ctx, data.hue)
+    this._compositeExcerptGradientBands(ctx, data.hue, EXCERPT_HEADER_HEIGHT_PX)
+    this._drawExcerptHeader(ctx, data)
   }
 
   _drawCtaSlide(ctx, accent) {

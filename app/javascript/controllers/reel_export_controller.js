@@ -96,13 +96,13 @@ const REEL_W = 1080
 const REEL_H = 1920
 const REEL_FPS = 60
 
-const REEL_SVG_MORPH_END = 3.0
-const REEL_COVER_END = 4.0
+const REEL_SVG_MORPH_END = 4.0
+const REEL_COVER_END = 7.0
 const REEL_PHASE1_FADE_OUT = 0.35
 const REEL_PHASE2_GAP_AFTER_FADE = 0.12
 /** Durée du scroll une fois REEL_SCROLL_START atteint (vitesse px/s inchangée → plus de texte défilé). */
-const REEL_PHASE2_SCROLL_DURATION = 13.0
-const REEL_OUTRO_DURATION = 3.0
+const REEL_PHASE2_SCROLL_DURATION = 20.0
+const REEL_OUTRO_DURATION = 6.0
 
 const REEL_SCROLL_START = REEL_COVER_END + REEL_PHASE1_FADE_OUT + REEL_PHASE2_GAP_AFTER_FADE
 const REEL_TEXT_END = REEL_SCROLL_START + REEL_PHASE2_SCROLL_DURATION
@@ -610,8 +610,8 @@ export default class extends Controller {
     ctx.fillStyle = "#FFFFFF"
 
     const maxWidth = W - REEL_COVER_SIDE_INSET_PX * 2
-    const words = data.body.split(/\s+/)
-    const lines = this._wrapText(ctx, words, maxWidth)
+    const bodyText = this._plainBody(data.body)
+    const lines = this._wrapBodyLines(ctx, bodyText, maxWidth)
     const lineHeight = fontSize * REEL_BODY_LINE_HEIGHT_MULT
 
     // Fixed scroll speed in px/s — independent of text length.
@@ -720,6 +720,31 @@ export default class extends Controller {
 
     ctx.textAlign = "start"
     ctx.textBaseline = "top"
+  }
+
+  _plainBody(body) {
+    if (!body) return ""
+    const d = document.createElement("div")
+    d.innerHTML = body.replace(/<br\s*\/?>/gi, "\n")
+    let text = d.textContent || d.innerText || ""
+    text = text.replace(/\r\n?/g, "\n")
+    text = text.replace(/[^\S\n]+/g, " ")
+    text = text.replace(/ +(\n|$)/g, "$1")
+    return text.trim()
+  }
+
+  _wrapBodyLines(ctx, text, maxWidth) {
+    const lines = []
+    text.split("\n").forEach((paragraph) => {
+      const trimmed = paragraph.trim()
+      if (trimmed) {
+        const words = trimmed.split(/\s+/)
+        lines.push(...this._wrapText(ctx, words, maxWidth))
+      } else {
+        lines.push("")
+      }
+    })
+    return lines
   }
 
   _wrapText(ctx, words, maxWidth) {
