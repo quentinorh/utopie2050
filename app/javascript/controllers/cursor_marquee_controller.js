@@ -14,34 +14,85 @@ export default class extends Controller {
   }
 
   connect() {
-    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return
+    this._active = false
+    this._activeEl = null
+    this._lastX = 0
+    this._lastY = 0
+    this._pauseTimeout = null
+    this._bootTimeout = null
+
+    this._onPointerMove = this._onPointerMove.bind(this)
+    this._onScroll      = this._onScroll.bind(this)
+    this._onPageChange  = this._sync.bind(this)
+
+    document.addEventListener("turbo:load", this._onPageChange)
+    this._sync()
+  }
+
+  disconnect() {
+    document.removeEventListener("turbo:load", this._onPageChange)
+    this._deactivate()
+  }
+
+  _sync() {
+    const canUse = !window.matchMedia("(hover: none), (pointer: coarse)").matches
+      && document.querySelector("[data-cursor-marquee-text]")
+
+    if (canUse) {
+      if (!this._active) this._activate()
+    } else {
+      this._deactivate()
+    }
+  }
+
+  _activate() {
+    this._active = true
+    this._activeEl = null
+
+    if (this.hasCursorTarget) {
+      this.cursorTarget.hidden = false
+      this.cursorTarget.setAttribute("data-cursor-marquee-status", "")
+    }
 
     this.xTo = gsap.quickTo(this.cursorTarget, "x",
       { duration: this.followDurationValue, ease: "power3" })
     this.yTo = gsap.quickTo(this.cursorTarget, "y",
       { duration: this.followDurationValue, ease: "power3" })
 
-    this._activeEl = null
-    this._lastX = 0
-    this._lastY = 0
-    this._pauseTimeout = null
-
-    this._onPointerMove = this._onPointerMove.bind(this)
-    this._onScroll      = this._onScroll.bind(this)
-
     window.addEventListener("pointermove", this._onPointerMove, { passive: true })
     window.addEventListener("scroll",       this._onScroll,       { passive: true })
 
-    // Show in idle state once the script has booted.
-    setTimeout(() => {
-      this.cursorTarget.setAttribute("data-cursor-marquee-status", "not-active")
+    this._bootTimeout = setTimeout(() => {
+      if (this._active && this.hasCursorTarget) {
+        this.cursorTarget.setAttribute("data-cursor-marquee-status", "not-active")
+      }
     }, 500)
   }
 
-  disconnect() {
+  _deactivate() {
     window.removeEventListener("pointermove", this._onPointerMove)
     window.removeEventListener("scroll",       this._onScroll)
-    if (this._pauseTimeout) clearTimeout(this._pauseTimeout)
+
+    if (this._pauseTimeout) {
+      clearTimeout(this._pauseTimeout)
+      this._pauseTimeout = null
+    }
+    if (this._bootTimeout) {
+      clearTimeout(this._bootTimeout)
+      this._bootTimeout = null
+    }
+
+    if (this.hasCursorTarget) {
+      gsap.killTweensOf(this.cursorTarget)
+      gsap.set(this.cursorTarget, { clearProps: "transform" })
+      this.cursorTarget.setAttribute("data-cursor-marquee-status", "")
+      this.cursorTarget.hidden = true
+    }
+
+    this._activeEl = null
+    this._active = false
+    this.xTo = null
+    this.yTo = null
   }
 
   _onPointerMove(e) {

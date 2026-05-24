@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def open_graph_image_url_for(post)
+    post.social_image_url.presence || default_open_graph_image_url
+  end
+
   # Image utilisée par défaut pour og:image / LinkedIn quand aucune page ne définit :open_graph_image.
   # Format idéal pour les réseaux : ~1200×630 px (PNG/JPEG), voir app/assets/images/.
   def default_open_graph_image_url

@@ -1,0 +1,16 @@
+<%= link_to "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            class: "show-license-notice border-t border-gray-950/10 dark:border-white/10",
+            "aria-label": "Ce texte est publié par #{post.user.username} sous licence Creative Commons BY-NC-SA 4.0" do %>
+  <p class="show-license-notice__text">
+    Texte publié par <span class="show-license-notice__author"><%= post.user.username %></span>
+    sous licence Creative Commons BY-NC-SA 4.0.
+  </p>
+  <span class="show-license-notice__icons" aria-hidden="true">
+    <%= inline_svg_tag("cc.svg", class: "show-license-notice__icon") %>
+    <%= inline_svg_tag("nc.svg", class: "show-license-notice__icon") %>
+    <%= inline_svg_tag("by.svg", class: "show-license-notice__icon") %>
+    <%= inline_svg_tag("sa.svg", class: "show-license-notice__icon") %>
+  </span>
+<% end %>

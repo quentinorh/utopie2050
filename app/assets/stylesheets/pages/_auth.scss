@@ -452,6 +452,41 @@
   }
 }
 
+/* Mobile choice screen (sign in) */
+.auth-form__choice {
+  .auth-form__actions {
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 639px) {
+  .auth-form__choice {
+    display: block;
+  }
+
+  [data-auth-session-target="loginForm"] {
+    display: none;
+  }
+
+  .auth-page[data-auth-session-show-form-value="true"] .auth-form__choice {
+    display: none;
+  }
+
+  .auth-page[data-auth-session-show-form-value="true"] [data-auth-session-target="loginForm"] {
+    display: block;
+  }
+
+  .auth-form__register-link {
+    display: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .auth-form__choice {
+    display: none;
+  }
+}
+
 /* Buttons */
 .auth-form__actions {
   margin-top: 32px;

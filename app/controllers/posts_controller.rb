@@ -1,8 +1,8 @@
 require 'open-uri'
 
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :favorite, :unfavorite]
+  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub]
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :favorite, :unfavorite, :export_pdf, :export_epub]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
 
   has_scope :by_author
@@ -108,6 +108,26 @@ class PostsController < ApplicationController
     end
   end
 
+  def export_pdf
+    return unless authorize_export!
+
+    exporter = build_exporter
+    send_data exporter.to_pdf,
+              filename: "#{exporter.filename_base}.pdf",
+              type: "application/pdf",
+              disposition: "attachment"
+  end
+
+  def export_epub
+    return unless authorize_export!
+
+    exporter = build_exporter
+    send_data exporter.to_epub,
+              filename: "#{exporter.filename_base}.epub",
+              type: "application/epub+zip",
+              disposition: "attachment"
+  end
+
   def favorites
     @favorite_posts = Post.published
                          .joins(:favorites)
@@ -125,7 +145,7 @@ class PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.includes(cover_image_attachment: :blob).find(params[:id])
   end
 
   def authorize_user!
@@ -143,6 +163,26 @@ class PostsController < ApplicationController
   def can_view_draft?(post)
     return true unless post.draft == true
     current_user&.admin? || current_user == post.user
+  end
+
+  def build_exporter
+    PostExportService.new(@post, og_image_url: absolute_open_graph_image_url)
+  end
+
+  def absolute_open_graph_image_url
+    url = helpers.open_graph_image_url_for(@post).to_s.strip
+    return url if url.start_with?("http://", "https://")
+
+    URI.join("#{request.base_url}/", url.delete_prefix("/")).to_s
+  end
+
+  def authorize_export!
+    unless can_view_draft?(@post)
+      redirect_to posts_path, alert: "Ce futur n'est pas accessible."
+      return false
+    end
+
+    true
   end
 
   def set_event_code

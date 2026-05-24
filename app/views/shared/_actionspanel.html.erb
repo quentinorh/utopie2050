@@ -17,6 +17,32 @@
       <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Partager</span>
     </button>
 
+
+    <%# Export (couverture = og:image) %>
+    <%= link_to export_pdf_post_path(@post),
+        data: { turbo: false },
+        class: "group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-950/5 dark:hover:bg-white/5 w-full text-left",
+        aria_label: "Télécharger en PDF" do %>
+      <svg class="size-4 stroke-gray-500 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 1.5v9"/>
+        <polyline points="5.5 8 8 10.5 10.5 8"/>
+        <path d="M3 12.5h10"/>
+      </svg>
+      <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Télécharger en PDF</span>
+    <% end %>
+
+    <%= link_to export_epub_post_path(@post),
+        data: { turbo: false },
+        class: "group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-950/5 dark:hover:bg-white/5 w-full text-left",
+        aria_label: "Télécharger en EPUB" do %>
+      <svg class="size-4 stroke-gray-500 group-hover:stroke-gray-900 dark:group-hover:stroke-white shrink-0" viewBox="0 0 16 16" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 2.5h7l3 3v8a1 1 0 01-1 1H3a1 1 0 01-1-1v-10a1 1 0 011-1z"/>
+        <path d="M10 2.5v3h3"/>
+        <path d="M5 9h6M5 11.5h4"/>
+      </svg>
+      <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Télécharger en EPUB</span>
+    <% end %>
+
     <% if user_signed_in? %>
       <%# Favorite %>
       <%= turbo_frame_tag "favorite_button" do %>

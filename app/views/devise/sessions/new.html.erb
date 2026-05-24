@@ -3,7 +3,9 @@
 <% content_for :meta_robots, "noindex, nofollow" %>
 <% content_for :navbar_transparent, true %>
 
-<div class="auth-page" data-controller="auth-background">
+<div class="auth-page"
+     data-controller="auth-background auth-session"
+     data-auth-session-show-form-value="<%= flash.present? %>">
   <!-- Animated SVG pattern background -->
   <div class="auth-bg" data-auth-background-target="svg"></div>
   <div class="auth-overlay"></div>
@@ -11,6 +13,21 @@
   <!-- Form -->
   <div class="auth-form-container">
     <div class="auth-form">
+      <%# Mobile (<640px) : choix inscription / connexion avant le formulaire %>
+      <div class="auth-form__choice" data-auth-session-target="choice">
+        <h2 class="auth-form__title">Bienvenue</h2>
+        <p class="auth-form__subtitle">Rejoins la communauté SP2050</p>
+        <div class="auth-form__actions">
+          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-primary" %>
+          <button type="button"
+                  class="auth-btn-secondary"
+                  data-action="click->auth-session#showLogin">
+            Se connecter
+          </button>
+        </div>
+      </div>
+
+      <div data-auth-session-target="loginForm">
       <h2 class="auth-form__title">Se connecter</h2>
       <p class="auth-form__subtitle">Bienvenue dans le futur</p>
 
@@ -19,7 +36,7 @@
           <%= f.input :email,
                       label: "Adresse e-mail",
                       required: false,
-                      autofocus: true,
+                      autofocus: false,
                       input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
                       label_html: { class: "auth-label" } %>
           <%= f.input :password,
@@ -41,7 +58,7 @@
 
         <div class="auth-form__actions">
           <%= f.button :submit, "Je me connecte", class: "auth-btn-primary", data: { form_type: "other" } %>
-          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary" %>
+          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary auth-form__register-link" %>
         </div>
 
         <div class="auth-form__footer">
@@ -51,6 +68,7 @@
           <% end %>
         </div>
       <% end %>
+      </div>
     </div>
   </div>
 </div>

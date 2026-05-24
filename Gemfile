@@ -96,3 +96,6 @@ gem 'aws-sdk-s3'
 
 gem "bugsnag", "~> 6.27"
 gem "rack-attack"
+
+gem "prawn", "~> 2.5", require: "prawn"
+gem "gepub", "~> 1.0", require: "gepub"

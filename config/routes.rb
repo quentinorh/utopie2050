@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       delete :remove_photo
       post 'favorite'
       delete 'unfavorite'
+      get 'export/pdf', action: :export_pdf, as: :export_pdf
+      get 'export/epub', action: :export_epub, as: :export_epub
     end
     resources :reports, only: [:new, :create]
   end
