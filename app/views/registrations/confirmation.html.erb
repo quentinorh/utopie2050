@@ -1,6 +1,14 @@
 <div class="text-center mt-12">
   <h2>Merci pour ton inscription !</h2><br></br>
   <p>Un email de confirmation a été envoyé à l'adresse que tu as fournie. Clique sur le lien dans cet email pour confirmer ton compte.</p>
+  <% if PendingPostSession.fetch(session) %>
+    <br></br>
+    <p>
+      Ton futur est déjà enregistré. Il sera
+      <%= PendingPostSession.draft?(PendingPostSession.fetch(session)) ? "accessible en brouillon" : "publié" %>
+      dès que tu auras confirmé ton compte et que tu te seras connecté·e.
+    </p>
+  <% end %>
   <br></br>
   <p>Si tu ne reçois pas l'email, vérifie tes spams ou <a href="#">réessaye</a> de l'envoyer.</p>
 </div>

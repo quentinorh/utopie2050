@@ -1,15 +1,31 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
+import { loadRegistrationPrefill, saveRegistrationPrefill } from "utils/registration_prefill"
 
 export default class extends Controller {
-  static targets = ["step", "flashMessages", "username", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton", "progress", "progressStep"];
+  static targets = ["step", "flashMessages", "username", "age", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton", "progress", "progressStep"];
 
   connect() {
     this.usernameUnique = false
     this.emailUnique = false
     this.passwordValid = false
     document.addEventListener('keydown', this.handleKeydown.bind(this))
+    this.applyRegistrationPrefill()
     this.updateProgress(this.currentStepId())
+  }
+
+  applyRegistrationPrefill() {
+    const prefill = loadRegistrationPrefill()
+    if (!prefill) return
+
+    if (prefill.username && this.hasUsernameTarget) {
+      this.usernameTarget.value = prefill.username
+      this.checkUsername()
+    }
+
+    if (prefill.age && this.hasAgeTarget) {
+      this.ageTarget.value = prefill.age
+    }
   }
 
   currentStepId() {
@@ -84,7 +100,18 @@ export default class extends Controller {
     });
 
     if (isValid) {
+      this.persistStepPrefill(currentStepId)
       this.fadeTransition(currentStepId, nextStepId);
+    }
+  }
+
+  persistStepPrefill(stepId) {
+    if (stepId === "step-username" && this.hasUsernameTarget) {
+      saveRegistrationPrefill({ username: this.usernameTarget.value })
+    }
+
+    if (stepId === "step-age" && this.hasAgeTarget) {
+      saveRegistrationPrefill({ age: this.ageTarget.value })
     }
   }
 
@@ -95,6 +122,11 @@ export default class extends Controller {
   }
 
   fadeTransition(currentStepId, nextStepId) {
+    this.element.dispatchEvent(new CustomEvent("auth:step-changed", {
+      bubbles: true,
+      detail: { from: currentStepId, to: nextStepId }
+    }))
+
     const currentStep = document.getElementById(currentStepId);
     const nextStep = document.getElementById(nextStepId);
 
@@ -109,13 +141,7 @@ export default class extends Controller {
           { opacity: 0 },
           {
             opacity: 1,
-            duration: 0.3,
-            onComplete: () => {
-              this.element.dispatchEvent(new CustomEvent("signup:step-changed", {
-                bubbles: true,
-                detail: { from: currentStepId, to: nextStepId }
-              }))
-            }
+            duration: 0.3
           }
         );
       }

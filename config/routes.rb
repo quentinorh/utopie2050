@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   resources :posts, path: 'futurs' do
     collection do
       get :deleted
+      post :stage
+      get :pending
+      get :claim
     end
     
     member do
@@ -30,6 +33,9 @@ Rails.application.routes.draw do
 
   get 'mes_futurs', to: 'posts#user_posts', as: 'user_posts'
   get 'mes_favoris', to: 'posts#favorites', as: 'user_favorites'
+
+  get 'ecrire-le-futur', to: 'pages#writing_tutorial', as: 'writing_tutorial'
+  get 'idea_generator/spark', to: 'idea_generators#spark', as: 'idea_generator_spark'
 
   root to: "pages#home"
 

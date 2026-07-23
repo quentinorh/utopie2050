@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 
+const CROSSFADE_DURATION = 1.15
+const CROSSFADE_EASE = "power2.out"
+
 export default class extends Controller {
   static targets = ["svg"]
 
@@ -10,7 +13,7 @@ export default class extends Controller {
     this._preloadedImage = null
     this._preloadingPromise = null
     this.handleStepChanged = this.reloadBackground.bind(this)
-    this.element.addEventListener("signup:step-changed", this.handleStepChanged)
+    this.element.addEventListener("auth:step-changed", this.handleStepChanged)
     this._svgMarkup = this.generatePattern()
     this.startRipple()
     this._prepareNextBackground()
@@ -18,22 +21,39 @@ export default class extends Controller {
 
   disconnect() {
     this._isConnected = false
-    this.element.removeEventListener("signup:step-changed", this.handleStepChanged)
+    this.element.removeEventListener("auth:step-changed", this.handleStepChanged)
     const visuals = this._getPreviousVisuals()
     visuals.forEach(node => this._destroyLayerForNode(node))
   }
 
   reloadBackground() {
-    const preloadedImage = this._consumePreloadedImage()
+    const applyBackground = (image) => {
+      if (!this._isConnected) return
 
-    if (preloadedImage) {
-      this._setupWebGL(preloadedImage)
-    } else {
-      this._svgMarkup = this.generatePattern()
-      this.startRipple()
+      if (image) {
+        this._setupWebGL(image)
+      } else {
+        this._svgMarkup = this.generatePattern()
+        this.startRipple()
+      }
+
+      this._prepareNextBackground()
     }
 
-    this._prepareNextBackground()
+    const preloadedImage = this._consumePreloadedImage()
+    if (preloadedImage) {
+      applyBackground(preloadedImage)
+      return
+    }
+
+    if (this._preloadingPromise) {
+      this._preloadingPromise.then(() => {
+        applyBackground(this._consumePreloadedImage())
+      })
+      return
+    }
+
+    applyBackground(null)
   }
 
   generatePattern() {
@@ -155,8 +175,8 @@ export default class extends Controller {
     canvas.style.height = '100%'
     canvas.style.display = 'block'
     canvas.style.opacity = '0'
-    canvas.style.willChange = 'opacity'
-    canvas.style.transform = 'translateZ(0)'
+    canvas.style.willChange = 'opacity, transform'
+    canvas.style.transform = 'translateZ(0) scale(1.06)'
     this.svgTarget.appendChild(canvas)
 
     // Size canvas to fill container
@@ -270,6 +290,8 @@ export default class extends Controller {
     svg.removeAttribute('width')
     svg.removeAttribute('height')
     svg.style.opacity = '0'
+    svg.style.transform = 'scale(1.06)'
+    svg.style.transformOrigin = '50% 50%'
     this.svgTarget.appendChild(svg)
 
     this._crossfadeTo(svg, previousVisuals)
@@ -283,13 +305,25 @@ export default class extends Controller {
 
   _crossfadeTo(nextVisual, previousVisuals) {
     previousVisuals.forEach(node => this._pauseLayerForNode(node))
-    gsap.to(nextVisual, { opacity: 1, duration: 1.2, ease: "power1.out" })
+
+    gsap.fromTo(nextVisual, {
+      opacity: 0,
+      scale: 1.06
+    }, {
+      opacity: 1,
+      scale: 1,
+      duration: CROSSFADE_DURATION,
+      ease: CROSSFADE_EASE,
+      transformOrigin: "50% 50%"
+    })
 
     if (previousVisuals.length > 0) {
       gsap.to(previousVisuals, {
         opacity: 0,
-        duration: 1.2,
-        ease: "power1.out",
+        scale: 0.97,
+        duration: CROSSFADE_DURATION * 0.9,
+        ease: "power1.inOut",
+        transformOrigin: "50% 50%",
         onComplete: () => previousVisuals.forEach(node => this._destroyLayerForNode(node))
       })
     }

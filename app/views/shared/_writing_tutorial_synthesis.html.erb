@@ -1,0 +1,59 @@
+<%# locals: (username: nil, age: nil, variant: :auth) %>
+<% editor = local_assigns[:variant] == :editor %>
+<div data-controller="writing-tutorial-synthesis"
+     data-writing-tutorial-synthesis-username-value="<%= local_assigns[:username].presence %>"
+     data-writing-tutorial-synthesis-age-value="<%= local_assigns[:age].presence %>"
+     <% if editor %>
+     data-writing-tutorial-synthesis-collapsible-value="true"
+     <% end %>>
+  <div class="writing-tutorial-synthesis<%= ' writing-tutorial-synthesis--editor' if editor %>"
+       data-writing-tutorial-synthesis-target="panel"
+       hidden>
+    <% if editor %>
+      <div class="writing-tutorial-synthesis__header">
+        <button type="button"
+                class="writing-tutorial-synthesis__toggle"
+                data-writing-tutorial-synthesis-target="toggle"
+                data-action="click->writing-tutorial-synthesis#toggle"
+                aria-expanded="true"
+                aria-controls="writing-tutorial-synthesis-body">
+          <span class="writing-tutorial-synthesis__toggle-main">
+            <span class="writing-tutorial-synthesis__badge" aria-hidden="true">Brouillon</span>
+            <span class="writing-tutorial-synthesis__title">Ton brouillon</span>
+            <span class="writing-tutorial-synthesis__compact"
+                  data-writing-tutorial-synthesis-target="summary"
+                  hidden></span>
+          </span>
+          <span class="writing-tutorial-synthesis__toggle-action">
+            <span class="writing-tutorial-synthesis__toggle-label"
+                  data-writing-tutorial-synthesis-target="toggleLabel">Réduire</span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="writing-tutorial-synthesis__chev"
+                 viewBox="0 0 16 16"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.5"
+                 stroke-linecap="round"
+                 aria-hidden="true">
+              <polyline points="4 10 8 6 12 10"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div id="writing-tutorial-synthesis-body"
+           class="writing-tutorial-synthesis__body"
+           data-writing-tutorial-synthesis-target="body">
+        <div class="writing-tutorial-synthesis__body-inner">
+          <p class="writing-tutorial-synthesis__intro">Ajuste les éléments de ton brouillon avant d'écrire.</p>
+          <dl class="writing-tutorial-synthesis__list"
+              data-writing-tutorial-synthesis-target="list"
+              data-action="input->writing-tutorial-synthesis#updateField blur->writing-tutorial-synthesis#updateField"></dl>
+        </div>
+      </div>
+    <% else %>
+      <h3 class="writing-tutorial-synthesis__title">Ton brouillon</h3>
+      <p class="writing-tutorial-synthesis__intro">Voici ce que tu as préparé pour ton futur.</p>
+      <dl class="writing-tutorial-synthesis__list" data-writing-tutorial-synthesis-target="list"></dl>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<% content_for :title, "SP2050 - Futur en attente" %>
+<% content_for :description, "Ton futur est enregistré. Connecte-toi ou crée un compte pour le publier ou l'enregistrer en brouillon." %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :navbar_transparent, true %>
+
+<% draft = PendingPostSession.draft?(@pending_post) %>
+
+<div class="auth-page" data-controller="auth-background">
+  <div class="auth-bg" data-auth-background-target="svg"></div>
+  <div class="auth-overlay"></div>
+
+  <div class="auth-form-container">
+    <div class="auth-form auth-form--wide pending-post">
+      <h2 class="auth-form__title">Ton futur est enregistré</h2>
+
+      <p class="auth-form__subtitle pending-post__lead">
+        <% if draft %>
+          Ton texte est prêt. Il sera accessible en brouillon dès que tu t'auras identifié
+          ou après la création et la validation de ton compte.
+        <% else %>
+          Ton texte est prêt. Il sera publié dès que tu t'auras identifié
+          ou après la création et la validation de ton compte.
+        <% end %>
+      </p>
+
+      <% if @pending_post["title"].present? %>
+        <p class="pending-post__title font-mono">
+          « <%= @pending_post["title"] %> »
+        </p>
+      <% end %>
+
+      <p class="pending-post__hint font-mono">
+        Tes choix du didacticiel et ta couverture sont conservés le temps de l'identification.
+      </p>
+
+      <div class="auth-form__actions pending-post__actions">
+        <%= link_to "Se connecter", new_user_session_path, class: "auth-btn-primary" %>
+        <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary" %>
+      </div>
+
+      <div class="auth-form__footer pending-post__footer">
+        <%= link_to "Modifier mon texte", new_post_path, class: "auth-link" %>
+      </div>
+    </div>
+  </div>
+</div>

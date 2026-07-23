@@ -1017,6 +1017,246 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   }
 }
 
+/* Panneau « Ton brouillon » — éditeur post (repliable) */
+.form-editor .writing-tutorial-synthesis--editor {
+  margin: 0 0 32px;
+  padding: 0;
+  border: 1px solid var(--editor-border);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, var(--editor-surface) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 8px 24px -18px rgba(31, 31, 31, 0.28);
+  overflow: hidden;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--editor-border-strong) 18%, var(--editor-border));
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.8) inset,
+      0 12px 28px -16px rgba(31, 31, 31, 0.22);
+  }
+
+  &.is-collapsed {
+    .writing-tutorial-synthesis__body {
+      grid-template-rows: 0fr;
+    }
+
+    .writing-tutorial-synthesis__chev {
+      transform: rotate(0deg);
+    }
+
+    .writing-tutorial-synthesis__title {
+      display: none;
+    }
+
+    .writing-tutorial-synthesis__compact:not([hidden]) {
+      display: block;
+    }
+  }
+}
+
+.form-editor .writing-tutorial-synthesis__header {
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.25s ease;
+
+  .writing-tutorial-synthesis--editor:not(.is-collapsed) & {
+    border-bottom-color: var(--editor-border);
+  }
+}
+
+.form-editor .writing-tutorial-synthesis__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--editor-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--editor-surface-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--editor-ink);
+    outline-offset: -2px;
+  }
+}
+
+.form-editor .writing-tutorial-synthesis__toggle-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.form-editor .writing-tutorial-synthesis__toggle-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.form-editor .writing-tutorial-synthesis__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-surface-soft);
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--editor-ink-muted);
+}
+
+.form-editor .writing-tutorial-synthesis__title {
+  margin: 0;
+  font-family: "Apfel", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--editor-ink);
+}
+
+.form-editor .writing-tutorial-synthesis__compact {
+  display: none;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--editor-ink-muted);
+}
+
+.form-editor .writing-tutorial-synthesis__toggle-label {
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--editor-ink-faint);
+}
+
+.form-editor .writing-tutorial-synthesis__chev {
+  width: 12px;
+  height: 12px;
+  color: var(--editor-ink-muted);
+  transform: rotate(180deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.form-editor .writing-tutorial-synthesis__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-editor .writing-tutorial-synthesis__body-inner {
+  overflow: hidden;
+}
+
+.form-editor .writing-tutorial-synthesis__intro {
+  margin: 0;
+  padding: 14px 16px 0;
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--editor-ink-muted);
+}
+
+.form-editor .writing-tutorial-synthesis__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 12px 16px 16px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
+}
+
+.form-editor .writing-tutorial-synthesis__item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--editor-border);
+
+  @media (min-width: 640px) {
+    &:nth-child(-n + 2) {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+.form-editor .writing-tutorial-synthesis__label {
+  margin: 0;
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--editor-ink-faint);
+}
+
+.form-editor .writing-tutorial-synthesis__value {
+  margin: 0;
+  font-family: "Apfel", sans-serif;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--editor-ink);
+  word-break: break-word;
+}
+
+.form-editor .writing-tutorial-synthesis__input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--editor-border);
+  border-radius: 8px;
+  background: var(--editor-surface);
+  color: var(--editor-ink);
+  font-family: "Apfel", sans-serif;
+  font-size: 1rem;
+  line-height: 1.35;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--editor-border-strong);
+    background: #fff;
+  }
+
+  &--textarea {
+    resize: vertical;
+    min-height: 56px;
+  }
+}
+
 /* Reveal initial states — gated par .is-revealing pour qu'on n'efface jamais
    le contenu si JS échoue (pas de class = tout visible).
    Le controller editor_reveal_controller ajoute .is-revealing au connect()
@@ -1106,6 +1346,99 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
 .editor-body-field {
   display: block;
   margin-top: 28px;
+}
+
+/* Booster de créativité — question aléatoire au-dessus du textarea */
+.editor-creativity-booster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.editor-creativity-booster__prompt {
+  width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--editor-border);
+  border-left: 3px solid var(--editor-ink);
+  border-radius: 12px;
+  background: var(--editor-surface);
+  box-shadow: 0 6px 20px -16px rgba(31, 31, 31, 0.35);
+  animation: creativity-booster-in 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+.editor-creativity-booster__prompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.editor-creativity-booster__prompt-label {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--editor-ink-faint);
+}
+
+.editor-creativity-booster__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--editor-border);
+  border-radius: 50%;
+  background: var(--editor-surface-soft);
+  color: var(--editor-ink-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: var(--editor-surface);
+    color: var(--editor-ink);
+    border-color: var(--editor-border-strong);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--editor-ink);
+    outline-offset: 2px;
+  }
+}
+
+.editor-creativity-booster__question {
+  margin: 0;
+  font-family: "Apfel", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.45;
+  color: var(--editor-ink);
+}
+
+@keyframes creativity-booster-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .editor-textarea {

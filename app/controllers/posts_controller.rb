@@ -1,9 +1,10 @@
 require 'open-uri'
 
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub]
+  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub, :new, :stage, :pending]
   before_action :set_post, only: [:show, :edit, :update, :destroy, :favorite, :unfavorite, :export_pdf, :export_epub]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
+  before_action :load_pending_post, only: [:pending, :claim]
 
   has_scope :by_author
   has_scope :by_query
@@ -32,7 +33,42 @@ class PostsController < ApplicationController
   end
 
   def new
-    @post = current_user.posts.build
+    @post = user_signed_in? ? current_user.posts.build : Post.new
+    @guest_writer = !user_signed_in?
+  end
+
+  def stage
+    @post = Post.new(stage_post_params.except(:event_code))
+    @guest_writer = true
+
+    if @post.title.blank?
+      @post.errors.add(:title, :blank)
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    PendingPostSession.store(session, params)
+    redirect_to pending_posts_path
+  end
+
+  def pending
+    redirect_to claim_posts_path if user_signed_in?
+  end
+
+  def claim
+    pending_record = PendingPostSession.find_record(session)
+    @post = PendingPostSession.build_post(current_user, @pending_post)
+    PendingPostSession.assign_event_code(@post, @pending_post["event_code"])
+
+    if @post.save
+      PendingPostSession.attach_cover_image(@post, pending_record)
+      PendingPostSession.clear(session)
+      AttachCoverImageJob.perform_later(@post.id)
+      notice = PendingPostSession.draft?(@pending_post) ? "Ton brouillon a été enregistré." : "Ton futur a été publié."
+      redirect_to @post, notice: notice, flash: { clear_registration_prefill: true }
+    else
+      redirect_to pending_posts_path, alert: @post.errors.full_messages.to_sentence
+    end
   end
 
   def create
@@ -41,7 +77,7 @@ class PostsController < ApplicationController
     
     if @post.save
       AttachCoverImageJob.perform_later(@post.id)
-      redirect_to @post
+      redirect_to @post, flash: { clear_registration_prefill: true }
     else
       render :new
     end
@@ -158,6 +194,20 @@ class PostsController < ApplicationController
     params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
       :cover_image,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
+  end
+
+  def stage_post_params
+    params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
+      :cover_image, :event_code,
+      chapters_attributes: [:id, :title, :body, :position, :_destroy])
+  end
+
+  def load_pending_post
+    @pending_post = PendingPostSession.fetch(session)
+
+    unless @pending_post
+      redirect_to new_post_path, alert: "Aucun futur en attente. Tu peux recommencer ton écriture."
+    end
   end
 
   def can_view_draft?(post)

@@ -1,0 +1,40 @@
+<div class="idea-generator"
+     data-controller="idea-generator"
+     data-idea-generator-url-value="<%= idea_generator_spark_path(format: :json) %>">
+  <p class="auth-form__subtitle">Besoin d'une étincelle ?<br>Associe un nom et un adjectif.</p>
+
+  <p class="idea-generator__phrase" aria-live="polite">
+    <span data-idea-generator-target="noun"
+          data-controller="randomize-letter-animation"
+          data-randomize-letter-animation-text-value=""
+          class="idea-generator__noun"></span>
+    <span data-idea-generator-target="adjective"
+          data-controller="randomize-letter-animation"
+          data-randomize-letter-animation-text-value=""
+          class="idea-generator__adjective"></span>
+  </p>
+
+  <div class="idea-generator__actions">
+    <button type="button"
+            class="idea-generator__btn"
+            data-action="click->idea-generator#randomizeNoun"
+            aria-label="Générer un nouvel élément">
+      <span class="idea-generator__btn-icon" aria-hidden="true">↻</span>
+      Nom
+    </button>
+    <button type="button"
+            class="idea-generator__btn"
+            data-action="click->idea-generator#randomizeAdjective"
+            aria-label="Générer un nouvel adjectif">
+      <span class="idea-generator__btn-icon" aria-hidden="true">↻</span>
+      Adjectif
+    </button>
+    <button type="button"
+            class="idea-generator__btn idea-generator__btn--primary"
+            data-action="click->idea-generator#randomizeBoth"
+            aria-label="Générer une nouvelle association">
+      <span class="idea-generator__btn-icon" aria-hidden="true">↻</span>
+      Tout
+    </button>
+  </div>
+</div>

@@ -60,12 +60,12 @@
 
           <!-- Step 3: Age -->
           <div class="step" id="step-age" style="display: none;" data-signup-target="step">
-            <h2 class="auth-form__title">Quel age auras-tu en 2050&nbsp;?</h2>
+            <h2 class="auth-form__title">Quel âge auras-tu en 2050&nbsp;?</h2>
             <%= f.input :age,
                         required: true,
                         label: false,
                         wrapper_html: { class: 'mt-4' },
-                        input_html: { class: 'auth-input text-center', placeholder: 'Ton age en 2050' } %>
+                        input_html: { class: 'auth-input text-center', placeholder: 'Ton age en 2050', 'data-signup-target': 'age' } %>
             <div class="text-red-400 text-sm mt-1" data-signup-target="ageError"></div>
             <div class="auth-form__actions-row">
               <button type="button" data-action="click->signup#previousStep" data-step-id="step-username" class="auth-btn-secondary">Precedent</button>
