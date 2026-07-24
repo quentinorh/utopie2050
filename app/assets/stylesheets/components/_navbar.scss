@@ -60,10 +60,28 @@
   select,
   summary,
   form,
-  .tw-dropdown-menu,
+  .tw-dropdown-menu.is-open,
   [role="button"],
   [role="switch"] {
     pointer-events: auto;
+  }
+
+  /* Le menu profil fermé reste dans le flux (invisible : opacity 0), survolant
+     la barre de réglages remontée près de l'avatar. Sans ça, ses liens/boutons
+     — réactivés par la règle ci-dessus — voleraient les clics des pastilles.
+     On neutralise le conteneur ET ses éléments interactifs quand il est fermé. */
+  .tw-dropdown-menu:not(.is-open) {
+    &,
+    a,
+    button,
+    input,
+    select,
+    summary,
+    form,
+    [role="button"],
+    [role="switch"] {
+      pointer-events: none;
+    }
   }
 }
 

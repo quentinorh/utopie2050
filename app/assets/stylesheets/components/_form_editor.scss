@@ -189,12 +189,14 @@
   z-index: 50;
   pointer-events: none;
 
-  /* Mobile : la couverture est pleine largeur et la navbar (56px) porte déjà
-     l'avatar à droite → on descend la barre sous la navbar pour éviter la
-     collision, et on la réancre à 20px du bord. */
+  /* Mobile : on remonte la barre DANS la navbar (56px), calée juste à gauche de
+     l'avatar. Pastilles 36×36 pour s'aligner sur la taille de l'avatar (h-9 w-9),
+     centrées verticalement sur la navbar. L'avatar fait 36px et vit à 10px du
+     bord (px-xs) → on borne la barre à droite à 10 + 36 + 8px d'écart. */
   @media (max-width: 1023px) {
-    top: calc(56px + 20px);
-    right: 20px;
+    --cover-toolbar-h: 36px;
+    top: calc((56px - 36px) / 2);
+    right: calc(10px + 36px + 8px);
   }
 
   > * {
