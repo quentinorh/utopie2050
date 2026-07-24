@@ -1,19 +1,43 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
+import { loadRegistrationPrefill, saveRegistrationPrefill } from "utils/registration_prefill"
 
 export default class extends Controller {
-  static targets = ["step", "flashMessages", "username", "email", "password", "usernameError", "emailError", "ageError", "passwordError", "nextStepUsernameButton", "nextStepEmailButton", "progress", "progressStep"];
+  static targets = [
+    "step", "flashMessages", "username", "age", "email", "terms",
+    "usernameError", "emailError", "ageError", "termsError",
+    "nextStepProfileButton", "submitButton", "progress", "progressStep"
+  ]
 
   connect() {
     this.usernameUnique = false
     this.emailUnique = false
-    this.passwordValid = false
-    document.addEventListener('keydown', this.handleKeydown.bind(this))
+    this.ageValid = false
+    this.termsAccepted = false
+    document.addEventListener("keydown", this.handleKeydownBound = this.handleKeydown.bind(this))
+    this.applyRegistrationPrefill()
     this.updateProgress(this.currentStepId())
+    this.toggleNextStepProfileButton()
+    this.toggleSubmitButton()
+  }
+
+  applyRegistrationPrefill() {
+    const prefill = loadRegistrationPrefill()
+    if (!prefill) return
+
+    if (prefill.username && this.hasUsernameTarget) {
+      this.usernameTarget.value = prefill.username
+      this.checkUsername()
+    }
+
+    if (prefill.age && this.hasAgeTarget) {
+      this.ageTarget.value = prefill.age
+      this.checkAge()
+    }
   }
 
   currentStepId() {
-    const current = this.stepTargets.find(step => step.style.display !== 'none')
+    const current = this.stepTargets.find(step => step.style.display !== "none")
     return current ? current.id : null
   }
 
@@ -30,112 +54,127 @@ export default class extends Controller {
 
     this.progressTarget.hidden = false
     this.progressStepTargets.forEach((el, index) => {
-      el.classList.toggle('auth-progress__step--completed', index < activeIndex)
-      el.classList.toggle('auth-progress__step--active', index === activeIndex)
+      el.classList.toggle("auth-progress__step--completed", index < activeIndex)
+      el.classList.toggle("auth-progress__step--active", index === activeIndex)
     })
   }
 
   disconnect() {
-    document.removeEventListener('keydown', this.handleKeydown.bind(this))
+    document.removeEventListener("keydown", this.handleKeydownBound)
   }
 
   handleKeydown(event) {
-    if (!document.querySelector('#registration-steps')) return;
-    
+    if (!document.querySelector("#registration-steps")) return
+
     if (event.key === "Enter") {
-      event.preventDefault();
-      const currentStep = this.stepTargets.find(step => step.style.display !== 'none');
-      const nextButton = currentStep.querySelector('[data-action="click->signup#nextStep"]');
-      
-      if (nextButton) {
-        nextButton.click();
+      const currentStep = this.stepTargets.find(step => step.style.display !== "none")
+      if (!currentStep) return
+
+      if (currentStep.id === "step-terms") {
+        return
+      }
+
+      event.preventDefault()
+      const nextButton = currentStep.querySelector('[data-action="click->signup#nextStep"]')
+      if (nextButton && !nextButton.disabled) {
+        nextButton.click()
       }
     }
   }
 
   nextStep(event) {
-    const nextStepId = event.currentTarget.dataset.nextStep;
-    const currentStepId = this.stepTargets.find(step => step.style.display !== 'none').id;
-    const currentStep = document.getElementById(currentStepId);
-    const inputs = currentStep.querySelectorAll('input');
-    let isValid = true;
+    const nextStepId = event.currentTarget.dataset.nextStep
+    const currentStepId = this.stepTargets.find(step => step.style.display !== "none").id
+    const currentStep = document.getElementById(currentStepId)
+    const inputs = currentStep.querySelectorAll("input")
+    let isValid = true
 
     inputs.forEach(input => {
+      if (input.type === "checkbox") return
+
       if (input.required && !input.value.trim()) {
-        isValid = false;
-        input.classList.add('border-red-500');
-        
-        const fieldName = input.name.replace('user[', '').replace(']', '');
-        const errorTarget = this[`${fieldName}ErrorTarget`];
-        
+        isValid = false
+        input.classList.add("border-red-500")
+
+        const fieldName = input.name.replace("user[", "").replace("]", "")
+        const errorTarget = this[`${fieldName}ErrorTarget`]
+
         if (errorTarget) {
-          errorTarget.innerText = `Le champ "${fieldName}" est obligatoire.`;
+          errorTarget.innerText = `Le champ "${fieldName}" est obligatoire.`
         }
       } else {
-        input.classList.remove('border-red-500');
-        
-        const fieldName = input.name.replace('user[', '').replace(']', '');
-        const errorTarget = this[`${fieldName}ErrorTarget`];
-        
-        if (errorTarget) {
-          errorTarget.innerText = '';
-        }
+        input.classList.remove("border-red-500")
       }
-    });
+    })
+
+    if (currentStepId === "step-profile") {
+      this.checkUsername()
+      this.checkAge()
+      this.checkEmail()
+      if (!this.usernameUnique || !this.ageValid || !this.emailUnique) {
+        isValid = false
+      }
+    }
 
     if (isValid) {
-      this.fadeTransition(currentStepId, nextStepId);
+      this.persistStepPrefill(currentStepId)
+      this.fadeTransition(currentStepId, nextStepId)
+    }
+  }
+
+  persistStepPrefill(stepId) {
+    if (stepId === "step-profile") {
+      const payload = {}
+      if (this.hasUsernameTarget) payload.username = this.usernameTarget.value
+      if (this.hasAgeTarget) payload.age = this.ageTarget.value
+      saveRegistrationPrefill(payload)
     }
   }
 
   previousStep(event) {
-    const currentStepId = this.stepTargets.find(step => step.style.display !== 'none').id;
-    const previousStepId = event.currentTarget.dataset.stepId;
-    this.fadeTransition(currentStepId, previousStepId);
+    const currentStepId = this.stepTargets.find(step => step.style.display !== "none").id
+    const previousStepId = event.currentTarget.dataset.stepId
+    this.fadeTransition(currentStepId, previousStepId)
   }
 
   fadeTransition(currentStepId, nextStepId) {
-    const currentStep = document.getElementById(currentStepId);
-    const nextStep = document.getElementById(nextStepId);
+    this.element.dispatchEvent(new CustomEvent("auth:step-changed", {
+      bubbles: true,
+      detail: { from: currentStepId, to: nextStepId }
+    }))
+
+    const currentStep = document.getElementById(currentStepId)
+    const nextStep = document.getElementById(nextStepId)
 
     gsap.to(currentStep, {
       opacity: 0,
       duration: 0.3,
       onComplete: () => {
-        currentStep.style.display = 'none';
-        nextStep.style.display = 'block';
-        this.updateProgress(nextStepId);
-        gsap.fromTo(nextStep, 
+        currentStep.style.display = "none"
+        nextStep.style.display = "block"
+        this.updateProgress(nextStepId)
+        gsap.fromTo(nextStep,
           { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.3,
-            onComplete: () => {
-              this.element.dispatchEvent(new CustomEvent("signup:step-changed", {
-                bubbles: true,
-                detail: { from: currentStepId, to: nextStepId }
-              }))
-            }
-          }
-        );
+          { opacity: 1, duration: 0.3 }
+        )
       }
-    });
+    })
   }
 
   showFlash(type, message) {
-    const alertClass = type === 'error' ? 'bg-red-100 border-red-400 text-red-700' : 'bg-green-100 border-green-400 text-green-700';
-    
+    const alertClass = type === "error" ? "bg-red-100 border-red-400 text-red-700" : "bg-green-100 border-green-400 text-green-700"
+
     this.flashMessagesTarget.innerHTML = `
       <div class="border px-4 py-3 rounded relative ${alertClass}" role="alert">
         <span class="block sm:inline">${message}</span>
       </div>
-    `;
+    `
 
-    this.flashMessagesTarget.scrollIntoView({ behavior: 'smooth' });
+    this.flashMessagesTarget.scrollIntoView({ behavior: "smooth" })
 
     setTimeout(() => {
-      this.flashMessagesTarget.innerHTML = '';
-    }, 5000);
+      this.flashMessagesTarget.innerHTML = ""
+    }, 5000)
   }
 
   checkUsername() {
@@ -152,13 +191,27 @@ export default class extends Controller {
             this.usernameErrorTarget.innerText = ""
             this.usernameUnique = true
           }
-          this.toggleNextStepUsernameButton()
+          this.toggleNextStepProfileButton()
         })
     } else {
       this.usernameErrorTarget.innerText = "Le nom d'utilisateur ne peut pas être vide."
       this.usernameUnique = false
-      this.toggleNextStepUsernameButton()
+      this.toggleNextStepProfileButton()
     }
+  }
+
+  checkAge() {
+    const ageValue = this.ageTarget.value.trim()
+    const age = Number.parseInt(ageValue, 10)
+
+    if (ageValue.length === 0 || Number.isNaN(age) || age < 0) {
+      this.ageErrorTarget.innerText = "Indique un âge valide."
+      this.ageValid = false
+    } else {
+      this.ageErrorTarget.innerText = ""
+      this.ageValid = true
+    }
+    this.toggleNextStepProfileButton()
   }
 
   checkEmail() {
@@ -168,14 +221,14 @@ export default class extends Controller {
     if (email.length === 0) {
       this.emailErrorTarget.innerText = "L'email ne peut pas être vide."
       this.emailUnique = false
-      this.toggleNextStepEmailButton()
+      this.toggleNextStepProfileButton()
       return
     }
 
     if (!emailRegex.test(email)) {
       this.emailErrorTarget.innerText = "Veuillez entrer une adresse email valide."
       this.emailUnique = false
-      this.toggleNextStepEmailButton()
+      this.toggleNextStepProfileButton()
       return
     }
 
@@ -189,36 +242,35 @@ export default class extends Controller {
           this.emailErrorTarget.innerText = ""
           this.emailUnique = true
         }
-        this.toggleNextStepEmailButton()
+        this.toggleNextStepProfileButton()
       })
   }
 
-  checkPassword() {
-    const password = this.passwordTarget.value.trim()
-    
-    if (password.length < 6) {
-      this.passwordErrorTarget.innerText = "Le mot de passe doit contenir au moins 6 caractères."
-      this.passwordValid = false
-    } else {
-      this.passwordErrorTarget.innerText = ""
-      this.passwordValid = true
+  checkTerms() {
+    this.termsAccepted = this.hasTermsTarget && this.termsTarget.checked
+    if (this.hasTermsErrorTarget) {
+      this.termsErrorTarget.innerText = this.termsAccepted ? "" : ""
     }
-    this.toggleNextStepEmailButton()
+    this.toggleSubmitButton()
   }
 
-  toggleNextStepUsernameButton() {
-    if (this.usernameUnique) {
-      this.nextStepUsernameButtonTarget.removeAttribute("disabled")
+  toggleNextStepProfileButton() {
+    if (!this.hasNextStepProfileButtonTarget) return
+
+    if (this.usernameUnique && this.ageValid && this.emailUnique) {
+      this.nextStepProfileButtonTarget.removeAttribute("disabled")
     } else {
-      this.nextStepUsernameButtonTarget.setAttribute("disabled", "true")
+      this.nextStepProfileButtonTarget.setAttribute("disabled", "true")
     }
   }
 
-  toggleNextStepEmailButton() {
-    if (this.emailUnique && this.passwordValid) {
-      this.nextStepEmailButtonTarget.removeAttribute("disabled")
+  toggleSubmitButton() {
+    if (!this.hasSubmitButtonTarget) return
+
+    if (this.termsAccepted) {
+      this.submitButtonTarget.removeAttribute("disabled")
     } else {
-      this.nextStepEmailButtonTarget.setAttribute("disabled", "true")
+      this.submitButtonTarget.setAttribute("disabled", "true")
     }
   }
 }

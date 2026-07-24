@@ -400,7 +400,7 @@
 .auth-form__subtitle {
   font-family: "Roboto Mono", monospace;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.85);
   text-align: center;
   margin-top: 8px;
   text-transform: uppercase;
@@ -647,12 +647,12 @@
     font-family: "Roboto Mono", monospace;
     font-size: 12px;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.85);
     margin: 0;
   }
 
   a {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.85);
   }
 }
 
@@ -685,4 +685,550 @@
 
 .auth-form .field_with_errors input {
   border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* Writing tutorial — skip button (fixed bottom-right) */
+.writing-tutorial-skip {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(18, 20, 44, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Roboto Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+
+  @media (min-width: 640px) {
+    bottom: 32px;
+    right: 40px;
+    padding: 14px 22px;
+    font-size: 13px;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.writing-tutorial-skip__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.writing-tutorial-skip:hover .writing-tutorial-skip__icon {
+  transform: translateX(3px);
+}
+
+.writing-tutorial-identity {
+  text-wrap: balance;
+}
+
+.writing-tutorial-identity__value {
+  margin-left: 0.2em;
+  color: #fff;
+}
+
+.writing-tutorial-identity__mark {
+  margin-left: 0.08em;
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.45em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  vertical-align: super;
+  line-height: 0;
+}
+
+.writing-tutorial-identity__note {
+  margin-top: 16px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.writing-tutorial-themes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 28px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+.writing-tutorial-theme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 14px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &--selected {
+    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+}
+
+.writing-tutorial-trend-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.writing-tutorial-trend-picker__display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 16px 20px;
+  text-align: center;
+  cursor: default;
+}
+
+.writing-tutorial-trend-picker__label {
+  font-family: "Roboto Mono", monospace;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.writing-tutorial-trend-picker__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+}
+
+.writing-tutorial-trend-panel {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.writing-tutorial-trend-panel__label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.writing-tutorial-trend-panel__input {
+  min-height: 88px;
+  resize: vertical;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.writing-tutorial-section-label {
+  margin: 0 0 8px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.writing-tutorial-styles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 24px;
+  max-height: 350px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+
+  @media (min-width: 520px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.writing-tutorial-style {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &--selected {
+    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.writing-tutorial-style__title {
+  font-family: "Apfel", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.writing-tutorial-style__badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: "Roboto Mono", monospace;
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.writing-tutorial-style__desc {
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.writing-tutorial-synthesis {
+  margin-top: 24px;
+  padding: 20px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &--editor {
+    margin-top: 0;
+    margin-bottom: 28px;
+    border-color: var(--editor-border);
+    background: var(--editor-surface);
+    color: var(--editor-ink);
+  }
+}
+
+.writing-tutorial-synthesis__title {
+  margin: 0 0 6px;
+  font-family: "Apfel", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: #fff;
+
+  .writing-tutorial-synthesis--editor & {
+    color: var(--editor-ink);
+  }
+}
+
+.writing-tutorial-synthesis__intro {
+  margin: 0 0 16px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+
+  .writing-tutorial-synthesis--editor & {
+    color: var(--editor-ink-muted);
+  }
+}
+
+.writing-tutorial-synthesis__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.writing-tutorial-synthesis__item {
+  display: grid;
+  gap: 4px;
+}
+
+.writing-tutorial-synthesis__label {
+  margin: 0;
+  font-family: "Roboto Mono", monospace;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.55);
+
+  .writing-tutorial-synthesis--editor & {
+    color: var(--editor-ink-faint);
+  }
+}
+
+.writing-tutorial-synthesis__value {
+  margin: 0;
+  font-family: "Apfel", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: #fff;
+
+  .writing-tutorial-synthesis--editor & {
+    color: var(--editor-ink);
+  }
+}
+
+.writing-tutorial-draft {
+  margin-top: 24px;
+  text-align: left;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.writing-tutorial-draft__scroll {
+  padding: 0;
+  max-height: #{"min(50vh, 420px)"};
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.writing-tutorial-draft__editor {
+  min-height: 280px;
+  padding: 12px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.55;
+  font-size: 14px;
+  cursor: text;
+  border: 0;
+  background: transparent;
+
+  @media (min-width: 640px) {
+    padding: 14px 16px;
+  }
+
+  strong {
+    font-weight: 700;
+    color: #fff;
+  }
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(255, 255, 255, 0.25);
+    pointer-events: none;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+/* Futur en attente (posts/pending) */
+
+.pending-post {
+  text-align: center;
+}
+
+.pending-post__eyebrow {
+  margin: 0;
+  font-family: "Roboto Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+
+.pending-post__title {
+  margin: 16px auto 0;
+  max-width: 28rem;
+  font-family: "Apfel", sans-serif;
+  font-size: clamp(1.65rem, 4.2vw, 2.35rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.pending-post__lead {
+  max-width: 32rem;
+  margin-inline: auto;
+  margin-top: 20px;
+}
+
+.pending-post__hint {
+  margin: 16px auto 0;
+  max-width: 28rem;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}
+
+.pending-post__form {
+  margin-top: 8px;
+}
+
+.pending-post__actions {
+  margin-top: 28px;
+}
+
+.pending-post__footer {
+  margin-top: 20px;
+}
+
+/* Idea generator (writing tutorial) */
+
+.idea-generator__intro {
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 20px;
+}
+
+.idea-generator__phrase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.35em;
+  min-height: 2.5em;
+  margin: 20px 0 20px;
+  text-align: center;
+}
+
+.idea-generator__noun,
+.idea-generator__adjective {
+  font-family: "Apfel", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+  color: #fff;
+}
+
+.idea-generator__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.idea-generator__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+}
+
+.idea-generator__btn--primary {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.idea-generator__btn-icon {
+  font-size: 14px;
+  line-height: 1;
 }

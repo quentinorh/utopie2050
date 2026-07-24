@@ -78,7 +78,7 @@
 
       <% if user_signed_in? %>
         <!-- New post (desktop) -->
-        <%= link_to new_post_path,
+        <%= link_to writing_tutorial_path,
                     class: "max-sm:hidden btn-animate-chars btn-animate-chars--primary text-[14px] flex-shrink-0",
                     data: { controller: "stagger-chars" },
                     "aria-label": "Nouveau futur" do %>
@@ -126,7 +126,7 @@
               </span>
             </button>
             <div class="tw-dropdown-menu text-center" data-navbar-target="menuDesktop">
-              <%= link_to new_post_path,
+              <%= link_to writing_tutorial_path,
                           class: "inline-flex shrink-0 mt-1 sm:hidden btn-animate-chars btn-animate-chars--primary btn-animate-chars--hero-mobile",
                           data: { controller: "stagger-chars" },
                           "aria-label": "Nouveau futur" do %>

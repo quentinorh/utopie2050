@@ -6,15 +6,23 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def after_sign_in_path_for(resource)
+    if PendingPostSession.fetch(session)
+      claim_posts_path
+    else
+      super
+    end
+  end
+
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :age])
     devise_parameter_sanitizer.permit(:account_update, keys: [:username, :email, :age])
   end
 
   private
 
   def handle_invalid_authenticity_token
-    if request.path == "/users/sign_in" && request.post?
+    if ["/users/sign_in", "/users/magic_link"].include?(request.path) && request.post?
       redirect_to new_user_session_path, alert: "Votre session a expiré. Veuillez réessayer."
     else
       redirect_to root_path, alert: "Votre session a expiré. Veuillez réessayer."
