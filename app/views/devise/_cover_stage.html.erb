@@ -1,0 +1,45 @@
+<%# Couverture aléatoire partagée (connexion + inscription). Rend le moteur de
+    couverture (SVG + cibles cover-editor) + la barre du générateur. Décorative :
+    le bloc titre est masqué. Requiert `unique_id` unique par page. %>
+<div class="sp-cover">
+  <%# Logo — retour à l'accueil (la navbar est masquée sur ces pages). %>
+  <%= link_to "SP2050", root_path, class: "sp-logo", "aria-label": "Retour à l'accueil" %>
+
+  <div class="form-cover-svg form-cover-svg--editor">
+    <svg class="cover-svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="gradient1-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+        <radialGradient id="gradient2-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+        <radialGradient id="gradient3-<%= unique_id %>" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"/>
+          <stop offset="100%"/>
+        </radialGradient>
+      </defs>
+      <g data-cover-editor-target="curveGroup"></g>
+    </svg>
+
+    <div class="cover-title-block pointer-events-none" aria-hidden="true">
+      <div class="cover-username" data-cover-editor-target="userName"></div>
+      <div class="cover-title-text" data-cover-editor-target="titleWrapper"></div>
+    </div>
+  </div>
+
+  <%= render "posts/cover_toolbar", unique_id: unique_id %>
+
+  <div class="sr-only">
+    <input type="range" data-cover-editor-target="firstSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
+    <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
+    <input type="hidden" data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve">
+    <input type="hidden" data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve">
+    <input type="hidden" data-cover-editor-target="patternSettings" value="">
+    <input type="hidden" data-cover-editor-target="cover">
+    <input type="hidden" data-cover-editor-target="titleInput" value="">
+    <input type="file" data-cover-editor-target="coverImageFile" accept="image/jpeg,image/png" tabindex="-1" aria-hidden="true" class="hidden">
+  </div>
+</div>

@@ -47,11 +47,13 @@
   </head>
 
   <body data-controller="cursor-marquee">
-    <%= render 'shared/navbar', transparent: content_for?(:navbar_transparent) %>
+    <% unless content_for?(:hide_navbar) %>
+      <%= render 'shared/navbar', transparent: content_for?(:navbar_transparent) %>
+    <% end %>
     <main>
       <%= yield %>
     </main>
-    <%= render 'shared/flashes' %>
+    <div id="flashes"><%= render 'shared/flashes' %></div>
 
     <%# Pilule « Lire » qui suit le curseur (libellé statique). %>
     <div class="cursor-marquee"

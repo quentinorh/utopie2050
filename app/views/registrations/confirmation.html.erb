@@ -1,14 +1,36 @@
-<div class="text-center mt-12">
-  <h2>Merci pour ton inscription !</h2><br></br>
-  <p>Un lien de connexion a été envoyé à l'adresse que tu as fournie. Clique sur ce lien pour activer ton compte et te connecter.</p>
-  <% if PendingPostSession.fetch(session) %>
-    <br></br>
-    <p>
-      Ton futur est déjà enregistré. Il sera
-      <%= PendingPostSession.draft?(PendingPostSession.fetch(session)) ? "accessible en brouillon" : "publié" %>
-      dès que tu auras cliqué sur le lien reçu par email.
-    </p>
-  <% end %>
-  <br></br>
-  <p>Si tu ne reçois pas l'email, vérifie tes spams ou <%= link_to "demande un nouveau lien", new_user_session_path %>.</p>
+<% content_for :title, "SP2050 - Bienvenue" %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :hide_navbar, true %>
+
+<% unique_id = "merci-#{SecureRandom.hex(4)}" %>
+<% pending = PendingPostSession.fetch(session) %>
+
+<div class="sp-auth"
+     data-controller="cover-editor editor-reveal"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true">
+
+  <%= render "devise/cover_stage", unique_id: unique_id %>
+
+  <div class="sp-panel">
+    <div class="sp-content">
+      <div class="sp-head">
+        <h1 class="sp-title editor-stagger">Merci</h1>
+        <p class="sp-subtitle editor-stagger">Ton compte a été créé. Clique sur le lien de vérification qu'on vient de t'envoyer par email.</p>
+      </div>
+
+      <% if pending %>
+        <p class="sp-note editor-stagger">
+          Ton futur est déjà enregistré : il sera
+          <%= PendingPostSession.draft?(pending) ? "accessible en brouillon" : "publié" %>
+          dès que tu auras cliqué sur le lien reçu par email.
+        </p>
+      <% end %>
+
+      <p class="sp-note editor-stagger">
+        Tu ne reçois rien ? Vérifie tes spams ou
+        <%= link_to "demande un nouveau lien", new_user_session_path, class: "sp-terms__link" %>.
+      </p>
+    </div>
+  </div>
 </div>

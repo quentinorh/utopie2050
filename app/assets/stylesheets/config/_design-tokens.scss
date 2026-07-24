@@ -1,0 +1,45 @@
+/* ================================================================
+   Design tokens — variables réutilisables (auth + reste de l'app)
+   Source de vérité pour le grand titre display (Connexion / Bienvenue /
+   Merci), la palette et l'échelle typographique du système « futur ».
+   Se réutilise partout : `var(--sp-…)`.
+   ================================================================ */
+
+:root {
+  /* --- Couleurs ------------------------------------------------- */
+  --sp-ink: #201d1d;            /* Titres / texte fort            */
+  --sp-ink-muted: #323232;      /* Corps / labels                 */
+  --sp-ink-faint: rgba(0, 0, 0, 0.35); /* Placeholders            */
+  --sp-primary: #4f46e5;        /* Indigo (CTA principal)         */
+  --sp-primary-hover: #4338ca;
+  --sp-surface: #ffffff;        /* Panneau formulaire             */
+  --sp-cover-bg: #12142c;       /* Fond de la couverture          */
+  --sp-field-border: rgba(0, 0, 0, 0.2);
+  --sp-field-border-hover: rgba(0, 0, 0, 0.32);
+  --sp-danger: #dc2626;
+  --sp-link: #b4b4b4;             /* Liens secondaires gris (Retour, alt)    */
+  --sp-link-hover: var(--sp-ink);
+
+  /* --- Titre display (h1 Connexion / Bienvenue / Merci) --------- */
+  --sp-h1-family: "Apfel", sans-serif;
+  --sp-h1-weight: 500;          /* Apfel Grotezk Mittel           */
+  --sp-h1-size: clamp(3rem, 8vw, 5.43rem); /* cible 86.8px        */
+  --sp-h1-line: 1.02;
+  --sp-h1-tracking: -0.033em;
+
+  /* --- Échelle typographique (auth) ---------------------------- */
+  --sp-text-subtitle: 1.425rem;         /* 22.8px                 */
+  --sp-text-subtitle-mobile: 1.125rem;  /* 18px                   */
+  --sp-text-label: 1.1875rem;           /* 19px                   */
+  --sp-text-label-mobile: 1rem;         /* 16px                   */
+  --sp-text-input: 1.1875rem;           /* 19px                   */
+  --sp-text-input-mobile: 1rem;         /* 16px                   */
+  --sp-text-helper: 0.9375rem;          /* 15px                   */
+  --sp-text-small: 0.875rem;            /* 14px                   */
+  --sp-text-link: 0.95rem;              /* 15.2px                 */
+
+  /* --- Rayons / transitions ------------------------------------ */
+  --sp-radius-field: 9px;
+  --sp-radius-pill: 38px;
+  --sp-ease: cubic-bezier(0.2, 0, 0, 1);
+}

@@ -210,25 +210,19 @@
    La chaîne :not() reprend celle du verre blanc de .cover-pill pour la supplanter. */
 .cover-toolbar .cover-pill:not(.cover-pill--filled):not(.cover-pill--ghost) {
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  /* Flat : fond noir plein, filet blanc très léger, aucune ombre ni verre
+     (ni portée, ni interne, ni backdrop-blur). */
+  border-color: transparent;
+  box-shadow: none;
 
-  /* Verre plus dense et plus flou : le « liquid glass » demandé, avec un léger
-     dégradé haut→bas pour attraper la lumière. */
   &::before {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
-      rgba(14, 14, 16, 0.55);
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    background: #000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   &:hover::before {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 55%),
-      rgba(30, 30, 34, 0.62);
+    background: #141416;
   }
 
   &:active { scale: 0.96; }
@@ -564,19 +558,19 @@
   margin: 0;
   background: transparent;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  /* Flat : filet blanc très léger, aucune ombre (portée ou interne). */
+  border: 1px solid transparent;
   border-radius: 50%;
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: none;
   transition:
     scale 0.15s ease-out,
     color 0.15s ease,
     border-color 0.15s ease;
 
+  /* Fond noir plein porté par ::before (pas de dégradé, pas de backdrop-blur). */
   &::before {
     content: "";
     position: absolute;
@@ -584,20 +578,14 @@
     border-radius: inherit;
     z-index: 0;
     pointer-events: none;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
-      rgba(14, 14, 16, 0.55);
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    background: #000;
     transition: background-color 0.15s ease;
   }
 
   > * { position: relative; z-index: 1; }
 
   &:hover::before {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 55%),
-      rgba(30, 30, 34, 0.62);
+    background: #141416;
   }
 
   &:active { scale: 0.96; }
@@ -607,15 +595,12 @@
     outline-offset: 2px;
   }
 
-  /* Groupe déplié : le noir se densifie et le contour s'éclaire, plutôt qu'une
-     inversion en blanc qui casserait la continuité avec le popover. */
+  /* Groupe déplié : fond noir plein, sans contour (bord blanc retiré). */
   &[aria-expanded="true"] {
-    border-color: rgba(255, 255, 255, 0.34);
+    border-color: transparent;
 
     &::before {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 55%),
-        rgba(8, 8, 10, 0.72);
+      background: #000;
     }
   }
 
@@ -720,18 +705,11 @@
   max-width: calc(100vw - 24px);
   padding: 14px;
   border-radius: 18px;
-  /* « Liquid glass » : verre plus flou/saturé, léger dégradé de lumière en haut,
-     double liseré interne (haut clair / bas sombre) pour donner de l'épaisseur. */
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 40%),
-    rgba(9, 9, 11, 0.62);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 32px 80px -28px rgba(0, 0, 0, 0.95),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  /* Flat : même vocabulaire que les déclencheurs — fond noir plein, filet blanc
+     très léger, aucune ombre (portée ou interne) ni backdrop-blur. */
+  background: #000;
+  border: 1px solid transparent;
+  box-shadow: none;
   transform-origin: top center;
   opacity: 0;
   visibility: hidden;
@@ -778,16 +756,19 @@
     height: 38px;
     padding: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
+    /* Flat : fond noir plein, filet blanc très léger (vrai border, pas d'inset),
+       aucune ombre. */
+    background: #000;
     color: rgba(255, 255, 255, 0.64);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid transparent;
+    box-shadow: none;
     transition:
       scale 0.15s ease-out,
       background-color 0.15s ease,
       color 0.15s ease;
 
     &:hover:not(.is-active) {
-      background: rgba(255, 255, 255, 0.16);
+      background: #141416;
       color: #fff;
     }
 
@@ -796,7 +777,8 @@
     &.is-active {
       background: #fafafa;
       color: #131315;
-      box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.6);
+      border-color: transparent;
+      box-shadow: none;
     }
 
     &:focus-visible {
@@ -891,9 +873,9 @@
   height: 10px;
   margin-left: -5px;
   rotate: 45deg;
-  background: rgba(10, 10, 12, 0.78);
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: #000;
+  border-left: 1px solid transparent;
+  border-top: 1px solid transparent;
   pointer-events: none;
 }
 
@@ -933,19 +915,15 @@
       font-size: 9px;
       line-height: 1;
       letter-spacing: 0.08em;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
-        rgba(14, 14, 16, 0.55);
+      /* Flat : même matière que les pills de la barre — noir plein, filet blanc
+         très léger, aucune ombre ni verre. */
+      background: #000;
       color: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(22px) saturate(160%);
-      -webkit-backdrop-filter: blur(22px) saturate(160%);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-        0 1px 2px rgba(0, 0, 0, 0.4),
-        0 10px 30px -12px rgba(0, 0, 0, 0.7);
+      border: 1px solid transparent;
+      box-shadow: none;
 
       &:hover:not(.is-active) {
-        background: rgba(32, 32, 35, 0.78);
+        background: #141416;
         color: #fff;
       }
     }

@@ -1,52 +1,56 @@
 <% content_for :title, "SP2050 - Connexion" %>
 <% content_for :description, "Connectez-vous à votre compte SP2050 pour partager vos futurs." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<%# Maquette plein-cadre : pas de navbar globale (cf. layout application). %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page"
-     data-controller="auth-background auth-session"
-     data-auth-session-show-form-value="<%= flash.present? %>">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<% unique_id = "signin-#{SecureRandom.hex(4)}" %>
 
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form">
-      <%# Mobile (<640px) : choix inscription / connexion avant le formulaire %>
-      <div class="auth-form__choice" data-auth-session-target="choice">
-        <h2 class="auth-form__title">Bienvenue</h2>
-        <p class="auth-form__subtitle">Rejoins la communauté SP2050</p>
-        <div class="auth-form__actions">
-          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-primary" %>
-          <button type="button"
-                  class="auth-btn-secondary"
-                  data-action="click->auth-session#showLogin">
-            Se connecter
-          </button>
-        </div>
+<div class="sp-auth"
+     data-controller="cover-editor editor-reveal"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true">
+
+  <!-- Colonne gauche : couverture aléatoire + barre du générateur -->
+  <%= render "devise/cover_stage", unique_id: unique_id %>
+
+  <!-- Colonne droite : contenu de connexion -->
+  <div class="sp-panel">
+    <div class="sp-content">
+      <div class="sp-head">
+        <h1 class="sp-title editor-stagger">Connexion</h1>
+        <p class="sp-subtitle editor-stagger">Connectes-toi pour retrouver tes textes, nous t'enverrons un lien de connexion.</p>
       </div>
 
-      <div data-auth-session-target="loginForm">
-      <h2 class="auth-form__title">Se connecter</h2>
-      <p class="auth-form__subtitle">On t'envoie un lien magique par email</p>
-
-      <%= simple_form_for(resource, as: resource_name, url: user_magic_links_path) do |f| %>
-        <div class="auth-form__fields">
-          <%= f.input :email,
-                      label: "Adresse e-mail",
-                      required: true,
-                      autofocus: false,
-                      input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
-                      label_html: { class: "auth-label" } %>
+      <%= form_with url: user_magic_links_path, scope: :user, method: :post, class: "sp-form" do |f| %>
+        <div class="sp-field editor-stagger">
+          <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+          <%= f.email_field :email,
+                            autofocus: true,
+                            required: true,
+                            autocomplete: "email",
+                            placeholder: "hello@fromfuture.com",
+                            class: "sp-input" %>
         </div>
 
-        <div class="auth-form__actions">
-          <%= f.button :submit, "Recevoir mon lien", class: "auth-btn-primary", data: { form_type: "other" } %>
-          <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary auth-form__register-link" %>
+        <label class="sp-remember editor-stagger">
+          <%= f.check_box :remember_me, class: "sp-checkbox" %>
+          <span class="sp-remember-label">Se souvenir de moi</span>
+        </label>
+
+        <%# CTA principal (pleine largeur), marge haute 6vw. %>
+        <div class="sp-cta editor-stagger">
+          <div id="signin-submit">
+            <%= render "devise/sessions/submit", label: "Me connecter" %>
+          </div>
         </div>
       <% end %>
-      </div>
+    </div>
+
+    <%# Lien secondaire : même placement/CTA que sur l'inscription (10vh du bas,
+        centré). Fait partie du stagger d'entrée. %>
+    <div class="sp-alt-wrap">
+      <%= link_to "Créer mon compte", new_user_registration_path, class: "sp-alt editor-stagger", data: { underline_link: "" } %>
     </div>
   </div>
 </div>

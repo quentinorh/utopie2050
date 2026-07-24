@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
+import { reveal } from "utils/motion"
 
 // cubic-bezier(0.625, 0.05, 0, 1) — same coverEase used on the show page,
 // so the editor entrance feels like a natural continuation.
@@ -129,15 +130,17 @@ export default class extends Controller {
     // de réglages sont hors flux tant que l'utilisateur ne les déplie pas, il
     // n'y a donc plus de popover à révéler ici.
 
+    // Reveal staggeré : easing/durée/stagger repris de mm-content-anim
+    // (fr.familleperrin.com), exposés via utils/motion.
     const staggered = this.element.querySelectorAll(".editor-stagger")
     if (staggered.length) {
       gsap.set(staggered, { opacity: 0, y: 12 })
       tl.to(staggered, {
         opacity: 1,
         y: 0,
-        duration: 0.6,
-        ease: coverEase,
-        stagger: 0.07
+        duration: reveal.duration,
+        ease: reveal.ease,
+        stagger: reveal.stagger
       }, 0.55)
     }
 

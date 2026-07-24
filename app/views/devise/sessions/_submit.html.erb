@@ -1,0 +1,10 @@
+<%# CTA d'envoi du lien magique. `label` bascule sur « Renvoyer un code de
+    connexion » après un premier envoi (via Turbo Stream, sans recharger). %>
+<button type="submit"
+        class="btn-animate-chars btn-animate-chars--primary sp-submit"
+        data-controller="stagger-chars">
+  <div class="btn-animate-chars__bg"></div>
+  <span data-button-animate-chars
+        data-stagger-chars-target="text"
+        class="btn-animate-chars__text"><%= label %></span>
+</button>

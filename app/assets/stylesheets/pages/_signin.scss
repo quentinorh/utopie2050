@@ -1,0 +1,344 @@
+/* ================================================================
+   Split-auth design system — « sp- » (piloté par les tokens --sp-*).
+   Layout partagé connexion + inscription : couverture aléatoire à gauche
+   (42.43% = 611/1440), contenu à droite dans une colonne de 449px.
+   Réutilise le moteur de couverture (.form-cover-svg--editor, .cover-toolbar)
+   et l'entrée animée (editor-reveal / .editor-stagger).
+   ================================================================ */
+
+.sp-auth {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100dvh;
+  background: var(--sp-surface);
+  color: var(--sp-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+  }
+}
+
+/* --- Couverture (gauche) ----------------------------------------------- */
+.sp-cover {
+  position: relative;
+  width: 100%;
+  height: 40vh;
+  min-height: 240px;
+  overflow: hidden;
+  background: var(--sp-cover-bg);
+  flex-shrink: 0;
+
+  @media (min-width: 1024px) {
+    width: 42.43%;
+    height: auto;
+    align-self: stretch;
+  }
+
+  .form-cover-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Décorative : pas de titre sur la couverture d'auth. */
+  .cover-title-block {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .cover-toolbar {
+      top: 16px;
+      right: 16px;
+    }
+  }
+}
+
+/* Logo — retour accueil, en haut à gauche sur la couverture (navbar masquée). */
+.sp-logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+  font-family: var(--sp-h1-family);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  @media (min-width: 1024px) {
+    top: 28px;
+    left: 40px;
+  }
+}
+
+/* --- Panneau formulaire (droite) --------------------------------------- */
+.sp-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px 56px;
+
+  @media (min-width: 1024px) {
+    /* Padding bas plus fort : bloc centré remonté vers le tiers supérieur. */
+    padding: 40px 40px 172px;
+  }
+}
+
+.sp-content {
+  width: 100%;
+  max-width: 449px;
+}
+
+/* --- Typographie (tokens) ---------------------------------------------- */
+.sp-title {
+  font-family: var(--sp-h1-family);
+  font-weight: var(--sp-h1-weight);
+  font-size: var(--sp-h1-size);
+  line-height: var(--sp-h1-line);
+  letter-spacing: var(--sp-h1-tracking);
+  color: var(--sp-ink);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.sp-subtitle {
+  margin-top: 10px;
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-subtitle);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--sp-ink-muted);
+  text-align: center;
+  text-wrap: pretty;
+
+  /* Tweak demandé : 1.125rem sur mobile. */
+  @media (max-width: 639px) {
+    font-size: var(--sp-text-subtitle-mobile);
+  }
+}
+
+/* Bloc formulaire : 384px, centré dans la colonne de 449px. */
+.sp-form {
+  max-width: 384px;
+  margin-inline: auto;
+  margin-top: clamp(40px, 9vw, 112px);
+}
+
+.sp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.sp-label {
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-label);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--sp-ink-muted);
+
+  /* Tweak demandé : 1rem sur mobile. */
+  @media (max-width: 639px) {
+    font-size: var(--sp-text-label-mobile);
+  }
+}
+
+/* Aide sous une question (ex. « Ça permet de se projeter dans le futur »). */
+.sp-helper {
+  margin-top: 0;
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-helper);
+  line-height: 1.4;
+  color: var(--sp-ink-faint);
+}
+
+/* --- Input « super clean » --------------------------------------------- */
+.sp-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-input);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--sp-ink);
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-field-border);
+  border-radius: var(--sp-radius-field);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &::placeholder {
+    color: var(--sp-ink-faint);
+  }
+
+  &:hover {
+    border-color: var(--sp-field-border-hover);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: var(--sp-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+  }
+
+  /* Tweak demandé : placeholder / saisie à 1rem sur mobile. */
+  @media (max-width: 639px) {
+    font-size: var(--sp-text-input-mobile);
+  }
+}
+
+/* Lien secondaire (« J'ai déjà un compte ») — gris, trait Osmo au survol.
+   L'underline vient de [data-underline-link] : pas de text-decoration ici. */
+.sp-alt {
+  display: inline-block;
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-link);
+  line-height: 1.2;
+  color: var(--sp-link);
+  text-align: center;
+  white-space: nowrap;
+  transition: color 0.25s var(--sp-ease);
+
+  &:hover {
+    color: var(--sp-link-hover);
+  }
+}
+
+/* ================================================================
+   Connexion — spécifique (remember-me + CTA pleine largeur)
+   ================================================================ */
+
+.sp-remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.sp-checkbox {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin: 0;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  display: grid;
+  place-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    transform: scale(0);
+    transition: transform 0.12s ease;
+    box-shadow: inset 1em 1em #fff;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
+
+  &:checked {
+    background: var(--sp-primary);
+    border-color: var(--sp-primary);
+
+    &::before {
+      transform: scale(1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sp-primary);
+    outline-offset: 2px;
+  }
+}
+
+.sp-remember-label {
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-small);
+  line-height: 1.3;
+  color: var(--sp-ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sp-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* CTA pleine largeur */
+  gap: 6px;
+  margin-top: 6vw;
+}
+
+/* CTA connexion : bouton animé standard, PLEINE LARGEUR (tweak demandé). */
+.sp-submit {
+  width: 100%;
+  font-size: 1.0625rem; /* 17px */
+  transition: scale 0.12s ease-out;
+
+  &:active {
+    scale: 0.96;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sp-primary);
+    outline-offset: 3px;
+  }
+}
+
+/* Lien secondaire ancré à 10vh du bas, centré dans le panneau blanc — même
+   placement sur connexion et inscription. Le wrapper porte le centrage
+   (translateX) ; le lien reçoit le stagger d'entrée (opacity/translateY). */
+.sp-alt-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 10vh;
+  transform: translateX(-50%);
+  z-index: 5;
+  text-align: center;
+}
+
+/* --- Entrée : pré-masquage anti-flash (GSAP prend le relais) ------------ */
+.sp-auth.is-revealing {
+  .form-cover-svg,
+  .editor-stagger {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-auth.is-revealing {
+    .form-cover-svg,
+    .editor-stagger {
+      opacity: 1;
+    }
+  }
+}

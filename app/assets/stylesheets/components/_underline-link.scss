@@ -1,0 +1,60 @@
+/* ================================================================
+   Osmo Supply — Underline Link Animation (resource intégrée telle quelle).
+   Le trait se déploie au survol ; variante [data-underline-link="alt"] pour
+   les CTA secondaires (échange de traits). NE PAS modifier l'animation.
+   (Le wrapper de démo .link-group / .underline-link n'est pas repris.)
+   ================================================================ */
+
+[data-underline-link] {
+  text-decoration: none;
+  position: relative;
+}
+
+[data-underline-link]::before,
+[data-underline-link="alt"]::before,
+[data-underline-link="alt"]::after {
+  content: "";
+  position: absolute;
+  bottom: -0.0625em;
+  left: 0;
+  width: 100%;
+  height: 0.0625em;
+  background-color: currentColor;
+  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+  transform-origin: right;
+  transform: scaleX(0) rotate(0.001deg);
+}
+
+[data-underline-link="alt"]::before {
+  transform-origin: left;
+  transform: scaleX(1) rotate(0.001deg);
+  transition-delay: 0.3s;
+}
+
+[data-underline-link="alt"]::after {
+  transform-origin: right;
+  transform: scaleX(0) rotate(0.001deg);
+  transition-delay: 0s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-hover]:hover [data-underline-link]::before,
+  [data-underline-link]:hover::before {
+    transform-origin: left;
+    transform: scaleX(1) rotate(0.001deg);
+  }
+
+  [data-hover]:hover [data-underline-link="alt"]::before,
+  [data-underline-link="alt"]:hover::before {
+    transform-origin: right;
+    transform: scaleX(0) rotate(0.001deg);
+    transition-delay: 0s;
+  }
+
+  [data-hover]:hover [data-underline-link="alt"]::after,
+  [data-underline-link="alt"]:hover::after {
+    transform-origin: left;
+    transform: scaleX(1) rotate(0.001deg);
+    transition-delay: 0.3s;
+  }
+}

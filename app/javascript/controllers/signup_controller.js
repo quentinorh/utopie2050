@@ -1,276 +1,239 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 import { loadRegistrationPrefill, saveRegistrationPrefill } from "utils/registration_prefill"
+import { step } from "utils/motion"
+
+// Assistant d'inscription multi-étapes (« questions au toi du futur »).
+// Chaque étape = une question. Transition entre étapes : dissolution 300ms +
+// légère translation (soft), directionnelle (avant/arrière). Validation par
+// étape (dont unicité pseudo/email en async) avant de pouvoir avancer.
+// Respecte prefers-reduced-motion.
+const SHIFT = 24 // px — translation horizontale douce
 
 export default class extends Controller {
-  static targets = [
-    "step", "flashMessages", "username", "age", "email", "terms",
-    "usernameError", "emailError", "ageError", "termsError",
-    "nextStepProfileButton", "submitButton", "progress", "progressStep"
-  ]
+  static targets = ["step", "username", "age", "email", "terms", "stage", "back", "next"]
 
   connect() {
-    this.usernameUnique = false
-    this.emailUnique = false
-    this.ageValid = false
-    this.termsAccepted = false
-    document.addEventListener("keydown", this.handleKeydownBound = this.handleKeydown.bind(this))
-    this.applyRegistrationPrefill()
-    this.updateProgress(this.currentStepId())
-    this.toggleNextStepProfileButton()
-    this.toggleSubmitButton()
-  }
+    this.index = 0
+    this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-  applyRegistrationPrefill() {
-    const prefill = loadRegistrationPrefill()
-    if (!prefill) return
-
-    if (prefill.username && this.hasUsernameTarget) {
-      this.usernameTarget.value = prefill.username
-      this.checkUsername()
-    }
-
-    if (prefill.age && this.hasAgeTarget) {
-      this.ageTarget.value = prefill.age
-      this.checkAge()
-    }
-  }
-
-  currentStepId() {
-    const current = this.stepTargets.find(step => step.style.display !== "none")
-    return current ? current.id : null
-  }
-
-  updateProgress(activeStepId) {
-    if (!this.hasProgressTarget) return
-
-    const trackedIds = this.progressStepTargets.map(el => el.dataset.stepId)
-    const activeIndex = trackedIds.indexOf(activeStepId)
-
-    if (activeIndex === -1) {
-      this.progressTarget.hidden = true
-      return
-    }
-
-    this.progressTarget.hidden = false
-    this.progressStepTargets.forEach((el, index) => {
-      el.classList.toggle("auth-progress__step--completed", index < activeIndex)
-      el.classList.toggle("auth-progress__step--active", index === activeIndex)
+    // N'afficher que la première étape.
+    this.stepTargets.forEach((step, i) => {
+      step.style.display = i === 0 ? "block" : "none"
+      step.style.opacity = ""
     })
+
+    this.applyPrefill()
+    this.updateNav()
+
+    this._onKeydown = this.handleKeydown.bind(this)
+    this.element.addEventListener("keydown", this._onKeydown)
+  }
+
+  get isLast() {
+    return this.index === this.stepTargets.length - 1
+  }
+
+  // Barre de nav partagée : libellé du CTA + présence du « Retour ». Le CTA reste
+  // toujours à droite (« Retour » masqué en visibility → conserve sa place).
+  updateNav() {
+    if (this.hasBackTarget) {
+      this.backTarget.classList.toggle("sp-back--hidden", this.index === 0)
+    }
+    if (this.hasNextTarget) {
+      const span = this.nextTarget.querySelector(".btn-animate-chars__text")
+      if (span) span.textContent = this.isLast ? "Créer mon compte" : "Suite"
+    }
+  }
+
+  // Clic sur le CTA : avance d'une étape, ou soumet à la dernière.
+  handleCta() {
+    if (this._animating) return
+    if (this.isLast) {
+      this.element.querySelector("form.sp-form")?.requestSubmit()
+    } else {
+      this.next()
+    }
   }
 
   disconnect() {
-    document.removeEventListener("keydown", this.handleKeydownBound)
+    this.element.removeEventListener("keydown", this._onKeydown)
+    this._tween?.kill()
+  }
+
+  // --- Navigation -------------------------------------------------------
+
+  async next(event) {
+    event?.preventDefault()
+    if (this._animating) return
+
+    const ok = await this.validateStep(this.index)
+    if (!ok) return
+
+    this.persistPrefill()
+    if (this.index < this.stepTargets.length - 1) {
+      this.go(this.index + 1, 1)
+    }
+  }
+
+  back(event) {
+    event?.preventDefault()
+    if (this._animating || this.index === 0) return
+    this.clearError(this.stepTargets[this.index])
+    this.go(this.index - 1, -1)
+  }
+
+  go(toIndex, dir) {
+    const from = this.stepTargets[this.index]
+    const to = this.stepTargets[toIndex]
+    this.index = toIndex
+    this.updateNav()
+
+    const focusTarget = () => {
+      const field = to.querySelector("input:not([type=hidden]):not([type=file]), [contenteditable]")
+      field?.focus({ preventScroll: true })
+    }
+
+    if (this.reduceMotion) {
+      from.style.display = "none"
+      to.style.display = "block"
+      to.style.opacity = "1"
+      focusTarget()
+      return
+    }
+
+    this._animating = true
+    this._tween?.kill()
+    // Timeline unique : sortie (dissolve + translation HORIZONTALE) → bascule
+    // display → entrée. Seule la question se déplace ; la nav ne bouge pas.
+    this._tween = gsap.timeline({
+      onComplete: () => {
+        this._animating = false
+        focusTarget()
+      },
+    })
+    this._tween
+      .to(from, { opacity: 0, x: -SHIFT * dir, duration: step.out.duration, ease: step.out.ease })
+      .set(from, { display: "none", clearProps: "opacity,transform" })
+      .set(to, { display: "block" })
+      .fromTo(
+        to,
+        { opacity: 0, x: SHIFT * dir },
+        { opacity: 1, x: 0, duration: step.in.duration, ease: step.in.ease, clearProps: "transform,opacity" }
+      )
   }
 
   handleKeydown(event) {
-    if (!document.querySelector("#registration-steps")) return
+    if (event.key !== "Enter") return
+    const step = this.stepTargets[this.index]
+    // Sur la dernière étape (CGU) : laisser le submit natif si les CGU sont OK.
+    if (step.dataset.step === "terms") return
+    event.preventDefault()
+    this.next()
+  }
 
-    if (event.key === "Enter") {
-      const currentStep = this.stepTargets.find(step => step.style.display !== "none")
-      if (!currentStep) return
+  // --- Validation -------------------------------------------------------
 
-      if (currentStep.id === "step-terms") {
-        return
-      }
-
-      event.preventDefault()
-      const nextButton = currentStep.querySelector('[data-action="click->signup#nextStep"]')
-      if (nextButton && !nextButton.disabled) {
-        nextButton.click()
-      }
+  async validateStep(index) {
+    const step = this.stepTargets[index]
+    switch (step.dataset.step) {
+      case "username":
+        return this.validateUsername(step)
+      case "age":
+        return this.validateAge(step)
+      case "email":
+        return this.validateEmail(step)
+      case "terms":
+        return this.validateTerms(step)
+      default:
+        return true
     }
   }
 
-  nextStep(event) {
-    const nextStepId = event.currentTarget.dataset.nextStep
-    const currentStepId = this.stepTargets.find(step => step.style.display !== "none").id
-    const currentStep = document.getElementById(currentStepId)
-    const inputs = currentStep.querySelectorAll("input")
-    let isValid = true
-
-    inputs.forEach(input => {
-      if (input.type === "checkbox") return
-
-      if (input.required && !input.value.trim()) {
-        isValid = false
-        input.classList.add("border-red-500")
-
-        const fieldName = input.name.replace("user[", "").replace("]", "")
-        const errorTarget = this[`${fieldName}ErrorTarget`]
-
-        if (errorTarget) {
-          errorTarget.innerText = `Le champ "${fieldName}" est obligatoire.`
-        }
-      } else {
-        input.classList.remove("border-red-500")
-      }
-    })
-
-    if (currentStepId === "step-profile") {
-      this.checkUsername()
-      this.checkAge()
-      this.checkEmail()
-      if (!this.usernameUnique || !this.ageValid || !this.emailUnique) {
-        isValid = false
-      }
-    }
-
-    if (isValid) {
-      this.persistStepPrefill(currentStepId)
-      this.fadeTransition(currentStepId, nextStepId)
-    }
+  async validateUsername(step) {
+    const value = this.usernameTarget.value.trim()
+    if (!value) return this.fail(step, this.usernameTarget, "Indique un nom pour le toi du futur.")
+    try {
+      const res = await fetch(`/users/check_username?username=${encodeURIComponent(value.toLowerCase())}`)
+      const data = await res.json()
+      if (data.exists) return this.fail(step, this.usernameTarget, "Ce nom est déjà pris.")
+    } catch (_) { /* réseau : on laisse passer, le serveur revalidera */ }
+    return this.pass(step, this.usernameTarget)
   }
 
-  persistStepPrefill(stepId) {
-    if (stepId === "step-profile") {
-      const payload = {}
-      if (this.hasUsernameTarget) payload.username = this.usernameTarget.value
-      if (this.hasAgeTarget) payload.age = this.ageTarget.value
-      saveRegistrationPrefill(payload)
+  validateAge(step) {
+    const raw = this.ageTarget.value.trim()
+    const age = Number.parseInt(raw, 10)
+    if (!raw || Number.isNaN(age) || age < 1 || age > 150) {
+      return this.fail(step, this.ageTarget, "Indique un âge valide.")
     }
+    return this.pass(step, this.ageTarget)
   }
 
-  previousStep(event) {
-    const currentStepId = this.stepTargets.find(step => step.style.display !== "none").id
-    const previousStepId = event.currentTarget.dataset.stepId
-    this.fadeTransition(currentStepId, previousStepId)
+  async validateEmail(step) {
+    const value = this.emailTarget.value.trim().toLowerCase()
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!value) return this.fail(step, this.emailTarget, "Indique ton adresse email.")
+    if (!re.test(value)) return this.fail(step, this.emailTarget, "Cette adresse email n'est pas valide.")
+    try {
+      const res = await fetch(`/users/check_email?email=${encodeURIComponent(value)}`)
+      const data = await res.json()
+      if (data.exists) return this.fail(step, this.emailTarget, "Cette adresse email est déjà utilisée.")
+    } catch (_) { /* réseau : on laisse passer */ }
+    return this.pass(step, this.emailTarget)
   }
 
-  fadeTransition(currentStepId, nextStepId) {
-    this.element.dispatchEvent(new CustomEvent("auth:step-changed", {
-      bubbles: true,
-      detail: { from: currentStepId, to: nextStepId }
-    }))
-
-    const currentStep = document.getElementById(currentStepId)
-    const nextStep = document.getElementById(nextStepId)
-
-    gsap.to(currentStep, {
-      opacity: 0,
-      duration: 0.3,
-      onComplete: () => {
-        currentStep.style.display = "none"
-        nextStep.style.display = "block"
-        this.updateProgress(nextStepId)
-        gsap.fromTo(nextStep,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.3 }
-        )
-      }
-    })
-  }
-
-  showFlash(type, message) {
-    const alertClass = type === "error" ? "bg-red-100 border-red-400 text-red-700" : "bg-green-100 border-green-400 text-green-700"
-
-    this.flashMessagesTarget.innerHTML = `
-      <div class="border px-4 py-3 rounded relative ${alertClass}" role="alert">
-        <span class="block sm:inline">${message}</span>
-      </div>
-    `
-
-    this.flashMessagesTarget.scrollIntoView({ behavior: "smooth" })
-
-    setTimeout(() => {
-      this.flashMessagesTarget.innerHTML = ""
-    }, 5000)
-  }
-
-  checkUsername() {
-    const username = this.usernameTarget.value.trim().toLowerCase()
-
-    if (username.length > 0) {
-      fetch(`/users/check_username?username=${username}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.exists) {
-            this.usernameErrorTarget.innerText = "Ce nom d'utilisateur est déjà pris."
-            this.usernameUnique = false
-          } else {
-            this.usernameErrorTarget.innerText = ""
-            this.usernameUnique = true
-          }
-          this.toggleNextStepProfileButton()
-        })
-    } else {
-      this.usernameErrorTarget.innerText = "Le nom d'utilisateur ne peut pas être vide."
-      this.usernameUnique = false
-      this.toggleNextStepProfileButton()
+  validateTerms(step) {
+    if (this.hasTermsTarget && !this.termsTarget.checked) {
+      return this.fail(step, null, "Merci d'accepter les conditions pour continuer.")
     }
+    return this.pass(step, null)
   }
 
-  checkAge() {
-    const ageValue = this.ageTarget.value.trim()
-    const age = Number.parseInt(ageValue, 10)
+  // --- Helpers erreurs --------------------------------------------------
 
-    if (ageValue.length === 0 || Number.isNaN(age) || age < 0) {
-      this.ageErrorTarget.innerText = "Indique un âge valide."
-      this.ageValid = false
-    } else {
-      this.ageErrorTarget.innerText = ""
-      this.ageValid = true
-    }
-    this.toggleNextStepProfileButton()
+  fail(step, input, message) {
+    this.setError(step, message)
+    if (input) input.classList.add("sp-input--error")
+    return false
   }
 
-  checkEmail() {
-    const email = this.emailTarget.value.trim().toLowerCase()
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-    if (email.length === 0) {
-      this.emailErrorTarget.innerText = "L'email ne peut pas être vide."
-      this.emailUnique = false
-      this.toggleNextStepProfileButton()
-      return
-    }
-
-    if (!emailRegex.test(email)) {
-      this.emailErrorTarget.innerText = "Veuillez entrer une adresse email valide."
-      this.emailUnique = false
-      this.toggleNextStepProfileButton()
-      return
-    }
-
-    fetch(`/users/check_email?email=${email}`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.exists) {
-          this.emailErrorTarget.innerText = "Cette adresse email est déjà utilisée."
-          this.emailUnique = false
-        } else {
-          this.emailErrorTarget.innerText = ""
-          this.emailUnique = true
-        }
-        this.toggleNextStepProfileButton()
-      })
+  pass(step, input) {
+    this.clearError(step)
+    if (input) input.classList.remove("sp-input--error")
+    return true
   }
 
-  checkTerms() {
-    this.termsAccepted = this.hasTermsTarget && this.termsTarget.checked
-    if (this.hasTermsErrorTarget) {
-      this.termsErrorTarget.innerText = this.termsAccepted ? "" : ""
-    }
-    this.toggleSubmitButton()
+  setError(step, message) {
+    const el = step.querySelector('[data-signup-target="error"]')
+    if (el) el.textContent = message
   }
 
-  toggleNextStepProfileButton() {
-    if (!this.hasNextStepProfileButtonTarget) return
-
-    if (this.usernameUnique && this.ageValid && this.emailUnique) {
-      this.nextStepProfileButtonTarget.removeAttribute("disabled")
-    } else {
-      this.nextStepProfileButtonTarget.setAttribute("disabled", "true")
-    }
+  clearError(step) {
+    const el = step.querySelector('[data-signup-target="error"]')
+    if (el) el.textContent = ""
   }
 
-  toggleSubmitButton() {
-    if (!this.hasSubmitButtonTarget) return
+  // Efface l'erreur d'un champ pendant la saisie.
+  clearFieldError(event) {
+    const step = event.target.closest('[data-signup-target="step"]')
+    if (step) this.clearError(step)
+    event.target.classList.remove("sp-input--error")
+  }
 
-    if (this.termsAccepted) {
-      this.submitButtonTarget.removeAttribute("disabled")
-    } else {
-      this.submitButtonTarget.setAttribute("disabled", "true")
-    }
+  // --- Prefill (flux « futur en attente ») ------------------------------
+
+  applyPrefill() {
+    const prefill = loadRegistrationPrefill()
+    if (!prefill) return
+    if (prefill.username && this.hasUsernameTarget) this.usernameTarget.value = prefill.username
+    if (prefill.age && this.hasAgeTarget) this.ageTarget.value = prefill.age
+  }
+
+  persistPrefill() {
+    const payload = {}
+    if (this.hasUsernameTarget) payload.username = this.usernameTarget.value
+    if (this.hasAgeTarget) payload.age = this.ageTarget.value
+    saveRegistrationPrefill(payload)
   }
 }

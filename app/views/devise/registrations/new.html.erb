@@ -1,119 +1,130 @@
 <% content_for :title, "SP2050 - Créer un compte" %>
 <% content_for :description, "Rejoignez la communauté SP2050. Créez votre compte pour partager vos visions d'un futur désirable et durable." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="signup auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<% unique_id = "signup-#{SecureRandom.hex(4)}" %>
 
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form auth-form--wide">
-      <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+<div class="sp-auth sp-auth--wizard"
+     data-controller="cover-editor editor-reveal signup"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true">
+
+  <!-- Colonne gauche : couverture aléatoire + barre du générateur -->
+  <%= render "devise/cover_stage", unique_id: unique_id %>
+
+  <!-- Colonne droite : assistant d'inscription -->
+  <div class="sp-panel">
+    <div class="sp-content">
+      <div class="sp-head">
+        <h1 class="sp-title editor-stagger">Bienvenue</h1>
+        <p class="sp-subtitle editor-stagger">Pour t'inscrire, quelques questions avec le toi du futur.</p>
+      </div>
+
+      <%= form_with model: resource, scope: resource_name, url: registration_path(resource_name), method: :post, class: "sp-form" do |f| %>
         <%# Honeypot anti-bot %>
-        <div aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
+        <div aria-hidden="true" style="position:absolute; left:-9999px; top:-9999px; height:0; width:0; overflow:hidden;">
           <label for="user_website_url">Ne pas remplir</label>
           <input type="text" name="user[website_url]" id="user_website_url" tabindex="-1" autocomplete="off" />
         </div>
 
-        <div class="auth-progress" data-signup-target="progress">
-          <% [
-               { id: "step-profile", label: "Profil" },
-               { id: "step-terms",   label: "CGU" }
-             ].each_with_index do |step, index| %>
-            <div class="auth-progress__step"
-                 data-signup-target="progressStep"
-                 data-step-id="<%= step[:id] %>">
-              <span class="auth-progress__dot"><%= index + 1 %></span>
-              <span class="auth-progress__label"><%= step[:label] %></span>
+        <%# Scène : seule la question courante y est visible ; les étapes se
+            fondent horizontalement. La barre de nav ci-dessous ne bouge jamais. %>
+        <div class="sp-stage editor-stagger" data-signup-target="stage">
+          <!-- Étape 1 — Pseudo -->
+          <div class="sp-step" data-signup-target="step" data-step="username">
+            <div class="sp-field">
+              <%= f.label :username, "En 2050, comment aimerais-tu être appelé·e ?", class: "sp-label" %>
+              <%= f.text_field :username,
+                               autofocus: true,
+                               autocomplete: "off",
+                               placeholder: "Je m'appelle …",
+                               class: "sp-input",
+                               data: { signup_target: "username", action: "input->signup#clearFieldError" } %>
+              <p class="sp-error" data-signup-target="error"></p>
             </div>
-          <% end %>
+          </div>
+
+          <!-- Étape 2 — Âge -->
+          <div class="sp-step" data-signup-target="step" data-step="age">
+            <div class="sp-field">
+              <div class="sp-field__head">
+                <%= f.label :age, "Quel âge auras-tu en 2050 ?", class: "sp-label" %>
+                <span class="sp-helper">Ça permet de se projeter dans le futur.</span>
+              </div>
+              <%= f.text_field :age,
+                               inputmode: "numeric",
+                               autocomplete: "off",
+                               placeholder: "Mon âge en 2050",
+                               class: "sp-input",
+                               data: { signup_target: "age", action: "input->signup#clearFieldError" } %>
+              <p class="sp-error" data-signup-target="error"></p>
+            </div>
+          </div>
+
+          <!-- Étape 3 — Email -->
+          <div class="sp-step" data-signup-target="step" data-step="email">
+            <div class="sp-field">
+              <div class="sp-field__head">
+                <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+                <span class="sp-helper">On t'enverra un lien magique pour activer ton compte.</span>
+              </div>
+              <%= f.email_field :email,
+                                autocomplete: "email",
+                                placeholder: "hello@fromfuture.com",
+                                class: "sp-input",
+                                data: { signup_target: "email", action: "input->signup#clearFieldError" } %>
+              <p class="sp-error" data-signup-target="error"></p>
+            </div>
+          </div>
+
+          <!-- Étape 4 — Charte -->
+          <div class="sp-step" data-signup-target="step" data-step="terms">
+            <div class="sp-terms">
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Futurs désirables</h3>
+                <p class="sp-terms__text">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous·tes. En publiant, tu t'engages à respecter cette ligne directrice.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Contenus respectueux</h3>
+                <p class="sp-terms__text">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Droit d'auteur·ice</h3>
+                <p class="sp-terms__text">Veille à ne partager que des contenus dont tu es l'auteur·ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Licence libre</h3>
+                <p class="sp-terms__text">En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="sp-terms__link" data-underline-link>Creative Commons BY-NC-SA 4.0</a>.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="registration-steps">
-          <!-- Step 1: Pseudo, âge, email -->
-          <div class="step" id="step-profile" data-signup-target="step">
-            <h2 class="auth-form__title">Bienvenue</h2>
-            <p class="auth-form__subtitle">Avant de commencer, pour mieux nous connaitre, parle-nous du toi du futur...</p>
-
-            <label class="auth-label mt-6 block text-center">En 2050, par quel nom aimerais-tu être appelé·e&nbsp;?</label>
-            <%= f.input :username,
-                        required: true,
-                        label: false,
-                        wrapper_html: { class: 'mt-2' },
-                        input_html: { class: 'auth-input text-center', placeholder: 'Ton pseudo', 'data-action': 'input->signup#checkUsername', 'data-signup-target': 'username' } %>
-            <div class="text-red-400 text-sm mt-1" data-signup-target="usernameError"></div>
-
-            <label class="auth-label mt-6 block text-center">Quel âge auras-tu en 2050&nbsp;?</label>
-            <%= f.input :age,
-                        required: true,
-                        label: false,
-                        wrapper_html: { class: 'mt-2' },
-                        input_html: { class: 'auth-input text-center', placeholder: 'Ton age en 2050', 'data-action': 'input->signup#checkAge', 'data-signup-target': 'age' } %>
-            <div class="text-red-400 text-sm mt-1" data-signup-target="ageError"></div>
-
-            <label class="auth-label mt-6 block text-center">Ton adresse email&nbsp;?</label>
-            <%= f.input :email,
-                        required: true,
-                        label: false,
-                        wrapper_html: { class: 'mt-2' },
-                        input_html: { autocomplete: "email", class: 'auth-input text-center', placeholder: 'ton@email.com', 'data-action': 'input->signup#checkEmail', 'data-signup-target': 'email' } %>
-            <div class="text-red-400 text-sm mt-1" data-signup-target="emailError"></div>
-            <p class="text-xs text-white/40 text-center mt-2">On t'enverra un lien magique pour activer ton compte</p>
-
-            <div class="auth-form__actions-row mt-6">
-              <button type="button"
-                      data-action="click->signup#nextStep"
-                      data-next-step="step-terms"
-                      class="auth-btn-primary w-full"
-                      data-signup-target="nextStepProfileButton"
-                      disabled>
-                Suivant
-              </button>
-            </div>
-          </div>
-
-          <!-- Step 2: CGU -->
-          <div class="step" id="step-terms" style="display: none;" data-signup-target="step">
-            <h2 class="auth-form__title">Conditions d'utilisation</h2>
-            <div class="auth-terms mt-4">
-              <h4>Futurs desirables</h4>
-              <p>Chaque histoire doit contribuer a imaginer un monde meilleur pour tous.tes. En publiant sur ce site tu t'engages a respecter cette ligne directrice.</p>
-              <h4>Contenus respectueux</h4>
-              <p>En 2050, nous imaginons un monde fait de diversite et de respect. Aucun contenu faisant la promotion de discrimination ne sera tolere.</p>
-              <h4>Droit d'auteur.ice</h4>
-              <p>Veuilles a ne partager que des contenus dont tu es l'auteur.ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
-              <h4>Licence libre</h4>
-              <p>En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Creative Commons BY-NC-SA 4.0</a>.</p>
-            </div>
-
-            <label class="flex items-start gap-3 mt-4 text-sm text-white/70 cursor-pointer">
-              <input type="checkbox"
-                     required
-                     class="tw-form-checkbox mt-0.5"
-                     data-signup-target="terms"
-                     data-action="change->signup#checkTerms">
-              <span>J'accepte les conditions d'utilisation</span>
-            </label>
-            <div class="text-red-400 text-sm mt-1" data-signup-target="termsError"></div>
-
-            <div class="auth-form__actions-row mt-6">
-              <button type="button" data-action="click->signup#previousStep" data-step-id="step-profile" class="auth-btn-secondary">Precedent</button>
-              <button type="submit"
-                      class="auth-btn-primary"
-                      data-form-type="other"
-                      data-signup-target="submitButton"
-                      disabled>
-                Recevoir mon lien
-              </button>
-            </div>
-            <p class="text-xs text-white/40 text-center mt-4">Un lien de connexion te sera envoyé par email.</p>
-          </div>
+        <%# Barre de nav partagée : position stable, les CTA ne bougent jamais.
+            « Retour » garde sa place (visibility) à l'étape 1 → le CTA reste calé
+            à droite. Le libellé du CTA et l'action sont pilotés par le contrôleur. %>
+        <div class="sp-nav editor-stagger">
+          <button type="button"
+                  class="sp-back sp-back--hidden"
+                  data-underline-link
+                  data-signup-target="back"
+                  data-action="click->signup#back">Retour</button>
+          <button type="button"
+                  class="btn-animate-chars btn-animate-chars--primary sp-next"
+                  data-signup-target="next"
+                  data-action="click->signup#handleCta">
+            <div class="btn-animate-chars__bg"></div>
+            <span class="btn-animate-chars__text">Suite</span>
+          </button>
         </div>
       <% end %>
     </div>
+
+    <%# « J'ai déjà un compte » : ancré à 10vh du bas, centré dans le blanc.
+        Fait partie du stagger d'entrée. %>
+    <div class="sp-alt-wrap">
+      <%= link_to "J'ai déjà un compte", new_user_session_path, class: "sp-alt editor-stagger", data: { underline_link: "" } %>
+    </div>
   </div>
-  <div id="flash-messages" class="fixed bottom-4 left-4 right-4 z-50" data-signup-target="flashMessages"></div>
 </div>
