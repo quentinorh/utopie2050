@@ -23,8 +23,8 @@ export default class extends Controller {
     "path", "curveGroup", "svg", "bgLayer",
     "firstSliderControl", "secondSliderControl", "symmetryMode",
     "colorPicker", "rows", "columns", "smoothing",
-    "anchor1", "anchor2", "grid", "controlsToggleIcon",
-    "smoothingValue", "curveValue", "gridValue"
+    "anchor1", "anchor2", "grid",
+    "smoothingValue", "curveValue", "gridValue", "symmetryValue"
   ]
   static values = { uniqueId: String }
 
@@ -441,25 +441,20 @@ export default class extends Controller {
     requestAnimationFrame(() => this.updateCursorPositions());
   }
 
-  toggleControls(event) {
-    const isCollapsed = this.element.classList.toggle('controls-collapsed');
+  // Le dépliement de la barre est piloté par cover_controls_controller (même
+  // bouton, deux actions). On se contente de resynchroniser les contrôles avec
+  // l'état courant de l'animation pour que les valeurs affichées soient justes.
+  toggleControls() {
+    this.syncControls();
+  }
 
-    if (event && event.currentTarget) {
-      event.currentTarget.setAttribute('aria-expanded', String(!isCollapsed));
-    }
-
-    if (this.hasControlsToggleIconTarget) {
-      this.controlsToggleIconTarget.classList.toggle('rotate-180', isCollapsed);
-    }
-
-    if (!isCollapsed) {
-      // On opening the panel, sync the controls to the current animation state
-      // so the user sees values that match what's on screen.
-      this.syncControlsFromState();
-      this.updateSymmetrybutton(this.mode);
-      this.updateValueDisplays();
-      requestAnimationFrame(() => this.updateCursorPositions());
-    }
+  // Émis par cover_controls_controller à l'ouverture d'un popover : les
+  // mini-grilles se mesurent en pixels, elles doivent être visibles.
+  syncControls() {
+    this.syncControlsFromState();
+    this.updateSymmetrybutton(this.mode);
+    this.updateValueDisplays();
+    requestAnimationFrame(() => this.updateCursorPositions());
   }
 
   updateSymmetrybutton(symmetryMode) {
@@ -467,21 +462,27 @@ export default class extends Controller {
     this.symmetryModeTargets.forEach(target => {
       target.classList.toggle('is-active', target.dataset.value === symmetryMode);
     });
+
+    // Le déclencheur du groupe affiche la valeur courante (×4 / ×8 / ×16).
+    const label = String(symmetryMode || 'x4').replace('x', '×');
+    this.symmetryValueTargets.forEach(el => { el.textContent = label; });
   }
 
   updateValueDisplays() {
-    if (this.hasSmoothingValueTarget && this.hasSmoothingTarget) {
-      this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
+    // Chaque valeur est affichée deux fois (déclencheur du groupe + popover).
+    if (this.hasSmoothingTarget) {
+      const smoothing = `${parseInt(this.smoothingTarget.value, 10)}`;
+      this.smoothingValueTargets.forEach(el => { el.textContent = smoothing; });
     }
-    if (this.hasCurveValueTarget && this.hasFirstSliderControlTarget && this.hasSecondSliderControlTarget) {
+    if (this.hasFirstSliderControlTarget && this.hasSecondSliderControlTarget) {
       const x = Math.round(parseFloat(this.firstSliderControlTarget.value) || 0);
       const y = Math.round(parseFloat(this.secondSliderControlTarget.value) || 0);
-      this.curveValueTarget.textContent = `${x}, ${y}`;
+      this.curveValueTargets.forEach(el => { el.textContent = `${x}, ${y}`; });
     }
-    if (this.hasGridValueTarget && this.hasColumnsTarget && this.hasRowsTarget) {
+    if (this.hasColumnsTarget && this.hasRowsTarget) {
       const cols = Math.round(parseFloat(this.columnsTarget.value) || 1);
       const rows = Math.round(parseFloat(this.rowsTarget.value) || 1);
-      this.gridValueTarget.textContent = `${cols} × ${rows}`;
+      this.gridValueTargets.forEach(el => { el.textContent = `${cols} × ${rows}`; });
     }
     if (this.hasColorPickerTarget) {
       const hue = parseInt(this.colorPickerTarget.value, 10);

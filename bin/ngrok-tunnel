@@ -2,6 +2,15 @@
 set -euo pipefail
 export PATH="${HOME}/.local/bin:${PATH}"
 
+# ngrok est optionnel en dev. S'il est absent, on n'échoue PAS (sinon foreman
+# tue tous les process, web + css compris) : on prévient et on reste en vie sans
+# rien faire, pour que `bin/dev` continue de tourner normalement.
+if ! command -v ngrok >/dev/null 2>&1; then
+  echo "[ngrok-tunnel] ngrok introuvable → tunnel désactivé. Le serveur (web+css) tourne quand même."
+  echo "[ngrok-tunnel] Pour l'activer : installe ngrok (brew install ngrok) puis relance bin/dev."
+  exec tail -f /dev/null
+fi
+
 if [[ -n "${NGROK_DOMAIN:-}" ]]; then
   exec ngrok http 3000 --url="https://${NGROK_DOMAIN}"
 else

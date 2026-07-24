@@ -17,16 +17,20 @@
     @apply rounded-md bg-red-100 px-3.5 py-2.5 border border-gray-100 text-sm uppercase font-mono text-red-600 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600
   }
 
-  /* Dropdown menu container */
+  /* Dropdown menu container — ancré sous l'avatar (son wrapper .relative), pas
+     au viewport : un `position: fixed` avec un top codé en dur se détachait du
+     déclencheur (il « flottait en haut ») et cassait dès que la navbar changeait
+     de hauteur. En absolute, il suit toujours l'avatar. */
   .tw-dropdown-menu {
-    @apply fixed z-50 min-w-[160px] p-2 flex flex-col items-center gap-0.5;
+    @apply absolute z-50 min-w-[180px] p-2 flex flex-col items-stretch gap-0.5;
     @apply bg-white dark:bg-gray-900 border border-gray-950/5 dark:border-white/10 rounded-2xl;
     @apply shadow-lg shadow-gray-950/5 dark:shadow-none;
     @apply opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out;
-    @apply right-[16px] lg:right-[40px];
+    top: calc(100% + 10px);
+    right: 0;
+    transform-origin: top right;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    top: calc(75px + 16px);
   }
 
   .tw-dropdown-menu.is-open {

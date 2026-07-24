@@ -27,8 +27,8 @@ const SOCIAL_COVER_H = 1400
 export default class extends Controller {
   static targets = ["path", "firstSliderControl", "secondSliderControl",
                    "symmetryMode", "curveGroup", "colorPicker",
-                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "submitButton", "controlsToggleIcon",
-                   "hueValue", "smoothingValue", "curveValue", "gridValue", "titleError", "coverImageFile"]
+                   "rows", "columns", "smoothing", "titleInput", "titleWrapper", "userName", "cover", "patternSettings", "anchor1", "anchor2", "grid", "draft", "submitButton",
+                   "hueValue", "smoothingValue", "curveValue", "gridValue", "symmetryValue", "titleError", "coverImageFile"]
   static values = { uniqueId: String, newRecord: Boolean }
 
   connect() {
@@ -127,22 +127,22 @@ export default class extends Controller {
   }
 
   updateValueDisplays() {
-    if (this.hasHueValueTarget) {
-      this.hueValueTarget.textContent = `${parseInt(this.colorPickerTarget.value, 10)}`;
-    }
-    if (this.hasSmoothingValueTarget) {
-      this.smoothingValueTarget.textContent = parseInt(this.smoothingTarget.value, 10);
-    }
-    if (this.hasCurveValueTarget) {
-      const x = Math.round(parseFloat(this.firstSliderControlTarget.value) || 0);
-      const y = Math.round(parseFloat(this.secondSliderControlTarget.value) || 0);
-      this.curveValueTarget.textContent = `${x}, ${y}`;
-    }
-    if (this.hasGridValueTarget) {
-      const cols = Math.round(parseFloat(this.columnsTarget.value) || 1);
-      const rows = Math.round(parseFloat(this.rowsTarget.value) || 1);
-      this.gridValueTarget.textContent = `${cols} × ${rows}`;
-    }
+    // Chaque valeur est affichée deux fois (sur le déclencheur du groupe et dans
+    // son popover) — d'où l'itération sur les targets au pluriel.
+    const hue = `${parseInt(this.colorPickerTarget.value, 10)}`;
+    this.hueValueTargets.forEach(el => { el.textContent = hue; });
+
+    const smoothing = `${parseInt(this.smoothingTarget.value, 10)}`;
+    this.smoothingValueTargets.forEach(el => { el.textContent = smoothing; });
+
+    const x = Math.round(parseFloat(this.firstSliderControlTarget.value) || 0);
+    const y = Math.round(parseFloat(this.secondSliderControlTarget.value) || 0);
+    this.curveValueTargets.forEach(el => { el.textContent = `${x}, ${y}`; });
+
+    const cols = Math.round(parseFloat(this.columnsTarget.value) || 1);
+    const rows = Math.round(parseFloat(this.rowsTarget.value) || 1);
+    this.gridValueTargets.forEach(el => { el.textContent = `${cols} × ${rows}`; });
+
     if (this.hasColorPickerTarget) {
       const hue = parseInt(this.colorPickerTarget.value, 10);
       this.colorPickerTarget.style.setProperty("--slider-accent", `hsl(${hue}, 80%, 55%)`);
@@ -439,6 +439,10 @@ export default class extends Controller {
     this.symmetryModeTargets.forEach(target => {
       target.classList.toggle('is-active', target.dataset.value === symmetryMode);
     });
+
+    // Le déclencheur du groupe affiche la valeur courante (×4 / ×8 / ×16).
+    const label = String(symmetryMode || 'x4').replace('x', '×');
+    this.symmetryValueTargets.forEach(el => { el.textContent = label; });
   }
 
   saveSVG() {
@@ -687,28 +691,23 @@ export default class extends Controller {
     }
   }
 
-  toggleControls(event) {
-    const editor = this.element.closest('.form-editor');
+  // Le dépliement de la barre est piloté par cover_controls_controller (même
+  // bouton, deux actions). Ici on ne garde que les effets côté couverture :
+  // les valeurs affichées et le recalcul du titre une fois la barre stabilisée.
+  toggleControls() {
+    this.updateValueDisplays();
 
-    // Activer les transitions uniquement pour le toggle
-    editor.classList.add('is-animating');
-    const isCollapsed = editor.classList.toggle('controls-collapsed');
-
-    // Toggle aria-expanded sur le bouton head pour l'accessibilité
-    if (event && event.currentTarget) {
-      event.currentTarget.setAttribute('aria-expanded', String(!isCollapsed));
-    }
-
-    // Rotation du chevron
-    if (this.hasControlsToggleIconTarget) {
-      this.controlsToggleIconTarget.classList.toggle('rotate-180', isCollapsed);
-    }
-
-    // Retirer la classe d'animation et déclencher un resize pour recalculer le titre (boundFitTitle)
     setTimeout(() => {
-      editor.classList.remove('is-animating');
       window.dispatchEvent(new Event('resize'));
     }, 350);
+  }
+
+  // Émis par cover_controls_controller à l'ouverture d'un popover : les
+  // mini-grilles se positionnent en pixels, elles ont besoin d'être visibles
+  // pour être mesurées.
+  syncControls() {
+    this.updateValueDisplays();
+    requestAnimationFrame(() => this.updateCursorPositions());
   }
 
   toggleDraft(event) {

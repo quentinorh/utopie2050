@@ -54,188 +54,21 @@
             </div>
           </div>
 
-          <!-- Toolbar bas-droite — sibling du SVG pour ne pas être clippée
-               CTA Aléatoire (gauche) + Paramètres (droite), ancrée au coin bas-droit -->
-          <div class="cover-toolbar">
-            <button type="button"
-                    class="cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
-                    data-action="click->cover-editor#randomize"
-                    aria-label="Générer une couverture aléatoire">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   class="cover-pill__icon"
-                   viewBox="0 0 24 24"
-                   fill="none"
-                   stroke="currentColor"
-                   stroke-width="1.8"
-                   stroke-linecap="round"
-                   stroke-linejoin="round"
-                   aria-hidden="true">
-                <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
-                <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
-                <path d="M6 18h.01"/>
-                <path d="M10 14h.01"/>
-                <path d="M15 6h.01"/>
-                <path d="M18 9h.01"/>
-              </svg>
-            </button>
+          <%= render "posts/cover_toolbar", unique_id: unique_id %>
 
-            <!-- Carte de contrôles : header pill + body popover qui s'ouvre vers le haut -->
-            <div class="cover-controls" data-cover-editor-target="controlsCard">
-              <button type="button"
-                      class="cover-controls__head cover-pill cover-pill--reveal"
-                      data-action="click->cover-editor#toggleControls"
-                      aria-expanded="true"
-                      aria-controls="cover-controls-body"
-                      aria-label="Paramètres de la couverture">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="cover-pill__icon cover-controls__settings-icon"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="1.8"
-                     stroke-linecap="round"
-                     stroke-linejoin="round"
-                     aria-hidden="true">
-                  <line x1="21" x2="14" y1="4" y2="4"/>
-                  <line x1="10" x2="3" y1="4" y2="4"/>
-                  <line x1="21" x2="12" y1="12" y2="12"/>
-                  <line x1="8" x2="3" y1="12" y2="12"/>
-                  <line x1="21" x2="16" y1="20" y2="20"/>
-                  <line x1="12" x2="3" y1="20" y2="20"/>
-                  <line x1="14" x2="14" y1="2" y2="6"/>
-                  <line x1="8" x2="8" y1="10" y2="14"/>
-                  <line x1="16" x2="16" y1="18" y2="22"/>
-                </svg>
-                <span class="cover-controls__title">Paramètres de la couverture</span>
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="cover-controls__chev"
-                     data-cover-editor-target="controlsToggleIcon"
-                     viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-                  <polyline points="4 10 8 6 12 10"/>
-                </svg>
-              </button>
-
-                <div class="cover-controls__body" id="cover-controls-body">
-                  <div class="cc-stack">
-                    <!-- SYMÉTRIE -->
-                    <div class="cc-row">
-                      <span class="cc-label">Symétrie</span>
-                      <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
-                        <button type="button"
-                                class="cc-segmented__btn"
-                                data-cover-editor-target="symmetryMode"
-                                data-action="click->cover-editor#updateCurve"
-                                data-value="x4"
-                                role="radio">×4</button>
-                        <button type="button"
-                                class="cc-segmented__btn"
-                                data-cover-editor-target="symmetryMode"
-                                data-action="click->cover-editor#updateCurve"
-                                data-value="x8"
-                                role="radio">×8</button>
-                        <button type="button"
-                                class="cc-segmented__btn"
-                                data-cover-editor-target="symmetryMode"
-                                data-action="click->cover-editor#updateCurve"
-                                data-value="x16"
-                                role="radio">×16</button>
-                      </div>
-                    </div>
-
-                    <!-- TEINTE -->
-                    <div class="cc-row">
-                      <div class="cc-label-row">
-                        <span class="cc-label">Teinte</span>
-                        <span class="cc-value tabular-nums" data-cover-editor-target="hueValue">280</span>
-                      </div>
-                      <input
-                        type="range"
-                        id="hue"
-                        data-cover-editor-target="colorPicker"
-                        data-action="input->cover-editor#updateColors input->cover-editor#updateTitle input->cover-editor#updateCurve input->cover-editor#updateValueDisplays"
-                        min="0"
-                        max="360"
-                        value="280"
-                        aria-label="Teinte"
-                        class="cc-slider cc-slider--hue"
-                      >
-                    </div>
-
-                    <!-- LISSAGE -->
-                    <div class="cc-row">
-                      <div class="cc-label-row">
-                        <span class="cc-label">Lissage</span>
-                        <span class="cc-value tabular-nums" data-cover-editor-target="smoothingValue">50</span>
-                      </div>
-                      <input
-                        type="range"
-                        data-cover-editor-target="smoothing"
-                        data-action="input->cover-editor#updateCurve input->cover-editor#updateValueDisplays"
-                        min="10"
-                        max="100"
-                        value="50"
-                        aria-label="Lissage"
-                        class="cc-slider"
-                      >
-                    </div>
-
-                    <!-- Courbe + Grille — paire côte à côte -->
-                    <div class="cc-pair">
-                      <div class="cc-row cc-row--grid">
-                        <div class="cc-label-row">
-                          <span class="cc-label">Courbe</span>
-                          <span class="cc-value tabular-nums" data-cover-editor-target="curveValue">50, 50</span>
-                        </div>
-                        <div class="cc-grid"
-                             data-pattern-grid="1"
-                             data-controller="tooltip"
-                             data-tooltip-text-value="Forme du motif">
-                          <div class="cc-grid__lines" data-cover-editor-target="grid" data-pattern-grid="1"></div>
-                          <div class="cc-grid__handle"
-                               data-cover-editor-target="anchor1"
-                               data-action="mousedown->cover-editor#startDrag touchstart->cover-editor#startDrag mousemove->cover-editor#drag touchmove->cover-editor#drag mouseup->cover-editor#stopDrag touchend->cover-editor#stopDrag"
-                               aria-label="Point de contrôle de la courbe"
-                               role="slider"></div>
-                        </div>
-                      </div>
-
-                      <div class="cc-row cc-row--grid">
-                        <div class="cc-label-row">
-                          <span class="cc-label">Grille</span>
-                          <span class="cc-value tabular-nums" data-cover-editor-target="gridValue">2 × 2</span>
-                        </div>
-                        <div class="cc-grid"
-                             data-pattern-grid="2"
-                             data-controller="tooltip"
-                             data-tooltip-text-value="Répétition du motif">
-                          <div class="cc-grid__lines cc-grid__lines--quad" data-cover-editor-target="grid" data-pattern-grid="2"></div>
-                          <div class="cc-grid__handle"
-                               data-cover-editor-target="anchor2"
-                               data-action="mousedown->cover-editor#startDrag touchstart->cover-editor#startDrag mousemove->cover-editor#drag touchmove->cover-editor#drag mouseup->cover-editor#stopDrag touchend->cover-editor#stopDrag"
-                               aria-label="Densité de la grille"
-                               role="slider"></div>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sr-only">
-                  <input type="range" data-cover-editor-target="firstSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
-                  <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
-                  <input type="hidden" data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve">
-                  <input type="hidden" data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve">
-                  <%= form.hidden_field :pattern_settings, data: { "cover-editor-target": "patternSettings" } %>
-                  <%= form.hidden_field :cover, data: { "cover-editor-target": "cover" } %>
-                  <%= form.file_field :cover_image,
-                                      accept: "image/jpeg,image/png",
-                                      tabindex: -1,
-                                      aria: { hidden: true },
-                                      data: { "cover-editor-target": "coverImageFile" } %>
-                </div>
-              </div>
-            </div>
+          <div class="sr-only">
+            <input type="range" data-cover-editor-target="firstSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
+            <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
+            <input type="hidden" data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve">
+            <input type="hidden" data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve">
+            <%= form.hidden_field :pattern_settings, data: { "cover-editor-target": "patternSettings" } %>
+            <%= form.hidden_field :cover, data: { "cover-editor-target": "cover" } %>
+            <%= form.file_field :cover_image,
+                                accept: "image/jpeg,image/png",
+                                tabindex: -1,
+                                aria: { hidden: true },
+                                data: { "cover-editor-target": "coverImageFile" } %>
+          </div>
           </div>
         </div>
       </aside>

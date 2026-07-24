@@ -14,6 +14,9 @@
   --editor-ink: #1F1F1F;
   --editor-ink-muted: #6B6964;
   --editor-ink-faint: #A8A6A2;
+  /* Placeholders : un cran plus doux que --editor-ink-faint au repos, et le
+     faint au focus (le champ actif se démarque sans crier). */
+  --editor-ink-placeholder: #C9C7C3;
   --editor-cover-bg: #12142C;
 }
 
@@ -158,22 +161,43 @@
 }
 
 /* ===========================
-   Cover toolbar — CTA aléatoire + paramètres, coin bas-droit du conteneur (ex. .form-cover-wrapper)
+   Cover toolbar — dé · [groupes] · paramètres, coin haut-droit de la couverture.
+   Ordre en flux : le dé (gauche) et le bouton Paramètres (droite) encadrent les
+   groupes de réglages ; à l'ouverture ceux-ci se déplient ENTRE les deux. Le
+   bouton Paramètres (celui qu'on clique) reste la borne droite fixe.
    =========================== */
 
 .cover-toolbar {
+  /* Hauteur commune du dé, des déclencheurs et du bouton Paramètres — un cran
+     plus petit qu'avant (36 → 32) pour un objet plus fin et posé. */
+  --cover-toolbar-h: 32px;
+
   position: absolute;
-  bottom: 14px;
-  right: 10px;
+  /* Desktop : aligné sur la ligne du logo « Lire les futurs » de la navbar
+     (h 75px → centre 37.5px), à droite de la couverture (px navbar = 40px).
+     La navbar transparente laisse passer les clics (pointer-events: none). */
+  top: calc((75px - var(--cover-toolbar-h)) / 2);
+  right: 40px;
+  bottom: auto;
   left: auto;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 6px;
   width: max-content;
-  max-width: calc(100% - 20px);
   z-index: 50;
   pointer-events: none;
+
+  /* Mobile : on remonte la barre DANS la navbar (56px), calée juste à gauche de
+     l'avatar. Pastilles 36×36 pour s'aligner sur la taille de l'avatar (h-9 w-9),
+     centrées verticalement sur la navbar. L'avatar fait 36px et vit à 10px du
+     bord (px-xs) → on borne la barre à droite à 10 + 36 + 8px d'écart. */
+  @media (max-width: 1023px) {
+    --cover-toolbar-h: 36px;
+    top: calc((56px - 36px) / 2);
+    right: calc(10px + 36px + 8px);
+  }
 
   > * {
     pointer-events: auto;
@@ -182,9 +206,55 @@
   }
 }
 
+/* Pastilles de la barre : noires par défaut, comme les déclencheurs de réglages.
+   La chaîne :not() reprend celle du verre blanc de .cover-pill pour la supplanter. */
+.cover-toolbar .cover-pill:not(.cover-pill--filled):not(.cover-pill--ghost) {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 30px -12px rgba(0, 0, 0, 0.7);
+
+  /* Verre plus dense et plus flou : le « liquid glass » demandé, avec un léger
+     dégradé haut→bas pour attraper la lumière. */
+  &::before {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
+      rgba(14, 14, 16, 0.55);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+  }
+
+  &:hover::before {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 55%),
+      rgba(30, 30, 34, 0.62);
+  }
+
+  &:active { scale: 0.96; }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 2px;
+  }
+}
+
 .cover-toolbar--off-cover {
   visibility: hidden;
   pointer-events: none;
+}
+
+/* Taille commune (32px) du dé et du bouton Paramètres dans la barre. */
+.cover-toolbar .cover-pill--icon {
+  width: var(--cover-toolbar-h);
+  height: var(--cover-toolbar-h);
+}
+
+.cover-toolbar .cover-pill--icon .cover-pill__icon,
+.cover-toolbar .cover-toggle__icons,
+.cover-toolbar .cover-toggle__icon {
+  width: 17px;
+  height: 17px;
 }
 
 /* ===========================
@@ -401,140 +471,332 @@
    Le hook .editor-randomize reste utilisé côté markup et JS si besoin futur. */
 
 /* ===========================
-   Cover controls — header pill + body popover
+   Cover controls — barre à déclencheurs + popovers
+   Au repos : dé + bouton Paramètres. À l'ouverture, les groupes se déplient en
+   cascade vers la gauche du couple de pastilles, qui ne bouge jamais : les
+   groupes sont hors flux (absolute), ils ne peuvent donc pas le pousser.
+     • ≥1024px : symétrie en cercles + 3 déclencheurs libellés
+     • <1024px : 4 pastilles icône (le libellé passe dans le popover)
    =========================== */
 
-.cover-controls {
+/* Conteneur des groupes — ENTRE le dé et le bouton Paramètres. Sa largeur est
+   animée via une grille 0fr↔1fr : la barre s'allonge/se replie en douceur, sans
+   layout shift (pas de display:none qui couperait la transition). Paramètres
+   (borne droite) ne bouge pas ; le dé glisse au rythme de la largeur. */
+.cover-groups {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.42s cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-controls-open="true"] .cover-groups {
+  grid-template-columns: 1fr;
+}
+
+/* La rangée réelle : clippée pendant l'ouverture/fermeture (sinon les groupes
+   déborderaient de la largeur animée). Une fois la barre stabilisée (.is-settled
+   posé par le controller), on retire le clip pour que les popovers des groupes
+   puissent déborder totalement (le popover Motif est plus large que la rangée). */
+.cover-groups__track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: clip;
+  /* Petit air à droite pour ne pas coller au bouton Paramètres une fois ouvert. */
+  padding-right: 6px;
+  margin-right: -6px;
+}
+
+.is-settled .cover-groups__track {
+  overflow: visible;
+}
+
+/* Chaque groupe se révèle en fondu doux, décalé (--i), pendant que la largeur
+   s'ouvre — plus de translation horizontale (la grille s'en charge). */
+.cover-group {
   position: relative;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  opacity: 0;
+  filter: blur(3px);
+  pointer-events: none;
+  transition:
+    opacity 0.16s ease-in,
+    filter 0.16s ease-in;
+  transition-delay: calc(var(--o, 0) * 24ms);
 }
 
-/* Le head est désormais une .cover-pill — on n'a plus à redéfinir bg/border/typo,
-   uniquement le réglage spécifique du chevron à droite. */
-.cover-controls__head {
-  /* Verrouille la même hauteur visuelle que le bouton aléatoire */
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  box-sizing: border-box;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.cover-controls__title {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  color: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-}
-
-/* Icône paramètres — visible uniquement sur mobile (cf. media query plus bas). */
-.cover-controls__settings-icon {
-  display: none;
-}
-
-/* Mobile : le head devient une pastille ronde icône-only, alignée visuellement
-   avec le bouton aléatoire (.cover-pill--icon) à sa gauche. */
-@media (max-width: 1023px) {
-  .cover-controls__head {
-    width: 36px;
-    padding: 0;
-    gap: 0;
-    justify-content: center;
-    border-radius: 50%;
-  }
-
-  .cover-controls__title,
-  .cover-controls__chev {
-    display: none;
-  }
-
-  .cover-controls__settings-icon {
-    display: block;
-  }
-}
-
-/* Toolbar ancrée en bas-droite : le popover s'ouvre vers le haut.
-   Chevron par défaut (panneau ouvert) pointe vers le bas (rotate 180),
-   et pointe vers le haut quand fermé (rotate 0 = invite à ouvrir vers le haut). */
-.cover-controls__chev {
-  width: 12px;
-  height: 12px;
-  color: currentColor;
-  opacity: 0.55;
-  transform: rotate(180deg);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.controls-collapsed .cover-controls__chev {
-  transform: rotate(0deg);
-}
-
-/* Body popover — ancré au-dessus du head, aligné à droite, ne décale pas la toolbar.
-   La transition est volontairement absente ici : elle est gated par .is-animating
-   (cf. plus bas) pour ne pas se déclencher sur les resizes navigateur. */
-.cover-controls__body {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  right: 0;
-  width: 320px;
-  max-width: calc(100vw - 18px);
-  padding: 12px 14px 14px;
-  isolation: isolate;
-  /* Effet vitré type « liquid glass » (backdrop + reflets inset) */
-  background: rgba(45, 45, 45, 0.58);
-  backdrop-filter: blur(0.6px) saturate(180%);
-  -webkit-backdrop-filter: blur(0.6px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 14px;
-  box-shadow:
-    0 8px 32px rgba(255, 255, 255, 0.1),
-    inset 0 4px 20px rgba(255, 255, 255, 0.1);
-  transform-origin: bottom right;
-  transform: translateY(0) scale(1);
+[data-controls-open="true"] .cover-group {
   opacity: 1;
-  /* Évite le scroll-chaining vers le document si le panneau défile (petits écrans). */
-  overscroll-behavior: contain;
+  filter: blur(0);
+  pointer-events: auto;
+  transition:
+    opacity 0.34s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.34s cubic-bezier(0.2, 0, 0, 1);
+  transition-delay: calc(0.06s + var(--i, 0) * 55ms);
+}
 
-  &::after {
+/* Sans animation : la barre s'ouvre/ferme instantanément (pas de transition de
+   largeur ni de cascade), mais reste fonctionnelle. */
+@media (prefers-reduced-motion: reduce) {
+  .cover-groups,
+  .cover-group,
+  [data-controls-open="true"] .cover-group {
+    transition: none;
+  }
+}
+
+/* Déclencheur — pastille icône par défaut (mobile), pilule libellée en desktop.
+   Même matière que .cover-pill : verre blanc porté par ::before. */
+.cover-group__trigger {
+  appearance: none;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: var(--cover-toolbar-h, 32px);
+  height: var(--cover-toolbar-h, 32px);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 30px -12px rgba(0, 0, 0, 0.7);
+  transition:
+    scale 0.15s ease-out,
+    color 0.15s ease,
+    border-color 0.15s ease;
+
+  &::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    pointer-events: none;
-    background: rgba(255, 255, 255, 0.1);
-    opacity: 0.4;
     z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
+      rgba(14, 14, 16, 0.55);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    transition: background-color 0.15s ease;
   }
 
-  /* Pseudo « gloss » sous le contenu interactif sans z-index -1 peu fiable selon UA */
-  > * {
-    position: relative;
-    z-index: 1;
+  > * { position: relative; z-index: 1; }
+
+  &:hover::before {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 55%),
+      rgba(30, 30, 34, 0.62);
   }
 
-  /* Typo lisible sur panneau glass */
-  .cc-label {
-    color: rgba(255, 255, 255, 1);
+  &:active { scale: 0.96; }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 2px;
   }
 
-  .cc-value {
-    color: rgba(255, 255, 255, 0.92);
+  /* Groupe déplié : le noir se densifie et le contour s'éclaire, plutôt qu'une
+     inversion en blanc qui casserait la continuité avec le popover. */
+  &[aria-expanded="true"] {
+    border-color: rgba(255, 255, 255, 0.34);
+
+    &::before {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 55%),
+        rgba(8, 8, 10, 0.72);
+    }
   }
 
-  /* Segmented & grilles sans fond opaque — laisse voir le flou dessous */
+  &:active { scale: 0.96; }
+
+  /* Cible tactile de 48px sans grossir la pastille (48 - 32 = 8px de marge). */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+}
+
+@media (pointer: fine) {
+  .cover-group__trigger::after { display: none; }
+}
+
+.cover-group__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.cover-group__label,
+.cover-group__value,
+.cover-group__chev {
+  display: none;
+}
+
+/* Les libellés n'apparaissent qu'à partir de 1280px : en dessous, la barre
+   dépliée occuperait presque toute la largeur de la couverture (moitié gauche
+   de l'écran) et viendrait buter sur le logo de la navbar. */
+@media (min-width: 1280px) {
+  .cover-group__trigger {
+    width: auto;
+    padding: 0 10px;
+    gap: 6px;
+    border-radius: 999px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Le libellé porte déjà le sens : l'icône ne ferait qu'allonger la barre et
+     grignoter la place des cercles de symétrie. */
+  .cover-group__icon { display: none; }
+
+  .cover-group__label { display: inline; }
+
+  /* La valeur sur le déclencheur n'apparaît que quand la couverture est assez
+     large pour l'accueillir sans pousser la barre sur le logo :
+       • 50% (1372–1439px) : elle tient ;
+       • 40% (≥1440px)      : trop étroite → masquée jusqu'à ce que 40% de la
+         fenêtre redonne la place (≥1715px). Sinon la valeur reste dans le popover. */
+  .cover-group__value {
+    display: none;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Le popover descend : le chevron pointe vers le bas au repos et se retourne
+     à l'ouverture pour indiquer le repli. Présent dès que les libellés le sont. */
+  .cover-group__chev {
+    display: block;
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    opacity: 0.5;
+    rotate: 180deg;
+    transition: rotate 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .cover-group__trigger[aria-expanded="true"] .cover-group__chev { rotate: 360deg; }
+}
+
+/* La valeur sur le déclencheur n'apparaît que quand la couverture a la place :
+   50% (1372–1439px) OK ; 40% (1440–1714px) trop étroite → masquée ; ≥1715px OK. */
+@media (min-width: 1372px) {
+  .cover-group__value { display: inline; }
+}
+
+@media (min-width: 1440px) and (max-width: 1714px) {
+  .cover-group__value { display: none; }
+}
+
+/* Popover d'un groupe — verre noir ancré sous le déclencheur (la barre est en
+   haut), recalé horizontalement par cover_controls_controller (--pop-shift). */
+.cover-pop {
+  position: absolute;
+  top: calc(100% + 10px);
+  bottom: auto;
+  left: 50%;
+  translate: calc(-50% + var(--pop-shift, 0px)) 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 232px;
+  max-width: calc(100vw - 24px);
+  padding: 14px;
+  border-radius: 18px;
+  /* « Liquid glass » : verre plus flou/saturé, léger dégradé de lumière en haut,
+     double liseré interne (haut clair / bas sombre) pour donner de l'épaisseur. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 40%),
+    rgba(9, 9, 11, 0.62);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 32px 80px -28px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  transform-origin: top center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.96);
+  pointer-events: none;
+  overscroll-behavior: contain;
+  transition:
+    opacity 0.18s ease-in,
+    transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 0.2s;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    transition:
+      opacity 0.22s cubic-bezier(0.2, 0, 0, 1),
+      transform 0.3s cubic-bezier(0.2, 0, 0, 1),
+      visibility 0s;
+  }
+
+  /* Typo lisible sur le verre noir */
+  .cc-label { color: rgba(255, 255, 255, 0.7); }
+  .cc-value { color: #fff; }
+
+  /* Symétrie : trois pastilles rondes, même vocabulaire que les déclencheurs. */
   .cc-segmented {
-    background: transparent;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    width: auto;
+    padding: 0;
+    background: transparent !important;
     box-shadow: none;
   }
 
   .cc-segmented__btn {
-    color: rgba(255, 255, 255, 0.62);
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.64);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition:
+      scale 0.15s ease-out,
+      background-color 0.15s ease,
+      color 0.15s ease;
 
     &:hover:not(.is-active) {
+      background: rgba(255, 255, 255, 0.16);
       color: #fff;
+    }
+
+    &:active { scale: 0.96; transform: none; }
+
+    &.is-active {
+      background: #fafafa;
+      color: #131315;
+      box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.6);
     }
 
     &:focus-visible {
@@ -543,44 +805,193 @@
     }
   }
 
-  /* Mini-grilles : cadre lisible sur fond vitré (contour lumineux + relief doux),
-     tout en gardant overflow visible pour les cc-tip du tooltip_controller. */
+  /* Nuancier de teinte — la pastille est l'affordance principale, le curseur
+     reste là pour l'ajustement fin. */
+  /* Les pastilles ne doivent jamais s'étirer : elles restent rondes et
+     l'anneau de sélection a besoin d'air autour (d'où le gap généreux). */
+  .cc-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 2px 0;
+  }
+
+  .cc-swatch {
+    appearance: none;
+    position: relative;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    transition: scale 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Anneau de sélection dessiné en dehors de la pastille : il ne déplace rien
+       et peut donc apparaître sans faire sauter la rangée. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid #fff;
+      opacity: 0;
+      scale: 0.8;
+      transition:
+        opacity 0.18s ease,
+        scale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    &:hover {
+      scale: 1.14;
+
+      &::after { opacity: 0.45; scale: 1; }
+    }
+
+    &:active { scale: 0.96; }
+
+    &.is-active::after { opacity: 1; scale: 1; }
+
+    &:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.85);
+      outline-offset: 3px;
+    }
+  }
+
+  /* Mini-grilles : contour lumineux, overflow visible pour les cc-tip. */
   .cc-grid {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 12px;
     box-shadow:
       0 4px 16px rgba(15, 23, 42, 0.2),
-      0 2px 6px rgba(0, 0, 0, 0.12),
-      inset 0 1px 2px rgba(255, 255, 255, 0.225),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      inset 0 1px 2px rgba(255, 255, 255, 0.22);
   }
 }
 
-/* Très étroit : tirer parti de toute la largeur disponible au lieu du plafond 320px */
-@media (max-width: 369px) {
-  .cover-controls__body {
-    width: calc(100vw - 18px);
-    max-width: calc(100vw - 18px);
-  }
-}
+.cover-pop--motif { width: 258px; }
 
-.controls-collapsed .cover-controls__body {
-  opacity: 0;
-  transform: translateY(6px) scale(0.96);
+/* Symétrie : trois cercles, le popover n'a pas besoin de la largeur standard. */
+.cover-pop--sym { width: max-content; }
+
+/* Teinte : assez large pour aligner les 8 pastilles sur une seule rangée. */
+.cover-pop:has(.cc-swatches) { width: 284px; }
+
+/* Petite flèche d'ancrage — la barre est en haut, le popover descend :
+   la flèche est donc sur son arête supérieure. */
+.cover-pop__caret {
+  position: absolute;
+  top: -5px;
+  left: calc(50% - var(--pop-shift, 0px));
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  rotate: 45deg;
+  background: rgba(10, 10, 12, 0.78);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
   pointer-events: none;
 }
 
-/* === Stack vertical : sliders → paire de grids en bas === */
-.cc-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 0;
+@media (min-width: 1024px) {
+  .cover-pop__caret { display: none; }
 
-  /* La première rangée (Symétrie / segmented control) a besoin d'un peu plus
-     d'air en haut sinon le segmented colle au bord supérieur du popover. */
-  > .cc-row:first-child { padding-top: 6px; gap: 8px; }
+  /* Symétrie : les trois cercles remontent dans la barre, le déclencheur
+     du groupe n'a plus lieu d'être. */
+  .cover-group--sym .cover-group__trigger { display: none; }
+
+  /* Le popover n'en est plus un : ses trois cercles s'alignent directement
+     dans la barre, sans capsule autour. */
+  .cover-pop--sym {
+    position: static;
+    translate: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    gap: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: none;
+
+    .cc-segmented__btn {
+      width: var(--cover-toolbar-h, 32px);
+      height: var(--cover-toolbar-h, 32px);
+      /* Typo STRICTEMENT identique aux libellés des pills (9px / même
+         interlettrage / line-height 1) : sinon ×4/×8/×16 paraissent plus gros
+         et « décalés » par rapport à TEINTE/LISSAGE/MOTIF. */
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
+        rgba(14, 14, 16, 0.55);
+      color: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        0 10px 30px -12px rgba(0, 0, 0, 0.7);
+
+      &:hover:not(.is-active) {
+        background: rgba(32, 32, 35, 0.78);
+        color: #fff;
+      }
+    }
+  }
+}
+
+/* Bouton bascule — l'icône réglages et la croix cohabitent dans le DOM et se
+   croisent (scale + opacity + blur), pour animer l'entrée comme la sortie. */
+.cover-toggle__icons {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.cover-toggle__icon {
+  width: 20px;
+  height: 20px;
+  transition:
+    opacity 0.3s cubic-bezier(0.2, 0, 0, 1),
+    scale 0.3s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.cover-toggle__icon--close {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  scale: 0.25;
+  filter: blur(4px);
+}
+
+.cover-toggle[aria-expanded="true"] {
+  .cover-toggle__icon--settings {
+    opacity: 0;
+    scale: 0.25;
+    filter: blur(4px);
+  }
+
+  .cover-toggle__icon--close {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
+  }
 }
 
 /* === Paire de grids côte à côte === */
@@ -588,15 +999,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 2px;
 }
 
 /* Mobile : le scroll vertical de la page ne doit pas voler le geste sur les curseurs
    et les mini-grilles (la poignée a déjà touch-action: none, pas le fond ni les <input range>). */
 @media (max-width: 1023px) {
-  .cover-controls__body .cc-slider,
-  .cover-controls__body .cc-pair,
-  .cover-controls__body .cc-grid {
+  .cover-pop .cc-slider,
+  .cover-pop .cc-pair,
+  .cover-pop .cc-grid {
     touch-action: none;
   }
 }
@@ -905,7 +1315,7 @@ $cc-cover-grid-lines-curve-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmln
 /* Répétition du motif — 5×5 (voir renderGridLines isQuad dans cover_editor_controller / hero_controller). */
 $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0%200%205%205' preserveAspectRatio='xMidYMid%20meet'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.5' stroke-width='0.04' stroke-linecap='butt' stroke-linejoin='miter'%3E%3Cpath d='M1%200V5M2%200V5M3%200V5M4%200V5M0%201H5M0%202H5M0%203H5M0%204H5'/%3E%3C/g%3E%3C/svg%3E");
 
-.cover-controls .cover-controls__body {
+.cover-pop {
   .cc-grid__lines .cc-grid__cell {
     border: 0;
   }
@@ -1270,15 +1680,19 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   .cover-toolbar .cover-pill--reveal {
     clip-path: none;
   }
-  .cover-controls__body        { opacity: 0; }
 }
 
 /* Title input — large, borderless except a focus underline */
-.editor-title-field { display: block; }
+.editor-title-field {
+  display: block;
+  position: relative;
+}
 
 .editor-title-input {
   display: block;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
   background: transparent;
   padding: 8px 0 12px;
@@ -1288,10 +1702,152 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   color: var(--editor-ink);
   border-bottom: 1px solid var(--editor-border);
   outline: none;
-  transition: border-color 0.15s ease;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.2s ease,
+    color 0.15s ease;
 
-  &::placeholder { color: var(--editor-ink-faint); }
-  &:focus { border-bottom-color: var(--editor-border-strong); }
+  /* Le ring bleu du navigateur ne doit jamais réapparaître (cf. capture). */
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-bottom-color: var(--editor-border-strong);
+  }
+
+  &::placeholder {
+    color: var(--editor-ink-placeholder);
+    transition: color 0.15s ease;
+  }
+
+  /* Le champ vide et actif laisse la main à l'indice (.editor-hint) : ni
+     placeholder natif, ni curseur natif, pour n'avoir qu'un seul signal. */
+  &:focus:placeholder-shown {
+    caret-color: transparent;
+
+    &::placeholder { color: transparent; }
+  }
+
+  /* Dès qu'on écrit, le texte passe à l'encre pleine et le curseur revient. */
+  &:not(:placeholder-shown) {
+    color: #000;
+    caret-color: var(--editor-ink);
+  }
+}
+
+/* === Indice de saisie — curseur + libellé « shimmer » + ellipsis ===
+   Superposé au champ, décoratif (aria-hidden). Visible seulement quand le champ
+   est actif et vide. Le libellé ne bouge pas : une large bande de lumière le
+   traverse lentement, et trois points apparaissent l'un après l'autre. */
+.editor-hint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.14em;
+  padding: 8px 0 12px;
+  font-family: "Apfel", sans-serif;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.editor-title-input:focus:placeholder-shown ~ .editor-hint,
+.editor-textarea:focus:placeholder-shown ~ .editor-hint {
+  opacity: 1;
+}
+
+.editor-hint__caret {
+  width: 2px;
+  height: 0.92em;
+  border-radius: 1px;
+  background: var(--editor-ink);
+  transform: translateY(0.1em);
+  animation: editor-caret-blink 1.1s steps(1, end) infinite;
+}
+
+/* Libellé traversé par une bande claire, large et douce (transitions étalées),
+   qui balaie lentement. Base plus foncée que le placeholder au repos — le champ
+   actif se lit mieux. */
+/* Le libellé : base gris foncé au focus, large bande claire qui balaie. Le
+   dégradé se répète (pas de no-repeat) pour couvrir le texte en permanence —
+   sinon aux extrêmes le texte se retrouve hors dégradé et devient invisible. */
+.editor-hint__text {
+  --shine-base: #908E8A;
+  --shine-hi: #ECEAE6;
+  background-image: linear-gradient(
+    100deg,
+    var(--shine-base) 0%,
+    var(--shine-base) 36%,
+    var(--shine-hi) 50%,
+    var(--shine-base) 64%,
+    var(--shine-base) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Safari exige text-fill-color transparent pour laisser voir le dégradé
+     clippé — sans ça le texte reste opaque et « rien ne bouge ». */
+  -webkit-text-fill-color: transparent;
+  animation: editor-shine 4s linear infinite;
+}
+
+/* Ellipsis : couleur pleine (pas de shimmer) pour que l'apparition point par
+   point reste bien lisible. */
+.editor-hint__dots {
+  display: inline-flex;
+  gap: 0.04em;
+  margin-left: -0.06em;
+  color: #908E8A;
+}
+
+.editor-hint__dots i {
+  font-style: normal;
+  opacity: 0;
+  animation: editor-dot-in 2.4s ease-in-out infinite;
+
+  &:nth-child(2) { animation-delay: 0.28s; }
+  &:nth-child(3) { animation-delay: 0.56s; }
+}
+
+@keyframes editor-caret-blink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Balayage lent et continu de droite à gauche ; la large bande (320%) rend la
+   transition douce. */
+/* Le dégradé (200%) glisse d'une tuile complète : la bande claire traverse le
+   texte une fois par cycle, en boucle continue et sans « trou ». */
+@keyframes editor-shine {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@keyframes editor-dot-in {
+  0%, 6% { opacity: 0; transform: translateY(0.1em); }
+  20%, 66% { opacity: 1; transform: translateY(0); }
+  82%, 100% { opacity: 0; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-hint__caret,
+  .editor-hint__dots i {
+    animation: none;
+    opacity: 1;
+  }
+  .editor-hint__text,
+  .editor-hint__dots {
+    animation: none;
+    color: #908E8A;
+    -webkit-text-fill-color: currentColor;
+  }
 }
 
 .editor-error {
@@ -1444,6 +2000,8 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
 .editor-textarea {
   display: block;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
   border: 1px solid var(--editor-border);
   background: var(--editor-surface);
   padding: 16px 18px;
@@ -1454,11 +2012,47 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   resize: vertical;
   min-height: 240px;
   outline: none;
-  transition: border-color 0.15s ease;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.2s ease,
+    color 0.15s ease;
   overscroll-behavior: contain;
 
-  &::placeholder { color: var(--editor-ink-faint); }
-  &:focus { border-color: var(--editor-border-strong); }
+  &::placeholder {
+    color: var(--editor-ink-placeholder);
+    transition: color 0.15s ease;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--editor-border-strong);
+  }
+
+  &:focus:placeholder-shown {
+    caret-color: transparent;
+
+    &::placeholder { color: transparent; }
+  }
+
+  &:not(:placeholder-shown) {
+    color: #000;
+    caret-color: var(--editor-ink);
+  }
+}
+
+/* Le corps du texte a sa propre métrique : l'indice se cale sur la première
+   ligne, à l'intérieur du cadre. */
+.editor-body-field {
+  position: relative;
+
+  .editor-hint {
+    padding: 16px 18px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
 }
 
 /* ===========================
@@ -1677,11 +2271,5 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   padding: 0;
 }
 
-/* Transitions uniquement pendant le toggle (pas pendant le resize navigateur) */
-.form-editor.is-animating {
-  .cover-controls__body {
-    transition:
-      opacity 0.18s ease,
-      transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-}
+/* Les transitions de la barre de réglages sont portées par .cover-group /
+   .cover-pop (cf. plus haut) : plus besoin de les activer au coup par coup. */
