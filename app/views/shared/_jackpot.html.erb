@@ -1,0 +1,24 @@
+<%# Générateur d'étincelles — machine à sous (nom + adjectif). %>
+<div class="jackpot" data-controller="jackpot"
+     data-jackpot-url-value="<%= idea_generator_spark_path(format: :json) %>">
+  <div class="jackpot__reels">
+    <div class="jackpot__reel">
+      <div class="jackpot__strip" data-jackpot-target="strip" data-reel="noun"></div>
+    </div>
+
+    <button type="button" class="jackpot__spin" data-jackpot-target="spin"
+            data-action="click->jackpot#spin" aria-label="Générer une nouvelle étincelle">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 1.5l1.9 5.9a3 3 0 0 0 1.9 1.9l5.9 1.9-5.9 1.9a3 3 0 0 0-1.9 1.9L12 21l-1.9-5.9a3 3 0 0 0-1.9-1.9L2.3 11.3l5.9-1.9a3 3 0 0 0 1.9-1.9L12 1.5z"/>
+      </svg>
+    </button>
+
+    <div class="jackpot__reel">
+      <div class="jackpot__strip" data-jackpot-target="strip" data-reel="adjective"></div>
+    </div>
+  </div>
+
+  <%# Points de lecture pour l'entonnoir (collectIdeaGeneratorData). %>
+  <span class="sr-only" data-idea-generator-target="noun" aria-live="polite"></span>
+  <span class="sr-only" data-idea-generator-target="adjective"></span>
+</div>

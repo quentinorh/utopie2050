@@ -33,7 +33,12 @@ export default class extends Controller {
 
   connect() {
     this.renderGridLines()
+    const carried = this.newRecordValue ? this.carriedPatternSettings() : null
     if (this.hasPatternSettingsTarget && this.patternSettingsTarget.value) {
+      this.loadPatternSettings();
+    } else if (carried && this.hasPatternSettingsTarget) {
+      // La couverture composée dans l'entonnoir se retrouve dans le texte.
+      this.patternSettingsTarget.value = carried
       this.loadPatternSettings();
     } else {
       this.randomize();
@@ -71,6 +76,17 @@ export default class extends Controller {
     }
     if (this._fitTitleTimeout) clearTimeout(this._fitTitleTimeout);
     if (this._titleFitRaf) cancelAnimationFrame(this._titleFitRaf);
+  }
+
+  // Réglages de motif transmis par l'entonnoir (sessionStorage) → continuité
+  // de la couverture entre l'entonnoir et l'éditeur.
+  carriedPatternSettings() {
+    try {
+      const prefill = JSON.parse(sessionStorage.getItem("sp2050_registration_prefill") || "{}")
+      return prefill.coverPatternSettings || null
+    } catch {
+      return null
+    }
   }
 
   scheduleFitTitle() {

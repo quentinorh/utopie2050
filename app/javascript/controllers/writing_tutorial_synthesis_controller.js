@@ -197,9 +197,11 @@ export default class extends Controller {
 
   loadCollapsedState() {
     try {
-      return sessionStorage.getItem(COLLAPSED_STORAGE_KEY) === "true"
+      // Réduit par défaut ; on respecte le choix de l'utilisateur une fois posé.
+      const stored = sessionStorage.getItem(COLLAPSED_STORAGE_KEY)
+      return stored === null ? true : stored === "true"
     } catch {
-      return false
+      return true
     }
   }
 

@@ -54,5 +54,4 @@ Rails.application.routes.draw do
 
   get "/sitemap.xml.gz", to: redirect("https://sp2050.s3.us-east-1.amazonaws.com/sitemaps/sitemap.xml.gz")
 
-  get "test", to: "pages#test"
 end

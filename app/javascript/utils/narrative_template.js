@@ -141,7 +141,7 @@ export function highlightNarrativeValues(text, prefill = {}) {
   for (const value of values) {
     const escaped = escapeHtml(value)
     if (!escaped) continue
-    html = html.split(escaped).join(`<strong>${escaped}</strong>`)
+    html = html.split(escaped).join(`<strong class="draft-value">${escaped}</strong>`)
   }
 
   return html.replace(/\n/g, "<br>")

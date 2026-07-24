@@ -14,7 +14,8 @@ export const SYNTHESIS_LABELS = {
 
 export function saveRegistrationPrefill({
   username, age, livingPlace, theme, noun, adjective, phrase,
-  trend, trendOpposite, narrativeStyle, narrativeStyleLabel, bodyTemplate, bodyTemplateEdited
+  trend, trendOpposite, narrativeStyle, narrativeStyleLabel, bodyTemplate, bodyTemplateEdited,
+  coverPatternSettings
 } = {}) {
   const existing = loadRegistrationPrefill() || {}
   const data = { ...existing }
@@ -81,6 +82,11 @@ export function saveRegistrationPrefill({
 
   if (bodyTemplateEdited !== undefined && bodyTemplateEdited !== null) {
     data.bodyTemplateEdited = Boolean(bodyTemplateEdited)
+  }
+
+  if (coverPatternSettings !== undefined && coverPatternSettings !== null) {
+    const value = String(coverPatternSettings).trim()
+    if (value) data.coverPatternSettings = value
   }
 
   if (Object.keys(data).length > 0) {

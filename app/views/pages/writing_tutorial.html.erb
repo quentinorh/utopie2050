@@ -1,321 +1,216 @@
-<% content_for :title, "SP2050 - Guide d'écriture" %>
+<% content_for :title, "SP2050 - Écrire le futur" %>
 <% content_for :description, "Découvre comment écrire un futur désirable sur SP2050. Quelques étapes pour t'inspirer avant de commencer ton récit." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page"
-     data-controller="writing-tutorial auth-background"
+<% unique_id = "funnel-#{SecureRandom.hex(4)}" %>
+
+<div class="sp-auth sp-auth--wizard sp-auth--funnel"
+     data-controller="cover-editor editor-reveal writing-tutorial"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true"
      data-writing-tutorial-signed-in-value="<%= user_signed_in? %>"
      data-writing-tutorial-username-value="<%= user_signed_in? ? current_user.username : '' %>"
-     data-writing-tutorial-age-value="<%= user_signed_in? ? current_user.age : '' %>">
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+     data-writing-tutorial-age-value="<%= user_signed_in? ? current_user.age : '' %>"
+     data-writing-tutorial-skip-path-value="<%= @skip_path %>">
 
-  <div class="auth-form-container">
-    <div class="auth-form auth-form--wide">
-      <div class="auth-progress" data-writing-tutorial-target="progress" aria-hidden="true" hidden>
-        <% [
-             { id: "step-username",     label: "Pseudo" },
-             { id: "step-age",          label: "Age" },
-             { id: "step-living-place", label: "Lieu" },
-             { id: "step-positive",     label: "Consignes" },
-             { id: "step-freedom",  label: "Générateur" },
-             { id: "step-theme",    label: "Thème" },
-             { id: "step-trend",    label: "Tendance" },
-             { id: "step-style",    label: "Style" },
-             { id: "step-ready",    label: "Prêt" }
-           ].each_with_index do |step, index| %>
-          <div class="auth-progress__step"
-               data-writing-tutorial-target="progressStep"
-               data-step-id="<%= step[:id] %>">
-            <span class="auth-progress__dot"><%= index + 1 %></span>
+  <!-- Colonne gauche : couverture aléatoire + actions du générateur -->
+  <%= render "devise/cover_stage", unique_id: unique_id %>
+
+  <!-- Colonne droite : entonnoir d'écriture -->
+  <div class="sp-panel">
+    <%# Chrome de progression : phrase cryptique scramblée + pastille % croissant. %>
+    <div class="funnel-progress" aria-hidden="true">
+      <span class="funnel-progress__phrase"
+            data-writing-tutorial-target="progressPhrase"
+            data-controller="randomize-letter-animation"
+            data-randomize-letter-animation-text-value="initialisation du récit">initialisation du récit</span>
+      <span class="funnel-progress__pill">
+        <svg class="funnel-progress__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M5.5 5h5M5.5 8h5M5.5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="funnel-progress__percent" data-writing-tutorial-target="progressPercent">12%</span>
+      </span>
+    </div>
+
+    <div class="sp-content">
+      <div class="sp-stage editor-stagger" data-writing-tutorial-target="stage">
+
+        <!-- Intro -->
+        <div class="sp-step funnel-step--intro" data-writing-tutorial-target="step" data-step="intro">
+          <h1 class="sp-title">Bienvenue à l'écriture de votre premier texte</h1>
+          <p class="sp-subtitle">SP2050 est une plateforme collaborative d'écriture de textes. Nous t'avons prévu quelques questions pour t'aider à te lancer dans l'écriture.</p>
+        </div>
+
+        <% unless user_signed_in? %>
+          <!-- Pseudo -->
+          <div class="sp-step" data-writing-tutorial-target="step" data-step="username">
+            <h1 class="sp-title">Bienvenue</h1>
+            <div class="funnel-field">
+              <label class="sp-label" for="funnel-username">En 2050, comment aimerais-tu être appelé·e ?</label>
+              <input type="text" id="funnel-username" class="sp-input"
+                     placeholder="Je m'appelle …" autocomplete="username"
+                     data-writing-tutorial-target="username"
+                     data-action="input->writing-tutorial#checkUsername" />
+              <p class="sp-error" data-writing-tutorial-target="usernameError"></p>
+            </div>
+          </div>
+
+          <!-- Âge -->
+          <div class="sp-step" data-writing-tutorial-target="step" data-step="age">
+            <h1 class="sp-title">Bienvenue</h1>
+            <div class="funnel-field">
+              <label class="sp-label" for="funnel-age">En 2050, quel âge auras-tu ?</label>
+              <input type="text" id="funnel-age" class="sp-input" inputmode="numeric"
+                     placeholder="Mon âge en 2050" autocomplete="off"
+                     data-writing-tutorial-target="age"
+                     data-action="input->writing-tutorial#clearFieldError" />
+              <p class="sp-error" data-writing-tutorial-target="ageError"></p>
+            </div>
           </div>
         <% end %>
-      </div>
 
-      <div id="writing-tutorial-steps">
-        <!-- Étape 1 : Intro -->
-        <div class="step" id="step-intro" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Écrire le futur</h2>
-          <p class="auth-form__subtitle">Prêt·e à écrire le futur ?</p>
-          <p class="auth-form__subtitle">Laisse-toi guider pas à pas pour récolter les ingrédients de ton récit...</p>
-          <p class="auth-form__subtitle">Ou clique sur "Passer" si tu préfères te lancer directement dans l'écriture !</p>
-          <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-username" class="auth-btn-primary mt-6">Commencer</button>
-        </div>
-
-        <!-- Étape 2 : Pseudo -->
-        <div class="step" id="step-username" style="display: none;" data-writing-tutorial-target="step">
-          <% if user_signed_in? %>
-            <h2 class="auth-form__title writing-tutorial-identity">
-              En 2050, tu seras appelé·e
-              <span class="writing-tutorial-identity__value"><%= current_user.username %></span><sup class="writing-tutorial-identity__mark">*</sup>
-            </h2>
-            <p class="writing-tutorial-identity__note">*Pseudo enregistré sur ton profil.</p>
-            <div class="auth-form__actions-row">
-              <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-intro" class="auth-btn-secondary">Précédent</button>
-              <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-age" class="auth-btn-primary">Suivant</button>
+        <!-- Lieu de vie -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="living-place">
+          <h1 class="sp-title">Bienvenue</h1>
+          <div class="funnel-field">
+            <div class="sp-field__head">
+              <label class="sp-label" for="funnel-living-place">Où vivras-tu en 2050 ?</label>
+              <span class="sp-helper">Une ville, un quartier, un territoire.</span>
             </div>
-          <% else %>
-            <h2 class="auth-form__title">En 2050, par quel nom aimerais-tu être appelé·e&nbsp;?</h2>
-            <input type="text"
-                   class="auth-input text-center mt-4"
-                   placeholder="Ton pseudo"
-                   autocomplete="username"
-                   data-writing-tutorial-target="username"
-                   data-action="input->writing-tutorial#checkUsername" />
-            <div class="text-red-400 text-sm mt-1" data-writing-tutorial-target="usernameError"></div>
-            <div class="auth-form__actions-row">
-              <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-intro" class="auth-btn-secondary">Précédent</button>
-              <button type="button"
-                      data-action="click->writing-tutorial#nextStep"
-                      data-next-step="step-age"
-                      class="auth-btn-primary"
-                      data-writing-tutorial-target="nextStepUsernameButton"
-                      disabled>Suivant</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Étape 3 : Âge -->
-        <div class="step" id="step-age" style="display: none;" data-writing-tutorial-target="step">
-          <% if user_signed_in? %>
-            <h2 class="auth-form__title writing-tutorial-identity">
-              En 2050, tu auras
-              <span class="writing-tutorial-identity__value"><%= current_user.age %> ans</span><sup class="writing-tutorial-identity__mark">*</sup>
-            </h2>
-            <p class="writing-tutorial-identity__note">*Âge enregistré sur ton profil.</p>
-            <div class="auth-form__actions-row">
-              <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-username" class="auth-btn-secondary">Précédent</button>
-              <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-living-place" class="auth-btn-primary">Suivant</button>
-            </div>
-          <% else %>
-            <h2 class="auth-form__title">Quel âge auras-tu en 2050&nbsp;?</h2>
-            <input type="number"
-                   min="0"
-                   class="auth-input text-center mt-4"
-                   placeholder="Ton age en 2050"
-                   autocomplete="off"
-                   data-writing-tutorial-target="age" />
-            <div class="text-red-400 text-sm mt-1" data-writing-tutorial-target="ageError"></div>
-            <div class="auth-form__actions-row">
-              <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-username" class="auth-btn-secondary">Précédent</button>
-              <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-living-place" class="auth-btn-primary">Suivant</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Étape 4 : Lieu de vie -->
-        <div class="step" id="step-living-place" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Où viveras-tu en 2050&nbsp;?</h2>
-          <p class="auth-form__subtitle">Une ville, un quartier, un territoire — décris l'endroit où tu habiteras.</p>
-          <input type="text"
-                 class="auth-input text-center mt-4"
-                 placeholder="Par exemple : un quartier coopératif au bord de la Loire"
-                 autocomplete="off"
-                 data-writing-tutorial-target="livingPlace" />
-          <div class="text-red-400 text-sm mt-1" data-writing-tutorial-target="livingPlaceError"></div>
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-age" class="auth-btn-secondary">Précédent</button>
-            <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-positive" class="auth-btn-primary">Suivant</button>
+            <input type="text" id="funnel-living-place" class="sp-input"
+                   placeholder="Un quartier coopératif au bord de la Loire" autocomplete="off"
+                   data-writing-tutorial-target="livingPlace"
+                   data-action="input->writing-tutorial#clearFieldError" />
+            <p class="sp-error" data-writing-tutorial-target="livingPlaceError"></p>
           </div>
         </div>
 
-        <!-- Étape 5 : Futurs désirables -->
-        <div class="step" id="step-positive" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Des futurs désirables</h2>
-          <div class="auth-terms">
-            <p>Chaque histoire doit contribuer a imaginer un monde meilleur pour tous.tes. En publiant sur ce site tu t'engages a respecter cette ligne directrice.</p>
-            <br>
-            <p>En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
-          </div>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-living-place" class="auth-btn-secondary">Précédent</button>
-            <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-freedom" class="auth-btn-primary">Suivant</button>
-          </div>
-        </div>
-
-        <!-- Étape 6 : Liberté créative -->
-        <div class="step" id="step-freedom" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Générateur d'étincelles</h2>
-
-          <%= render "shared/idea_generator" %>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-positive" class="auth-btn-secondary">Précédent</button>
-            <button type="button" data-action="click->writing-tutorial#nextStep" data-next-step="step-theme" class="auth-btn-primary">Suivant</button>
+        <!-- Consignes / futurs désirables -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="positive">
+          <h1 class="sp-title">Bienvenue</h1>
+          <div class="sp-terms funnel-terms">
+            <div class="sp-terms__item">
+              <h3 class="sp-terms__title">Des futurs désirables</h3>
+              <p class="sp-terms__text">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous·tes. En publiant, tu t'engages à respecter cette ligne directrice.</p>
+            </div>
+            <div class="sp-terms__item">
+              <h3 class="sp-terms__title">Contenus respectueux</h3>
+              <p class="sp-terms__text">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
+            </div>
           </div>
         </div>
 
-        <!-- Étape 6 : Thème -->
-        <div class="step" id="step-theme" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Quel thème t'inspire&nbsp;?</h2>
-          <p class="auth-form__subtitle">Choisis un thème pour orienter ton futur.</p>
+        <!-- Thème (checkboxes délicieuses) -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="theme">
+          <p class="sp-eyebrow">La fabrique à idée</p>
+          <h1 class="sp-title">Quelques questions pour stimuler l'écriture</h1>
+          <p class="sp-subtitle sp-subtitle--q">Quel thème t'inspire ?</p>
 
-          <div class="writing-tutorial-themes" role="radiogroup" aria-label="Thèmes de récit">
+          <div class="funnel-chips" role="radiogroup" aria-label="Thèmes de récit">
             <% %w[Géopolitique Technologie Société Loi Environnement Social].each do |theme| %>
-              <button type="button"
-                      class="writing-tutorial-theme"
-                      role="radio"
-                      aria-checked="false"
+              <button type="button" class="funnel-chip"
+                      role="radio" aria-checked="false"
                       data-writing-tutorial-target="themeOption"
                       data-writing-tutorial-theme-param="<%= theme %>"
                       data-action="click->writing-tutorial#selectTheme">
-                <%= theme %>
+                <span class="funnel-chip__box" aria-hidden="true">
+                  <svg class="funnel-chip__check" viewBox="0 0 16 16" fill="none">
+                    <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <span class="funnel-chip__label"><%= theme %></span>
               </button>
             <% end %>
           </div>
-
-          <div class="text-red-400 text-sm mt-2 text-center" data-writing-tutorial-target="themeError"></div>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-freedom" class="auth-btn-secondary">Précédent</button>
-            <button type="button"
-                    data-action="click->writing-tutorial#nextStep"
-                    data-next-step="step-trend"
-                    class="auth-btn-primary"
-                    data-writing-tutorial-target="nextStepThemeButton"
-                    disabled>Suivant</button>
-          </div>
+          <p class="sp-error sp-error--center" data-writing-tutorial-target="themeError"></p>
         </div>
 
-        <!-- Étape 7 : Inverse la tendance -->
-        <div class="step" id="step-trend" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Inverse la tendance</h2>
-          <p class="auth-form__subtitle">Choisis une dynamique du présent que ton futur contredirait radicalement.</p>
+        <!-- Générateur d'étincelles -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="etincelle">
+          <p class="sp-eyebrow">La fabrique à idée</p>
+          <h1 class="sp-title">Générateur d'étincelles</h1>
+          <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit.</p>
+          <%= render "shared/jackpot" %>
+        </div>
 
-          <div class="writing-tutorial-trend-picker"
-               role="group"
-               aria-label="Tendance à inverser">
-            <button type="button"
-                    class="writing-tutorial-trend-picker__arrow writing-tutorial-trend-picker__arrow--up"
-                    aria-label="Tendance précédente"
-                    data-action="click->writing-tutorial#previousTrend">
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+        <!-- Inversion la tendance -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="inversion">
+          <p class="sp-eyebrow">La fabrique à idée</p>
+          <h1 class="sp-title">Inversion la tendance</h1>
+          <p class="sp-subtitle sp-subtitle--q">Choisis une dynamique actuelle pour combattre la tendance.</p>
 
-            <div id="writing-tutorial-trend"
-                 class="writing-tutorial-trend-picker__display auth-input"
-                 data-writing-tutorial-target="trendPicker"
-                 aria-live="polite">
-              <span data-writing-tutorial-target="trendLabel"
-                    data-controller="randomize-letter-animation"
-                    data-randomize-letter-animation-text-value="<%= @writing_tutorial_trends.first %>"
-                    class="writing-tutorial-trend-picker__label"><%= @writing_tutorial_trends.first %></span>
+          <div class="jackpot jackpot--trend" role="group" aria-label="Tendance à inverser">
+            <div class="jackpot__reel jackpot__reel--trend" aria-live="polite">
+              <div class="jackpot__strip" data-writing-tutorial-target="trendStrip"></div>
             </div>
-
-            <button type="button"
-                    class="writing-tutorial-trend-picker__arrow writing-tutorial-trend-picker__arrow--down"
-                    aria-label="Tendance suivante"
-                    data-action="click->writing-tutorial#nextTrend">
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <button type="button" class="jackpot__spin" data-writing-tutorial-target="trendSpin"
+                    data-action="click->writing-tutorial#spinTrend" aria-label="Tirer une tendance">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 1.5l1.9 5.9a3 3 0 0 0 1.9 1.9l5.9 1.9-5.9 1.9a3 3 0 0 0-1.9 1.9L12 21l-1.9-5.9a3 3 0 0 0-1.9-1.9L2.3 11.3l5.9-1.9a3 3 0 0 0 1.9-1.9L12 1.5z"/>
               </svg>
             </button>
           </div>
+          <p class="sp-error sp-error--center" data-writing-tutorial-target="trendError"></p>
 
-          <div class="text-red-400 text-sm mt-2 text-center" data-writing-tutorial-target="trendError"></div>
-
-          <div class="writing-tutorial-trend-panel"
-               data-writing-tutorial-target="trendOppositePanel"
-               hidden>
-            <label class="writing-tutorial-trend-panel__label" for="writing-tutorial-trend-opposite">
-              Et si, en 2050, on inversait complètement cette tendance&nbsp;?
-            </label>
-            <textarea id="writing-tutorial-trend-opposite"
-                      class="auth-input writing-tutorial-trend-panel__input"
-                      rows="3"
-                      placeholder="Décris une approche radicalement opposée…"
+          <div class="funnel-trend__panel" data-writing-tutorial-target="trendOppositePanel" hidden>
+            <label class="sp-label funnel-trend__label" for="funnel-trend-opposite">Racontes nous comment on inverse ça</label>
+            <textarea id="funnel-trend-opposite" class="sp-input funnel-textarea" rows="3"
+                      placeholder="une action, un lieu, un personnage, tout ce qui te viens par la tête."
                       data-writing-tutorial-target="trendOpposite"
                       data-action="input->writing-tutorial#updateTrendOpposite"></textarea>
-            <div class="text-red-400 text-sm mt-1" data-writing-tutorial-target="trendOppositeError"></div>
-          </div>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-theme" class="auth-btn-secondary">Précédent</button>
-            <button type="button"
-                    data-action="click->writing-tutorial#nextStep"
-                    data-next-step="step-style"
-                    class="auth-btn-primary"
-                    data-writing-tutorial-target="nextStepTrendButton"
-                    disabled>Suivant</button>
+            <p class="sp-error" data-writing-tutorial-target="trendOppositeError"></p>
           </div>
         </div>
 
-        <!-- Étape 8 : Style -->
-        <div class="step" id="step-style" style="display: none;" data-writing-tutorial-target="step">
-          <h2 class="auth-form__title">Trouve ton style</h2>
-          <p class="auth-form__subtitle">Choisis maintenant ton style pour générer ta trame de récit personnalisée.</p>
+        <!-- Style (checkboxes classiques) -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="style">
+          <p class="sp-eyebrow">La fabrique à idée</p>
+          <h1 class="sp-title">Choisis un style d'écriture</h1>
+          <p class="sp-subtitle sp-subtitle--q">Parmi ces formats, lequel te parle le plus ?</p>
 
-          <div class="writing-tutorial-styles" role="radiogroup" aria-label="Styles de récit" data-lenis-prevent>
+          <div class="funnel-styles" role="radiogroup" aria-label="Styles de récit" data-lenis-prevent>
             <% @narrative_styles.each do |style| %>
-              <button type="button"
-                      class="writing-tutorial-style"
-                      role="radio"
-                      aria-checked="false"
+              <button type="button" class="funnel-style"
+                      role="radio" aria-checked="false"
                       data-writing-tutorial-target="styleOption"
                       data-writing-tutorial-style-id-param="<%= style[:id] %>"
                       data-action="click->writing-tutorial#selectStyle">
-                <span class="writing-tutorial-style__title"><%= style[:title] %></span>
-                <span class="writing-tutorial-style__badge"><%= style[:style] %></span>
-                <span class="writing-tutorial-style__desc"><%= style[:description] %></span>
+                <span class="funnel-style__check" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="funnel-style__title"><%= style[:title] %></span>
+                <span class="funnel-style__desc"><%= style[:description] %></span>
               </button>
             <% end %>
           </div>
-
-          <div class="text-red-400 text-sm mt-2 text-center" data-writing-tutorial-target="styleError"></div>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-trend" class="auth-btn-secondary">Précédent</button>
-            <button type="button"
-                    data-action="click->writing-tutorial#nextStep"
-                    data-next-step="step-ready"
-                    class="auth-btn-primary"
-                    data-writing-tutorial-target="nextStepStyleButton"
-                    disabled>Suivant</button>
-          </div>
+          <p class="sp-error sp-error--center" data-writing-tutorial-target="styleError"></p>
         </div>
 
-        <!-- Étape 9 : Prêt -->
-        <div class="step"
-             id="step-ready"
-             style="display: none;"
-             data-writing-tutorial-target="step"
-             data-controller="writing-tutorial-draft">
-          <h2 class="auth-form__title">C'est parti&nbsp;!</h2>
-          <p class="auth-form__subtitle">
-            Relis ta trame et ajuste-la avant de commencer ton récit.
-          </p>
+      </div>
 
-          <%= render "shared/writing_tutorial_draft" %>
-
-          <div class="auth-form__actions-row">
-            <button type="button" data-action="click->writing-tutorial#previousStep" data-step-id="step-style" class="auth-btn-secondary">Précédent</button>
-            <%= link_to "Écrire mon futur",
-                        @skip_path,
-                        class: "auth-btn-primary",
-                        data: { action: "click->writing-tutorial-draft#confirm" } %>
-          </div>
-        </div>
+      <!-- Barre de nav partagée (stationnaire) -->
+      <div class="sp-nav editor-stagger">
+        <button type="button" class="sp-back sp-back--hidden" data-underline-link
+                data-writing-tutorial-target="back"
+                data-action="click->writing-tutorial#back">Retour</button>
+        <button type="button" class="btn-animate-chars btn-animate-chars--primary sp-next"
+                data-controller="stagger-chars"
+                data-writing-tutorial-target="next"
+                data-action="click->writing-tutorial#handleCta">
+          <div class="btn-animate-chars__bg"></div>
+          <span data-button-animate-chars data-stagger-chars-target="text"
+                class="btn-animate-chars__text">Commencer</span>
+        </button>
       </div>
     </div>
-  </div>
 
-  <%= link_to @skip_path,
-              class: "writing-tutorial-skip",
-              style: "position:fixed;bottom:24px;right:24px;z-index:10;display:inline-flex;align-items:center;gap:10px;",
-              data: {
-                writing_tutorial_target: "skip",
-                action: "click->writing-tutorial#skip"
-              },
-              aria: { label: "Passer le didacticiel" } do %>
-    <span class="writing-tutorial-skip__label">Passer</span>
-    <svg class="writing-tutorial-skip__icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  <% end %>
+    <%# Passer le didacticiel — va directement à l'éditeur %>
+    <div class="sp-alt-wrap funnel-skip-wrap">
+      <%= link_to "Passer le guide", @skip_path, class: "sp-alt", data: { underline_link: "", writing_tutorial_target: "skip", action: "click->writing-tutorial#skip" } %>
+    </div>
+  </div>
 
   <script type="application/json" id="writing-narrative-styles-json"><%= raw @narrative_styles.to_json %></script>
   <script type="application/json" id="writing-tutorial-trends-json"><%= raw @writing_tutorial_trends.to_json %></script>

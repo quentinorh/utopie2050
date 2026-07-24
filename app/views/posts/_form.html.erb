@@ -105,6 +105,9 @@
             <p class="editor-error mt-2 hidden" data-cover-editor-target="titleError">Le titre est requis</p>
           </div>
 
+          <%# Trait qui se dessine à l'entrée (editor-reveal). %>
+          <span class="editor-drawline" aria-hidden="true"></span>
+
           <!-- Code événement — optionnel, révélé par un switch -->
           <% event_code_str = @post.event_code&.code.to_s %>
           <% event_code_active = event_code_str.present? %>
@@ -144,7 +147,14 @@
           <% end %>
 
           <!-- Corps du texte -->
-          <div class="editor-body-field editor-stagger">
+          <div class="editor-body-field editor-stagger<%= ' editor-body-field--draft' if @post.new_record? %>">
+            <% if @post.new_record? %>
+              <div class="editor-skeleton" aria-hidden="true">
+                <% [92, 100, 74, 96, 68].each do |w| %>
+                  <span class="editor-skeleton__line" style="width: <%= w %>%"></span>
+                <% end %>
+              </div>
+            <% end %>
             <%= form.text_area :body,
                                id: "post_body",
                                class: "editor-textarea",

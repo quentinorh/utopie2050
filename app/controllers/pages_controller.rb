@@ -80,12 +80,6 @@ class PagesController < ApplicationController
     @published_authors_count = Post.published.distinct.count(:user_id)
   end
 
-  # Labo de design : 10 pistes pour le panneau .cover-controls__body.
-  # Page autonome (aucun layout) pour ne pas hériter du CSS applicatif.
-  def test
-    render layout: false
-  end
-
   def writing_tutorial
     @skip_path = new_post_path
     @writing_tutorial_trends = shuffled_writing_tutorial_trends

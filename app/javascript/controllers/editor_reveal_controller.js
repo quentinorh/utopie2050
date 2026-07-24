@@ -33,7 +33,31 @@ export default class extends Controller {
 
     this._cacheHandler = () => this._reset()
     document.addEventListener("turbo:before-cache", this._cacheHandler)
-    this._run()
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      this._revealInstant()
+    } else {
+      this._run()
+    }
+  }
+
+  // Accessibilité : pas d'animation d'entrée, on montre l'état final direct.
+  _revealInstant() {
+    this._tl?.kill()
+    this.element.classList.remove("is-revealing")
+    this.element.querySelectorAll(
+      ".form-cover-svg, .cover-pill--reveal, .cover-title-text, .cover-username, .editor-stagger, .editor-actionbar"
+    ).forEach(el => {
+      el.style.opacity = ""
+      el.style.transform = ""
+      el.style.clipPath = ""
+    })
+    const skeleton = this.element.querySelector(".editor-skeleton")
+    if (skeleton) skeleton.style.display = "none"
+    const textarea = this.element.querySelector(".editor-body-field .editor-textarea")
+    if (textarea) textarea.style.opacity = ""
+    const drawline = this.element.querySelector(".editor-drawline")
+    if (drawline) drawline.style.transform = "scaleX(1)"
   }
 
   disconnect() {
@@ -142,6 +166,31 @@ export default class extends Controller {
         ease: reveal.ease,
         stagger: reveal.stagger
       }, 0.55)
+    }
+
+    // Trait qui se dessine sous le titre, dans le fil des staggers.
+    const drawline = this.element.querySelector(".editor-drawline")
+    if (drawline) {
+      gsap.set(drawline, { scaleX: 0, transformOrigin: "left center" })
+      tl.to(drawline, { scaleX: 1, duration: 0.7, ease: coverEase }, 0.72)
+    }
+
+    // Skeleton → brouillon : le corps prérempli (issu de l'entonnoir) se révèle
+    // à partir de lignes squelette qui s'estompent. Nouveau texte uniquement.
+    const skeleton = this.element.querySelector(".editor-skeleton")
+    if (skeleton) {
+      const field = skeleton.closest(".editor-body-field")
+      const textarea = field?.querySelector(".editor-textarea")
+      if (textarea) gsap.set(textarea, { opacity: 0 })
+      gsap.set(skeleton, { opacity: 1 })
+      const at = 1.0
+      if (textarea) tl.to(textarea, { opacity: 1, duration: 0.55, ease: reveal.ease }, at)
+      tl.to(skeleton, {
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.out",
+        onComplete: () => { skeleton.style.display = "none" }
+      }, at)
     }
 
     const actionbar = this.element.querySelector(".editor-actionbar")
