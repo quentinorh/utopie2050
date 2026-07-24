@@ -1,12 +1,15 @@
 <% unique_id = @post.persisted? ? @post.id : SecureRandom.uuid %>
-<%# Auteur du récit (pas l’éditeur connecté — ex. admin qui modifie le post d’un·e auteur·ice) %>
-<% post_author_username = @post.user&.username.presence || current_user.username %>
+<% guest_writer = local_assigns.fetch(:guest_writer, false) || @guest_writer %>
+<% post_author_username = @post.user&.username.presence || current_user&.username.presence || "…" %>
 <div data-controller="chapter cover-editor editor-reveal"
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="<%= @post.new_record? ? 'true' : 'false' %>"
      data-cover-editor-pattern-settings-value="<%= @post.pattern_settings.to_json %>"
      class="w-full min-w-0 max-w-full form-editor is-revealing">
-  <%= form_with(model: @post, local: true, html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#handleFormSubmit" } }) do |form| %>
+  <%= form_with(model: @post,
+                url: guest_writer ? stage_posts_path : nil,
+                local: true,
+                html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#handleFormSubmit" } }) do |form| %>
 
     <% if @post.errors.any? %>
       <div class="editor-errors" role="alert">
@@ -72,7 +75,19 @@
 
       <!-- Colonne de droite : contenu -->
       <main class="form-right-panel">
-        <div class="editor-body">
+        <div class="editor-body"
+             <% if @post.new_record? %>
+             data-controller="writing-tutorial-prefill"
+             data-writing-tutorial-prefill-enabled-value="true"
+             <% end %>>
+          <% if @post.new_record? %>
+            <%= render "shared/writing_tutorial_synthesis",
+                       username: current_user&.username,
+                       age: current_user&.age,
+                       variant: :editor %>
+            <script type="application/json" id="writing-narrative-styles-json"><%= raw WritingTutorialNarrativeStyles::STYLES.to_json %></script>
+          <% end %>
+
           <!-- Titre du futur — input minimaliste, gros caractères -->
           <div class="editor-title-field editor-stagger">
             <label for="post_title" class="sr-only">Titre du futur</label>
@@ -82,14 +97,11 @@
                                 placeholder: "Ton futur titre…",
                                 value: @post.title,
                                 required: true,
-                                data: { action: "input->cover-editor#updateTitle", "cover-editor-target": "titleInput" } %>
-            <%# Indice affiché quand le champ est actif et vide : curseur clignotant
-                + libellé traversé par une brillance discrète (voir .editor-hint__text). %>
-            <span class="editor-hint" aria-hidden="true">
-              <span class="editor-hint__caret"></span>
-              <span class="editor-hint__text">Ton futur titre</span>
-              <span class="editor-hint__dots"><i>.</i><i>.</i><i>.</i></span>
-            </span>
+                                data: {
+                                  action: "input->cover-editor#updateTitle",
+                                  "cover-editor-target": "titleInput",
+                                  writing_tutorial_prefill_target: "title"
+                                } %>
             <p class="editor-error mt-2 hidden" data-cover-editor-target="titleError">Le titre est requis</p>
           </div>
 
@@ -126,18 +138,19 @@
             </div>
           </div>
 
+          <!-- Booster de créativité -->
+          <% if @post.new_record? %>
+            <%= render "shared/creativity_booster" %>
+          <% end %>
+
           <!-- Corps du texte -->
           <div class="editor-body-field editor-stagger">
             <%= form.text_area :body,
                                id: "post_body",
                                class: "editor-textarea",
                                rows: 12,
-                               placeholder: "Écris ton futur ici…" %>
-            <span class="editor-hint" aria-hidden="true">
-              <span class="editor-hint__caret"></span>
-              <span class="editor-hint__text">Écris ton futur ici</span>
-              <span class="editor-hint__dots"><i>.</i><i>.</i><i>.</i></span>
-            </span>
+                               placeholder: "Écris ton futur ici…",
+                               data: { writing_tutorial_prefill_target: "body" } %>
           </div>
 
           <!-- Chapitres -->

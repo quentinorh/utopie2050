@@ -17,7 +17,8 @@
   <link rel="canonical" href="<%= post_url(@post, host: 'votre-domaine.fr') %>" />
 <% end %>
 
-<div data-controller="scroll cover actions svg-animation"
+<div data-controller="scroll cover actions svg-animation registration-prefill-clear"
+     data-registration-prefill-clear-active-value="<%= flash[:clear_registration_prefill].present? %>"
      data-post-id="<%= @post.id %>"
      data-cover-hue-value="<%= @post.pattern_settings.present? ? JSON.parse(@post.pattern_settings)['hue'] : 0 %>"
      data-cover-pattern-settings-value="<%= @post.pattern_settings %>">

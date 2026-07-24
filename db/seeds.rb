@@ -209,7 +209,6 @@ Chapter.destroy_all
 # Create a specific user with provided parameters
 quentin_user = User.create!(
   email: "quentin.orhant@mailo.fr",
-  password: "azertyuiop",
   username: "Quentin Orhant",
   age: 62,
   role: "admin"

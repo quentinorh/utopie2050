@@ -6,6 +6,8 @@ export default class extends Controller {
   static values = { text: String }
 
   connect() {
+    if (!this.textValue) return
+
     // Resolve which element receives textContent updates.
     // When a `text` target exists we animate that node only — this lets
     // the controller live on a button that also contains sibling icons

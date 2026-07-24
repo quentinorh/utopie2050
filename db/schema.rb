@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_18_120000) do
+ActiveRecord::Schema[7.0].define(version: 2026_07_24_020000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,16 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_18_120000) do
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
+  create_table "pending_posts", force: :cascade do |t|
+    t.string "token", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_pending_posts_on_expires_at"
+    t.index ["token"], name: "index_pending_posts_on_token", unique: true
+  end
+
   create_table "post_themes", force: :cascade do |t|
     t.bigint "post_id", null: false
     t.bigint "theme_id", null: false
@@ -118,7 +128,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_18_120000) do
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
+    t.string "encrypted_password", default: ""
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
@@ -131,8 +141,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_18_120000) do
     t.string "unconfirmed_email"
     t.integer "age"
     t.string "role"
+    t.string "magic_link_token"
+    t.datetime "magic_link_sent_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["magic_link_token"], name: "index_users_on_magic_link_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
