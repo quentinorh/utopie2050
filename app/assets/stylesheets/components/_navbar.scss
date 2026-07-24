@@ -46,6 +46,27 @@
   background-color: #fff;
 }
 
+/* Tant qu'elle est transparente, la navbar n'est qu'un calque décoratif de la
+   largeur de l'écran : elle ne doit pas capter les clics du contenu qu'elle
+   survole (barre de réglages de la couverture en haut de l'éditeur, par
+   exemple). Seuls ses éléments interactifs restent cliquables. Dès qu'elle
+   devient opaque (.navbar--scrolled), elle reprend son comportement normal. */
+.navbar--transparent:not(.navbar--scrolled) {
+  pointer-events: none;
+
+  a,
+  button,
+  input,
+  select,
+  summary,
+  form,
+  .tw-dropdown-menu,
+  [role="button"],
+  [role="switch"] {
+    pointer-events: auto;
+  }
+}
+
 .navbar--transparent {
   background-color: transparent !important;
   border-color: transparent !important;
@@ -304,10 +325,6 @@
     border-color 0.4s ease;
 }
 
-/* Mobile : navbar h-[56px] sm:h-[75px] — position du menu profil alignée sous la barre */
-@media (max-width: 639px) {
-  .tw-dropdown-menu {
-    top: calc(56px + 16px);
-    right: 10px;
-  }
-}
+/* Le menu profil est désormais ancré à l'avatar (position: absolute) : il suit
+   la hauteur de la navbar tout seul, plus besoin de recaler top/right par
+   media-query. */

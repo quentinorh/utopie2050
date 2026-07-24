@@ -56,14 +56,14 @@
 }
 
 .auth-form {
-  padding: 20px 14px;
+  padding: 18px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
   @media (min-width: 640px) {
-    padding: 50px;
+    padding: 36px 40px;
   }
 }
 
@@ -82,11 +82,11 @@
 /* Split layout header (spans both columns) */
 .auth-form__header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 
   @media (min-width: 768px) {
-    margin-bottom: 36px;
-    padding-bottom: 28px;
+    margin-bottom: 28px;
+    padding-bottom: 22px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -99,11 +99,11 @@
 .auth-form__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: 24px;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
-    gap: 48px;
+    gap: 36px;
     align-items: start;
   }
 }
@@ -120,14 +120,14 @@
 }
 
 .auth-form__column--side {
-  gap: 20px;
+  gap: 14px;
   justify-content: flex-start;
 }
 
 /* Cards (profile summary, password, danger) */
 .auth-card {
   position: relative;
-  padding: 20px;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
   transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
@@ -183,16 +183,16 @@
   grid-template-areas:
     "avatar identity"
     "stats  stats";
-  gap: 16px;
-  padding: 24px;
+  gap: 14px;
+  padding: 18px;
   background: linear-gradient(135deg, rgba(126, 88, 255, 0.10) 0%, rgba(41, 226, 209, 0.06) 100%);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 .auth-avatar {
   grid-area: avatar;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -200,7 +200,7 @@
   background: linear-gradient(135deg, #7e58ff 0%, #ff46a9 100%);
   color: #fff;
   font-family: "Apfel", sans-serif;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: bold;
   flex-shrink: 0;
   box-shadow: 0 4px 20px rgba(126, 88, 255, 0.35);
@@ -241,7 +241,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -511,55 +511,50 @@
     min-width: 0;
   }
 
+  /* Côte à côte : la géométrie commune suffit, on n'ajuste que l'espace
+     horizontal quand les libellés doivent passer sur deux lignes. */
   .auth-btn-primary,
   .auth-btn-secondary {
-    width: 100%;
     box-sizing: border-box;
     white-space: normal;
-    line-height: 1.25;
-    padding-top: 14px;
-    padding-bottom: 14px;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 13px;
-    letter-spacing: 0.03em;
-
-    @media (min-width: 640px) {
-      padding: 16px 24px;
-      font-size: 16px;
-      letter-spacing: 0.05em;
-    }
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
-.auth-btn-primary {
-  display: block;
+/* Boutons — une seule géométrie pour les trois variantes : même hauteur, même
+   typo, même transition. Seule la peau change (rempli / contour / danger).
+   44px : assez pour le doigt, plus compact que les 51px précédents. */
+@mixin auth-btn-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 14px 16px;
-  background: #fff;
-  color: #12142C;
+  min-height: 44px;
+  padding: 10px 18px;
   font-family: "Apfel", sans-serif;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 13px;
+  line-height: 1.2;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border: none;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    scale 0.12s ease-out;
 
   @media (min-width: 640px) {
-    padding: 16px 24px;
-    font-size: 16px;
-    letter-spacing: 0.05em;
+    font-size: 14px;
   }
 
-  &:hover {
-    background: #f0f0f0;
-  }
+  &:active { scale: 0.98; }
 
-  &:active {
-    transform: scale(0.98);
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 2px;
   }
 
   &:disabled {
@@ -568,26 +563,20 @@
   }
 }
 
+.auth-btn-primary {
+  @include auth-btn-base;
+  background: #fff;
+  color: #12142C;
+  font-weight: bold;
+
+  &:hover { background: #f0f0f0; }
+}
+
 .auth-btn-secondary {
-  display: block;
-  width: 100%;
-  padding: 14px 16px;
+  @include auth-btn-base;
   background: transparent;
   color: #fff;
-  font-family: "Apfel", sans-serif;
-  font-size: 14px;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-
-  @media (min-width: 640px) {
-    padding: 16px 24px;
-    font-size: 16px;
-    letter-spacing: 0.05em;
-  }
+  border-color: rgba(255, 255, 255, 0.2);
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.5);
@@ -596,25 +585,10 @@
 }
 
 .auth-btn-danger {
-  display: block;
-  width: 100%;
-  padding: 14px 16px;
+  @include auth-btn-base;
   background: transparent;
   color: #ff7a7a;
-  font-family: "Apfel", sans-serif;
-  font-size: 14px;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
-
-  @media (min-width: 640px) {
-    padding: 16px 24px;
-    font-size: 16px;
-    letter-spacing: 0.05em;
-  }
+  border-color: rgba(239, 68, 68, 0.4);
 
   &:hover {
     border-color: rgba(239, 68, 68, 0.8);

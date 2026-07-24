@@ -44,7 +44,7 @@ export default class extends Controller {
   _reset() {
     this._tl?.kill()
     const all = this.element.querySelectorAll(
-      ".form-cover-svg, .cover-pill--reveal, .cover-title-text, .cover-username, .editor-stagger, .editor-actionbar, .cover-controls__body"
+      ".form-cover-svg, .cover-pill--reveal, .cover-title-text, .cover-username, .editor-stagger, .editor-actionbar"
     )
     all.forEach(el => {
       gsap.killTweensOf(el)
@@ -58,13 +58,13 @@ export default class extends Controller {
 
   _run() {
     // When the timeline completes, strip every inline style we wrote so that
-    // downstream CSS rules (e.g. `.controls-collapsed .cover-controls__body`)
-    // can take over without being out-prioritised by inline `style=""`.
+    // downstream CSS rules can take over without being out-prioritised by
+    // inline `style=""`.
     const tl = gsap.timeline({
       onComplete: () => {
         this.element.classList.remove("is-revealing")
         const cleanup = this.element.querySelectorAll(
-          ".form-cover-svg, .cover-pill--reveal, .cover-title-text, .cover-username, .editor-stagger, .editor-actionbar, .cover-controls__body"
+          ".form-cover-svg, .cover-pill--reveal, .cover-title-text, .cover-username, .editor-stagger, .editor-actionbar"
         )
         cleanup.forEach(el => {
           el.style.opacity = ""
@@ -125,19 +125,9 @@ export default class extends Controller {
       }
     }
 
-    // Le popover des paramètres flotte au-dessus du pill head (toolbar bas-droite) —
-    // on le révèle juste après le head pour éviter qu'il n'apparaisse en orphelin.
-    const popover = this.element.querySelector(".cover-controls__body")
-    if (popover) {
-      gsap.set(popover, { opacity: 0, y: 8, scale: 0.96, transformOrigin: "bottom right" })
-      tl.to(popover, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.5,
-        ease: coverEase
-      }, 0.85)
-    }
+    // La barre s'ouvre au repos sur le dé + le bouton Paramètres : les groupes
+    // de réglages sont hors flux tant que l'utilisateur ne les déplie pas, il
+    // n'y a donc plus de popover à révéler ici.
 
     const staggered = this.element.querySelectorAll(".editor-stagger")
     if (staggered.length) {

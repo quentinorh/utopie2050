@@ -1,0 +1,300 @@
+          <!-- Barre de réglages ancrée en bas à droite — sibling du SVG pour ne pas être clippée.
+               Au repos : le dé (aléatoire) + le bouton Paramètres. À l'ouverture, les groupes se
+               déplient en cascade vers la gauche (la barre s'allonge, les deux pastilles ne bougent pas) :
+               ≥1024px symétrie en segmented inline + 3 dropdowns, en dessous 4 pastilles icône. -->
+          <div class="cover-toolbar"
+               data-controller="cover-controls"
+               data-controls-open="false"
+               data-action="cover-controls:opened->cover-editor#syncControls">
+
+
+            <button type="button"
+                    class="cover-pill cover-pill--icon cover-pill--reveal editor-randomize"
+                    data-action="click->cover-editor#randomize"
+                    aria-label="Générer une couverture aléatoire">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   class="cover-pill__icon"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="1.8"
+                   stroke-linecap="round"
+                   stroke-linejoin="round"
+                   aria-hidden="true">
+                <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
+                <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
+                <path d="M6 18h.01"/>
+                <path d="M10 14h.01"/>
+                <path d="M15 6h.01"/>
+                <path d="M18 9h.01"/>
+              </svg>
+            </button>
+
+            <%# .cover-groups : grille 0fr↔1fr qui anime la largeur (pas de layout
+                shift). .cover-groups__track : la rangée réelle, clippée pendant
+                l'animation. %>
+            <div class="cover-groups"
+                 id="cover-controls-groups-<%= unique_id %>"
+                 data-cover-controls-target="groups">
+              <div class="cover-groups__track">
+
+              <!-- SYMÉTRIE — segmented inline en desktop, dropdown en mobile -->
+              <div class="cover-group cover-group--sym"
+                   style="--i: 3; --o: 0"
+                   data-cover-controls-target="group">
+                <button type="button"
+                        class="cover-group__trigger"
+                        data-cover-controls-target="trigger"
+                        data-action="click->cover-controls#togglePop"
+                        aria-expanded="false"
+                        aria-label="Symétrie">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
+                       fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3v18" stroke-dasharray="3 3"/>
+                    <path d="M9 8 4 12l5 4z"/>
+                    <path d="m15 8 5 4-5 4z"/>
+                  </svg>
+                  <span class="cover-group__label">Symétrie</span>
+                  <span class="cover-group__value tabular-nums" data-cover-editor-target="symmetryValue">×4</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
+                       fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <polyline points="4 10 8 6 12 10"/>
+                  </svg>
+                </button>
+
+                <div class="cover-pop cover-pop--sym" data-cover-controls-target="pop">
+                  <span class="cover-pop__caret" aria-hidden="true"></span>
+                  <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+                    <button type="button"
+                            class="cc-segmented__btn"
+                            data-cover-editor-target="symmetryMode"
+                            data-action="click->cover-editor#updateCurve"
+                            data-value="x4"
+                            role="radio">×4</button>
+                    <button type="button"
+                            class="cc-segmented__btn"
+                            data-cover-editor-target="symmetryMode"
+                            data-action="click->cover-editor#updateCurve"
+                            data-value="x8"
+                            role="radio">×8</button>
+                    <button type="button"
+                            class="cc-segmented__btn"
+                            data-cover-editor-target="symmetryMode"
+                            data-action="click->cover-editor#updateCurve"
+                            data-value="x16"
+                            role="radio">×16</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEINTE -->
+              <div class="cover-group"
+                   style="--i: 2; --o: 1"
+                   data-cover-controls-target="group">
+                <button type="button"
+                        class="cover-group__trigger"
+                        data-cover-controls-target="trigger"
+                        data-action="click->cover-controls#togglePop"
+                        aria-expanded="false"
+                        aria-label="Teinte">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
+                       fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <%# Goutte translatée de +1.5 en y : son centre optique tombe
+                        pile au milieu de la pastille (sinon elle « flotte » haut). %>
+                    <path d="M12 4.2 7.4 8.8a6.5 6.5 0 1 0 9.2 0z"/>
+                  </svg>
+                  <span class="cover-group__label">Teinte</span>
+                  <span class="cover-group__value tabular-nums" data-cover-editor-target="hueValue">280</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
+                       fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <polyline points="4 10 8 6 12 10"/>
+                  </svg>
+                </button>
+
+                <div class="cover-pop" data-cover-controls-target="pop">
+                  <span class="cover-pop__caret" aria-hidden="true"></span>
+                  <div class="cc-label-row">
+                    <span class="cc-label">Teinte</span>
+                    <span class="cc-value tabular-nums" data-cover-editor-target="hueValue">280</span>
+                  </div>
+                  <div class="cc-swatches" role="group" aria-label="Teintes prédéfinies">
+                    <% [0, 35, 80, 150, 200, 245, 280, 320].each do |hue| %>
+                      <button type="button"
+                              class="cc-swatch"
+                              style="background: hsl(<%= hue %> 78% 56%)"
+                              data-hue="<%= hue %>"
+                              data-action="click->cover-controls#pickHue"
+                              aria-label="Teinte <%= hue %>"></button>
+                    <% end %>
+                  </div>
+                  <input
+                    type="range"
+                    id="hue"
+                    data-hue-input
+                    data-cover-editor-target="colorPicker"
+                    data-action="input->cover-editor#updateColors input->cover-editor#updateTitle input->cover-editor#updateCurve input->cover-editor#updateValueDisplays"
+                    min="0"
+                    max="360"
+                    value="280"
+                    aria-label="Teinte"
+                    class="cc-slider cc-slider--hue"
+                  >
+                </div>
+              </div>
+
+              <!-- LISSAGE -->
+              <div class="cover-group"
+                   style="--i: 1; --o: 2"
+                   data-cover-controls-target="group">
+                <button type="button"
+                        class="cover-group__trigger"
+                        data-cover-controls-target="trigger"
+                        data-action="click->cover-controls#togglePop"
+                        aria-expanded="false"
+                        aria-label="Lissage">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
+                       fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <%# Vagues translatées de +1 en y pour centrer l'icône. %>
+                    <path d="M3 15c2.5-4 5-4 7.5 0s5 4 7.5 0 3-2 3-2"/>
+                    <path d="M3 9c2.5-4 5-4 7.5 0s5 4 7.5 0 3-2 3-2" opacity=".45"/>
+                  </svg>
+                  <span class="cover-group__label">Lissage</span>
+                  <span class="cover-group__value tabular-nums" data-cover-editor-target="smoothingValue">50</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
+                       fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <polyline points="4 10 8 6 12 10"/>
+                  </svg>
+                </button>
+
+                <div class="cover-pop" data-cover-controls-target="pop">
+                  <span class="cover-pop__caret" aria-hidden="true"></span>
+                  <div class="cc-label-row">
+                    <span class="cc-label">Lissage</span>
+                    <span class="cc-value tabular-nums" data-cover-editor-target="smoothingValue">50</span>
+                  </div>
+                  <input
+                    type="range"
+                    data-cover-editor-target="smoothing"
+                    data-action="input->cover-editor#updateCurve input->cover-editor#updateValueDisplays"
+                    min="10"
+                    max="100"
+                    value="50"
+                    aria-label="Lissage"
+                    class="cc-slider"
+                  >
+                </div>
+              </div>
+
+              <!-- MOTIF — courbe + grille -->
+              <div class="cover-group"
+                   style="--i: 0; --o: 3"
+                   data-cover-controls-target="group">
+                <button type="button"
+                        class="cover-group__trigger"
+                        data-cover-controls-target="trigger"
+                        data-action="click->cover-controls#togglePop"
+                        aria-expanded="false"
+                        aria-label="Motif">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
+                       fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <path d="M9 3v18M15 3v18M3 9h18M3 15h18" opacity=".5"/>
+                  </svg>
+                  <span class="cover-group__label">Motif</span>
+                  <span class="cover-group__value tabular-nums" data-cover-editor-target="gridValue">2 × 2</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
+                       fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <polyline points="4 10 8 6 12 10"/>
+                  </svg>
+                </button>
+
+                <div class="cover-pop cover-pop--motif" data-cover-controls-target="pop">
+                  <span class="cover-pop__caret" aria-hidden="true"></span>
+                  <div class="cc-pair">
+                    <div class="cc-row cc-row--grid">
+                      <div class="cc-label-row">
+                        <span class="cc-label">Courbe</span>
+                        <span class="cc-value tabular-nums" data-cover-editor-target="curveValue">50, 50</span>
+                      </div>
+                      <div class="cc-grid"
+                           data-pattern-grid="1"
+                           data-controller="tooltip"
+                           data-tooltip-text-value="Forme du motif">
+                        <div class="cc-grid__lines" data-cover-editor-target="grid" data-pattern-grid="1"></div>
+                        <div class="cc-grid__handle"
+                             data-cover-editor-target="anchor1"
+                             data-action="mousedown->cover-editor#startDrag touchstart->cover-editor#startDrag mousemove->cover-editor#drag touchmove->cover-editor#drag mouseup->cover-editor#stopDrag touchend->cover-editor#stopDrag"
+                             aria-label="Point de contrôle de la courbe"
+                             role="slider"></div>
+                      </div>
+                    </div>
+
+                    <div class="cc-row cc-row--grid">
+                      <div class="cc-label-row">
+                        <span class="cc-label">Grille</span>
+                        <span class="cc-value tabular-nums" data-cover-editor-target="gridValue">2 × 2</span>
+                      </div>
+                      <div class="cc-grid"
+                           data-pattern-grid="2"
+                           data-controller="tooltip"
+                           data-tooltip-text-value="Répétition du motif">
+                        <div class="cc-grid__lines cc-grid__lines--quad" data-cover-editor-target="grid" data-pattern-grid="2"></div>
+                        <div class="cc-grid__handle"
+                             data-cover-editor-target="anchor2"
+                             data-action="mousedown->cover-editor#startDrag touchstart->cover-editor#startDrag mousemove->cover-editor#drag touchmove->cover-editor#drag mouseup->cover-editor#stopDrag touchend->cover-editor#stopDrag"
+                             aria-label="Densité de la grille"
+                             role="slider"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div><%# /.cover-groups__track %>
+            </div>
+
+            <%# Le bouton bascule : icône réglages ↔ croix, les deux restent dans le DOM
+                pour que l'entrée ET la sortie s'animent (cross-fade scale + blur). %>
+            <button type="button"
+                    class="cover-pill cover-pill--icon cover-pill--reveal cover-toggle"
+                    data-cover-controls-toggle
+                    data-action="click->cover-editor#toggleControls click->cover-controls#toggle"
+                    aria-expanded="false"
+                    aria-controls="cover-controls-groups-<%= unique_id %>"
+                    aria-label="Paramètres de la couverture">
+              <span class="cover-toggle__icons">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="cover-toggle__icon cover-toggle__icon--settings"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                  <line x1="21" x2="14" y1="4" y2="4"/>
+                  <line x1="10" x2="3" y1="4" y2="4"/>
+                  <line x1="21" x2="12" y1="12" y2="12"/>
+                  <line x1="8" x2="3" y1="12" y2="12"/>
+                  <line x1="21" x2="16" y1="20" y2="20"/>
+                  <line x1="12" x2="3" y1="20" y2="20"/>
+                  <line x1="14" x2="14" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="10" y2="14"/>
+                  <line x1="16" x2="16" y1="18" y2="22"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="cover-toggle__icon cover-toggle__icon--close"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18"/>
+                </svg>
+              </span>
+            </button>
+          </div>
