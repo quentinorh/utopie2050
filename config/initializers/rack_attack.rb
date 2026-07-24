@@ -5,14 +5,14 @@ class Rack::Attack
     req.ip if req.path == "/users" && req.post?
   end
 
-  # Limite les tentatives de connexion : 10 par IP toutes les 15 minutes
-  throttle("logins/ip", limit: 10, period: 15.minutes) do |req|
-    req.ip if req.path == "/users/sign_in" && req.post?
+  # Limite les demandes de magic-link : 5 par IP toutes les 15 minutes
+  throttle("magic_links/ip", limit: 5, period: 15.minutes) do |req|
+    req.ip if req.path == "/users/magic_link" && req.post?
   end
 
-  # Limite les demandes de réinitialisation de mot de passe : 5 par IP toutes les 30 minutes
-  throttle("password_resets/ip", limit: 5, period: 30.minutes) do |req|
-    req.ip if req.path == "/users/password" && req.post?
+  # Limite l'auth depuis la page futur en attente
+  throttle("pending_auth/ip", limit: 5, period: 15.minutes) do |req|
+    req.ip if req.path == "/futurs/pending_auth" && req.post?
   end
 
   # Réponse personnalisée en cas de blocage (429 Too Many Requests)

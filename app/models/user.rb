@@ -1,25 +1,23 @@
 class User < ApplicationRecord
-  # Devise modules...
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+  MAGIC_LINK_TTL = 20.minutes
 
-  # Validations
+  devise :database_authenticatable, :registerable,
+         :rememberable, :validatable, :confirmable
+
   validates :username, presence: true, uniqueness: { case_sensitive: false, message: "Ce nom d'utilisateur est déjà pris." }
   validates :email, presence: true, uniqueness: { case_sensitive: false, message: "Cette adresse email est déjà utilisée." }
   validates :age, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  # Associations
   has_many :posts, dependent: :destroy
   has_many :favorites, dependent: :destroy
   has_many :favorited_posts, through: :favorites, source: :post
 
-  # Ajouter un callback pour s'assurer que le pseudo est toujours présent
   before_validation :set_default_username, on: :create
 
-  scope :has_posts, -> { 
+  scope :has_posts, -> {
     joins(:posts)
       .where(posts: { draft: [false, nil] })
-      .distinct 
+      .distinct
   }
 
   # Comptes non confirmés depuis plus de 48h (probablement des bots)
@@ -32,7 +30,6 @@ class User < ApplicationRecord
       )
   }
 
-  # Supprime les comptes non confirmés expirés
   def self.cleanup_unconfirmed!
     users = unconfirmed_expired
     count = users.count
@@ -41,16 +38,45 @@ class User < ApplicationRecord
     count
   end
 
-  # Définir la méthode admin? comme publique
   def admin?
     role == "admin"
+  end
+
+  def password_required?
+    false
+  end
+
+  def send_magic_link!
+    raw = SecureRandom.urlsafe_base64(32)
+    update!(
+      magic_link_token: self.class.digest_magic_link_token(raw),
+      magic_link_sent_at: Time.current
+    )
+    MagicLinkMailer.with(user: self, token: raw).login_link.deliver_now
+    raw
+  end
+
+  def self.consume_magic_link(raw_token)
+    return nil if raw_token.blank?
+
+    user = find_by(magic_link_token: digest_magic_link_token(raw_token))
+    return nil unless user
+    return nil if user.magic_link_sent_at.blank? || user.magic_link_sent_at < MAGIC_LINK_TTL.ago
+
+    user.confirm unless user.confirmed?
+    user.update!(magic_link_token: nil, magic_link_sent_at: nil)
+    user
+  end
+
+  def self.digest_magic_link_token(raw_token)
+    Digest::SHA256.hexdigest(raw_token)
   end
 
   private
 
   def set_default_username
-    if self.username.blank?
-      self.username = "user#{self.id || User.maximum(:id).to_i + 1}"
+    if username.blank?
+      self.username = "user#{id || User.maximum(:id).to_i + 1}"
     end
   end
 end

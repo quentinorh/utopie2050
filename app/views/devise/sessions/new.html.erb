@@ -29,43 +29,21 @@
 
       <div data-auth-session-target="loginForm">
       <h2 class="auth-form__title">Se connecter</h2>
-      <p class="auth-form__subtitle">Bienvenue dans le futur</p>
+      <p class="auth-form__subtitle">On t'envoie un lien magique par email</p>
 
-      <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <%= simple_form_for(resource, as: resource_name, url: user_magic_links_path) do |f| %>
         <div class="auth-form__fields">
           <%= f.input :email,
                       label: "Adresse e-mail",
-                      required: false,
+                      required: true,
                       autofocus: false,
                       input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
                       label_html: { class: "auth-label" } %>
-          <%= f.input :password,
-                      label: "Mot de passe",
-                      required: false,
-                      input_html: { autocomplete: "current-password", class: 'auth-input', placeholder: "••••••••" },
-                      label_html: { class: "auth-label" } %>
-          <% if devise_mapping.rememberable? %>
-            <div class="flex items-center gap-2 mt-2">
-              <%= f.input :remember_me,
-                          as: :boolean,
-                          label: "Se souvenir de moi",
-                          input_html: { class: 'tw-form-checkbox' },
-                          label_html: { class: 'text-sm text-white/70' },
-                          wrapper_html: { class: 'mb-0' } %>
-            </div>
-          <% end %>
         </div>
 
         <div class="auth-form__actions">
-          <%= f.button :submit, "Je me connecte", class: "auth-btn-primary", data: { form_type: "other" } %>
+          <%= f.button :submit, "Recevoir mon lien", class: "auth-btn-primary", data: { form_type: "other" } %>
           <%= link_to "Créer un compte", new_user_registration_path, class: "auth-btn-secondary auth-form__register-link" %>
-        </div>
-
-        <div class="auth-form__footer">
-          <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "auth-link" %>
-          <% if devise_mapping.confirmable? %>
-            <%= link_to "Renvoyer le lien de confirmation", new_confirmation_path(resource_name), class: "auth-link" %>
-          <% end %>
         </div>
       <% end %>
       </div>

@@ -1,10 +1,10 @@
 require 'open-uri'
 
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub, :new, :stage, :pending]
+  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub, :new, :stage, :pending, :pending_auth]
   before_action :set_post, only: [:show, :edit, :update, :destroy, :favorite, :unfavorite, :export_pdf, :export_epub]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
-  before_action :load_pending_post, only: [:pending, :claim]
+  before_action :load_pending_post, only: [:pending, :pending_auth, :claim]
 
   has_scope :by_author
   has_scope :by_query
@@ -53,6 +53,48 @@ class PostsController < ApplicationController
 
   def pending
     redirect_to claim_posts_path if user_signed_in?
+  end
+
+  def pending_auth
+    redirect_to claim_posts_path and return if user_signed_in?
+
+    if params[:website_url].present?
+      Rails.logger.warn "[Honeypot] Bot détecté depuis l'IP #{request.remote_ip} (pending_auth)"
+      redirect_to pending_posts_path(mail_sent: 1) and return
+    end
+
+    email = params[:email].to_s.strip.downcase
+    user = User.find_by("LOWER(email) = ?", email)
+
+    if user.nil?
+      user = User.new(
+        email: email,
+        username: params[:username].to_s.strip.presence,
+        age: params[:age].presence || 0
+      )
+      user.skip_confirmation_notification!
+
+      unless user.save
+        flash.now[:alert] = user.errors.full_messages.to_sentence
+        @pending_auth_email = email
+        render :pending, status: :unprocessable_entity
+        return
+      end
+    end
+
+    begin
+      user.send_magic_link!
+    rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
+      Rails.logger.error "[SMTP] Erreur pending_auth : #{e.message}"
+      flash.now[:alert] = "L'adresse email semble invalide ou n'accepte pas les emails."
+      @pending_auth_email = email
+      render :pending, status: :unprocessable_entity
+      return
+    rescue Net::SMTPError => e
+      Rails.logger.error "[SMTP] Erreur SMTP inattendue (pending_auth) : #{e.message}"
+    end
+
+    redirect_to pending_posts_path(mail_sent: 1)
   end
 
   def claim

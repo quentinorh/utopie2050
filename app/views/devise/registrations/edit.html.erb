@@ -60,27 +60,6 @@
                           label_html: { class: "auth-label" } %>
             </div>
 
-            <%# Confirmation block — visually separated as a safeguard %>
-            <div class="auth-confirm">
-              <div class="auth-confirm__header">
-                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="4" y="11" width="16" height="10" rx="2"></rect>
-                  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-                </svg>
-                <span>Confirme avec ton mot de passe</span>
-              </div>
-              <%= f.input :current_password,
-                          required: true,
-                          input_html: {
-                            class: 'auth-input',
-                            autocomplete: "current-password",
-                            placeholder: "••••••••"
-                          },
-                          label: false,
-                          wrapper_html: { class: 'mt-2' } %>
-              <p class="auth-confirm__hint">Nécessaire pour valider tout changement sur ton compte.</p>
-            </div>
-
             <div class="auth-form__actions">
               <%= f.button :submit, "Enregistrer les modifications", class: "auth-btn-primary", data: { form_type: "other" } %>
             </div>
@@ -112,26 +91,6 @@
                 <span class="auth-stat__label">Depuis</span>
               </div>
             </div>
-          </div>
-
-          <%# Password reset card %>
-          <div class="auth-card">
-            <div class="auth-card__header">
-              <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 7h12"></path>
-                <path d="M4 12h8"></path>
-                <path d="M4 17h6"></path>
-                <circle cx="18" cy="16" r="3"></circle>
-                <path d="M18 13v-2a3 3 0 0 1 6 0"></path>
-              </svg>
-              <h3 class="auth-card__title">Changer de mot de passe</h3>
-            </div>
-            <p class="auth-card__text">On t'envoie un lien par email pour choisir un nouveau mot de passe en toute securite.</p>
-
-            <%= form_tag password_resets_path do %>
-              <%= hidden_field_tag :email, current_user.email %>
-              <%= submit_tag "Recevoir le lien par email", class: "auth-btn-secondary" %>
-            <% end %>
           </div>
 
           <%# Danger zone card %>
