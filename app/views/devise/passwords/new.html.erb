@@ -1,37 +1,36 @@
 <% content_for :title, "SP2050 - Mot de passe oublié" %>
 <% content_for :description, "Réinitialise ton mot de passe SP2050. Retrouve l'accès à ton compte en quelques étapes simples." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
-
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form">
-      <h2 class="auth-form__title">Mot de passe oublié</h2>
-      <p class="auth-form__subtitle">On t'envoie un lien par email</p>
-
-      <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-        <%= f.error_notification %>
-
-        <div class="auth-form__fields">
-          <%= f.input :email,
-                      label: "Adresse e-mail",
-                      required: true,
-                      autofocus: true,
-                      input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
-                      label_html: { class: "auth-label" } %>
-        </div>
-
-        <div class="auth-form__actions">
-          <%= f.button :submit, "Envoyer les instructions", class: "auth-btn-primary", data: { form_type: "other" } %>
-        </div>
-      <% end %>
-
-      <%= render "devise/shared/links" %>
+<%= render layout: "devise/frame", locals: { frame_id: "password-#{SecureRandom.hex(4)}" } do %>
+  <div class="sp-content">
+    <div class="sp-head">
+      <h1 class="sp-title editor-stagger">Mot de passe oublié</h1>
+      <p class="sp-subtitle editor-stagger">On t'envoie un lien par email.</p>
     </div>
+
+    <%= form_with model: resource, scope: resource_name, url: password_path(resource_name), method: :post, class: "sp-form" do |f| %>
+      <div class="sp-field editor-stagger">
+        <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+        <%= f.email_field :email,
+                          autofocus: true,
+                          required: true,
+                          autocomplete: "email",
+                          placeholder: "hello@fromfuture.com",
+                          class: "sp-input #{"sp-input--error" if resource.errors[:email].any?}" %>
+        <% if resource.errors[:email].any? %>
+          <p class="sp-error"><%= resource.errors[:email].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-cta editor-stagger">
+        <%= render "devise/sessions/submit", label: "Envoyer le lien" %>
+      </div>
+    <% end %>
   </div>
-</div>
+
+  <div class="sp-alt-wrap sp-alt-wrap--row">
+    <%= render "devise/shared/links" %>
+  </div>
+<% end %>

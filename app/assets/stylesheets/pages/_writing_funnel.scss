@@ -25,6 +25,16 @@
     margin-inline: auto;
   }
 
+  /* Couverture : le nom et le titre apparaissent au fil des étapes. */
+  .sp-cover .cover-title-block {
+    display: flex;
+  }
+
+  .cover-username:empty,
+  .cover-title-text:empty {
+    display: none;
+  }
+
   /* Scène de hauteur stable → la barre de nav ne bouge jamais entre les étapes
      (le titre reste ancré en haut, l'espace vide comble le bas). */
   @media (min-width: 1024px) {
@@ -123,6 +133,11 @@
   text-align: center;
 }
 
+/* Intro : le paragraphe descend au niveau des champs des autres étapes. */
+.funnel-intro__lead {
+  margin-top: clamp(40px, 9vw, 96px);
+}
+
 /* Sous-titre « question » (au-dessus d'un widget). */
 .sp-subtitle--q {
   font-size: var(--sp-text-subtitle);
@@ -149,7 +164,7 @@
   text-align: left;
 }
 
-/* Consignes (étape « futurs désirables ») — texte un cran plus grand. */
+/* Conditions d'utilisation — texte un cran plus grand. */
 .funnel-terms {
   max-width: 460px;
   margin: clamp(32px, 6vw, 64px) auto 0;
@@ -379,6 +394,30 @@
   border: 1px solid var(--sp-field-border);
   border-radius: 12px;
   background: var(--sp-surface);
+}
+
+button.jackpot__reel {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--sp-field-border-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sp-ink);
+    outline-offset: 2px;
+  }
+
+  &.is-busy {
+    cursor: progress;
+  }
 }
 
 .jackpot__strip {

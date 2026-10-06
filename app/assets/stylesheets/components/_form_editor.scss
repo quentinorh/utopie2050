@@ -171,6 +171,8 @@
   /* Hauteur commune du dé, des déclencheurs et du bouton Paramètres — un cran
      plus petit qu'avant (36 → 32) pour un objet plus fin et posé. */
   --cover-toolbar-h: 32px;
+  --cover-toolbar-gap: 6px;
+  --cover-toolbar-icon: 17px;
 
   position: absolute;
   /* Desktop : aligné sur la ligne du logo « Lire les futurs » de la navbar
@@ -184,19 +186,30 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--cover-toolbar-gap);
   width: max-content;
   z-index: 50;
   pointer-events: none;
 
-  /* Mobile : on remonte la barre DANS la navbar (56px), calée juste à gauche de
-     l'avatar. Pastilles 36×36 pour s'aligner sur la taille de l'avatar (h-9 w-9),
-     centrées verticalement sur la navbar. L'avatar fait 36px et vit à 10px du
-     bord (px-xs) → on borne la barre à droite à 10 + 36 + 8px d'écart. */
+  /* < lg : la barre vit dans la navbar, juste à gauche des actions.
+     Pastilles et écart calqués sur les boutons ronds de la navbar
+     (36px / gap 8 sous 640px, 42px dès sm, navbar 56px puis 75px).
+     Le retrait droit est mesuré (--cover-toolbar-safe-right) : icône seule,
+     ou icône + CTA selon que la session est ouverte ou non. Le repli CSS
+     couvre le cas « une seule pastille » si la mesure n'a pas encore tourné. */
   @media (max-width: 1023px) {
     --cover-toolbar-h: 36px;
-    top: calc((56px - 36px) / 2);
-    right: calc(10px + 36px + 8px);
+    --cover-toolbar-gap: 8px;
+    --cover-toolbar-icon: 16px;
+    top: calc((56px - var(--cover-toolbar-h)) / 2);
+    right: var(--cover-toolbar-safe-right, calc(10px + 36px + 8px));
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    --cover-toolbar-h: 42px;
+    --cover-toolbar-icon: 18px;
+    top: calc((75px - var(--cover-toolbar-h)) / 2);
+    right: var(--cover-toolbar-safe-right, calc(20px + 42px + 8px));
   }
 
   > * {
@@ -246,9 +259,10 @@
 
 .cover-toolbar .cover-pill--icon .cover-pill__icon,
 .cover-toolbar .cover-toggle__icons,
-.cover-toolbar .cover-toggle__icon {
-  width: 17px;
-  height: 17px;
+.cover-toolbar .cover-toggle__icon,
+.cover-toolbar .cover-group__icon {
+  width: var(--cover-toolbar-icon);
+  height: var(--cover-toolbar-icon);
 }
 
 /* ===========================
@@ -469,8 +483,8 @@
    Au repos : dé + bouton Paramètres. À l'ouverture, les groupes se déplient en
    cascade vers la gauche du couple de pastilles, qui ne bouge jamais : les
    groupes sont hors flux (absolute), ils ne peuvent donc pas le pousser.
-     • ≥1024px : symétrie en cercles + 3 déclencheurs libellés
-     • <1024px : 4 pastilles icône (le libellé passe dans le popover)
+     • ≥1280px : 4 déclencheurs libellés (symétrie, teinte, lissage, motif)
+     • <1280px : 4 pastilles icône (le libellé passe dans le popover)
    =========================== */
 
 /* Conteneur des groupes — ENTRE le dé et le bouton Paramètres. Sa largeur est
@@ -480,11 +494,19 @@
 .cover-groups {
   display: grid;
   grid-template-columns: 0fr;
-  transition: grid-template-columns 0.42s cubic-bezier(0.2, 0, 0, 1);
+  /* Fermé, la grille a une largeur nulle mais reste un item flex : les deux
+     gap de la barre s'additionnent (16px) et écartent le dé du bouton
+     Paramètres plus que l'icône utilisateur (8px). On annule le gap de gauche
+     pour qu'il n'en reste qu'un, le même que vers la navbar. */
+  margin-left: calc(var(--cover-toolbar-gap) * -1);
+  transition:
+    grid-template-columns 0.42s cubic-bezier(0.2, 0, 0, 1),
+    margin-left 0.42s cubic-bezier(0.2, 0, 0, 1);
 }
 
 [data-controls-open="true"] .cover-groups {
   grid-template-columns: 1fr;
+  margin-left: 0;
 }
 
 /* La rangée réelle : clippée pendant l'ouverture/fermeture (sinon les groupes
@@ -647,8 +669,7 @@
     text-transform: uppercase;
   }
 
-  /* Le libellé porte déjà le sens : l'icône ne ferait qu'allonger la barre et
-     grignoter la place des cercles de symétrie. */
+  /* Le libellé porte déjà le sens : l'icône ne ferait qu'allonger la barre. */
   .cover-group__icon { display: none; }
 
   .cover-group__label { display: inline; }
@@ -787,63 +808,6 @@
     }
   }
 
-  /* Nuancier de teinte — la pastille est l'affordance principale, le curseur
-     reste là pour l'ajustement fin. */
-  /* Les pastilles ne doivent jamais s'étirer : elles restent rondes et
-     l'anneau de sélection a besoin d'air autour (d'où le gap généreux). */
-  .cc-swatches {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 2px 0;
-  }
-
-  .cc-swatch {
-    appearance: none;
-    position: relative;
-    flex: 0 0 auto;
-    width: 22px;
-    height: 22px;
-    aspect-ratio: 1;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-    transition: scale 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-    /* Anneau de sélection dessiné en dehors de la pastille : il ne déplace rien
-       et peut donc apparaître sans faire sauter la rangée. */
-    &::after {
-      content: "";
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 1.5px solid #fff;
-      opacity: 0;
-      scale: 0.8;
-      transition:
-        opacity 0.18s ease,
-        scale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    &:hover {
-      scale: 1.14;
-
-      &::after { opacity: 0.45; scale: 1; }
-    }
-
-    &:active { scale: 0.96; }
-
-    &.is-active::after { opacity: 1; scale: 1; }
-
-    &:focus-visible {
-      outline: 2px solid rgba(255, 255, 255, 0.85);
-      outline-offset: 3px;
-    }
-  }
-
   /* Mini-grilles : contour lumineux, overflow visible pour les cc-tip. */
   .cc-grid {
     background: rgba(255, 255, 255, 0.06);
@@ -857,11 +821,8 @@
 
 .cover-pop--motif { width: 258px; }
 
-/* Symétrie : trois cercles, le popover n'a pas besoin de la largeur standard. */
+/* Symétrie : le libellé et les trois pastilles, sans la largeur des curseurs. */
 .cover-pop--sym { width: max-content; }
-
-/* Teinte : assez large pour aligner les 8 pastilles sur une seule rangée. */
-.cover-pop:has(.cc-swatches) { width: 284px; }
 
 /* Petite flèche d'ancrage — la barre est en haut, le popover descend :
    la flèche est donc sur son arête supérieure. */
@@ -881,53 +842,6 @@
 
 @media (min-width: 1024px) {
   .cover-pop__caret { display: none; }
-
-  /* Symétrie : les trois cercles remontent dans la barre, le déclencheur
-     du groupe n'a plus lieu d'être. */
-  .cover-group--sym .cover-group__trigger { display: none; }
-
-  /* Le popover n'en est plus un : ses trois cercles s'alignent directement
-     dans la barre, sans capsule autour. */
-  .cover-pop--sym {
-    position: static;
-    translate: none;
-    transform: none;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    width: auto;
-    max-width: none;
-    padding: 0;
-    gap: 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    transition: none;
-
-    .cc-segmented__btn {
-      width: var(--cover-toolbar-h, 32px);
-      height: var(--cover-toolbar-h, 32px);
-      /* Typo STRICTEMENT identique aux libellés des pills (9px / même
-         interlettrage / line-height 1) : sinon ×4/×8/×16 paraissent plus gros
-         et « décalés » par rapport à TEINTE/LISSAGE/MOTIF. */
-      font-size: 9px;
-      line-height: 1;
-      letter-spacing: 0.08em;
-      /* Flat : même matière que les pills de la barre — noir plein, filet blanc
-         très léger, aucune ombre ni verre. */
-      background: #000;
-      color: rgba(255, 255, 255, 0.72);
-      border: 1px solid transparent;
-      box-shadow: none;
-
-      &:hover:not(.is-active) {
-        background: #141416;
-        color: #fff;
-      }
-    }
-  }
 }
 
 /* Bouton bascule — l'icône réglages et la croix cohabitent dans le DOM et se
@@ -1471,10 +1385,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   cursor: pointer;
   transition: background-color 0.15s ease;
 
-  &:hover {
-    background: var(--editor-surface-soft);
-  }
-
   &:focus-visible {
     outline: 2px solid var(--editor-ink);
     outline-offset: -2px;
@@ -1493,7 +1403,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
 .form-editor .writing-tutorial-synthesis__toggle-action {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -1532,14 +1441,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   color: var(--editor-ink-muted);
 }
 
-.form-editor .writing-tutorial-synthesis__toggle-label {
-  font-family: "Roboto Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--editor-ink-faint);
-}
-
 .form-editor .writing-tutorial-synthesis__chev {
   width: 12px;
   height: 12px;
@@ -1568,38 +1469,26 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
 }
 
 .form-editor .writing-tutorial-synthesis__list {
-  display: grid;
-  gap: 0;
+  display: flex;
+  flex-direction: column;
   margin: 0;
-  padding: 12px 16px 16px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 20px;
-  }
+  padding: 8px 16px 14px;
 }
 
 .form-editor .writing-tutorial-synthesis__item {
   display: grid;
-  gap: 4px;
-  padding: 10px 0;
-  border-top: 1px solid var(--editor-border);
-
-  @media (min-width: 640px) {
-    &:nth-child(-n + 2) {
-      border-top: 0;
-      padding-top: 0;
-    }
-  }
-
-  &:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
+  grid-template-columns: minmax(5rem, 6rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 3px 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--editor-border);
 }
 
 .form-editor .writing-tutorial-synthesis__label {
   margin: 0;
+  flex: 0 0 auto;
   font-family: "Roboto Mono", monospace;
   font-size: 10px;
   font-weight: 500;
@@ -1610,25 +1499,38 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
 
 .form-editor .writing-tutorial-synthesis__value {
   margin: 0;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid transparent;
   font-family: "Apfel", sans-serif;
   font-size: 1rem;
-  line-height: 1.35;
+  /* Hauteur en px entiers (20 + 8 + 2 = 30) : une line-height fractionnaire
+     désaligne la boîte de la grille de pixels et le navigateur rend alors
+     l'arrondi du contour plus épais que ses côtés droits. */
+  line-height: 20px;
   color: var(--editor-ink);
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:has(.writing-tutorial-synthesis__input) {
+    padding: 0;
+    border: 0;
+  }
 }
 
 .form-editor .writing-tutorial-synthesis__input {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 8px 10px;
-  border: 1px solid var(--editor-border);
-  border-radius: 8px;
-  background: var(--editor-surface);
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  background-clip: padding-box;
   color: var(--editor-ink);
   font-family: "Apfel", sans-serif;
   font-size: 1rem;
-  line-height: 1.35;
+  line-height: 20px;
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease;
@@ -1637,11 +1539,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
     outline: none;
     border-color: var(--editor-border-strong);
     background: #fff;
-  }
-
-  &--textarea {
-    resize: vertical;
-    min-height: 56px;
   }
 }
 
@@ -1896,7 +1793,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   margin: 0;
   padding: 16px 18px;
   border: 1px solid var(--editor-border);
-  border-left: 3px solid var(--editor-ink);
   border-radius: 12px;
   background: var(--editor-surface);
   box-shadow: 0 6px 20px -16px rgba(31, 31, 31, 0.35);
@@ -1908,7 +1804,6 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
 }
 
 .editor-creativity-booster__prompt-label {

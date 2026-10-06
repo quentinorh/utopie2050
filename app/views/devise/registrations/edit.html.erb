@@ -1,118 +1,78 @@
 <% content_for :title, "SP2050 - Modifier ton profil" %>
 <% content_for :description, "Personnalise ton profil SP2050. Mets à jour tes informations et préférences pour une meilleure expérience." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
-
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form auth-form--split">
-      <header class="auth-form__header">
-        <h2 class="auth-form__title">Mon profil</h2>
-        <p class="auth-form__subtitle">Mettre à jour mes informations</p>
-      </header>
-
-      <div class="auth-form__grid">
-        <%# LEFT column: main profile form %>
-        <div class="auth-form__column">
-          <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-            <%= f.error_notification %>
-
-            <div class="auth-form__fields">
-              <%= f.input :username,
-                          required: true,
-                          autofocus: true,
-                          input_html: {
-                            class: 'auth-input',
-                            placeholder: 'Ton pseudo',
-                            autocomplete: "off",
-                            "data-form-type": "other",
-                            "data-auto-fill": "false",
-                            "data-lpignore": "true",
-                            "data-1p-ignore": "true"
-                          },
-                          label: "Nom d'auteur·ice",
-                          label_html: { class: "auth-label" } %>
-
-              <%= f.input :email,
-                          required: true,
-                          input_html: {
-                            class: 'auth-input',
-                            autocomplete: "username",
-                            placeholder: "ton@email.com"
-                          },
-                          label: "Adresse e-mail",
-                          label_html: { class: "auth-label" } %>
-
-              <%= f.input :age,
-                          required: true,
-                          autocomplete: "off",
-                          input_html: {
-                            class: 'auth-input',
-                            value: resource.age,
-                            placeholder: "Ton age en 2050"
-                          },
-                          label: "Age en 2050",
-                          label_html: { class: "auth-label" } %>
-            </div>
-
-            <div class="auth-form__actions">
-              <%= f.button :submit, "Enregistrer les modifications", class: "auth-btn-primary", data: { form_type: "other" } %>
-            </div>
-          <% end %>
-        </div>
-
-        <%# RIGHT column: profile summary + secondary actions %>
-        <div class="auth-form__column auth-form__column--side">
-          <%# Profile summary card %>
-          <div class="auth-card auth-card--profile">
-            <div class="auth-avatar" aria-hidden="true">
-              <span><%= current_user.username.to_s.first.to_s.upcase.presence || "?" %></span>
-            </div>
-            <div class="auth-card__identity">
-              <h3 class="auth-card__name"><%= current_user.username %></h3>
-              <p class="auth-card__meta"><%= current_user.email %></p>
-            </div>
-            <div class="auth-card__stats">
-              <div class="auth-stat">
-                <span class="auth-stat__value"><%= current_user.posts.count %></span>
-                <span class="auth-stat__label">Publications</span>
-              </div>
-              <div class="auth-stat">
-                <span class="auth-stat__value"><%= current_user.age %></span>
-                <span class="auth-stat__label">Age 2050</span>
-              </div>
-              <div class="auth-stat">
-                <span class="auth-stat__value"><%= I18n.l(current_user.created_at, format: "%m/%y") rescue current_user.created_at.strftime("%m/%y") %></span>
-                <span class="auth-stat__label">Depuis</span>
-              </div>
-            </div>
-          </div>
-
-          <%# Danger zone card %>
-          <div class="auth-card auth-card--danger">
-            <div class="auth-card__header">
-              <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3 2 20h20L12 3z"></path>
-                <path d="M12 10v5"></path>
-                <circle cx="12" cy="17.5" r="0.6" fill="currentColor"></circle>
-              </svg>
-              <h3 class="auth-card__title">Supprimer mon compte</h3>
-            </div>
-            <p class="auth-card__text">Action irréversible. Ton compte, tes publications et tes favoris seront définitivement supprimés.</p>
-
-            <%= button_to "Supprimer definitivement",
-                          registration_path(resource_name),
-                          data: { confirm: "Es-tu sûr ? Cette action est irréversible.", turbo_confirm: "Es-tu sûr ? Cette action est irréversible." },
-                          method: :delete,
-                          class: "auth-btn-danger" %>
-          </div>
-        </div>
-      </div>
+<%= render layout: "devise/frame",
+           locals: {
+             frame_id: "account-#{SecureRandom.hex(4)}",
+             frame_class: "sp-auth--account",
+             cover_title: current_user.username
+           } do %>
+  <div class="sp-content">
+    <div class="sp-head">
+      <h1 class="sp-title editor-stagger">Mon profil</h1>
+      <p class="sp-subtitle editor-stagger">Mettre à jour tes informations.</p>
+      <p class="sp-note editor-stagger">
+        <%= current_user.posts.count %>
+        <%= "texte".pluralize(current_user.posts.count) %>
+        · ici depuis <%= current_user.created_at.strftime("%m.%Y") %>
+      </p>
     </div>
+
+    <%= form_with model: resource, scope: resource_name, url: registration_path(resource_name), method: :put, class: "sp-form sp-form--fields" do |f| %>
+      <div class="sp-field editor-stagger">
+        <%= f.label :username, "Nom d'auteur·ice", class: "sp-label" %>
+        <%= f.text_field :username,
+                         autofocus: true,
+                         required: true,
+                         autocomplete: "off",
+                         placeholder: "Ton pseudo",
+                         class: "sp-input #{"sp-input--error" if resource.errors[:username].any?}",
+                         data: { form_type: "other", auto_fill: "false", lpignore: "true", "1p_ignore": "true" } %>
+        <% if resource.errors[:username].any? %>
+          <p class="sp-error"><%= resource.errors[:username].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-field editor-stagger">
+        <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+        <%= f.email_field :email,
+                          required: true,
+                          autocomplete: "email",
+                          placeholder: "hello@fromfuture.com",
+                          class: "sp-input #{"sp-input--error" if resource.errors[:email].any?}" %>
+        <% if resource.errors[:email].any? %>
+          <p class="sp-error"><%= resource.errors[:email].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-field editor-stagger">
+        <%= f.label :age, "Ton âge en 2050", class: "sp-label" %>
+        <%= f.text_field :age,
+                         required: true,
+                         inputmode: "numeric",
+                         autocomplete: "off",
+                         placeholder: "Ton âge en 2050",
+                         class: "sp-input #{"sp-input--error" if resource.errors[:age].any?}" %>
+        <% if resource.errors[:age].any? %>
+          <p class="sp-error"><%= resource.errors[:age].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-cta editor-stagger">
+        <%= render "devise/sessions/submit", label: "Enregistrer" %>
+      </div>
+    <% end %>
+
+    <p class="sp-note editor-stagger">
+      Supprimer ton compte retire aussi tes publications et tes favoris. C'est irréversible.
+    </p>
+    <%= button_to "Supprimer mon compte",
+                  registration_path(resource_name),
+                  method: :delete,
+                  class: "sp-alt sp-alt--danger editor-stagger",
+                  form_class: "sp-danger-form",
+                  data: { confirm: "Es-tu sûr ? Cette action est irréversible.", turbo_confirm: "Es-tu sûr ? Cette action est irréversible." } %>
   </div>
-</div>
+<% end %>

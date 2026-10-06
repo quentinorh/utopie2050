@@ -2,12 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 import { saveRegistrationPrefill } from "utils/registration_prefill"
 
-// Générateur d'étincelles « machine à sous » : deux rouleaux (nom + adjectif)
-// tirés d'un pool préchargé depuis le service d'étincelles. Le spin fait défiler
-// les mots (power2.out, 1s) et s'arrête sur une paire cohérente (accord
-// grammatical préservé car les deux rouleaux atterrissent sur le même index).
+// Générateur d'étincelles « machine à sous » : deux rouleaux (nom + adjectif).
+// Le bouton central relance la paire ; un clic sur un rouleau ne relance que
+// ce mot. L'accord grammatical vient du service (part=both | noun | adjective).
 const POOL_SIZE = 12
 const CELL = 52
+const COPIES = 3
 const DURATION = 1
 const EASE = "power2.out"
 
@@ -47,12 +47,16 @@ export default class extends Controller {
     }
   }
 
+  disconnect() {
+    this.stripTargets.forEach(strip => gsap.killTweensOf(strip))
+  }
+
   buildStrips() {
     // 3 copies empilées pour donner de la course au défilement.
     this.stripTargets.forEach(strip => {
       const kind = strip.dataset.reel // "noun" | "adjective"
       strip.textContent = ""
-      for (let c = 0; c < 3; c++) {
+      for (let c = 0; c < COPIES; c++) {
         this.pairs.forEach(pair => {
           const cell = document.createElement("div")
           cell.className = "jackpot__cell"
@@ -69,39 +73,123 @@ export default class extends Controller {
     this.updateHooks()
   }
 
-  spin() {
-    if (this._spinning || this.pairs.length < 2) return
-    const n = this.pairs.length
-    const target = (this.index + 1 + Math.floor(Math.random() * (n - 1))) % n
+  async spin() {
+    if (this._spinning || this.pairs.length < 1) return
+    await this.runSpin("both", { stagger: true })
+  }
 
-    if (this.reduceMotion) {
-      this.place(target)
-      this.persist()
-      return
+  async spinReel(event) {
+    if (this._spinning || this.pairs.length < 1) return
+    const reel = event.currentTarget
+    const strip = reel.querySelector("[data-jackpot-target='strip']")
+    const kind = strip?.dataset.reel
+    if (!strip || (kind !== "noun" && kind !== "adjective")) return
+    await this.runSpin(kind)
+  }
+
+  async runSpin(part, { stagger = false } = {}) {
+    this.lock(stagger)
+    try {
+      const next = await this.fetchPart(part)
+      if (!next?.noun || !next?.adjective) return
+
+      if (this.reduceMotion) {
+        this.commit(next)
+        return
+      }
+
+      const jobs = this.stripTargets.map((strip, i) => {
+        const kind = strip.dataset.reel
+        if (!stagger && kind !== part) return null
+        const duration = stagger ? DURATION + i * 0.14 : DURATION
+        return this.animateReel(strip, kind, next[kind], duration)
+      }).filter(Boolean)
+
+      await Promise.all(jobs)
+      this.commit(next)
+    } finally {
+      this.unlock()
     }
+  }
 
+  lock(animateButton = false) {
     this._spinning = true
-    if (this.hasSpinTarget) this.spinTarget.classList.add("is-spinning")
+    this.element.querySelectorAll(".jackpot__reel, .jackpot__spin").forEach(el => {
+      el.disabled = true
+      el.classList.add("is-busy")
+    })
+    if (animateButton && this.hasSpinTarget) this.spinTarget.classList.add("is-spinning")
+  }
 
-    this.stripTargets.forEach((strip, i) => {
-      gsap.set(strip, { y: -(this.index * CELL) })
-      const dest = n + target // défile ~une boucle puis atterrit
+  unlock() {
+    this._spinning = false
+    this.element.querySelectorAll(".jackpot__reel, .jackpot__spin").forEach(el => {
+      el.disabled = false
+      el.classList.remove("is-busy")
+    })
+    if (this.hasSpinTarget) this.spinTarget.classList.remove("is-spinning")
+  }
+
+  async fetchPart(part) {
+    const current = this.current()
+    const params = new URLSearchParams({ part })
+    if (current.noun) params.set("noun", current.noun)
+    if (current.adjective) params.set("adjective", current.adjective)
+
+    try {
+      const res = await fetch(`${this.urlValue}?${params}`, { headers: { Accept: "application/json" } })
+      if (!res.ok) return null
+      return await res.json()
+    } catch {
+      return null
+    }
+  }
+
+  animateReel(strip, kind, word, duration = DURATION) {
+    const n = this.pairs.length
+    const fillers = []
+    const laps = Math.max(n, 2)
+    for (let i = 1; i < laps; i++) {
+      fillers.push(this.pairs[(this.index + i) % n][kind])
+    }
+    fillers.push(word)
+
+    fillers.forEach(text => {
+      const cell = document.createElement("div")
+      cell.className = "jackpot__cell"
+      cell.textContent = text
+      strip.appendChild(cell)
+    })
+
+    const dest = strip.children.length - 1
+    return new Promise(resolve => {
       gsap.to(strip, {
         y: -(dest * CELL),
-        duration: DURATION + i * 0.14, // arrêt décalé des rouleaux
+        duration,
         ease: EASE,
-        onComplete: () => {
-          gsap.set(strip, { y: -(target * CELL) }) // repli sur la 1re copie (identique)
-          if (i === this.stripTargets.length - 1) {
-            this.index = target
-            this._spinning = false
-            if (this.hasSpinTarget) this.spinTarget.classList.remove("is-spinning")
-            this.updateHooks()
-            this.persist()
-          }
-        },
+        onComplete: resolve,
       })
     })
+  }
+
+  commit(next) {
+    this.pairs[this.index] = {
+      noun: next.noun,
+      adjective: next.adjective,
+      phrase: `${next.noun} ${next.adjective}`,
+    }
+    const n = this.pairs.length
+    this.stripTargets.forEach(strip => {
+      const kind = strip.dataset.reel
+      for (let c = 0; c < COPIES; c++) {
+        const cell = strip.children[c * n + this.index]
+        if (cell) cell.textContent = this.pairs[this.index][kind]
+      }
+      gsap.set(strip, { y: -(this.index * CELL) })
+      while (strip.children.length > n * COPIES) strip.lastChild.remove()
+    })
+    this.updateHooks()
+    this.persist()
   }
 
   current() {

@@ -43,6 +43,7 @@ export default class extends Controller {
     } else {
       this.randomize();
     }
+    this.applyCarriedUsername()
     this.updateColors()
     this.updateCurve()
     this.updateTitle()
@@ -76,6 +77,20 @@ export default class extends Controller {
     }
     if (this._fitTitleTimeout) clearTimeout(this._fitTitleTimeout);
     if (this._titleFitRaf) cancelAnimationFrame(this._titleFitRaf);
+  }
+
+  // Pseudo saisi dans l'entonnoir, si la couverture n'a pas encore d'auteur.
+  applyCarriedUsername() {
+    if (!this.hasUserNameTarget) return
+    if (this.userNameTarget.textContent.trim()) return
+
+    try {
+      const prefill = JSON.parse(sessionStorage.getItem("sp2050_registration_prefill") || "{}")
+      const username = String(prefill.username || "").trim()
+      if (username) this.userNameTarget.textContent = username
+    } catch {
+      // préremplissage absent ou illisible
+    }
   }
 
   // Réglages de motif transmis par l'entonnoir (sessionStorage) → continuité
@@ -119,7 +134,9 @@ export default class extends Controller {
       if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden")
     }
 
-    const title = raw || "Futur titre"
+    // L'entonnoir n'a qu'un champ titre caché : pas de placeholder tant qu'il est vide.
+    const showPlaceholder = this.titleInputTarget.type !== "hidden"
+    const title = raw.trim() ? raw : (showPlaceholder ? "Futur titre" : "")
 
     const hue = parseInt(this.colorPickerTarget.value, 10);
     const titleBackground = `hsl(${hue}, 80%, 70%)`;
@@ -127,10 +144,11 @@ export default class extends Controller {
 
     this.titleWrapperTarget.textContent = title;
     this.titleWrapperTarget.style.boxShadow = "none";
-    this.titleWrapperTarget.style.backgroundColor = titleBackground;
+    this.titleWrapperTarget.style.backgroundColor = title ? titleBackground : "";
 
     if (this.hasUserNameTarget) {
-      this.userNameTarget.style.backgroundColor = usernameBackground;
+      const hasName = Boolean(this.userNameTarget.textContent.trim())
+      this.userNameTarget.style.backgroundColor = hasName ? usernameBackground : "";
     }
 
     // Réajuster la largeur du fond au texte à chaque frappe (coalescé via rAF
@@ -442,10 +460,11 @@ export default class extends Controller {
     // Générer une valeur aléatoire pour le lissage
     this.smoothingTarget.value = Math.floor(Math.random() * 90) + 10;
     
-    // Mettre à jour les couleurs et la courbe
+    // Mettre à jour les couleurs, la courbe et les pastilles de la barre
     this.updateColors();
     this.updateCurve();
     this.updateTitle();
+    this.updateValueDisplays();
 
     // Mettre à jour les positions des curseurs après la randomisation
     requestAnimationFrame(() => this.updateCursorPositions());

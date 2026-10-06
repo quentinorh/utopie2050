@@ -1,39 +1,41 @@
 <% content_for :title, "SP2050 - Confirmation d'inscription" %>
 <% content_for :description, "Confirme ton compte SP2050 pour accéder à toutes les fonctionnalités de la plateforme." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<%= render layout: "devise/frame", locals: { frame_id: "confirm-#{SecureRandom.hex(4)}" } do %>
+  <div class="sp-content">
+    <div class="sp-head">
+      <h1 class="sp-title editor-stagger">Confirmer mon compte</h1>
+      <p class="sp-subtitle editor-stagger">On t'envoie un nouveau lien de confirmation.</p>
+    </div>
 
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form">
-      <h2 class="auth-form__title">Confirmer mon compte</h2>
-      <p class="auth-form__subtitle">Renvoyer le lien de confirmation</p>
-
-      <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-        <%= f.error_notification %>
-        <%= f.full_error :confirmation_token, class: "text-red-400 text-sm mt-2 text-center" %>
-
-        <div class="auth-form__fields">
-          <%= f.input :email,
-                      label: "Adresse e-mail",
-                      required: true,
-                      autofocus: true,
-                      value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
-                      input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
-                      label_html: { class: "auth-label" } %>
-        </div>
-
-        <div class="auth-form__actions">
-          <%= f.button :submit, "Renvoyer le lien", class: "auth-btn-primary", data: { form_type: "other" } %>
-        </div>
+    <%= form_with model: resource, scope: resource_name, url: confirmation_path(resource_name), method: :post, class: "sp-form" do |f| %>
+      <% if resource.errors[:confirmation_token].any? %>
+        <p class="sp-error sp-error--center editor-stagger"><%= resource.errors[:confirmation_token].to_sentence %></p>
       <% end %>
 
-      <%= render "devise/shared/links" %>
-    </div>
+      <div class="sp-field editor-stagger">
+        <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+        <%= f.email_field :email,
+                          autofocus: true,
+                          required: true,
+                          autocomplete: "email",
+                          placeholder: "hello@fromfuture.com",
+                          value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
+                          class: "sp-input #{"sp-input--error" if resource.errors[:email].any?}" %>
+        <% if resource.errors[:email].any? %>
+          <p class="sp-error"><%= resource.errors[:email].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-cta editor-stagger">
+        <%= render "devise/sessions/submit", label: "Renvoyer le lien" %>
+      </div>
+    <% end %>
   </div>
-</div>
+
+  <div class="sp-alt-wrap sp-alt-wrap--row">
+    <%= render "devise/shared/links" %>
+  </div>
+<% end %>

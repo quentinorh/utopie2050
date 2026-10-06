@@ -1,21 +1,21 @@
-<%# Générateur d'étincelles — machine à sous (nom + adjectif). %>
+<%# Générateur d'étincelles — le bouton central relance la paire, un clic sur un mot ne relance que celui-là. %>
 <div class="jackpot" data-controller="jackpot"
      data-jackpot-url-value="<%= idea_generator_spark_path(format: :json) %>">
   <div class="jackpot__reels">
-    <div class="jackpot__reel">
+    <button type="button" class="jackpot__reel" data-action="click->jackpot#spinReel" aria-label="Changer le nom">
       <div class="jackpot__strip" data-jackpot-target="strip" data-reel="noun"></div>
-    </div>
+    </button>
 
     <button type="button" class="jackpot__spin" data-jackpot-target="spin"
-            data-action="click->jackpot#spin" aria-label="Générer une nouvelle étincelle">
+            data-action="click->jackpot#spin" aria-label="Changer le nom et l'adjectif">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 1.5l1.9 5.9a3 3 0 0 0 1.9 1.9l5.9 1.9-5.9 1.9a3 3 0 0 0-1.9 1.9L12 21l-1.9-5.9a3 3 0 0 0-1.9-1.9L2.3 11.3l5.9-1.9a3 3 0 0 0 1.9-1.9L12 1.5z"/>
       </svg>
     </button>
 
-    <div class="jackpot__reel">
+    <button type="button" class="jackpot__reel" data-action="click->jackpot#spinReel" aria-label="Changer l'adjectif">
       <div class="jackpot__strip" data-jackpot-target="strip" data-reel="adjective"></div>
-    </div>
+    </button>
   </div>
 
   <%# Points de lecture pour l'entonnoir (collectIdeaGeneratorData). %>

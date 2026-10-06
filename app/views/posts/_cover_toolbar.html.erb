@@ -1,7 +1,8 @@
           <!-- Barre de réglages ancrée en bas à droite — sibling du SVG pour ne pas être clippée.
                Au repos : le dé (aléatoire) + le bouton Paramètres. À l'ouverture, les groupes se
                déplient en cascade vers la gauche (la barre s'allonge, les deux pastilles ne bougent pas) :
-               ≥1024px symétrie en segmented inline + 3 dropdowns, en dessous 4 pastilles icône. -->
+               quatre groupes (symétrie, teinte, lissage, motif), chacun en pastille
+               qui ouvre son popover. -->
           <div class="cover-toolbar"
                data-controller="cover-controls"
                data-controls-open="false"
@@ -38,7 +39,7 @@
                  data-cover-controls-target="groups">
               <div class="cover-groups__track">
 
-              <!-- SYMÉTRIE — segmented inline en desktop, dropdown en mobile -->
+              <!-- SYMÉTRIE — ×4 / ×8 / ×16 dans le popover -->
               <div class="cover-group cover-group--sym"
                    style="--i: 3; --o: 0"
                    data-cover-controls-target="group">
@@ -51,12 +52,11 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
                        fill="none" stroke="currentColor" stroke-width="1.6"
                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M12 3v18" stroke-dasharray="3 3"/>
-                    <path d="M9 8 4 12l5 4z"/>
-                    <path d="m15 8 5 4-5 4z"/>
+                    <path d="M9 7 4 12l5 5z"/>
+                    <path d="M12 4v16"/>
+                    <path d="m15 7 5 5-5 5z"/>
                   </svg>
                   <span class="cover-group__label">Symétrie</span>
-                  <span class="cover-group__value tabular-nums" data-cover-editor-target="symmetryValue">×4</span>
                   <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
                     <polyline points="4 10 8 6 12 10"/>
@@ -65,7 +65,11 @@
 
                 <div class="cover-pop cover-pop--sym" data-cover-controls-target="pop">
                   <span class="cover-pop__caret" aria-hidden="true"></span>
-                  <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+                  <div class="cc-label-row">
+                    <span class="cc-label">Symétries</span>
+                    <span class="cc-value tabular-nums" data-cover-editor-target="symmetryValue">×4</span>
+                  </div>
+                  <div class="cc-segmented" role="radiogroup" aria-label="Symétries">
                     <button type="button"
                             class="cc-segmented__btn"
                             data-cover-editor-target="symmetryMode"
@@ -106,7 +110,6 @@
                     <path d="M12 4.2 7.4 8.8a6.5 6.5 0 1 0 9.2 0z"/>
                   </svg>
                   <span class="cover-group__label">Teinte</span>
-                  <span class="cover-group__value tabular-nums" data-cover-editor-target="hueValue">280</span>
                   <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
                     <polyline points="4 10 8 6 12 10"/>
@@ -119,20 +122,9 @@
                     <span class="cc-label">Teinte</span>
                     <span class="cc-value tabular-nums" data-cover-editor-target="hueValue">280</span>
                   </div>
-                  <div class="cc-swatches" role="group" aria-label="Teintes prédéfinies">
-                    <% [0, 35, 80, 150, 200, 245, 280, 320].each do |hue| %>
-                      <button type="button"
-                              class="cc-swatch"
-                              style="background: hsl(<%= hue %> 78% 56%)"
-                              data-hue="<%= hue %>"
-                              data-action="click->cover-controls#pickHue"
-                              aria-label="Teinte <%= hue %>"></button>
-                    <% end %>
-                  </div>
                   <input
                     type="range"
                     id="hue"
-                    data-hue-input
                     data-cover-editor-target="colorPicker"
                     data-action="input->cover-editor#updateColors input->cover-editor#updateTitle input->cover-editor#updateCurve input->cover-editor#updateValueDisplays"
                     min="0"
@@ -162,7 +154,6 @@
                     <path d="M3 9c2.5-4 5-4 7.5 0s5 4 7.5 0 3-2 3-2" opacity=".45"/>
                   </svg>
                   <span class="cover-group__label">Lissage</span>
-                  <span class="cover-group__value tabular-nums" data-cover-editor-target="smoothingValue">50</span>
                   <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
                     <polyline points="4 10 8 6 12 10"/>
@@ -205,7 +196,6 @@
                     <path d="M9 3v18M15 3v18M3 9h18M3 15h18" opacity=".5"/>
                   </svg>
                   <span class="cover-group__label">Motif</span>
-                  <span class="cover-group__value tabular-nums" data-cover-editor-target="gridValue">2 × 2</span>
                   <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__chev" viewBox="0 0 16 16"
                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
                     <polyline points="4 10 8 6 12 10"/>

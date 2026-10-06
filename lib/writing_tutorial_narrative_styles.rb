@@ -3,135 +3,179 @@ module WritingTutorialNarrativeStyles
   # Modificateurs optionnels : cap, lower, upper, title — ex. %{lower:tendance}, %{cap:lieu}
 
   STYLES = [
-      {
+    {
       id: "journal_2050",
       title: "JOURNAL DE 2050",
-      style: "Journaliste",
       description: "Donnez des nouvelles fraîches de demain",
       template: <<~TEXT.strip
-        JOURNAL DE 2050 - Édition Spéciale locale : %{cap:lieu}
-        Chronique rédigée par notre envoyé·e spécial·e : %{pseudo} (%{age} ans)
+        JOURNAL DE 2050 — %{cap:lieu}
+        %{pseudo}, %{age} ans
 
-        Titre de l'article : [Exemple : Le jour où %{lower:lieu} a choisi d'y croire / La fin du monde n'aura pas lieu]
+        Titre
 
-        En ce mois de juin 2050, notre territoire respire enfin. Depuis que l'on s'est attaqué au problème de la %{lower:tendance} grâce à notre décision historique de %{lower:inversion}, nos modes de vie ont radicalement changé ici, à %{cap:lieu}. 
+        [Un titre qui ouvre une scène. Tu pourras le changer.]
 
-        Retour sur une transition réussie guidée par la thématique "%{theme}" et l'activation de notre fameuse étincelle : %{title:etincelle}.
+        Ce matin, à %{cap:lieu}…
 
-        [Rédigez votre chronique ci-dessous en répondant à ces questions :
-        - Comment ce changement a-t-il transformé le paysage de %{cap:lieu} ou votre rue ce matin ?
-        - Décrivez une scène quotidienne positive (un marché, un transport, un lieu d'entraide).
-        - À votre âge (%{age} ans), qu'est-ce que ce nouveau monde change pour votre propre quotidien ?]
+        [Décris un instant précis : un lieu, un geste, une lumière. Le futur devient crédible dans le détail.]
+
+        %{theme}
+
+        [Laisse ce thème colorer la journée sans l'expliquer. Un seul geste suffit.]
+
+        %{lower:tendance}
+        %{lower:inversion}
+
+        [Relie ces deux pistes par une habitude qui a changé. Qu'est-ce que tu aimerais vivre dans cette matinée ?]
+
+        %{title:etincelle}
+
+        [Donne-lui une forme concrète : un objet, un rituel, un mot qu'on se dit.]
       TEXT
     },
     {
       id: "lettre_futur",
       title: "LETTRE DU FUTUR",
-      style: "Intime",
       description: "Écrivez à un proche en 2050",
       template: <<~TEXT.strip
-        De : %{pseudo}, depuis mon refuge à %{cap:lieu}
-        Date : Juin 2050
-        Destinataire : [Par exemple : Mon double de 2026 / Mes enfants / Une personne disparue]
+        %{cap:lieu}, 2050
+        %{pseudo}, %{age} ans
 
-        Je t'écris d'une époque et d'un endroit (%{cap:lieu}) où la découverte de %{lower:etincelle} a tout changé. Du haut de mes %{age} ans, j'ai vu le monde basculer du bon côté. On a enfin trouvé une alternative durable à la %{lower:tendance} et, tu ne me croiras pas, mais on a retrouvé le goût du temps long et de la douceur.
+        À
 
-        Même quand les crises liées à notre %{lower:theme} sont arrivées, on a tenu bon collectivement parce que nous avons appliqué notre plan : %{lower:inversion}.
+        [Choisis quelqu'un de précis : toi d'avant, un proche, une personne qui n'est pas encore là.]
 
-        [Ouvrez votre cœur et décrivez votre intimité :
-        - Qu'est-ce que vous mangez ce midi ? D'où vient cette nourriture ?
-        - Quels sont les bruits et les odeurs qui entrent par votre fenêtre à %{cap:lieu} ?
-        - Quel message d'espoir ou quel conseil aimeriez-vous envoyer dans le passé ?]
+        Je t'écris depuis %{cap:lieu}.
+
+        [Commence par une nouvelle simple. Le repas, la rue, ce que tu vois depuis chez toi.]
+
+        %{theme}
+
+        [Parle de ce thème comme d'une part de ta vie. Un exemple vécu vaut mieux qu'une idée générale.]
+
+        %{lower:tendance}
+        %{lower:inversion}
+
+        [Dis ce qui a bougé pour toi. Un effort, un doute ou une joie ont autant leur place qu'une réussite.]
+
+        %{title:etincelle}
+
+        [Si tu ne devais transmettre qu'une image de ce futur, laquelle ?]
       TEXT
     },
     {
       id: "souvenir",
       title: "SOUVENIR",
-      style: "Rétrospective",
-      description: "Racontez comment on a surmonté la crise !",
+      description: "Racontez un souvenir depuis 2050",
       template: <<~TEXT.strip
-        Carnet de mémoires de %{pseudo} — Témoignage recueilli en 2050 à %{cap:lieu}.
+        %{pseudo}, %{age} ans
+        %{cap:lieu}, 2050
 
-        Nous y sommes. En 2050, du haut de mes %{age} ans, je peux le dire : le pari est gagné. Notre société a prouvé sa robustesse. Pourtant, lorsque je repense aux décennies passées, le chemin n'était pas tracé d'avance.
+        Je me souviens…
 
-        Quand le défi lié à la gestion de la %{lower:tendance} a frappé notre quotidien, beaucoup ont cru à un point de non-retour. Mais à %{cap:lieu}, notre secret a été d'activer immédiatement notre projet d'avenir : %{lower:inversion}. Cela nous a permis de recréer du lien social et de l'espoir à travers une dynamique forte autour de la question suivante : %{lower:theme}. Tout a démarré à l'époque par une idée reçue pour une folie : %{lower:etincelle}.
+        [Ancre la scène : un jour, un lieu, des visages. Le souvenir gagne à rester petit.]
 
-        Le grand point de bascule historique s'est produit lorsque...
+        %{lower:tendance}
 
-        [Racontez le jour de la bascule :
-        - Quel événement déclencheur a réuni les habitants de %{cap:lieu} ? (Une fête de quartier, une assemblée citoyenne, une grève joyeuse...)
-        - Comment les citoyens, les associations ou les communes se sont organisés concrètement pour faire plier l'ancien système ?]
+        [Comment est-ce qu'on vivait ça, dans un détail que tout le monde trouvait normal ?]
+
+        %{lower:inversion}
+
+        [Le tournant peut être minuscule. Qui a fait quoi, sans en faire une légende ?]
+
+        %{theme}
+        %{title:etincelle}
+
+        [Qu'est-ce qu'il en reste dans ta vie ? Le thème peut n'être que le décor.]
       TEXT
     },
     {
       id: "manifeste",
       title: "MANIFESTE",
-      style: "Engagé",
       description: "Écrivez un manifeste politique ou citoyen",
       template: <<~TEXT.strip
-        PROCLAMATION DE %{upper:lieu} — JUIN 2050
-        Porté par le collectif dont fait partie %{pseudo} (%{age} ans)
+        %{upper:lieu} — 2050
+        %{pseudo}, %{age} ans
 
-        Préambule :
-        Nous, citoyennes et citoyens réunis aujourd'hui à %{cap:lieu} en 2050, déclarons que l'ère de la performance aveugle et de la destruction du vivant est révolue. Face aux enjeux cruciaux du domaine %{lower:theme}, nous avons fait le choix de la robustesse, de la sobriété et de la joie. Nous proclamons la primauté de notre concept, %{title:etincelle}, comme un bien commun inaliénable.
+        Nous, à %{cap:lieu}…
 
-        Nos grandes résolutions :
+        [Une phrase au « nous ». Dis simplement ce que tu veux voir exister.]
 
-        Article 1 : Pour respecter le vivant et notre avenir, nous avons définitivement brisé la dynamique toxique de la %{lower:tendance}. Désormais, nous nous engageons à appliquer et défendre notre résolution phare : %{lower:inversion}.
+        1. %{theme}
 
-        Article 2 : Face aux crises de notre siècle, notre force réside dans... 
-        [Écrivez ici le premier grand principe de votre nouvelle société : comment partagez-vous les ressources ? Comment prenez-vous les décisions à %{cap:lieu} ?]
+        [Une règle du quotidien, assez courte pour être dite à voix haute.]
 
-        Article 3 : Pour les générations futures, nous garantissons que...
-        [Complétez avec une promesse d'avenir ou une règle d'or de votre monde idéal.]
+        2. %{lower:inversion}
+
+        [Fais-en un droit, un devoir, ou une façon de décider ensemble.]
+
+        3. %{lower:tendance}
+
+        [Une limite. Qu'est-ce que tu ne veux plus laisser décider à ta place ?]
+
+        %{title:etincelle}
+
+        [Termine par un geste qu'une personne peut tenir. Qui, et à partir de quand ?]
       TEXT
     },
     {
       id: "dialogue",
       title: "DIALOGUE",
-      style: "Échange",
       description: "Faites parler deux passants qui racontent leur quotidien",
       template: <<~TEXT.strip
-        Micro-trottoir réalisé sur la grand-place de %{cap:lieu} en juin 2050.
-        Journaliste : %{pseudo} (%{age} ans).
+        %{cap:lieu}, 2050
+        %{pseudo}, %{age} ans
 
-        %{pseudo} :
-        "Bonjour. Nous sommes en 2050 à %{cap:lieu}. Je suis avec [Prénom du Personnage B], qui accepte de regarder un instant le chemin parcouru."
+        Avec
 
-        Personnage B :
-        "Tu te rends compte, %{pseudo} ? Quand on repense aux années 2020, les rues de %{cap:lieu} et nos vies entières étaient bloquées par la %{lower:tendance}. C'était notre quotidien, on pensait que c'était une fatalité."
+        [Donne un nom à l'autre. Voisin, enfant, inconnu, toi plus jeune.]
 
-        %{pseudo} :
-        "Ça devait être étouffant ! J'ai %{age} ans aujourd'hui, et j'ai l'impression que les bouleversements de notre %{lower:theme} nous ont forcés à bifurquer pour le meilleur. Mais dites-moi, comment votre génération a fait concrètement pour mettre en place %{lower:inversion} ?"
+        %{pseudo} —
+        [Une question sur ce que l'autre est en train de faire.]
 
-        Personnage B : 
-        "Ah, c'est une sacrée histoire ! Au début, on a eu peur, mais on s'est serré les coudes autour d'une idée qui semblait folle à l'époque : %{title:etincelle}. Laisse-moi te raconter comment ça s'est passé..."
+        —
+        [Une réponse en geste : se déplacer, manger, travailler, décider.]
 
-        [Poursuivez le dialogue :
-        - Quelle a été la première action concrète du Personnage B et de ses voisins ?
-        - Comment réagit %{pseudo} face à ce récit ? Quelle est sa vision du futur maintenant qu'il ou elle y vit ?]
+        %{pseudo} —
+        %{theme}
+
+        [Relance sur un détail. Tu peux être surpris, ému, pas d'accord.]
+
+        —
+        %{lower:tendance}
+        %{lower:inversion}
+        %{title:etincelle}
+
+        [Laisse l'autre en faire une anecdote. Qu'est-ce que ces deux-là savent, en 2050, qu'on ignore encore ?]
       TEXT
     },
     {
       id: "carnet_voyage",
       title: "CARNET DE VOYAGE",
-      style: "Immersif",
       description: "Décrivez le futur à travers un récit de voyage",
       template: <<~TEXT.strip
-        Notes nomades de %{pseudo} (%{age} ans)
-        Étape n°24 : Exploration de %{cap:lieu} — Juin 2050
+        %{pseudo}, %{age} ans
+        %{cap:lieu}, 2050
 
-        Ce que je vois dans les rues de %{cap:lieu} :
-        Des infrastructures nées de notre décision collective de %{lower:inversion} (quel soulagement d'avoir mis fin à la %{lower:tendance} !). 
-        [Ajoutez 2 ou 3 éléments visuels marquants de ce paysage futuriste : y a-t-il des arbres bizarres, des architectures partagées, des animaux en liberté, des technologies low-tech visibles ?]
+        Je vois
+        %{theme}
 
-        Ce que j'entends depuis ma fenêtre ce matin :
-        Les discussions animées des habitants de %{cap:lieu} qui s'organisent au quotidien autour du thème %{lower:theme}.
-        [Décrivez un bruit ou une ambiance sonore typique de ce futur désirable : le rire des enfants, un outil d'artisanat, le silence des voitures remplacé par le chant des oiseaux, une musique partagée...]
+        [Deux ou trois choses devant toi. Le thème peut n'en colorer qu'une.]
 
-        Ce que j'ai dans les poches :
-        Un objet étrange mais indispensable, symbolisant notre fameuse %{title:etincelle}, que je compte troquer ou utiliser au marché ce soir.
-        [Décrivez cet objet : à quoi ressemble-t-il ? Quelle est sa texture ? Pourquoi est-il devenu un outil indispensable en 2050 ?]
+        J'entends
+
+        [Un son. Décris-le avant de dire ce qu'il signifie.]
+
+        J'emporte
+        %{title:etincelle}
+
+        [Un objet : sa matière, son poids, la personne à qui tu le tends.]
+
+        Je remarque
+        %{lower:tendance}
+        %{lower:inversion}
+
+        [Une présence ou une absence. Qu'est-ce qui, ici, te donnerait envie de rester ?]
       TEXT
     }
   ].freeze

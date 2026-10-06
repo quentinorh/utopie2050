@@ -86,7 +86,7 @@
          data-cover-controls-target="groups">
       <div class="cover-groups__track">
 
-      <!-- SYMÉTRIE — segmented inline en desktop, dropdown en mobile -->
+      <!-- SYMÉTRIE — ×4 / ×8 / ×16 dans le popover -->
       <div class="cover-group cover-group--sym"
            style="--i: 2; --o: 0"
            data-cover-controls-target="group">
@@ -99,9 +99,9 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="cover-group__icon" viewBox="0 0 24 24"
                fill="none" stroke="currentColor" stroke-width="1.6"
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3v18" stroke-dasharray="3 3"/>
-            <path d="M9 8 4 12l5 4z"/>
-            <path d="m15 8 5 4-5 4z"/>
+            <path d="M9 7 4 12l5 5z"/>
+            <path d="M12 4v16"/>
+            <path d="m15 7 5 5-5 5z"/>
           </svg>
           <span class="cover-group__label">Symétrie</span>
           <span class="cover-group__value tabular-nums" data-hero-target="symmetryValue">×4</span>
@@ -113,7 +113,11 @@
 
         <div class="cover-pop cover-pop--sym" data-cover-controls-target="pop">
           <span class="cover-pop__caret" aria-hidden="true"></span>
-          <div class="cc-segmented" role="radiogroup" aria-label="Symétrie">
+          <div class="cc-label-row">
+            <span class="cc-label">Symétries</span>
+            <span class="cc-value tabular-nums" data-hero-target="symmetryValue">×4</span>
+          </div>
+          <div class="cc-segmented" role="radiogroup" aria-label="Symétries">
             <button type="button"
                     class="cc-segmented__btn"
                     data-hero-target="symmetryMode"

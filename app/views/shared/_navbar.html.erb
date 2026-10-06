@@ -51,7 +51,7 @@
     <% end %>
 
     <!-- Right: Actions -->
-    <div class="flex items-center gap-[8px] flex-nowrap">
+    <div class="navbar-actions flex items-center gap-[8px] flex-nowrap">
       <!-- Fullscreen button (desktop) -->
       <button type="button"
               class="hidden items-center gap-[10px] px-[17px] py-[8px] rounded-full border border-gray-300 opacity-50 hover:opacity-100 transition-opacity duration-200 navbar-fullscreen-btn"
@@ -101,14 +101,14 @@
         </div>
         <!-- CTA button (desktop) -->
         <div class="hidden sm:block">
-          <%= link_to new_user_registration_path,
+          <%= link_to writing_tutorial_path,
                       class: "btn-animate-chars btn-animate-chars--primary text-[14px]",
                       data: { controller: "stagger-chars" },
-                      "aria-label": "Créer un compte" do %>
+                      "aria-label": "Écrire le futur" do %>
             <div class="btn-animate-chars__bg"></div>
             <span data-button-animate-chars
                   data-stagger-chars-target="text"
-                  class="btn-animate-chars__text">Créer un compte</span>
+                  class="btn-animate-chars__text">Écrire le futur</span>
           <% end %>
         </div>
       <% end %>

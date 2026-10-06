@@ -19,7 +19,9 @@ export function fitTitleWrapperToLongestLine(wrapper) {
   }
 
   const clone = wrapper.cloneNode(false)
-  clone.textContent = text
+  // Les blancs de bord (indentation ERB autour de <%= post.title %>) ne sont pas
+  // rendus mais seraient comptés dans la largeur de la première / dernière ligne.
+  clone.textContent = text.replace(/\s+/g, " ").trim()
   clone.removeAttribute("data-cover-editor-target")
   clone.removeAttribute("data-cover-target")
   clone.setAttribute("aria-hidden", "true")
@@ -37,30 +39,23 @@ export function fitTitleWrapperToLongestLine(wrapper) {
     if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return
 
     const range = document.createRange()
-    const len = text.length
-    let maxWidth = 0
-    let lineStart = 0
-    let lastBottom = null
+    range.setStart(textNode, 0)
+    range.setEnd(textNode, textNode.length)
 
-    for (let i = 1; i <= len; i++) {
-      range.setStart(textNode, 0)
-      range.setEnd(textNode, i)
-      const rect = range.getBoundingClientRect()
-      if (lastBottom !== null && rect.bottom > lastBottom) {
-        range.setStart(textNode, lineStart)
-        range.setEnd(textNode, i - 1)
-        maxWidth = Math.max(maxWidth, range.getBoundingClientRect().width)
-        lineStart = i
-      }
-      lastBottom = rect.bottom
+    // getClientRects() renvoie un rectangle par ligne : le plus large donne la
+    // largeur utile du bloc, sans compter les espaces repliés en fin de ligne.
+    let maxWidth = 0
+    for (const rect of range.getClientRects()) {
+      maxWidth = Math.max(maxWidth, rect.width)
     }
-    range.setStart(textNode, lineStart)
-    range.setEnd(textNode, len)
-    maxWidth = Math.max(maxWidth, range.getBoundingClientRect().width)
+    if (maxWidth === 0) return
 
     const style = getComputedStyle(clone)
+    // En content-box la largeur appliquée exclut déjà le padding.
     const padding =
-      (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0)
+      style.boxSizing === "border-box"
+        ? (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0)
+        : 0
 
     const finalWidth = Math.ceil(maxWidth) + padding
     wrapper.style.transition = "none"

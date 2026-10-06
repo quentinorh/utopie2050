@@ -22,6 +22,15 @@ export default class extends Controller {
       window.addEventListener("scroll", this.handleScroll, { passive: true })
       this.handleScroll()
     }
+
+    this.syncCoverToolbarInset = this.syncCoverToolbarInset.bind(this)
+    this.syncCoverToolbarInset()
+    const actions = this.element.querySelector(".navbar-actions")
+    if (actions && typeof ResizeObserver !== "undefined") {
+      this.actionsObserver = new ResizeObserver(() => this.syncCoverToolbarInset())
+      this.actionsObserver.observe(actions)
+    }
+    window.addEventListener("resize", this.syncCoverToolbarInset)
   }
 
   disconnect() {
@@ -29,6 +38,31 @@ export default class extends Controller {
     if (this.scrollValue) {
       window.removeEventListener("scroll", this.handleScroll)
     }
+    this.actionsObserver?.disconnect()
+    window.removeEventListener("resize", this.syncCoverToolbarInset)
+    document.documentElement.style.removeProperty("--cover-toolbar-safe-right")
+  }
+
+  // Sous lg, la cover-toolbar partage la ligne de la navbar. Son retrait droit
+  // suit la largeur réelle des actions : icône seule (mobile), ou icône + CTA
+  // (« Écrire le futur » / « Nouveau futur ») selon la session.
+  syncCoverToolbarInset() {
+    const actions = this.element.querySelector(".navbar-actions")
+    const root = document.documentElement
+    if (!actions || window.matchMedia("(min-width: 1024px)").matches) {
+      root.style.removeProperty("--cover-toolbar-safe-right")
+      return
+    }
+
+    const gap = 8
+    const actionsLeft = actions.getBoundingClientRect().left
+    const toolbar = document.querySelector(".cover-toolbar")
+    const parent = toolbar?.offsetParent
+    const rightEdge = parent
+      ? parent.getBoundingClientRect().right
+      : root.clientWidth
+    const inset = Math.max(0, Math.round(rightEdge - actionsLeft + gap))
+    root.style.setProperty("--cover-toolbar-safe-right", `${inset}px`)
   }
 
   handleScroll() {

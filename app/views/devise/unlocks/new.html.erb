@@ -1,38 +1,40 @@
 <% content_for :title, "SP2050 - Déverrouiller mon compte" %>
 <% content_for :description, "Reçois un nouveau lien pour déverrouiller ton compte SP2050." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<%= render layout: "devise/frame", locals: { frame_id: "unlock-#{SecureRandom.hex(4)}" } do %>
+  <div class="sp-content">
+    <div class="sp-head">
+      <h1 class="sp-title editor-stagger">Débloquer mon compte</h1>
+      <p class="sp-subtitle editor-stagger">On te renvoie les instructions par email.</p>
+    </div>
 
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form">
-      <h2 class="auth-form__title">Debloquer mon compte</h2>
-      <p class="auth-form__subtitle">On te renvoie les instructions par email</p>
-
-      <%= simple_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-        <%= f.error_notification %>
-        <%= f.full_error :unlock_token, class: "text-red-400 text-sm mt-2 text-center" %>
-
-        <div class="auth-form__fields">
-          <%= f.input :email,
-                      label: "Adresse e-mail",
-                      required: true,
-                      autofocus: true,
-                      input_html: { autocomplete: "email", class: 'auth-input', placeholder: "ton@email.com" },
-                      label_html: { class: "auth-label" } %>
-        </div>
-
-        <div class="auth-form__actions">
-          <%= f.button :submit, "Renvoyer les instructions", class: "auth-btn-primary", data: { form_type: "other" } %>
-        </div>
+    <%= form_with model: resource, scope: resource_name, url: unlock_path(resource_name), method: :post, class: "sp-form" do |f| %>
+      <% if resource.errors[:unlock_token].any? %>
+        <p class="sp-error sp-error--center editor-stagger"><%= resource.errors[:unlock_token].to_sentence %></p>
       <% end %>
 
-      <%= render "devise/shared/links" %>
-    </div>
+      <div class="sp-field editor-stagger">
+        <%= f.label :email, "Ton adresse email", class: "sp-label" %>
+        <%= f.email_field :email,
+                          autofocus: true,
+                          required: true,
+                          autocomplete: "email",
+                          placeholder: "hello@fromfuture.com",
+                          class: "sp-input #{"sp-input--error" if resource.errors[:email].any?}" %>
+        <% if resource.errors[:email].any? %>
+          <p class="sp-error"><%= resource.errors[:email].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-cta editor-stagger">
+        <%= render "devise/sessions/submit", label: "Renvoyer le lien" %>
+      </div>
+    <% end %>
   </div>
-</div>
+
+  <div class="sp-alt-wrap sp-alt-wrap--row">
+    <%= render "devise/shared/links" %>
+  </div>
+<% end %>

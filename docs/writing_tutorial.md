@@ -332,6 +332,35 @@ trend, trendOpposite, narrativeStyle, narrativeStyleLabel, bodyTemplate
 
 ---
 
+## Mise en forme de la trame dans l'éditeur
+
+Dans `/futurs/new`, le corps du texte reste un `textarea` classique (sélection,
+copier-coller, suppression au clavier), mais un **calque miroir**
+(`.editor-draft-layer`) est rendu derrière lui et habille le texte :
+
+| Élément | Rendu | Classe |
+| --- | --- | --- |
+| Réponses du didacticiel (pseudo, âge, lieu, étincelle, thème, tendance, inversion) | Étiquette à fond arrondi | `.draft-chip` |
+| Conseils d'écriture entre crochets | Note ambrée en retrait | `.draft-note` |
+
+Le texte du `textarea` est rendu transparent pendant que le calque est actif ;
+son surlignage de sélection est translucide pour rester lisible. Le contrôleur
+`draft_markup_controller.js` recopie les métriques du `textarea` sur le calque
+(police, interlignage, marges intérieures, place de l'ascenseur) : **toute règle
+CSS qui modifie la métrique du texte dans le calque — graisse, italique, taille,
+interlettrage — désaligne les deux couches.**
+
+### Conseils d'écriture
+
+- Un conseil est un bloc entre crochets contenant au moins une espace (motif
+  `NOTE_SOURCE` dans `utils/draft_markup.js`). Les renvois courts (`[1]`,
+  `[sic]`) restent du texte normal.
+- Le balisage est purement visuel : les conseils font partie du corps du texte
+  et sont enregistrés tels quels. C'est à l'auteur de les remplacer par son
+  récit.
+
+---
+
 ## Fichiers sources
 
 | Rôle | Fichier |
@@ -345,4 +374,6 @@ trend, trendOpposite, narrativeStyle, narrativeStyleLabel, bodyTemplate
 | Générateur d'idées | `app/views/shared/_idea_generator.html.erb` |
 | Affichage synthèse | `app/views/shared/_writing_tutorial_synthesis.html.erb` |
 | Préremplissage post | `app/javascript/controllers/writing_tutorial_prefill_controller.js` |
-| Styles visuels | `app/assets/stylesheets/pages/_auth.scss` |
+| Balisage étiquettes + notes | `app/javascript/utils/draft_markup.js` |
+| Calque miroir de l'éditeur | `app/javascript/controllers/draft_markup_controller.js` |
+| Styles visuels | `app/assets/stylesheets/pages/_auth.scss`, `app/assets/stylesheets/components/_editor_draft_markup.scss` |

@@ -54,8 +54,9 @@ export default class extends Controller {
     })
     const skeleton = this.element.querySelector(".editor-skeleton")
     if (skeleton) skeleton.style.display = "none"
-    const textarea = this.element.querySelector(".editor-body-field .editor-textarea")
-    if (textarea) textarea.style.opacity = ""
+    this.element.querySelectorAll(
+      ".editor-body-field .editor-textarea, .editor-body-field .editor-draft-layer"
+    ).forEach(el => { el.style.opacity = "" })
     const drawline = this.element.querySelector(".editor-drawline")
     if (drawline) drawline.style.transform = "scaleX(1)"
   }
@@ -180,11 +181,15 @@ export default class extends Controller {
     const skeleton = this.element.querySelector(".editor-skeleton")
     if (skeleton) {
       const field = skeleton.closest(".editor-body-field")
-      const textarea = field?.querySelector(".editor-textarea")
-      if (textarea) gsap.set(textarea, { opacity: 0 })
+      // Le calque de balisage se révèle avec le textarea : les deux couches
+      // forment une seule image.
+      const body = field
+        ? Array.from(field.querySelectorAll(".editor-textarea, .editor-draft-layer"))
+        : []
+      if (body.length) gsap.set(body, { opacity: 0 })
       gsap.set(skeleton, { opacity: 1 })
       const at = 1.0
-      if (textarea) tl.to(textarea, { opacity: 1, duration: 0.55, ease: reveal.ease }, at)
+      if (body.length) tl.to(body, { opacity: 1, duration: 0.55, ease: reveal.ease }, at)
       tl.to(skeleton, {
         opacity: 0,
         duration: 0.4,

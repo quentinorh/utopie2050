@@ -72,7 +72,10 @@ class IdeaGeneratorService
     end
 
     def noun_for_adjective_change(adjective, except: nil)
-      agreement = find_adjective(adjective) || find_noun(except)
+      previous_noun = find_noun(except)
+      # Même forme d'adjectif possible dans plusieurs listes (ex. pluriel
+      # épicène) : on garde le genre et le nombre du nom déjà affiché.
+      agreement = find_adjective(adjective, prefer: previous_noun) || previous_noun
 
       unless agreement
         entry = random_noun
@@ -84,7 +87,7 @@ class IdeaGeneratorService
         number: agreement[:number],
         except: except
       )
-      adjective_word = find_adjective(adjective)&.dig(:word) || adjective.to_s.strip
+      adjective_word = find_adjective(adjective, prefer: agreement)&.dig(:word) || adjective.to_s.strip
 
       [noun_entry, adjective_word]
     end
@@ -103,18 +106,25 @@ class IdeaGeneratorService
       nil
     end
 
-    def find_adjective(word)
+    def find_adjective(word, prefer: nil)
       normalized = normalize(word)
       return nil if normalized.blank?
 
+      matches = []
       GENDERS.each do |gender|
         NUMBERS.each do |number|
           match = adjectives_for(gender, number).find { |entry| normalize(entry) == normalized }
-          return { word: match, gender: gender, number: number } if match
+          matches << { word: match, gender: gender, number: number } if match
         end
       end
+      return nil if matches.empty?
 
-      nil
+      if prefer
+        preferred = matches.find { |entry| entry[:gender] == prefer[:gender] && entry[:number] == prefer[:number] }
+        return preferred if preferred
+      end
+
+      matches.first
     end
 
     def random_adjective_for(noun_entry, except: nil)

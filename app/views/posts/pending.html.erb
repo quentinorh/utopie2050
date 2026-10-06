@@ -1,62 +1,51 @@
 <% content_for :title, "SP2050 - Futur en attente" %>
 <% content_for :description, "Ton futur est enregistré. Valide ton email pour le publier ou l'enregistrer en brouillon." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
 <% draft = PendingPostSession.draft?(@pending_post) %>
 <% mail_sent = params[:mail_sent].present? %>
+<% unique_id = "pending-#{SecureRandom.hex(4)}" %>
+<% pattern_settings = PendingPostSession.pattern_settings_json(@pending_post) %>
+<% outcome = draft ? "enregistre ton brouillon" : "publie ton futur" %>
 
-<div class="auth-page" data-controller="auth-background pending-auth">
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<div class="sp-auth sp-auth--pending"
+     data-controller="cover-editor editor-reveal pending-auth"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true">
 
-  <div class="auth-form-container">
-    <div class="auth-form auth-form--wide pending-post">
+  <%= render "devise/cover_stage",
+             unique_id: unique_id,
+             title: @pending_post["title"],
+             pattern_settings: pattern_settings,
+             show_title: true %>
+
+  <div class="sp-panel">
+    <div class="sp-content">
       <% if mail_sent %>
-        <p class="pending-post__eyebrow">Vérifie ta boîte mail</p>
-
-        <% if @pending_post["title"].present? %>
-          <h2 class="pending-post__title">
-            <%= @pending_post["title"] %>
-          </h2>
-        <% end %>
-
-        <p class="auth-form__subtitle pending-post__lead">
-          Un lien de validation t'a été envoyé.
-          <% if draft %>
-            Clique dessus pour te connecter : ton futur sera alors enregistré en brouillon.
-          <% else %>
-            Clique dessus pour te connecter : ton futur sera alors publié.
-          <% end %>
-        </p>
-
-        <p class="pending-post__hint font-mono">
-          Sans validation de l'email, <%= draft ? "l'enregistrement en brouillon" : "la publication" %> ne peut pas aboutir.
-          Pense à vérifier tes spams.
-        </p>
-
-        <div class="auth-form__actions pending-post__actions">
-          <%= link_to "Renvoyer un lien", pending_posts_path, class: "auth-btn-secondary" %>
+        <div class="sp-head">
+          <h1 class="sp-title editor-stagger">Vérifie ta boîte mail</h1>
+          <p class="sp-subtitle editor-stagger">
+            Un lien de validation t'a été envoyé. Clique dessus pour te connecter :
+            ton futur sera alors <%= draft ? "enregistré en brouillon" : "publié" %>.
+          </p>
         </div>
-      <% else %>
-        <p class="pending-post__eyebrow">Ton futur est enregistré</p>
 
-        <% if @pending_post["title"].present? %>
-          <h2 class="pending-post__title">
-            <%= @pending_post["title"] %>
-          </h2>
-        <% end %>
-
-        <p class="auth-form__subtitle pending-post__lead">
-          <% if draft %>
-            Entre ton email pour l'enregistrer en brouillon.
-          <% else %>
-            Entre ton email pour le publier.
-          <% end %>
-          Tu recevras un lien de validation — indispensable pour finaliser.
+        <p class="sp-note editor-stagger">
+          Sans validation de l'email, <%= draft ? "l'enregistrement" : "la publication" %> ne peut pas aboutir.
+          Tu ne reçois rien ? Vérifie tes spams ou
+          <%= link_to "renvoie un lien", pending_posts_path, class: "sp-terms__link", data: { underline_link: "" } %>.
         </p>
+      <% else %>
+        <div class="sp-head">
+          <h1 class="sp-title editor-stagger"><%= draft ? "Enregistre ton brouillon" : "Publie ton futur" %></h1>
+          <p class="sp-subtitle editor-stagger">
+            Entre ton email pour <%= draft ? "l'enregistrer" : "le publier" %>.
+            Tu recevras un lien de validation — indispensable pour finaliser.
+          </p>
+        </div>
 
-        <%= form_with url: pending_auth_posts_path, method: :post, local: true, class: "pending-post__form", data: { turbo: false } do %>
+        <%= form_with url: pending_auth_posts_path, method: :post, class: "sp-form", data: { turbo: false } do %>
           <div aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden;">
             <label for="website_url">Ne pas remplir</label>
             <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off" />
@@ -65,35 +54,32 @@
           <input type="hidden" name="username" value="" data-pending-auth-target="username">
           <input type="hidden" name="age" value="" data-pending-auth-target="age">
 
-          <div class="auth-form__fields">
-            <label class="auth-label" for="pending_email">Adresse e-mail</label>
+          <div class="sp-field editor-stagger">
+            <label class="sp-label" for="pending_email">Ton adresse email</label>
             <input type="email"
                    name="email"
                    id="pending_email"
-                   class="auth-input"
-                   placeholder="ton@email.com"
+                   class="sp-input"
+                   placeholder="hello@fromfuture.com"
                    required
                    autofocus
                    value="<%= @pending_auth_email %>"
                    autocomplete="email">
           </div>
 
-          <p class="pending-post__hint font-mono">
-            Nouveau ou déjà inscrit·e : même démarche. Le lien te connecte
-            et <%= draft ? "enregistre ton brouillon" : "publie ton futur" %>.
+          <p class="sp-note editor-stagger">
+            Nouveau ou déjà inscrit·e : même démarche. Le lien te connecte et <%= outcome %>.
           </p>
 
-          <div class="auth-form__actions pending-post__actions">
-            <button type="submit" class="auth-btn-primary" data-form-type="other">
-              Recevoir mon lien de validation
-            </button>
+          <div class="sp-cta editor-stagger">
+            <%= render "devise/sessions/submit", label: "Recevoir mon lien" %>
           </div>
         <% end %>
       <% end %>
+    </div>
 
-      <div class="auth-form__footer pending-post__footer">
-        <%= link_to "Modifier mon texte", new_post_path, class: "auth-link" %>
-      </div>
+    <div class="sp-alt-wrap">
+      <%= link_to "Modifier mon texte", new_post_path, class: "sp-alt editor-stagger", data: { underline_link: "" } %>
     </div>
   </div>
 </div>
