@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       post :stage
       get :pending
       post :pending_auth
+      post :pending_cover
       get :claim
     end
 

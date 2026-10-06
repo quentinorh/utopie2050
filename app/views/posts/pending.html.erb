@@ -11,12 +11,15 @@
 <% cover_username = @cover_username.presence || flash[:pending_author].to_s.presence %>
 <% identity_email = @pending_auth_email.to_s %>
 
-<div class="sp-auth sp-auth--pending"
+<div class="sp-auth sp-auth--pending is-revealing"
      data-controller="cover-editor editor-reveal pending-auth"
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="true"
      data-pending-auth-cover-username-value="<%= cover_username %>"
-     data-pending-auth-refresh-cover-value="<%= @refresh_cover ? "true" : "false" %>">
+     <% if mail_sent %>
+     data-pending-auth-sync-cover-value="true"
+     data-pending-auth-cover-upload-url-value="<%= pending_cover_posts_path %>"
+     <% end %>>
 
   <%= render "devise/cover_stage",
              unique_id: unique_id,
@@ -40,25 +43,6 @@
           Tu ne reçois rien ? Vérifie tes spams ou
           <%= link_to "renvoie un lien", pending_posts_path, class: "sp-terms__link", data: { underline_link: "" } %>.
         </p>
-      <% elsif @refresh_cover %>
-        <div class="sp-head">
-          <h1 class="sp-title editor-stagger"><%= draft ? "Enregistre ton brouillon" : "Publie ton futur" %></h1>
-          <p class="sp-subtitle editor-stagger">
-            <%= cover_username %> est inscrit sur la couverture. Le lien part dans un instant.
-          </p>
-        </div>
-
-        <%= form_with url: pending_auth_posts_path, method: :post, class: "sp-form",
-                      data: { pending_auth_target: "form", action: "submit->pending-auth#prepareSubmit", turbo: false } do %>
-          <%= render "posts/pending_honeypot" %>
-          <input type="hidden" name="email" value="<%= identity_email %>">
-          <input type="hidden" name="cover_refreshed" value="1">
-          <input type="file" name="cover_image" accept="image/jpeg,image/png" tabindex="-1" aria-hidden="true" class="hidden" data-pending-auth-target="coverImage">
-
-          <div class="sp-cta editor-stagger">
-            <%= render "devise/sessions/submit", label: "Recevoir mon lien" %>
-          </div>
-        <% end %>
       <% elsif @needs_identity %>
         <div class="sp-head">
           <% if @show_username && @show_terms %>

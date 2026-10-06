@@ -58,7 +58,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, ActionMailer::Base.deliveries.size
   end
 
-  test "un compte existant reçoit le lien avec son pseudo, sans en créer un autre" do
+  test "un compte existant reçoit le lien tout de suite, avec son pseudo" do
     user = build_user(email: "deja@example.com", username: "Déjà Là")
     stage_guest_post
 
@@ -66,17 +66,28 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       post pending_auth_posts_path, params: { email: user.email }
     end
 
-    assert_response :success
-    assert_select "input[name=cover_refreshed][value=1]"
-    assert_match "Déjà Là", response.body
-    assert_empty ActionMailer::Base.deliveries
-
-    post pending_auth_posts_path, params: { email: user.email, cover_refreshed: "1" }
-
     assert_redirected_to pending_posts_path(mail_sent: 1)
+    assert_equal 1, ActionMailer::Base.deliveries.size
+
     follow_redirect!
     assert_match "Déjà Là", response.body
-    assert_equal 1, ActionMailer::Base.deliveries.size
+    assert_match pending_cover_posts_path, response.body
+  end
+
+  test "la couverture en attente se remplace sans changer de page" do
+    stage_guest_post
+    file = Tempfile.new(["cover", ".jpg"])
+    file.binmode
+    file.write("\xFF\xD8\xFF\xD9")
+    file.rewind
+    upload = Rack::Test::UploadedFile.new(file.path, "image/jpeg")
+
+    post pending_cover_posts_path, params: { cover_image: upload }
+
+    assert_response :no_content
+    assert PendingPost.order(:created_at).last.cover_image.attached?
+  ensure
+    file&.close!
   end
 
   test "un pseudo déjà pris reste sur l'étape d'identité" do

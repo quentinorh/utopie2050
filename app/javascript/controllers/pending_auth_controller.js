@@ -8,14 +8,12 @@ export default class extends Controller {
     "form", "username", "usernameField", "age", "terms", "termsAccepted",
     "coverImage", "usernameError", "termsError"
   ]
-  static values = { coverUsername: String, refreshCover: Boolean }
+  static values = { coverUsername: String, syncCover: Boolean, coverUploadUrl: String }
 
   connect() {
     this.applyPrefill()
     if (this.coverUsernameValue) this.paintCover(this.coverUsernameValue, { force: true })
-    if (this.refreshCoverValue && this.hasFormTarget) {
-      requestAnimationFrame(() => this.formTarget.requestSubmit())
-    }
+    if (this.syncCoverValue) this.syncCoverImage()
   }
 
   applyPrefill() {
@@ -56,7 +54,7 @@ export default class extends Controller {
   async prepareSubmit(event) {
     if (this._allowSubmit) return
 
-    const needsGate = this.hasUsernameFieldTarget || this.hasTermsTarget || this.refreshCoverValue
+    const needsGate = this.hasUsernameFieldTarget || this.hasTermsTarget
     if (!needsGate) return
 
     event.preventDefault()
@@ -133,6 +131,38 @@ export default class extends Controller {
 
     cover.userNameTarget.textContent = name
     cover.updateTitle()
+  }
+
+  // Met à jour l'image de partage après l'envoi du lien, sans changer de page.
+  async syncCoverImage() {
+    const cover = this.coverEditor()
+    if (!this.coverUploadUrlValue || !cover?.hasCoverTarget || !cover.hasCoverImageFileTarget) return
+
+    try {
+      if (this.coverUsernameValue) this.paintCover(this.coverUsernameValue, { force: true })
+      cover.saveSVG()
+      if (cover.hasPatternSettingsTarget) cover.savePatternSettings()
+      if (!cover.coverTarget.value) return
+
+      await cover.attachSocialCoverRaster()
+      const file = cover.coverImageFileTarget.files?.[0]
+      if (!file) return
+
+      const body = new FormData()
+      body.append("cover_image", file)
+      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content")
+      await fetch(this.coverUploadUrlValue, {
+        method: "POST",
+        body,
+        credentials: "same-origin",
+        headers: {
+          "X-CSRF-Token": token,
+          Accept: "application/json"
+        }
+      })
+    } catch (error) {
+      console.warn("Couverture réseau non générée", error)
+    }
   }
 
   async attachCoverFile() {

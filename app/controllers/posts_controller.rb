@@ -1,10 +1,10 @@
 require 'open-uri'
 
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub, :new, :stage, :pending, :pending_auth]
+  before_action :authenticate_user!, except: [:index, :show, :export_pdf, :export_epub, :new, :stage, :pending, :pending_auth, :pending_cover]
   before_action :set_post, only: [:show, :edit, :update, :destroy, :favorite, :unfavorite, :export_pdf, :export_epub]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
-  before_action :load_pending_post, only: [:pending, :pending_auth, :claim]
+  before_action :load_pending_post, only: [:pending, :pending_auth, :pending_cover, :claim]
 
   has_scope :by_author
   has_scope :by_query
@@ -72,16 +72,8 @@ class PostsController < ApplicationController
     end
 
     user = User.find_by("LOWER(email) = ?", email)
-
     if user
-      if cover_refreshed?
-        deliver_pending_link(user)
-      else
-        @refresh_cover = true
-        @cover_username = user.username
-        @pending_auth_email = email
-        render :pending
-      end
+      deliver_pending_link(user)
       return
     end
 
@@ -113,6 +105,12 @@ class PostsController < ApplicationController
     end
 
     deliver_pending_link(user)
+  end
+
+  # Remplace l'image de partage une fois le nom connu, sans recharger la page.
+  def pending_cover
+    refresh_pending_cover
+    head :no_content
   end
 
   def claim
@@ -260,10 +258,6 @@ class PostsController < ApplicationController
     params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
       :cover_image, :event_code,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
-  end
-
-  def cover_refreshed?
-    ActiveModel::Type::Boolean.new.cast(params[:cover_refreshed])
   end
 
   def pending_username_param
