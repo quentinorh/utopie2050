@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
 import { saveRegistrationPrefill, loadRegistrationPrefill, clearRegistrationPrefill } from "utils/registration_prefill"
-import { interpolateNarrativeTemplate, buildNarrativeContext } from "utils/narrative_template"
+import { interpolateNarrativeTemplate, buildNarrativeContext, buildEtincelle } from "utils/narrative_template"
 import { step as stepMotion } from "utils/motion"
 
 // Entonnoir d'écriture reconstruit sur le layout split .sp-* : une seule
@@ -17,18 +17,18 @@ const CTA_LABELS = {
   username: "Suivant",
   age: "Suivant",
   "living-place": "Suivant",
-  positive: "Commencer l'écriture",
-  theme: "Suivant",
+  positive: "Accepter",
+  theme: "Choisir ce thème",
   etincelle: "Choisir cette combinaison",
-  inversion: "Suivant",
-  style: "Démarrer l'écriture",
+  inversion: "Choisir cette tendance",
+  style: "Commencer l'écriture",
 }
 
 // Phrases « cryptiques » (une machine qui prépare le récit) affichées en haut,
 // scramblées à chaque étape via randomize-letter-animation.
 const PROGRESS_PHRASES = {
   intro: "initialisation du récit",
-  username: "calibrage du vocabulaire",
+  username: "identification de l'auteur·ice",
   age: "projection temporelle",
   "living-place": "cartographie du territoire",
   positive: "alignement des intentions",
@@ -212,15 +212,20 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key !== "Enter") return
     if (event.target.tagName === "TEXTAREA") return
+    if (event.target.closest(".jackpot__reel, .jackpot__spin")) return
     event.preventDefault()
     this.handleCta()
   }
 
   persistForStep(name) {
     if (!this.signedInValue && (name === "username" || name === "age")) this.persistPrefill()
+    if (name === "username") this.applyCoverUsername()
     if (name === "living-place") this.persistLivingPlace()
     if (name === "theme" && this.selectedTheme) saveRegistrationPrefill({ theme: this.selectedTheme })
-    if (name === "etincelle") this.persistIdeaGenerator()
+    if (name === "etincelle") {
+      this.persistIdeaGenerator()
+      this.applyCoverTitle()
+    }
     if (name === "inversion") this.persistTrend()
   }
 
@@ -368,7 +373,7 @@ export default class extends Controller {
 
   applyStyleSelection(style) {
     this.selectedStyleId = style.id
-    this.selectedStyleLabel = `${style.title} — ${style.style}`
+    this.selectedStyleLabel = style.title
     this.refreshSelectedBodyTemplate()
     if (this.hasStyleOptionTarget) {
       this.styleOptionTargets.forEach(el => {
@@ -506,6 +511,26 @@ export default class extends Controller {
   persistIdeaGenerator() {
     saveRegistrationPrefill(this.collectIdeaGeneratorData())
     this.refreshSelectedBodyTemplate()
+  }
+
+  coverEditor() {
+    return this.application.getControllerForElementAndIdentifier(this.element, "cover-editor")
+  }
+
+  applyCoverUsername() {
+    const username = this.resolveUsername()
+    const cover = this.coverEditor()
+    if (!username || !cover?.hasUserNameTarget) return
+    cover.userNameTarget.textContent = username
+    cover.updateTitle()
+  }
+
+  applyCoverTitle() {
+    const title = buildEtincelle(this.collectIdeaGeneratorData())
+    const cover = this.coverEditor()
+    if (!title || !cover?.hasTitleInputTarget) return
+    cover.titleInputTarget.value = title
+    cover.updateTitle()
   }
 
   // --- Prefill / template ------------------------------------------------

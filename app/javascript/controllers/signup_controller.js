@@ -88,6 +88,7 @@ export default class extends Controller {
     const to = this.stepTargets[toIndex]
     this.index = toIndex
     this.updateNav()
+    this.rerollCover()
 
     const focusTarget = () => {
       const field = to.querySelector("input:not([type=hidden]):not([type=file]), [contenteditable]")
@@ -219,6 +220,12 @@ export default class extends Controller {
     const step = event.target.closest('[data-signup-target="step"]')
     if (step) this.clearError(step)
     event.target.classList.remove("sp-input--error")
+  }
+
+  // Nouvelle couverture à chaque changement d'étape (même moteur que le dé).
+  rerollCover() {
+    const cover = this.application.getControllerForElementAndIdentifier(this.element, "cover-editor")
+    cover?.randomize()
   }
 
   // --- Prefill (flux « futur en attente ») ------------------------------

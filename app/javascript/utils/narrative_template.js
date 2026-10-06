@@ -13,8 +13,12 @@ export function buildEtincelleRaw(prefill = {}) {
     (prefill.noun && prefill.adjective ? `${prefill.noun} ${prefill.adjective}` : "")
 }
 
+// Titre généré : majuscule sur le nom seulement, l'adjectif reste en minuscule.
 export function buildEtincelle(prefill = {}) {
-  return capitalizeEtincelle(buildEtincelleRaw(prefill))
+  const raw = buildEtincelleRaw(prefill).trim()
+  if (!raw) return ""
+  const normalized = raw.toLocaleLowerCase("fr-FR")
+  return normalized.charAt(0).toLocaleUpperCase("fr-FR") + normalized.slice(1)
 }
 
 export function defaultNarrativeModifier(key) {
@@ -112,7 +116,10 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;")
 }
 
-function highlightVariantsForContext(context = {}) {
+// Toutes les écritures possibles des réponses du didacticiel une fois
+// interpolées : la trame peut contenir « Lyon », « lyon » ou « LYON ».
+export function narrativeValueVariants(prefill = {}) {
+  const context = buildNarrativeContext(prefill)
   const variants = new Set()
 
   Object.entries(context).forEach(([key, value]) => {
@@ -127,14 +134,16 @@ function highlightVariantsForContext(context = {}) {
     })
   })
 
-  return [...variants].sort((a, b) => b.length - a.length)
+  return [...variants]
+    .map(variant => variant.trim())
+    .filter(variant => variant.length > 1)
+    .sort((a, b) => b.length - a.length)
 }
 
 export function highlightNarrativeValues(text, prefill = {}) {
   if (!text) return ""
 
-  const context = buildNarrativeContext(prefill)
-  const values = highlightVariantsForContext(context)
+  const values = narrativeValueVariants(prefill)
 
   let html = escapeHtml(text)
 

@@ -23,6 +23,9 @@ export default class extends Controller {
 
     const coverName = document.querySelector('[data-cover-editor-target="userName"]')
     if (coverName) coverName.textContent = username
+
+    const actionbarType = document.querySelector(".editor-actionbar__type[data-guest-author]")
+    if (actionbarType) actionbarType.textContent = `Le futur de ${username}`
   }
 
   applyTitlePrefill(prefill) {

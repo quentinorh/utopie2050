@@ -47,6 +47,24 @@ class PendingPostSession
       data["draft"] == true
     end
 
+    # JSON des réglages de couverture, prêt pour l'input du moteur.
+    # Chaîne vide si le payload n'a pas un motif complet.
+    def pattern_settings_json(data)
+      raw = data["pattern_settings"]
+      return "" if raw.blank?
+
+      parsed = raw.is_a?(String) ? JSON.parse(raw) : raw
+      return "" unless parsed.is_a?(Hash)
+
+      parsed = parsed.stringify_keys
+      keys = %w[symmetryMode color firstSliderControl secondSliderControl rows columns smoothing]
+      return "" unless keys.all? { |key| !parsed[key].nil? && parsed[key] != "" }
+
+      parsed.to_json
+    rescue JSON::ParserError, TypeError
+      ""
+    end
+
     def build_post(user, data)
       post = user.posts.build(
         title: data["title"],

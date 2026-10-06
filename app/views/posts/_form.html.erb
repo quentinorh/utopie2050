@@ -106,7 +106,7 @@
           </div>
 
           <%# Trait qui se dessine à l'entrée (editor-reveal). %>
-          <span class="editor-drawline" aria-hidden="true"></span>
+          <%# <span class="editor-drawline" aria-hidden="true"></span> %>
 
           <!-- Code événement — optionnel, révélé par un switch -->
           <% event_code_str = @post.event_code&.code.to_s %>
@@ -147,20 +147,27 @@
           <% end %>
 
           <!-- Corps du texte -->
-          <div class="editor-body-field editor-stagger<%= ' editor-body-field--draft' if @post.new_record? %>">
-            <% if @post.new_record? %>
-              <div class="editor-skeleton" aria-hidden="true">
-                <% [92, 100, 74, 96, 68].each do |w| %>
-                  <span class="editor-skeleton__line" style="width: <%= w %>%"></span>
-                <% end %>
-              </div>
-            <% end %>
-            <%= form.text_area :body,
-                               id: "post_body",
-                               class: "editor-textarea",
-                               rows: 12,
-                               placeholder: "Écris ton futur ici…",
-                               data: { writing_tutorial_prefill_target: "body" } %>
+          <div class="editor-body-field editor-stagger<%= ' editor-body-field--draft' if @post.new_record? %>"
+               data-controller="draft-markup">
+            <div class="editor-body-field__frame">
+              <% if @post.new_record? %>
+                <div class="editor-skeleton" aria-hidden="true">
+                  <% [92, 100, 74, 96, 68].each do |w| %>
+                    <span class="editor-skeleton__line" style="width: <%= w %>%"></span>
+                  <% end %>
+                </div>
+              <% end %>
+              <div class="editor-draft-layer" aria-hidden="true" data-draft-markup-target="layer"></div>
+              <%= form.text_area :body,
+                                 id: "post_body",
+                                 class: "editor-textarea",
+                                 rows: 12,
+                                 placeholder: "Écris ton futur ici…",
+                                 data: {
+                                   writing_tutorial_prefill_target: "body",
+                                   draft_markup_target: "field"
+                                 } %>
+            </div>
           </div>
 
           <!-- Chapitres -->
@@ -221,7 +228,7 @@
         <footer class="editor-actionbar">
           <div class="editor-actionbar__inner">
             <div class="editor-actionbar__meta font-mono">
-              <span class="editor-actionbar__type">
+              <span class="editor-actionbar__type"<% if @post.new_record? && post_author_username == "…" %> data-guest-author<% end %>>
                 <%= @post.new_record? ? "Le futur de #{post_author_username}" : "Futur de #{post_author_username}" %>
               </span>
               <% if !@post.new_record? %>

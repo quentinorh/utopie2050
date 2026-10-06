@@ -27,21 +27,12 @@ export default class extends Controller {
     document.addEventListener("click", this._onDocumentClick)
     document.addEventListener("keydown", this._onKeydown)
     window.addEventListener("resize", this._onResize)
-
-    // Le curseur de teinte et le nuancier écrivent la même valeur : la pastille
-    // sélectionnée suit donc aussi les déplacements du curseur.
-    this._hueInput = this.element.querySelector("[data-hue-input]")
-    if (this._hueInput) {
-      this._onHueInput = () => this.markActiveSwatch(this._hueInput.value)
-      this._hueInput.addEventListener("input", this._onHueInput)
-    }
   }
 
   disconnect() {
     document.removeEventListener("click", this._onDocumentClick)
     document.removeEventListener("keydown", this._onKeydown)
     window.removeEventListener("resize", this._onResize)
-    this._hueInput?.removeEventListener("input", this._onHueInput)
   }
 
   get isOpen() {
@@ -111,31 +102,10 @@ export default class extends Controller {
       trigger.setAttribute("aria-expanded", "true")
       pop.classList.add("is-open")
       this.fitPop(pop)
-      if (this._hueInput) this.markActiveSwatch(this._hueInput.value)
       // Les mini-grilles se positionnent en pixels : elles ont besoin d'une
       // mesure valide, donc d'être visibles. On prévient le générateur.
       this.dispatch("opened", { detail: { group } })
     }
-  }
-
-  // --- Nuancier de teinte ---------------------------------------------------
-
-  // La pastille pilote le même <input type="range"> que le curseur : on écrit
-  // la valeur puis on émet `input` pour que le générateur recalcule tout seul.
-  pickHue(event) {
-    const swatch = event.currentTarget
-    const input = this.element.querySelector("[data-hue-input]")
-    if (!input) return
-
-    input.value = swatch.dataset.hue
-    input.dispatchEvent(new Event("input", { bubbles: true }))
-    this.markActiveSwatch(input.value)
-  }
-
-  markActiveSwatch(hue) {
-    this.element.querySelectorAll(".cc-swatch").forEach((swatch) => {
-      swatch.classList.toggle("is-active", swatch.dataset.hue === String(hue))
-    })
   }
 
   closePop(group) {

@@ -12,7 +12,7 @@ import { buildEtincelle, regenerateBodyTemplateFromPrefill } from "utils/narrati
 const COLLAPSED_STORAGE_KEY = "sp2050_draft_synthesis_collapsed"
 
 export default class extends Controller {
-  static targets = ["panel", "list", "body", "toggle", "summary", "toggleLabel"]
+  static targets = ["panel", "list", "body", "toggle", "summary"]
   static values = { username: String, age: String, collapsible: Boolean }
 
   connect() {
@@ -105,8 +105,13 @@ export default class extends Controller {
   }
 
   syncCoverUsername(username) {
+    if (!username) return
+
     const coverName = document.querySelector('[data-cover-editor-target="userName"]')
-    if (coverName && username) coverName.textContent = username
+    if (coverName) coverName.textContent = username
+
+    const actionbarType = document.querySelector(".editor-actionbar__type[data-guest-author]")
+    if (actionbarType) actionbarType.textContent = `Le futur de ${username}`
   }
 
   syncPostTitle(prefill, previousPrefill) {
@@ -184,10 +189,6 @@ export default class extends Controller {
 
     if (this.hasToggleTarget) {
       this.toggleTarget.setAttribute("aria-expanded", collapsed ? "false" : "true")
-    }
-
-    if (this.hasToggleLabelTarget) {
-      this.toggleLabelTarget.textContent = collapsed ? "Afficher" : "Réduire"
     }
 
     if (this.hasSummaryTarget) {

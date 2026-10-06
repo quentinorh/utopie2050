@@ -1,0 +1,20 @@
+<%# Cadre partagé des pages d'auth (couverture à gauche, contenu à droite).
+    Locals : frame_id (requis), frame_class, cover_title. %>
+<% frame_id = local_assigns.fetch(:frame_id) %>
+<% frame_class = local_assigns[:frame_class].to_s %>
+<% cover_title = local_assigns[:cover_title].to_s %>
+
+<div class="sp-auth <%= frame_class %>"
+     data-controller="cover-editor editor-reveal"
+     data-cover-editor-unique-id-value="<%= frame_id %>"
+     data-cover-editor-new-record-value="true">
+
+  <%= render "devise/cover_stage",
+             unique_id: frame_id,
+             title: cover_title,
+             show_title: cover_title.present? %>
+
+  <div class="sp-panel">
+    <%= yield %>
+  </div>
+</div>

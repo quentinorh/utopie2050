@@ -1,11 +1,11 @@
-import { buildEtincelle } from "utils/narrative_template"
+import { buildEtincelle, findNarrativeStyleById } from "utils/narrative_template"
 
 const STORAGE_KEY = "sp2050_registration_prefill"
 
 export const SYNTHESIS_LABELS = {
   username: "Pseudo",
   age: "Âge en 2050",
-  livingPlace: "Où viveras-tu en 2050 ?",
+  livingPlace: "Lieu de vie",
   spark: "Étincelle",
   theme: "Thème",
   trendOpposite: "Tendance inversée",
@@ -149,7 +149,7 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
     items.push({
       key: "username",
       label: SYNTHESIS_LABELS.username,
-      value: resolvedUsername,
+      value: sentenceCase(resolvedUsername),
       editable,
       field: "username"
     })
@@ -159,10 +159,9 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
     items.push({
       key: "age",
       label: SYNTHESIS_LABELS.age,
-      value: editable ? String(resolvedAge) : `${resolvedAge} ans`,
+      value: sentenceCase(editable ? String(resolvedAge) : `${resolvedAge} ans`),
       editable,
-      field: "age",
-      inputType: "number"
+      field: "age"
     })
   }
 
@@ -170,10 +169,9 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
     items.push({
       key: "livingPlace",
       label: SYNTHESIS_LABELS.livingPlace,
-      value: prefill.livingPlace,
+      value: sentenceCase(prefill.livingPlace),
       editable,
-      field: "livingPlace",
-      multiline: true
+      field: "livingPlace"
     })
   }
 
@@ -184,7 +182,7 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
     items.push({
       key: "spark",
       label: SYNTHESIS_LABELS.spark,
-      value: buildEtincelle(prefill),
+      value: sentenceCase(buildEtincelle(prefill)),
       editable,
       field: "spark"
     })
@@ -194,7 +192,7 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
     items.push({
       key: "theme",
       label: SYNTHESIS_LABELS.theme,
-      value: prefill.theme,
+      value: sentenceCase(prefill.theme),
       editable,
       field: "theme"
     })
@@ -205,7 +203,7 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
       items.push({
         key: "trend",
         label: "Tendance",
-        value: prefill.trend,
+        value: sentenceCase(prefill.trend),
         editable: true,
         field: "trend"
       })
@@ -215,40 +213,40 @@ export function buildSynthesisItems(prefill, { username, age, editable = false }
       items.push({
         key: "trendOpposite",
         label: "Inversion",
-        value: prefill.trendOpposite,
+        value: sentenceCase(prefill.trendOpposite),
         editable: true,
-        field: "trendOpposite",
-        multiline: true
+        field: "trendOpposite"
       })
     }
   } else if (prefill?.trend && prefill?.trendOpposite) {
     items.push({
       key: "trendInverted",
       label: SYNTHESIS_LABELS.trendOpposite,
-      value: `${prefill.trend} / ${prefill.trendOpposite}`,
+      value: sentenceCase(`${prefill.trend} / ${prefill.trendOpposite}`),
       editable: false
     })
   } else if (prefill?.trendOpposite) {
     items.push({
       key: "trendInverted",
       label: SYNTHESIS_LABELS.trendOpposite,
-      value: prefill.trendOpposite,
+      value: sentenceCase(prefill.trendOpposite),
       editable: false
     })
   } else if (prefill?.trend) {
     items.push({
       key: "trendInverted",
       label: SYNTHESIS_LABELS.trendOpposite,
-      value: prefill.trend,
+      value: sentenceCase(prefill.trend),
       editable: false
     })
   }
 
-  if (prefill?.narrativeStyleLabel) {
+  const styleTitle = narrativeStyleTitle(prefill)
+  if (styleTitle) {
     items.push({
       key: "narrativeStyle",
       label: SYNTHESIS_LABELS.narrativeStyle,
-      value: prefill.narrativeStyleLabel,
+      value: sentenceCase(styleTitle),
       editable: false
     })
   }
@@ -260,15 +258,23 @@ export function buildSynthesisSummary(prefill, options = {}) {
   const items = buildSynthesisItems(prefill, options)
   const parts = []
 
-  const spark = items.find(item => item.key === "spark")
+  const trend = sentenceCase(prefill?.trend)
   const theme = items.find(item => item.key === "theme")
   const style = items.find(item => item.key === "narrativeStyle")
 
-  if (spark?.value) parts.push(spark.value)
+  if (trend) parts.push(trend)
   if (theme?.value) parts.push(theme.value)
   if (style?.value) parts.push(style.value)
 
   return parts.join(" · ")
+}
+
+function sentenceCase(text) {
+  const value = String(text ?? "").trim()
+  if (!value) return ""
+
+  const lower = value.toLocaleLowerCase("fr-FR")
+  return lower.charAt(0).toLocaleUpperCase("fr-FR") + lower.slice(1)
 }
 
 function escapeHtml(text) {
@@ -283,6 +289,17 @@ function escapeAttribute(text) {
   return escapeHtml(text).replace(/'/g, "&#39;")
 }
 
+function narrativeStyleTitle(prefill) {
+  const fromCatalog = findNarrativeStyleById(prefill?.narrativeStyle)?.title
+  if (fromCatalog) return fromCatalog
+
+  const label = String(prefill?.narrativeStyleLabel || "").trim()
+  if (!label) return ""
+
+  const separator = label.indexOf(" — ")
+  return separator === -1 ? label : label.slice(0, separator).trim()
+}
+
 function renderSynthesisValue(item, editable) {
   if (!editable || !item.editable) {
     return `<dd class="writing-tutorial-synthesis__value">${escapeHtml(item.value)}</dd>`
@@ -291,24 +308,12 @@ function renderSynthesisValue(item, editable) {
   const field = escapeAttribute(item.field)
   const value = escapeAttribute(item.value)
 
-  if (item.multiline) {
-    return `<dd class="writing-tutorial-synthesis__value">
-      <textarea class="writing-tutorial-synthesis__input writing-tutorial-synthesis__input--textarea"
-                rows="2"
-                data-synthesis-field="${field}"
-                aria-label="${escapeAttribute(item.label)}">${escapeHtml(item.value)}</textarea>
-    </dd>`
-  }
-
-  const inputType = item.inputType || "text"
-  const minAttr = inputType === "number" ? ' min="0"' : ""
-
   return `<dd class="writing-tutorial-synthesis__value">
-    <input type="${inputType}"
+    <input type="text"
            class="writing-tutorial-synthesis__input"
            data-synthesis-field="${field}"
            value="${value}"
-           aria-label="${escapeAttribute(item.label)}"${minAttr} />
+           aria-label="${escapeAttribute(item.label)}" />
   </dd>`
 }
 
@@ -317,7 +322,7 @@ export function prefillUpdatesFromSynthesisField(field, value) {
     case "username":
       return { username: value }
     case "age":
-      return { age: value.replace(/[^\d]/g, "") }
+      return { age: value }
     case "livingPlace":
       return { livingPlace: value }
     case "spark":

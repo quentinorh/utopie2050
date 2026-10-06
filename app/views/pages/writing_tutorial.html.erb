@@ -39,14 +39,14 @@
 
         <!-- Intro -->
         <div class="sp-step funnel-step--intro" data-writing-tutorial-target="step" data-step="intro">
-          <h1 class="sp-title">Bienvenue à l'écriture de votre premier texte</h1>
-          <p class="sp-subtitle">SP2050 est une plateforme collaborative d'écriture de textes. Nous t'avons prévu quelques questions pour t'aider à te lancer dans l'écriture.</p>
+          <h1 class="sp-title">Bienvenue</h1>
+          <p class="sp-subtitle funnel-intro__lead">SP2050 est une plateforme collaborative d'écriture de textes. Nous t'avons prévu quelques questions pour t'aider à te lancer dans l'écriture.</p>
         </div>
 
         <% unless user_signed_in? %>
           <!-- Pseudo -->
           <div class="sp-step" data-writing-tutorial-target="step" data-step="username">
-            <h1 class="sp-title">Bienvenue</h1>
+            <h1 class="sp-title">Ton nom en 2050</h1>
             <div class="funnel-field">
               <label class="sp-label" for="funnel-username">En 2050, comment aimerais-tu être appelé·e ?</label>
               <input type="text" id="funnel-username" class="sp-input"
@@ -59,7 +59,7 @@
 
           <!-- Âge -->
           <div class="sp-step" data-writing-tutorial-target="step" data-step="age">
-            <h1 class="sp-title">Bienvenue</h1>
+            <h1 class="sp-title">Ton âge en 2050</h1>
             <div class="funnel-field">
               <label class="sp-label" for="funnel-age">En 2050, quel âge auras-tu ?</label>
               <input type="text" id="funnel-age" class="sp-input" inputmode="numeric"
@@ -73,7 +73,7 @@
 
         <!-- Lieu de vie -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="living-place">
-          <h1 class="sp-title">Bienvenue</h1>
+          <h1 class="sp-title">Ton lieu de vie en 2050</h1>
           <div class="funnel-field">
             <div class="sp-field__head">
               <label class="sp-label" for="funnel-living-place">Où vivras-tu en 2050 ?</label>
@@ -87,24 +87,32 @@
           </div>
         </div>
 
-        <!-- Consignes / futurs désirables -->
+        <!-- Conditions d'utilisation -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="positive">
-          <h1 class="sp-title">Bienvenue</h1>
+          <h1 class="sp-title">Conditions d'utilisation</h1>
           <div class="sp-terms funnel-terms">
             <div class="sp-terms__item">
-              <h3 class="sp-terms__title">Des futurs désirables</h3>
+              <h3 class="sp-terms__title">Futurs désirables</h3>
               <p class="sp-terms__text">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous·tes. En publiant, tu t'engages à respecter cette ligne directrice.</p>
             </div>
             <div class="sp-terms__item">
               <h3 class="sp-terms__title">Contenus respectueux</h3>
               <p class="sp-terms__text">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
             </div>
+            <div class="sp-terms__item">
+              <h3 class="sp-terms__title">Droit d'auteur·ice</h3>
+              <p class="sp-terms__text">Veille à ne partager que des contenus dont tu es l'auteur·ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
+            </div>
+            <div class="sp-terms__item">
+              <h3 class="sp-terms__title">Licence libre</h3>
+              <p class="sp-terms__text">En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="sp-terms__link" data-underline-link>Creative Commons BY-NC-SA 4.0</a>.</p>
+            </div>
           </div>
         </div>
 
         <!-- Thème (checkboxes délicieuses) -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="theme">
-          <p class="sp-eyebrow">La fabrique à idée</p>
+          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Quelques questions pour stimuler l'écriture</h1>
           <p class="sp-subtitle sp-subtitle--q">Quel thème t'inspire ?</p>
 
@@ -129,7 +137,7 @@
 
         <!-- Générateur d'étincelles -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="etincelle">
-          <p class="sp-eyebrow">La fabrique à idée</p>
+          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Générateur d'étincelles</h1>
           <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit.</p>
           <%= render "shared/jackpot" %>
@@ -137,7 +145,7 @@
 
         <!-- Inversion la tendance -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="inversion">
-          <p class="sp-eyebrow">La fabrique à idée</p>
+          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Inversion la tendance</h1>
           <p class="sp-subtitle sp-subtitle--q">Choisis une dynamique actuelle pour combattre la tendance.</p>
 
@@ -166,7 +174,7 @@
 
         <!-- Style (checkboxes classiques) -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="style">
-          <p class="sp-eyebrow">La fabrique à idée</p>
+          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Choisis un style d'écriture</h1>
           <p class="sp-subtitle sp-subtitle--q">Parmi ces formats, lequel te parle le plus ?</p>
 

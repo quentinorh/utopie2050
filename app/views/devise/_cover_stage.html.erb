@@ -1,6 +1,11 @@
-<%# Couverture aléatoire partagée (connexion + inscription). Rend le moteur de
-    couverture (SVG + cibles cover-editor) + la barre du générateur. Décorative :
-    le bloc titre est masqué. Requiert `unique_id` unique par page. %>
+<%# Couverture partagée (connexion, inscription, futur en attente).
+    Rend le moteur de couverture (SVG + cibles cover-editor) + la barre du générateur.
+    Par défaut le bloc titre est masqué (couverture décorative). Passer `show_title: true`
+    avec `title` et `pattern_settings` pour afficher la couverture d'un texte.
+    Requiert `unique_id` unique par page. %>
+<% title = local_assigns.fetch(:title, "").to_s %>
+<% pattern_settings = local_assigns.fetch(:pattern_settings, "").to_s %>
+<% show_title = local_assigns.fetch(:show_title, false) %>
 <div class="sp-cover">
   <%# Logo — retour à l'accueil (la navbar est masquée sur ces pages). %>
   <%= link_to "SP2050", root_path, class: "sp-logo", "aria-label": "Retour à l'accueil" %>
@@ -24,9 +29,9 @@
       <g data-cover-editor-target="curveGroup"></g>
     </svg>
 
-    <div class="cover-title-block pointer-events-none" aria-hidden="true">
+    <div class="cover-title-block pointer-events-none" <% unless show_title %>aria-hidden="true"<% end %>>
       <div class="cover-username" data-cover-editor-target="userName"></div>
-      <div class="cover-title-text" data-cover-editor-target="titleWrapper"></div>
+      <div class="cover-title-text" data-cover-editor-target="titleWrapper"><%= title %></div>
     </div>
   </div>
 
@@ -37,9 +42,9 @@
     <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
     <input type="hidden" data-cover-editor-target="rows" data-action="input->cover-editor#updateCurve">
     <input type="hidden" data-cover-editor-target="columns" data-action="input->cover-editor#updateCurve">
-    <input type="hidden" data-cover-editor-target="patternSettings" value="">
+    <input type="hidden" data-cover-editor-target="patternSettings" value="<%= pattern_settings %>">
     <input type="hidden" data-cover-editor-target="cover">
-    <input type="hidden" data-cover-editor-target="titleInput" value="">
+    <input type="hidden" data-cover-editor-target="titleInput" value="<%= title %>">
     <input type="file" data-cover-editor-target="coverImageFile" accept="image/jpeg,image/png" tabindex="-1" aria-hidden="true" class="hidden">
   </div>
 </div>

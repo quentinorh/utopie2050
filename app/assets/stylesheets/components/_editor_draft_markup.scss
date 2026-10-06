@@ -1,0 +1,108 @@
+/* ================================================================
+   Brouillon issu du didacticiel — étiquettes et notes dans le corps
+
+   Un calque miroir est rendu derrière le textarea : il reprend le texte
+   à l'identique et l'habille (réponses du didacticiel en étiquettes,
+   conseils entre crochets en notes). Le textarea reste un champ texte
+   normal — son texte est simplement rendu transparent pour laisser voir
+   le calque. Toute règle qui modifie la métrique du texte (graisse,
+   italique, taille, interlettrage) désaligne les deux couches.
+   ================================================================ */
+
+.editor-body-field__frame {
+  position: relative;
+}
+
+.editor-draft-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  border-style: solid;
+  border-color: transparent;
+  background: transparent;
+  color: transparent;
+}
+
+.editor-body-field .editor-textarea {
+  position: relative;
+  z-index: 1;
+}
+
+.editor-body-field.is-decorated {
+  .editor-draft-layer {
+    background: var(--editor-surface);
+    color: #000;
+  }
+
+  .editor-textarea,
+  .editor-textarea:not(:placeholder-shown) {
+    background: transparent;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    caret-color: var(--editor-ink);
+  }
+
+  /* Surlignage translucide : la sélection doit laisser lire le calque,
+     sinon le texte sélectionné disparaît. */
+  .editor-textarea::selection {
+    background: rgba(31, 31, 31, 0.18);
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Le brouillon prérempli reste en retrait ; seules les étiquettes ressortent. */
+.editor-body-field--draft.is-decorated .editor-draft-layer {
+  color: #6b6b6b;
+}
+
+/* Le surlignage s'arrête au mot : pas de marge latérale, sinon le fond
+   déborderait sur la ponctuation voisine. Le remplissage vertical ne change
+   pas la métrique du texte, `clone` le répète sur chaque ligne du bloc. */
+.draft-chip {
+  padding: 0.14em 0;
+  background: rgba(31, 31, 31, 0.08);
+  color: var(--editor-ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.draft-note {
+  padding: 0.14em 0;
+  background: rgba(214, 160, 32, 0.14);
+  color: rgba(31, 31, 31, 0.42);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.editor-draft-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--editor-ink-faint);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.editor-draft-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  &[hidden] {
+    display: none;
+  }
+
+  .draft-chip,
+  .draft-note {
+    padding: 2px 0;
+    font-size: 11px;
+  }
+}

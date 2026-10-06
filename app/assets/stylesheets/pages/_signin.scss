@@ -342,3 +342,129 @@
     }
   }
 }
+
+/* Futur en attente — même split que la connexion, couverture du texte à gauche.
+   Le lien « Modifier mon texte » reste dans le flux : le texte est plus long
+   que sur la connexion, et le placement absolu à 10vh le collait au bouton. */
+.sp-auth--pending {
+  .sp-cover .cover-title-block {
+    display: flex;
+  }
+
+  .cover-username:empty,
+  .cover-title-text:empty {
+    display: none;
+  }
+
+  /* Aperçu figé : les cibles du moteur restent dans le DOM, pas les réglages. */
+  .cover-toolbar {
+    display: none;
+  }
+
+  .sp-panel {
+    flex-direction: column;
+
+    @media (min-width: 1024px) {
+      padding-bottom: 40px;
+    }
+  }
+
+  .sp-form {
+    margin-top: clamp(28px, 5vw, 72px);
+  }
+
+  .sp-cta {
+    margin-top: clamp(28px, 4vw, 56px);
+  }
+
+  .sp-note {
+    max-width: 28rem;
+  }
+
+  .sp-alt-wrap {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin-top: 28px;
+  }
+}
+
+/* Plusieurs liens secondaires côte à côte (confirmation, déverrouillage…).
+   Sur mobile, le titre long pousse le bouton vers le lien ancré : on les remet dans le flux. */
+.sp-alt-wrap--row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 22px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+
+  @media (max-width: 1023px) {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: auto;
+    max-width: none;
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .sp-panel:has(.sp-alt-wrap--row) {
+    flex-direction: column;
+  }
+}
+
+/* Formulaire à plusieurs champs : l'écart vient du gap, pas du 6vw du CTA. */
+.sp-form--fields {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  > .sp-cta {
+    margin-top: 10px;
+  }
+}
+
+/* Profil — même split, le nom sur la couverture, actions dans le flux. */
+.sp-auth--account {
+  .sp-cover .cover-title-block {
+    display: flex;
+  }
+
+  .cover-username:empty,
+  .cover-title-text:empty {
+    display: none;
+  }
+
+  .sp-panel {
+    flex-direction: column;
+
+    @media (min-width: 1024px) {
+      padding-bottom: 40px;
+    }
+  }
+
+  .sp-form {
+    margin-top: clamp(28px, 5vw, 64px);
+  }
+
+  .sp-note {
+    max-width: 28rem;
+  }
+
+  .sp-alt--danger {
+    color: var(--sp-danger);
+
+    &:hover {
+      color: #b91c1c;
+    }
+  }
+}
+
+.sp-danger-form {
+  margin: 12px 0 0;
+  text-align: center;
+}

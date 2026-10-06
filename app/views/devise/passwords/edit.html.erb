@@ -1,47 +1,58 @@
 <% content_for :title, "SP2050 - Nouveau mot de passe" %>
 <% content_for :description, "Choisis un nouveau mot de passe pour ton compte SP2050." %>
 <% content_for :meta_robots, "noindex, nofollow" %>
-<% content_for :navbar_transparent, true %>
+<% content_for :hide_navbar, true %>
 
-<div class="auth-page" data-controller="auth-background">
-  <!-- Animated SVG pattern background -->
-  <div class="auth-bg" data-auth-background-target="svg"></div>
-  <div class="auth-overlay"></div>
+<%= render layout: "devise/frame", locals: { frame_id: "password-edit-#{SecureRandom.hex(4)}" } do %>
+  <div class="sp-content">
+    <div class="sp-head">
+      <h1 class="sp-title editor-stagger">Nouveau mot de passe</h1>
+      <p class="sp-subtitle editor-stagger">Choisis ton nouveau sésame.</p>
+    </div>
 
-  <!-- Form -->
-  <div class="auth-form-container">
-    <div class="auth-form">
-      <h2 class="auth-form__title">Nouveau mot de passe</h2>
-      <p class="auth-form__subtitle">Choisis ton nouveau sesame</p>
-
-      <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-        <%= f.error_notification %>
-        <%= f.input :reset_password_token, as: :hidden %>
-        <%= f.full_error :reset_password_token, class: "text-red-400 text-sm mt-2 text-center" %>
-
-        <div class="auth-form__fields">
-          <%= f.input :password,
-                      label: "Nouveau mot de passe",
-                      required: true,
-                      autofocus: true,
-                      hint: ("#{@minimum_password_length} caracteres minimum" if @minimum_password_length),
-                      hint_html: { class: "text-xs text-white/40 mt-1" },
-                      input_html: { autocomplete: "new-password", class: 'auth-input', placeholder: "••••••••" },
-                      label_html: { class: "auth-label" } %>
-
-          <%= f.input :password_confirmation,
-                      label: "Confirmer le mot de passe",
-                      required: true,
-                      input_html: { autocomplete: "new-password", class: 'auth-input', placeholder: "••••••••" },
-                      label_html: { class: "auth-label" } %>
-        </div>
-
-        <div class="auth-form__actions">
-          <%= f.button :submit, "Mettre à jour", class: "auth-btn-primary", data: { form_type: "other" } %>
-        </div>
+    <%= form_with model: resource, scope: resource_name, url: password_path(resource_name), method: :put, class: "sp-form sp-form--fields" do |f| %>
+      <%= f.hidden_field :reset_password_token %>
+      <% if resource.errors[:reset_password_token].any? %>
+        <p class="sp-error sp-error--center editor-stagger"><%= resource.errors[:reset_password_token].to_sentence %></p>
       <% end %>
 
-      <%= render "devise/shared/links" %>
-    </div>
+      <div class="sp-field editor-stagger">
+        <div class="sp-field__head">
+          <%= f.label :password, "Nouveau mot de passe", class: "sp-label" %>
+          <% if @minimum_password_length %>
+            <span class="sp-helper"><%= @minimum_password_length %> caractères minimum</span>
+          <% end %>
+        </div>
+        <%= f.password_field :password,
+                             autofocus: true,
+                             required: true,
+                             autocomplete: "new-password",
+                             placeholder: "••••••••",
+                             class: "sp-input #{"sp-input--error" if resource.errors[:password].any?}" %>
+        <% if resource.errors[:password].any? %>
+          <p class="sp-error"><%= resource.errors[:password].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-field editor-stagger">
+        <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "sp-label" %>
+        <%= f.password_field :password_confirmation,
+                             required: true,
+                             autocomplete: "new-password",
+                             placeholder: "••••••••",
+                             class: "sp-input #{"sp-input--error" if resource.errors[:password_confirmation].any?}" %>
+        <% if resource.errors[:password_confirmation].any? %>
+          <p class="sp-error"><%= resource.errors[:password_confirmation].to_sentence %></p>
+        <% end %>
+      </div>
+
+      <div class="sp-cta editor-stagger">
+        <%= render "devise/sessions/submit", label: "Mettre à jour" %>
+      </div>
+    <% end %>
   </div>
-</div>
+
+  <div class="sp-alt-wrap sp-alt-wrap--row">
+    <%= render "devise/shared/links" %>
+  </div>
+<% end %>

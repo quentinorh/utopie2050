@@ -83,6 +83,17 @@
       pointer-events: none;
     }
   }
+
+  /* « Lire le futur » est fondu avant le scroll. Sans ça, la règle `a`
+     ci-dessus le laisse cliquable alors que le texte est invisible. */
+  .navbar-center-wrapper--show-mobile {
+    &,
+    a,
+    button,
+    [role="button"] {
+      pointer-events: none;
+    }
+  }
 }
 
 .navbar--transparent {
@@ -191,12 +202,14 @@
 /* Show/edit/new — mobile : point + « Lire le futur » (même opacity, masqués avant scroll) */
 .navbar-center-wrapper--show-mobile {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .navbar--scrolled .navbar-center-wrapper--show-mobile {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 

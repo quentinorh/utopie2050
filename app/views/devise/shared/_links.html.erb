@@ -1,9 +1,7 @@
-<div class="auth-form__footer">
-  <%- if controller_name != 'sessions' && controller_name != 'magic_links' %>
-    <%= link_to "Se connecter", new_session_path(resource_name), class: "auth-link" %>
-  <% end %>
+<%- if controller_name != "sessions" && controller_name != "magic_links" %>
+  <%= link_to "Se connecter", new_session_path(resource_name), class: "sp-alt editor-stagger", data: { underline_link: "" } %>
+<% end %>
 
-  <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-    <%= link_to "Créer un compte", new_registration_path(resource_name), class: "auth-link" %>
-  <% end %>
-</div>
+<%- if devise_mapping.registerable? && controller_name != "registrations" %>
+  <%= link_to "Créer un compte", new_registration_path(resource_name), class: "sp-alt editor-stagger", data: { underline_link: "" } %>
+<% end %>
