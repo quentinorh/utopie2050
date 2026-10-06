@@ -221,6 +221,7 @@ export default class extends Controller {
     if (!this.signedInValue && (name === "username" || name === "age")) this.persistPrefill()
     if (name === "username") this.applyCoverUsername()
     if (name === "living-place") this.persistLivingPlace()
+    if (name === "positive") saveRegistrationPrefill({ termsAccepted: true })
     if (name === "theme" && this.selectedTheme) saveRegistrationPrefill({ theme: this.selectedTheme })
     if (name === "etincelle") {
       this.persistIdeaGenerator()

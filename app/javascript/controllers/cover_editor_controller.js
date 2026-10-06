@@ -82,7 +82,8 @@ export default class extends Controller {
   // Pseudo saisi dans l'entonnoir, si la couverture n'a pas encore d'auteur.
   applyCarriedUsername() {
     if (!this.hasUserNameTarget) return
-    if (this.userNameTarget.textContent.trim()) return
+    const current = this.userNameTarget.textContent.trim()
+    if (current && current !== "…") return
 
     try {
       const prefill = JSON.parse(sessionStorage.getItem("sp2050_registration_prefill") || "{}")

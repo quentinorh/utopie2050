@@ -64,37 +64,55 @@ class PostsController < ApplicationController
     end
 
     email = params[:email].to_s.strip.downcase
-    user = User.find_by("LOWER(email) = ?", email)
-
-    if user.nil?
-      user = User.new(
-        email: email,
-        username: params[:username].to_s.strip.presence,
-        age: params[:age].presence || 0
-      )
-      user.skip_confirmation_notification!
-
-      unless user.save
-        flash.now[:alert] = user.errors.full_messages.to_sentence
-        @pending_auth_email = email
-        render :pending, status: :unprocessable_entity
-        return
-      end
-    end
-
-    begin
-      user.send_magic_link!
-    rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
-      Rails.logger.error "[SMTP] Erreur pending_auth : #{e.message}"
-      flash.now[:alert] = "L'adresse email semble invalide ou n'accepte pas les emails."
+    unless email.match?(Devise.email_regexp)
+      flash.now[:alert] = email.blank? ? "Indique ton adresse email." : "Cette adresse email n'est pas valide."
       @pending_auth_email = email
       render :pending, status: :unprocessable_entity
       return
-    rescue Net::SMTPError => e
-      Rails.logger.error "[SMTP] Erreur SMTP inattendue (pending_auth) : #{e.message}"
     end
 
-    redirect_to pending_posts_path(mail_sent: 1)
+    user = User.find_by("LOWER(email) = ?", email)
+
+    if user
+      if cover_refreshed?
+        deliver_pending_link(user)
+      else
+        @refresh_cover = true
+        @cover_username = user.username
+        @pending_auth_email = email
+        render :pending
+      end
+      return
+    end
+
+    username = pending_username_param
+    terms_ok = ActiveModel::Type::Boolean.new.cast(params[:terms_accepted])
+
+    unless username.present? && terms_ok
+      assign_identity_form(email, username, terms_ok)
+      render :pending, status: :unprocessable_entity
+      return
+    end
+
+    user = User.new(email: email, username: username, age: params[:age].presence || 0)
+    user.skip_confirmation_notification!
+
+    unless user.save
+      flash.now[:alert] = user.errors.full_messages.to_sentence
+      if user.errors[:username].empty?
+        @pending_auth_email = email
+        @identity_username = username
+        @pending_auth_age = params[:age].to_s
+        @terms_already_accepted = true
+      else
+        assign_identity_form(email, username, true)
+        @show_username = true
+      end
+      render :pending, status: :unprocessable_entity
+      return
+    end
+
+    deliver_pending_link(user)
   end
 
   def claim
@@ -242,6 +260,54 @@ class PostsController < ApplicationController
     params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
       :cover_image, :event_code,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
+  end
+
+  def cover_refreshed?
+    ActiveModel::Type::Boolean.new.cast(params[:cover_refreshed])
+  end
+
+  def pending_username_param
+    value = params[:username].to_s.strip
+    return if value.blank? || value == "…"
+
+    value
+  end
+
+  def assign_identity_form(email, username, terms_ok)
+    @needs_identity = true
+    @show_username = username.blank?
+    @show_terms = !terms_ok
+    @identity_username = username.to_s
+    @pending_auth_email = email
+    @pending_auth_age = params[:age].to_s
+  end
+
+  def deliver_pending_link(user)
+    refresh_pending_cover
+
+    begin
+      user.send_magic_link!
+    rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
+      Rails.logger.error "[SMTP] Erreur pending_auth : #{e.message}"
+      flash.now[:alert] = "L'adresse email semble invalide ou n'accepte pas les emails."
+      @pending_auth_email = user.email
+      @cover_username = user.username
+      render :pending, status: :unprocessable_entity
+      return
+    rescue Net::SMTPError => e
+      Rails.logger.error "[SMTP] Erreur SMTP inattendue (pending_auth) : #{e.message}"
+    end
+
+    redirect_to pending_posts_path(mail_sent: 1), flash: { pending_author: user.username }
+  end
+
+  def refresh_pending_cover
+    file = params[:cover_image]
+    return if file.blank?
+
+    PendingPostSession.find_record(session)&.cover_image&.attach(file)
+  rescue StandardError => e
+    Rails.logger.error "[PendingPost] Couverture non remplacée : #{e.message}"
   end
 
   def load_pending_post

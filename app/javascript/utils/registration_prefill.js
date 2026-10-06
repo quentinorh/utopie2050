@@ -15,7 +15,7 @@ export const SYNTHESIS_LABELS = {
 export function saveRegistrationPrefill({
   username, age, livingPlace, theme, noun, adjective, phrase,
   trend, trendOpposite, narrativeStyle, narrativeStyleLabel, bodyTemplate, bodyTemplateEdited,
-  coverPatternSettings
+  coverPatternSettings, termsAccepted
 } = {}) {
   const existing = loadRegistrationPrefill() || {}
   const data = { ...existing }
@@ -87,6 +87,10 @@ export function saveRegistrationPrefill({
   if (coverPatternSettings !== undefined && coverPatternSettings !== null) {
     const value = String(coverPatternSettings).trim()
     if (value) data.coverPatternSettings = value
+  }
+
+  if (termsAccepted !== undefined && termsAccepted !== null) {
+    data.termsAccepted = Boolean(termsAccepted)
   }
 
   if (Object.keys(data).length > 0) {

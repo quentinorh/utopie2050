@@ -388,6 +388,14 @@
     transform: none;
     margin-top: 28px;
   }
+
+  .pending-terms {
+    text-align: left;
+  }
+
+  .pending-terms .sp-remember {
+    margin-top: 18px;
+  }
 }
 
 /* Plusieurs liens secondaires côte à côte (confirmation, déverrouillage…).
