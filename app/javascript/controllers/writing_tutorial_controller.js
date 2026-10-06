@@ -18,10 +18,10 @@ const CTA_LABELS = {
   age: "Suivant",
   "living-place": "Suivant",
   positive: "Accepter",
-  theme: "Choisir ce thème",
-  etincelle: "Choisir cette combinaison",
-  inversion: "Choisir cette tendance",
-  style: "Commencer l'écriture",
+  theme: "Suivant",
+  etincelle: "Suivant",
+  inversion: "Suivant",
+  style: "Terminer",
 }
 
 // Phrases « cryptiques » (une machine qui prépare le récit) affichées en haut,
