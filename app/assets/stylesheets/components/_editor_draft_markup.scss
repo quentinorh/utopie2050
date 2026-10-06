@@ -73,7 +73,9 @@
 .draft-note {
   padding: 0.14em 0;
   background: rgba(214, 160, 32, 0.14);
-  color: rgba(31, 31, 31, 0.42);
+  /* Ton chaud opaque : le conseil reste second par rapport au récit, mais
+     doit rester confortable à lire sur toute la longueur du bloc. */
+  color: #7a6530;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
