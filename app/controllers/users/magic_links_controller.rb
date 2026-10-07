@@ -3,22 +3,43 @@ class Users::MagicLinksController < ApplicationController
 
   def create
     email = params.dig(:user, :email).to_s.strip.downcase
-    user = User.find_by("LOWER(email) = ?", email)
-
-    # « Se souvenir de moi » : mémorisé le temps de l'aller-retour email, puis
-    # appliqué à la connexion effective (action #show).
-    session[:magic_link_remember] = ActiveModel::Type::Boolean.new.cast(params.dig(:user, :remember_me))
-
-    begin
-      user&.send_magic_link!
-    rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
-      Rails.logger.error "[SMTP] Erreur magic-link : #{e.message}"
-      return respond_magic_link(alert: "Adresse email invalide ou refusée.")
-    rescue Net::SMTPError => e
-      Rails.logger.error "[SMTP] Erreur SMTP inattendue (magic-link) : #{e.message}"
+    unless email.match?(Devise.email_regexp)
+      redirect_to new_user_session_path, alert: email.blank? ? "Indique ton adresse email." : "Cette adresse email n'est pas valide."
+      return
     end
 
-    respond_magic_link(notice: "Si un compte existe, un lien t'est envoyé.")
+    user = User.find_by("LOWER(email) = ?", email)
+
+    if user
+      # « Se souvenir de moi » : mémorisé le temps de l'aller-retour email, puis
+      # appliqué à la connexion effective (action #show).
+      session[:magic_link_remember] = ActiveModel::Type::Boolean.new.cast(params.dig(:user, :remember_me))
+
+      begin
+        user.send_magic_link!
+      rescue Net::SMTPFatalError, Net::SMTPSyntaxError => e
+        Rails.logger.error "[SMTP] Erreur magic-link : #{e.message}"
+        redirect_to new_user_session_path, alert: "Adresse email invalide ou refusée."
+        return
+      rescue Net::SMTPError => e
+        Rails.logger.error "[SMTP] Erreur SMTP inattendue (magic-link) : #{e.message}"
+      end
+
+      remember_magic_link_result(email, "sent")
+    else
+      session.delete(:magic_link_remember)
+      remember_magic_link_result(email, "unknown")
+    end
+
+    redirect_to user_magic_link_result_path
+  end
+
+  def result
+    @email = session[:magic_link_email].to_s
+    @status = session[:magic_link_status].to_s
+    return if @email.present? && %w[sent unknown].include?(@status)
+
+    redirect_to new_user_session_path
   end
 
   def show
@@ -37,31 +58,9 @@ class Users::MagicLinksController < ApplicationController
 
   private
 
-  # Répond en Turbo Stream (pas de rechargement) : met à jour la flash et, en cas
-  # de succès, bascule le CTA sur « Renvoyer un code de connexion » — l'email saisi
-  # reste en place. Fallback HTML (sans JS) : redirection classique.
-  def respond_magic_link(notice: nil, alert: nil)
-    respond_to do |format|
-      format.turbo_stream do
-        flash.now[:notice] = notice if notice
-        flash.now[:alert] = alert if alert
-
-        streams = [turbo_stream.update("flashes", partial: "shared/flashes")]
-        if notice
-          streams << turbo_stream.update(
-            "signin-submit",
-            partial: "devise/sessions/submit",
-            locals: { label: "Renvoyer un code de connexion" }
-          )
-        end
-        render turbo_stream: streams
-      end
-
-      format.html do
-        redirect_to(alert ? new_user_session_path : magic_link_redirect_path,
-                    notice: notice, alert: alert)
-      end
-    end
+  def remember_magic_link_result(email, status)
+    session[:magic_link_email] = email
+    session[:magic_link_status] = status
   end
 
   def magic_link_redirect_path

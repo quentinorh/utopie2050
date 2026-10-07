@@ -232,9 +232,15 @@ export default class extends Controller {
 
   applyPrefill() {
     const prefill = loadRegistrationPrefill()
-    if (!prefill) return
-    if (prefill.username && this.hasUsernameTarget) this.usernameTarget.value = prefill.username
-    if (prefill.age && this.hasAgeTarget) this.ageTarget.value = prefill.age
+    if (prefill) {
+      if (prefill.username && this.hasUsernameTarget) this.usernameTarget.value = prefill.username
+      if (prefill.age && this.hasAgeTarget) this.ageTarget.value = prefill.age
+    }
+
+    const fromQuery = new URLSearchParams(window.location.search).get("email")
+    if (fromQuery && this.hasEmailTarget && !this.emailTarget.value.trim()) {
+      this.emailTarget.value = fromQuery.trim()
+    }
   }
 
   persistPrefill() {

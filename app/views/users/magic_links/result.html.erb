@@ -1,0 +1,51 @@
+<% content_for :title, @status == "sent" ? "SP2050 - Lien envoyé" : "SP2050 - Adresse inconnue" %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+<% content_for :hide_navbar, true %>
+
+<% unique_id = "magic-link-#{SecureRandom.hex(4)}" %>
+
+<div class="sp-auth sp-auth--magic"
+     data-controller="cover-editor editor-reveal"
+     data-cover-editor-unique-id-value="<%= unique_id %>"
+     data-cover-editor-new-record-value="true">
+
+  <%= render "devise/cover_stage", unique_id: unique_id %>
+
+  <div class="sp-panel">
+    <div class="sp-content">
+      <% if @status == "sent" %>
+        <div class="sp-head">
+          <h1 class="sp-title editor-stagger">Lien envoyé</h1>
+          <p class="sp-subtitle editor-stagger">Un lien de connexion a été envoyé à <%= @email %>. Clique dessus pour te connecter.</p>
+        </div>
+
+        <p class="sp-note editor-stagger">
+          Il expire dans 20 minutes. Tu ne reçois rien ? Vérifie tes spams ou
+          <%= link_to "demande un nouveau lien", new_user_session_path, class: "sp-terms__link", data: { underline_link: "" } %>.
+        </p>
+      <% else %>
+        <div class="sp-head">
+          <h1 class="sp-title editor-stagger">Adresse inconnue</h1>
+          <p class="sp-subtitle editor-stagger">Aucun compte n'est associé à <%= @email %>.</p>
+        </div>
+
+        <p class="sp-note editor-stagger">Crée un compte pour retrouver tes textes et publier tes futurs.</p>
+
+        <div class="sp-cta editor-stagger">
+          <%= link_to new_user_registration_path(email: @email),
+                      class: "btn-animate-chars btn-animate-chars--primary sp-submit",
+                      data: { controller: "stagger-chars" } do %>
+            <div class="btn-animate-chars__bg"></div>
+            <span data-button-animate-chars
+                  data-stagger-chars-target="text"
+                  class="btn-animate-chars__text">Créer mon compte</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="sp-alt-wrap">
+      <%= link_to "Essayer une autre adresse", new_user_session_path, class: "sp-alt editor-stagger", data: { underline_link: "" } %>
+    </div>
+  </div>
+</div>

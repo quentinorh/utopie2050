@@ -87,28 +87,30 @@
           </div>
         </div>
 
-        <!-- Conditions d'utilisation -->
-        <div class="sp-step" data-writing-tutorial-target="step" data-step="positive">
-          <h1 class="sp-title">Conditions d'utilisation</h1>
-          <div class="sp-terms funnel-terms">
-            <div class="sp-terms__item">
-              <h3 class="sp-terms__title">Futurs désirables</h3>
-              <p class="sp-terms__text">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous·tes. En publiant, tu t'engages à respecter cette ligne directrice.</p>
-            </div>
-            <div class="sp-terms__item">
-              <h3 class="sp-terms__title">Contenus respectueux</h3>
-              <p class="sp-terms__text">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
-            </div>
-            <div class="sp-terms__item">
-              <h3 class="sp-terms__title">Droit d'auteur·ice</h3>
-              <p class="sp-terms__text">Veille à ne partager que des contenus dont tu es l'auteur·ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
-            </div>
-            <div class="sp-terms__item">
-              <h3 class="sp-terms__title">Licence libre</h3>
-              <p class="sp-terms__text">En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="sp-terms__link" data-underline-link>Creative Commons BY-NC-SA 4.0</a>.</p>
+        <% unless user_signed_in? %>
+          <!-- Conditions d'utilisation -->
+          <div class="sp-step" data-writing-tutorial-target="step" data-step="positive">
+            <h1 class="sp-title">Conditions d'utilisation</h1>
+            <div class="sp-terms funnel-terms">
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Futurs désirables</h3>
+                <p class="sp-terms__text">Chaque histoire doit contribuer à imaginer un monde meilleur pour tous·tes. En publiant, tu t'engages à respecter cette ligne directrice.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Contenus respectueux</h3>
+                <p class="sp-terms__text">En 2050, nous imaginons un monde fait de diversité et de respect. Aucun contenu faisant la promotion de discrimination ne sera toléré.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Droit d'auteur·ice</h3>
+                <p class="sp-terms__text">Veille à ne partager que des contenus dont tu es l'auteur·ice ou pour lesquels tu as obtenu les droits nécessaires.</p>
+              </div>
+              <div class="sp-terms__item">
+                <h3 class="sp-terms__title">Licence libre</h3>
+                <p class="sp-terms__text">En publiant, tu acceptes la licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="sp-terms__link" data-underline-link>Creative Commons BY-NC-SA 4.0</a>.</p>
+              </div>
             </div>
           </div>
-        </div>
+        <% end %>
 
         <!-- Thème (checkboxes délicieuses) -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="theme">

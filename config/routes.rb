@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   end
 
   post "users/magic_link", to: "users/magic_links#create", as: :user_magic_links
+  get "users/magic_link/result", to: "users/magic_links#result", as: :user_magic_link_result
   get "users/magic_link/:token", to: "users/magic_links#show", as: :user_magic_link
 
   resources :posts, path: "futurs" do

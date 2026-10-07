@@ -398,6 +398,26 @@
   }
 }
 
+/* Résultat du lien magique : le CTA et le lien secondaire restent dans le flux,
+   sinon le lien ancré à 10vh recouvre « Créer mon compte ». */
+.sp-auth--magic {
+  .sp-panel {
+    flex-direction: column;
+
+    @media (min-width: 1024px) {
+      padding-bottom: 40px;
+    }
+  }
+
+  .sp-alt-wrap {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin-top: 28px;
+  }
+}
+
 /* Plusieurs liens secondaires côte à côte (confirmation, déverrouillage…).
    Sur mobile, le titre long pousse le bouton vers le lien ancré : on les remet dans le flux. */
 .sp-alt-wrap--row {
