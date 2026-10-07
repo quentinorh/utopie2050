@@ -10,7 +10,6 @@ module WritingTutorialTrends
       "Chômage",
       "Spéculation",
       "Monopoles",
-      "Bulles économiques",
       "Crises financières"
     ].freeze,
     "Environnement" => [
