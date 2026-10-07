@@ -155,12 +155,20 @@
             <div class="jackpot__reel jackpot__reel--trend" aria-live="polite">
               <div class="jackpot__strip" data-writing-tutorial-target="trendStrip"></div>
             </div>
-            <button type="button" class="jackpot__spin" data-writing-tutorial-target="trendSpin"
-                    data-action="click->writing-tutorial#spinTrend" aria-label="Tirer une tendance">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 1.5l1.9 5.9a3 3 0 0 0 1.9 1.9l5.9 1.9-5.9 1.9a3 3 0 0 0-1.9 1.9L12 21l-1.9-5.9a3 3 0 0 0-1.9-1.9L2.3 11.3l5.9-1.9a3 3 0 0 0 1.9-1.9L12 1.5z"/>
-              </svg>
-            </button>
+            <div class="funnel-trend__nav">
+              <button type="button" class="funnel-trend__arrow" data-writing-tutorial-target="trendStep"
+                      data-action="click->writing-tutorial#previousTrend" aria-label="Tendance précédente">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button type="button" class="funnel-trend__arrow" data-writing-tutorial-target="trendStep"
+                      data-action="click->writing-tutorial#nextTrend" aria-label="Tendance suivante">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
           </div>
           <p class="sp-error sp-error--center" data-writing-tutorial-target="trendError"></p>
 

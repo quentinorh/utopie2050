@@ -494,7 +494,7 @@ button.jackpot__reel {
   }
 }
 
-/* Tendance en machine à sous : le rouleau collé au bouton jackpot, centrés. */
+/* Tendance : le rouleau et les flèches pour passer à la suivante ou revenir. */
 .jackpot--trend {
   display: flex;
   align-items: center;
@@ -511,6 +511,57 @@ button.jackpot__reel {
 
 .jackpot__cell--trend {
   font-size: 1rem;
+}
+
+.funnel-trend__nav {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 52px;
+  border: 1px solid var(--sp-field-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sp-surface);
+}
+
+.funnel-trend__arrow {
+  flex: 1;
+  width: 36px;
+  display: grid;
+  place-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--sp-ink);
+  cursor: pointer;
+
+  & + & {
+    border-top: 1px solid var(--sp-field-border);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &:active {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sp-ink);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+    background: transparent;
+  }
 }
 
 /* Lien « Passer le guide » : réutilise .sp-alt-wrap (10vh du bas, centré). */

@@ -44,7 +44,7 @@ export default class extends Controller {
     "username", "age", "livingPlace",
     "usernameError", "ageError", "livingPlaceError",
     "themeOption", "themeError",
-    "trendStrip", "trendSpin", "trendOppositePanel", "trendOpposite", "trendError", "trendOppositeError",
+    "trendStrip", "trendStep", "trendOppositePanel", "trendOpposite", "trendError", "trendOppositeError",
     "styleOption", "styleError",
     "progressPhrase", "progressPercent",
   ]
@@ -214,7 +214,7 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key !== "Enter") return
     if (event.target.tagName === "TEXTAREA") return
-    if (event.target.closest(".jackpot__reel, .jackpot__spin")) return
+    if (event.target.closest(".jackpot__reel, .jackpot__spin, .funnel-trend__arrow")) return
     event.preventDefault()
     this.handleCta()
   }
@@ -432,7 +432,6 @@ export default class extends Controller {
     this._trendTween?.kill()
     this._trendTween = null
     this._trendSpinning = false
-    if (this.hasTrendSpinTarget) this.trendSpinTarget.classList.remove("is-spinning")
 
     const previous = this.selectedTrend
     const list = this.shuffle(this.trendsFor(this.selectedTheme))
@@ -442,17 +441,20 @@ export default class extends Controller {
     if (!list.length) {
       this.selectedTrend = null
       if (this.hasTrendOppositePanelTarget) this.trendOppositePanelTarget.hidden = true
+      this.updateTrendNav()
       return false
     }
 
     const keptIndex = previous ? list.indexOf(previous) : -1
     if (keptIndex >= 0) {
       this.placeTrend(keptIndex)
+      this.updateTrendNav()
       return true
     }
 
     this.clearTrendAnswer()
     this.placeTrend(0)
+    this.updateTrendNav()
     return false
   }
 
@@ -496,12 +498,22 @@ export default class extends Controller {
     this.applyTrendSelection(this.trends()[index])
   }
 
-  spinTrend() {
+  nextTrend() {
+    this.stepTrend(1)
+  }
+
+  previousTrend() {
+    this.stepTrend(-1)
+  }
+
+  // Avance ou recule d'une seule tendance. Le doublon du rouleau sert à
+  // enchaîner le passage de la dernière à la première, et l'inverse.
+  stepTrend(direction) {
     if (this._trendSpinning) return
     const list = this.trends()
     const n = list.length
     if (n < 2) return
-    const target = (this.trendIndex + 1 + Math.floor(Math.random() * (n - 1))) % n
+    const target = (this.trendIndex + direction + n) % n
 
     if (this.reduceMotion) {
       this.placeTrend(target)
@@ -510,25 +522,34 @@ export default class extends Controller {
       return
     }
 
+    let from = this.trendIndex
+    let to = target
+    if (direction > 0 && this.trendIndex === n - 1) to = n
+    if (direction < 0 && this.trendIndex === 0) from = n
+
     this._trendSpinning = true
-    if (this.hasTrendSpinTarget) this.trendSpinTarget.classList.add("is-spinning")
     const strip = this.trendStripTarget
-    gsap.set(strip, { y: -(this.trendIndex * TREND_CELL) })
+    gsap.set(strip, { y: -(from * TREND_CELL) })
     this._trendTween = gsap.to(strip, {
-      y: -((n + target) * TREND_CELL),
-      duration: 1,
+      y: -(to * TREND_CELL),
+      duration: 0.32,
       ease: "power2.out",
       onComplete: () => {
         this._trendTween = null
         gsap.set(strip, { y: -(target * TREND_CELL) })
         this.trendIndex = target
         this._trendSpinning = false
-        if (this.hasTrendSpinTarget) this.trendSpinTarget.classList.remove("is-spinning")
         this.applyTrendSelection(list[target])
         this.persistTrend()
         this.refreshSelectedBodyTemplate()
       },
     })
+  }
+
+  updateTrendNav() {
+    if (!this.hasTrendStepTarget) return
+    const disabled = this.trends().length < 2
+    this.trendStepTargets.forEach(button => { button.disabled = disabled })
   }
 
   applyTrendSelection(trend) {
