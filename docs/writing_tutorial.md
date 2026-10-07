@@ -103,12 +103,11 @@ Lecture seule, pas de saisie.
 - **Titre :** Quel thème t'inspire ?
 - **Sous-titre :** Choisis une piste pour orienter ton futur.
 - **Choix (1 obligatoire pour les invités) :**
-  - Géopolitique
-  - Technologie
-  - Société
-  - Loi
+  - Économie
   - Environnement
-  - Social
+  - Géopolitique
+  - Sociétal
+  - Technologie
 
 **Donnée :** `theme`
 
@@ -120,34 +119,13 @@ Lecture seule, pas de saisie.
 
 - **Titre :** Inverse la tendance
 - **Sous-titre :** Choisis une dynamique du présent que ton futur contredirait radicalement.
-- **Sélecteur :** liste déroulante personnalisée (20 tendances)
+- **Sélecteur :** rouleau aléatoire limité au thème choisi à l'étape précédente
 - **Champ conditionnel :** *Et si, en 2050, on inversait complètement cette tendance ?* + textarea
 - **Validation (tous) :** tendance + approche opposée obligatoires
 
 ### Tendances disponibles
 
-Définies dans `PagesController::WRITING_TUTORIAL_TRENDS` :
-
-1. Voiture individuelle
-2. Surconsommation
-3. Hyperconnexion
-4. Impérialisme
-5. Transhumanisme
-6. Épuisement des ressources
-7. Individualisme
-8. Effondrement de la biodiversité
-9. Extractivisme
-10. Précarité
-11. Artificialisation des sols
-12. Obsolescence programmée
-13. Concentration des richesses
-14. Pollution plastique
-15. Standardisation culturelle
-16. Spéculation foncière
-17. Dépendance aux écrans
-18. Mondialisation
-19. Montée des eaux
-20. Étalement urbain
+Définies par thème dans `WritingTutorialTrends::BY_THEME` (`lib/writing_tutorial_trends.rb`) : Économie, Environnement, Géopolitique, Sociétal, Technologie. Le rouleau ne propose que le vivier du thème sélectionné, dans un ordre aléatoire.
 
 **Données :** `trend`, `trendOpposite`
 

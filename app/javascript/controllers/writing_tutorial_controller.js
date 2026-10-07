@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
-import { saveRegistrationPrefill, loadRegistrationPrefill, clearRegistrationPrefill } from "utils/registration_prefill"
+import { saveRegistrationPrefill, loadRegistrationPrefill, clearRegistrationPrefill, forgetRegistrationPrefill } from "utils/registration_prefill"
 import { interpolateNarrativeTemplate, buildNarrativeContext, buildEtincelle } from "utils/narrative_template"
 import { step as stepMotion } from "utils/motion"
 
@@ -61,7 +61,8 @@ export default class extends Controller {
     this.selectedStyleLabel = null
     this.selectedBodyTemplate = null
     this._narrativeStyles = null
-    this._trends = null
+    this._trendsByTheme = null
+    this._activeTrends = null
 
     this.stepTargets.forEach((step, i) => {
       step.style.display = i === 0 ? "block" : "none"
@@ -80,6 +81,7 @@ export default class extends Controller {
   disconnect() {
     this.element.removeEventListener("keydown", this._onKeydown)
     this._tween?.kill()
+    this._trendTween?.kill()
   }
 
   get currentName() {
@@ -347,20 +349,37 @@ export default class extends Controller {
   // --- Thème -------------------------------------------------------------
 
   selectTheme(event) {
-    this.applyThemeSelection(event.params.theme)
-    saveRegistrationPrefill({ theme: this.selectedTheme })
+    const previousTheme = this.selectedTheme
+    const keptTrend = this.applyThemeSelection(event.params.theme)
+    if (previousTheme && previousTheme !== this.selectedTheme && !keptTrend) {
+      forgetRegistrationPrefill("trendOpposite")
+    }
+    saveRegistrationPrefill({
+      theme: this.selectedTheme,
+      trend: this.selectedTrend || undefined,
+    })
     this.refreshSelectedBodyTemplate()
   }
 
   applyThemeSelection(theme) {
+    if (this.hasThemeOptionTarget) {
+      const known = this.themeOptionTargets.some(
+        el => el.getAttribute("data-writing-tutorial-theme-param") === theme
+      )
+      if (!known) return false
+    }
+    const changed = this.selectedTheme !== theme
     this.selectedTheme = theme
-    if (!this.hasThemeOptionTarget) return
-    this.themeOptionTargets.forEach(el => {
-      const selected = el.getAttribute("data-writing-tutorial-theme-param") === theme
-      el.classList.toggle("funnel-chip--selected", selected)
-      el.setAttribute("aria-checked", selected)
-    })
+    if (this.hasThemeOptionTarget) {
+      this.themeOptionTargets.forEach(el => {
+        const selected = el.getAttribute("data-writing-tutorial-theme-param") === theme
+        el.classList.toggle("funnel-chip--selected", selected)
+        el.setAttribute("aria-checked", selected)
+      })
+    }
     if (this.hasThemeErrorTarget) this.themeErrorTarget.textContent = ""
+    if (!changed) return true
+    return this.syncTrendReelToTheme()
   }
 
   // --- Style -------------------------------------------------------------
@@ -404,8 +423,56 @@ export default class extends Controller {
   initTrendReel() {
     this.trendIndex = 0
     this._trendSpinning = false
+    if (this.selectedTheme) this.syncTrendReelToTheme()
+  }
+
+  // Reconstruit le rouleau avec un tirage aléatoire du thème courant.
+  // Renvoie true si la tendance déjà choisie appartient encore à ce thème.
+  syncTrendReelToTheme() {
+    this._trendTween?.kill()
+    this._trendTween = null
+    this._trendSpinning = false
+    if (this.hasTrendSpinTarget) this.trendSpinTarget.classList.remove("is-spinning")
+
+    const previous = this.selectedTrend
+    const list = this.shuffle(this.trendsFor(this.selectedTheme))
+    this._activeTrends = list
     this.buildTrendStrip()
+
+    if (!list.length) {
+      this.selectedTrend = null
+      if (this.hasTrendOppositePanelTarget) this.trendOppositePanelTarget.hidden = true
+      return false
+    }
+
+    const keptIndex = previous ? list.indexOf(previous) : -1
+    if (keptIndex >= 0) {
+      this.placeTrend(keptIndex)
+      return true
+    }
+
+    this.clearTrendAnswer()
     this.placeTrend(0)
+    return false
+  }
+
+  clearTrendAnswer() {
+    if (this.hasTrendOppositeTarget) {
+      this.trendOppositeTarget.value = ""
+      this.trendOppositeTarget.classList.remove("sp-input--error")
+    }
+    if (this.hasTrendOppositeErrorTarget) this.trendOppositeErrorTarget.textContent = ""
+  }
+
+  shuffle(items) {
+    const list = items.slice()
+    for (let i = list.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = list[i]
+      list[i] = list[j]
+      list[j] = tmp
+    }
+    return list
   }
 
   buildTrendStrip() {
@@ -447,11 +514,12 @@ export default class extends Controller {
     if (this.hasTrendSpinTarget) this.trendSpinTarget.classList.add("is-spinning")
     const strip = this.trendStripTarget
     gsap.set(strip, { y: -(this.trendIndex * TREND_CELL) })
-    gsap.to(strip, {
+    this._trendTween = gsap.to(strip, {
       y: -((n + target) * TREND_CELL),
       duration: 1,
       ease: "power2.out",
       onComplete: () => {
+        this._trendTween = null
         gsap.set(strip, { y: -(target * TREND_CELL) })
         this.trendIndex = target
         this._trendSpinning = false
@@ -487,10 +555,21 @@ export default class extends Controller {
   }
 
   trends() {
-    if (this._trends) return this._trends
+    if (this._activeTrends) return this._activeTrends
+    return this.trendsFor(this.selectedTheme)
+  }
+
+  trendsByTheme() {
+    if (this._trendsByTheme) return this._trendsByTheme
     const el = document.getElementById("writing-tutorial-trends-json")
-    try { this._trends = el ? JSON.parse(el.textContent) : [] } catch { this._trends = [] }
-    return this._trends
+    try { this._trendsByTheme = el ? JSON.parse(el.textContent) : {} } catch { this._trendsByTheme = {} }
+    return this._trendsByTheme
+  }
+
+  trendsFor(theme) {
+    if (!theme) return []
+    const list = this.trendsByTheme()[theme]
+    return Array.isArray(list) ? list : []
   }
 
   // --- Générateur d'étincelles ------------------------------------------
@@ -547,10 +626,11 @@ export default class extends Controller {
     if (prefill.theme) this.applyThemeSelection(prefill.theme)
     if (prefill.trend) {
       const idx = this.trends().indexOf(prefill.trend)
-      if (idx >= 0) this.placeTrend(idx)
-      else this.applyTrendSelection(prefill.trend)
+      if (idx >= 0) {
+        this.placeTrend(idx)
+        if (prefill.trendOpposite && this.hasTrendOppositeTarget) this.trendOppositeTarget.value = prefill.trendOpposite
+      }
     }
-    if (prefill.trendOpposite && this.hasTrendOppositeTarget) this.trendOppositeTarget.value = prefill.trendOpposite
     if (prefill.narrativeStyle) {
       const style = this.findNarrativeStyle(prefill.narrativeStyle)
       if (style) this.applyStyleSelection(style)

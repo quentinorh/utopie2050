@@ -116,6 +116,17 @@ export function clearRegistrationPrefill() {
   }
 }
 
+export function forgetRegistrationPrefill(...keys) {
+  try {
+    const data = loadRegistrationPrefill()
+    if (!data) return
+    keys.forEach(key => delete data[key])
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch {
+    // sessionStorage indisponible
+  }
+}
+
 export function syncRegistrationPrefillFromAccount(username, age) {
   const data = { ...(loadRegistrationPrefill() || {}) }
   let changed = false

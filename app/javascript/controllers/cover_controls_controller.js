@@ -63,7 +63,12 @@ export default class extends Controller {
     this.toggleTriggerState(true)
     // Retire le clip quand la largeur a fini de s'ouvrir (transitionend +
     // filet de sécurité au cas où l'event ne se déclenche pas).
-    const done = () => { this.element.classList.add("is-settled") }
+    const done = () => {
+      this.element.classList.add("is-settled")
+      // La barre a bougé pendant l'ouverture : un popover déjà ouvert
+      // doit être recalculé sur la position finale du déclencheur.
+      this.fitOpenPop()
+    }
     const groups = this.hasGroupsTarget ? this.groupsTarget : this.element.querySelector(".cover-groups")
     if (groups) {
       groups.addEventListener("transitionend", (e) => {
@@ -121,8 +126,11 @@ export default class extends Controller {
 
   // --- Recalage horizontal des popovers -----------------------------------
 
+  // La couverture qui clippe vraiment le popover. Sur l'auth, la barre vit
+  // dans .sp-cover (overflow: hidden, ~42 % de l'écran) : se caler sur la
+  // fenêtre laissait le popover Motif dépasser à droite et se faire couper.
   get boundsElement() {
-    return this.element.closest(".form-cover-wrapper, .hero-stage") || document.documentElement
+    return this.element.closest(".form-cover-wrapper, .sp-cover, .hero-stage") || document.documentElement
   }
 
   fitOpenPop() {
@@ -131,14 +139,17 @@ export default class extends Controller {
 
   fitPop(pop) {
     const margin = 10
-    pop.style.setProperty("--pop-shift", "0px")
-
-    const popRect = pop.getBoundingClientRect()
     const bounds = this.boundsElement.getBoundingClientRect()
+    // Largeur de layout, pas getBoundingClientRect : à l'ouverture le popover
+    // est encore scale(0.96), et un décalage calculé sur cette boîte réduite
+    // le laisse déborder une fois revenu à l'échelle 1.
+    const width = pop.offsetWidth
+    const anchor = pop.parentElement.getBoundingClientRect()
+    const left = anchor.left + (anchor.width - width) / 2
 
     let shift = 0
-    if (popRect.right > bounds.right - margin) shift = bounds.right - margin - popRect.right
-    if (popRect.left + shift < bounds.left + margin) shift = bounds.left + margin - popRect.left
+    if (left + width > bounds.right - margin) shift = bounds.right - margin - (left + width)
+    if (left + shift < bounds.left + margin) shift = bounds.left + margin - left
 
     pop.style.setProperty("--pop-shift", `${Math.round(shift)}px`)
   }
