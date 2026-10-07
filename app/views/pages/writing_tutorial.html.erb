@@ -48,7 +48,7 @@
           <div class="sp-step" data-writing-tutorial-target="step" data-step="username">
             <h1 class="sp-title">En 2050, comment aimerais-tu être appelé·e ?</h1>
             <div class="funnel-field">
-              <label class="sp-label" for="funnel-username">Ton nom en 2050.</label>
+              <label class="sp-label" for="funnel-username">Ton nom en 2050</label>
               <input type="text" id="funnel-username" class="sp-input"
                      placeholder="Je m'appelle …" autocomplete="username"
                      data-writing-tutorial-target="username"
@@ -61,7 +61,7 @@
           <div class="sp-step" data-writing-tutorial-target="step" data-step="age">
             <h1 class="sp-title">En 2050, quel âge auras-tu ?</h1>
             <div class="funnel-field">
-              <label class="sp-label" for="funnel-age">Ton âge en 2050.</label>
+              <label class="sp-label" for="funnel-age">Ton âge en 2050</label>
               <input type="text" id="funnel-age" class="sp-input" inputmode="numeric"
                      placeholder="Mon âge en 2050" autocomplete="off"
                      data-writing-tutorial-target="age"
@@ -73,10 +73,10 @@
 
         <!-- Lieu de vie -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="living-place">
-          <h1 class="sp-title">Où vivras-tu en 2050 ?</h1>
+          <h1 class="sp-title">En 2050, où vivras-tu ?</h1>
           <div class="funnel-field">
             <div class="sp-field__head">
-              <label class="sp-label" for="funnel-living-place">Ton lieu de vie en 2050.</label>
+              <label class="sp-label" for="funnel-living-place">Ton lieu de vie en 2050</label>
             </div>
             <input type="text" id="funnel-living-place" class="sp-input"
                    placeholder="Un quartier coopératif au bord de la Loire" autocomplete="off"
@@ -115,15 +115,16 @@
         <div class="sp-step" data-writing-tutorial-target="step" data-step="etincelle">
           <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Générateur d'étincelles</h1>
-          <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit.</p>
+          <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit</p>
           <%= render "shared/jackpot" %>
+          <p class="funnel-etincelle__note">La combinaison choisie permet de préremplir le titre de ton futur texte. Tu pourras le modifier plus tard.</p>
         </div>
 
         <!-- Thème (checkboxes délicieuses) -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="theme">
           <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Sur quel sujet voudrais-tu écrire ?</h1>
-          <p class="sp-subtitle sp-subtitle--q">Choisis un thème qui te plait.</p>
+          <p class="sp-subtitle sp-subtitle--q">Choisis un thème qui te plait</p>
 
           <div class="funnel-chips" role="radiogroup" aria-label="Thèmes de récit">
             <% %w[Économie Environnement Géopolitique Sociétal Technologie].each do |theme| %>
@@ -148,7 +149,7 @@
         <div class="sp-step" data-writing-tutorial-target="step" data-step="inversion">
           <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
           <h1 class="sp-title">Inverse la tendance</h1>
-          <p class="sp-subtitle sp-subtitle--q">Choisis une dynamique actuelle pour combattre cette tendance.</p>
+          <p class="sp-subtitle sp-subtitle--q">Choisis une dynamique actuelle pour combattre cette tendance</p>
 
           <div class="jackpot jackpot--trend" role="group" aria-label="Tendance à inverser">
             <div class="jackpot__reel jackpot__reel--trend" aria-live="polite">
@@ -164,7 +165,7 @@
           <p class="sp-error sp-error--center" data-writing-tutorial-target="trendError"></p>
 
           <div class="funnel-trend__panel" data-writing-tutorial-target="trendOppositePanel" hidden>
-            <label class="sp-label funnel-trend__label" for="funnel-trend-opposite">Racontes nous comment on inverse ça</label>
+            <label class="sp-label funnel-trend__label" for="funnel-trend-opposite">Racontes nous comment on inverse cette tendance</label>
             <textarea id="funnel-trend-opposite" class="sp-input funnel-textarea" rows="3"
                       placeholder="une action, un lieu, un personnage, tout ce qui te viens par la tête."
                       data-writing-tutorial-target="trendOpposite"

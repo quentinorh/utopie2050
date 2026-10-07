@@ -26,7 +26,6 @@ module WritingTutorialTrends
     ].freeze,
     "Géopolitique" => [
       "Conflits armés",
-      "Terrorisme",
       "Réfugiés climatiques",
       "Cyberguerre",
       "Prolifération nucléaire",

@@ -379,6 +379,17 @@
   margin: clamp(24px, 4vw, 44px) auto 0;
 }
 
+.funnel-etincelle__note {
+  max-width: 420px;
+  margin: 18px auto 0;
+  font-family: var(--sp-h1-family);
+  font-weight: 400;
+  font-size: var(--sp-text-helper);
+  line-height: 1.45;
+  color: var(--sp-ink-faint);
+  text-align: center;
+}
+
 .jackpot__reels {
   display: flex;
   align-items: center;
