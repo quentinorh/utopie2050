@@ -30,22 +30,22 @@
         </div>
       <% else %>
         <div>
-          <%= link_to "Lire les futurs", posts_path,
+          <%= link_to "Lire le futur", posts_path,
                       class: "navbar-center-link text-[14px] leading-[16px]",
-                      data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire les futurs",
+                      data: { controller: "randomize-letter-animation", "randomize-letter-animation-text-value": "Lire le futur",
                       action: "mouseover->randomize-letter-animation#connect" } %>
         </div>
       <% end %>
     </div>
 
     <% if show_post_page %>
-      <%# Desktop (≥ lg) : « Lire les futurs » aligné sur le panneau contenu droit %>
+      <%# Desktop (≥ lg) : « Lire le futur » aligné sur le panneau contenu droit %>
       <div class="navbar-center-wrapper navbar-center-wrapper--show-desktop">
         <%= link_to posts_path,
                     class: "navbar-center-link navbar-center-link--show text-[14px] leading-[16px]" do %>
           <span data-controller="randomize-letter-animation"
-                data-randomize-letter-animation-text-value="Lire les futurs"
-                data-action="mouseover->randomize-letter-animation#connect">Lire les futurs</span>
+                data-randomize-letter-animation-text-value="Lire le futur"
+                data-action="mouseover->randomize-letter-animation#connect">Lire le futur</span>
         <% end %>
       </div>
     <% end %>
@@ -81,11 +81,11 @@
         <%= link_to writing_tutorial_path,
                     class: "max-sm:hidden btn-animate-chars btn-animate-chars--primary text-[14px] flex-shrink-0",
                     data: { controller: "stagger-chars" },
-                    "aria-label": "Nouveau futur" do %>
+                    "aria-label": "Écrire le futur" do %>
           <div class="btn-animate-chars__bg"></div>
           <span data-button-animate-chars
                 data-stagger-chars-target="text"
-                class="btn-animate-chars__text">Nouveau futur</span>
+                class="btn-animate-chars__text">Écrire le futur</span>
         <% end %>
       <% else %>
         <!-- User icon (circle with indigo border) -->
@@ -129,11 +129,11 @@
               <%= link_to writing_tutorial_path,
                           class: "inline-flex shrink-0 mt-1 sm:hidden btn-animate-chars btn-animate-chars--primary btn-animate-chars--hero-mobile",
                           data: { controller: "stagger-chars" },
-                          "aria-label": "Nouveau futur" do %>
+                          "aria-label": "Écrire le futur" do %>
                 <div class="btn-animate-chars__bg"></div>
                 <span data-button-animate-chars
                       data-stagger-chars-target="text"
-                      class="btn-animate-chars__text">Nouveau futur</span>
+                      class="btn-animate-chars__text">Écrire le futur</span>
               <% end %>
               <div class="w-full sm:hidden border-t border-gray-950/5 dark:border-white/10 my-0.5 my-1"></div>
               <% if current_user&.admin? %>

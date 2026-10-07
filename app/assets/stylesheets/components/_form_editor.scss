@@ -175,7 +175,7 @@
   --cover-toolbar-icon: 17px;
 
   position: absolute;
-  /* Desktop : aligné sur la ligne du logo « Lire les futurs » de la navbar
+  /* Desktop : aligné sur la ligne du logo « Lire le futur » de la navbar
      (h 75px → centre 37.5px), à droite de la couverture (px navbar = 40px).
      La navbar transparente laisse passer les clics (pointer-events: none). */
   top: calc((75px - var(--cover-toolbar-h)) / 2);

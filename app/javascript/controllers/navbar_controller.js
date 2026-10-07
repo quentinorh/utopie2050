@@ -45,7 +45,6 @@ export default class extends Controller {
 
   // Sous lg, la cover-toolbar partage la ligne de la navbar. Son retrait droit
   // suit la largeur réelle des actions : icône seule (mobile), ou icône + CTA
-  // (« Écrire le futur » / « Nouveau futur ») selon la session.
   syncCoverToolbarInset() {
     const actions = this.element.querySelector(".navbar-actions")
     const root = document.documentElement
