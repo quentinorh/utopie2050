@@ -18,7 +18,7 @@ module WritingTutorialTrends
       "Biodiversité",
       "Catastrophes naturelles",
       "Pollution",
-      "Niveau des mers",
+      "Niveau des océans",
       "Déforestation",
       "Épuisement des ressources",
       "Catastrophes industrielles"
