@@ -1481,9 +1481,13 @@ $cc-cover-grid-lines-repeat-bg: url("data:image/svg+xml;charset=utf-8,%3Csvg xml
   align-items: center;
   gap: 10px;
   min-width: 0;
-  padding: 3px 0;
+  padding: 0px 0px 10px 0px;
   border-top: 0;
   border-bottom: 1px solid var(--editor-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
 .form-editor .writing-tutorial-synthesis__label {
