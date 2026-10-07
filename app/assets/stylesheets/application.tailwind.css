@@ -169,6 +169,14 @@
   inset: 0.2em;
 }
 
+/* Navbar : même hauteur que l'avatar / l'icône connexion (42px dès sm) */
+.btn-animate-chars--navbar {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
 /* Hero CTA : même style que `.btn-animate-chars`, plus compact sous le breakpoint sm */
 @media not all and (min-width: 640px) {
   .btn-animate-chars--hero-mobile {
