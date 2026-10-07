@@ -13,20 +13,21 @@ module WritingTutorialNarrativeStyles
 
         Titre
 
-        [Un titre qui ouvre une scène. Tu pourras le changer.]
+        [Un titre qui ouvre une scène du quotidien : un repas, une rue, ce que tu vois depuis chez toi.]
 
         Ce matin, à %{cap:lieu}…
 
-        [Décris un instant précis : un lieu, un geste, une lumière. Le futur devient crédible dans le détail.]
+        [Décris un instant précis : un lieu, un geste, une lumière. Le futur devient crédible dans les détails.]
 
         %{theme}
 
-        [Laisse ce thème colorer la journée sans l'expliquer. Un seul geste suffit.]
+        [Laisse ce thème colorer la journée sans nécessairement l'expliquer.]
 
         %{lower:tendance}
         %{lower:inversion}
 
-        [Relie ces deux pistes par une habitude qui a changé. Qu'est-ce que tu aimerais vivre dans cette matinée ?]
+        [Relie ces deux pistes par une habitude qui a changé.]
+        [Qu'est-ce que tu aimerais vivre aujourd'hui ?]
 
         %{title:etincelle}
 
@@ -47,16 +48,16 @@ module WritingTutorialNarrativeStyles
 
         Je t'écris depuis %{cap:lieu}.
 
-        [Commence par une nouvelle simple. Le repas, la rue, ce que tu vois depuis chez toi.]
+        [Commence par une information simple : le repas, la rue, ce que tu vois depuis chez toi.]
 
         %{theme}
 
-        [Parle de ce thème comme d'une part de ta vie. Un exemple vécu vaut mieux qu'une idée générale.]
+        [Parle de ce thème comme d'une part de ta vie. Un exemple vécu, avec des détails, vaut mieux qu'une idée générale.]
 
         %{lower:tendance}
         %{lower:inversion}
 
-        [Dis ce qui a bougé pour toi. Un effort, un doute ou une joie ont autant leur place qu'une réussite.]
+        [Dis ce qui a bougé pour toi, parle de ton ressenti : une prise de conscience, un doute, une joie ou une surprise.]
 
         %{title:etincelle}
 
@@ -72,16 +73,18 @@ module WritingTutorialNarrativeStyles
         %{cap:lieu}, 2050
 
         Je me souviens…
+        [Le souvenir peut être une petite anecdote, un moment qui a marqué ta vie, un geste qui a changé ton quotidien.]
 
-        [Ancre la scène : un jour, un lieu, des visages. Le souvenir gagne à rester petit.]
+        [Ancre la scène : un jour, un lieu, des visages.]
 
         %{lower:tendance}
 
-        [Comment est-ce qu'on vivait ça, dans un détail que tout le monde trouvait normal ?]
+        [Comment est-ce qu'on vivait cela ? Trouve un événement qui a permis le changement.]
 
         %{lower:inversion}
 
-        [Le tournant peut être minuscule. Qui a fait quoi, sans en faire une légende ?]
+        [Le tournant peut être minuscule : un geste, une parole, un événement.]
+        [Qui a porté ce retournement de situation ?]
 
         %{theme}
         %{title:etincelle}
@@ -111,11 +114,11 @@ module WritingTutorialNarrativeStyles
 
         3. %{lower:tendance}
 
-        [Une limite. Qu'est-ce que tu ne veux plus laisser décider à ta place ?]
+        [Une limite : qu'est-ce que tu ne veux plus voir dans ce nouveau monde ?]
 
         %{title:etincelle}
 
-        [Termine par un geste qu'une personne peut tenir. Qui, et à partir de quand ?]
+        [Termine par une déclaration forte, qui résonne : un slogan, une promesse.]
       TEXT
     },
     {
@@ -128,13 +131,13 @@ module WritingTutorialNarrativeStyles
 
         Avec
 
-        [Donne un nom à l'autre. Voisin, enfant, inconnu, toi plus jeune.]
+        [Donne un nom à l'autre : voisin, enfant, inconnu, toi plus jeune.]
 
         %{pseudo} —
         [Une question sur ce que l'autre est en train de faire.]
 
         —
-        [Une réponse en geste : se déplacer, manger, travailler, décider.]
+        [Une réponse décrivant une action quotidienne : se déplacer, manger, travailler, décider.]
 
         %{pseudo} —
         %{theme}
@@ -146,7 +149,7 @@ module WritingTutorialNarrativeStyles
         %{lower:inversion}
         %{title:etincelle}
 
-        [Laisse l'autre en faire une anecdote. Qu'est-ce que ces deux-là savent, en 2050, qu'on ignore encore ?]
+        [Qu'est-ce que ces deux-là savent, en 2050, qu'on ignore encore ?]
       TEXT
     },
     {
@@ -160,7 +163,7 @@ module WritingTutorialNarrativeStyles
         Je vois
         %{theme}
 
-        [Deux ou trois choses devant toi. Le thème peut n'en colorer qu'une.]
+        [Parlent des choses que tu vois devant toi. Le thème peut n'en colorer qu'une.]
 
         J'entends
 
@@ -169,13 +172,13 @@ module WritingTutorialNarrativeStyles
         J'emporte
         %{title:etincelle}
 
-        [Un objet : sa matière, son poids, la personne à qui tu le tends.]
+        [Décris un objet que tu portes avec toi : sa matière, son poids, sa couleur, sa forme, etc.]
 
         Je remarque
         %{lower:tendance}
         %{lower:inversion}
 
-        [Une présence ou une absence. Qu'est-ce qui, ici, te donnerait envie de rester ?]
+        [Qu'est-ce qui, ici, te donnerait envie de rester ?]
       TEXT
     }
   ].freeze
