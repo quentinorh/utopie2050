@@ -529,18 +529,22 @@
   overflow: visible;
 }
 
-/* Chaque groupe se révèle en fondu doux, décalé (--i), pendant que la largeur
-   s'ouvre — plus de translation horizontale (la grille s'en charge). */
+/* Chaque groupe se révèle en fondu pendant que la largeur s'ouvre — plus de
+   translation horizontale (la grille s'en charge). Le fondu est commun :
+   un décalage (--i) laissait la symétrie, tout à gauche, apparaître après
+   teinte, lissage et motif, une fois la barre déjà ouverte. --o ne sert
+   qu'au repli, assez court pour ne pas se lire comme un retard. */
 .cover-group {
   position: relative;
   display: flex;
+  flex: 0 0 auto;
   opacity: 0;
   filter: blur(3px);
   pointer-events: none;
   transition:
     opacity 0.16s ease-in,
     filter 0.16s ease-in;
-  transition-delay: calc(var(--o, 0) * 24ms);
+  transition-delay: calc(var(--o, 0) * 16ms);
 }
 
 [data-controls-open="true"] .cover-group {
@@ -548,9 +552,9 @@
   filter: blur(0);
   pointer-events: auto;
   transition:
-    opacity 0.34s cubic-bezier(0.2, 0, 0, 1),
-    filter 0.34s cubic-bezier(0.2, 0, 0, 1);
-  transition-delay: calc(0.06s + var(--i, 0) * 55ms);
+    opacity 0.28s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.28s cubic-bezier(0.2, 0, 0, 1);
+  transition-delay: 0.02s;
 }
 
 /* Sans animation : la barre s'ouvre/ferme instantanément (pas de transition de
