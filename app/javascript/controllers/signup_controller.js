@@ -108,15 +108,13 @@ export default class extends Controller {
     // Timeline unique : sortie (dissolve + translation HORIZONTALE) → bascule
     // display → entrée. Seule la question se déplace ; la nav ne bouge pas.
     this._tween = gsap.timeline({
-      onComplete: () => {
-        this._animating = false
-        focusTarget()
-      },
+      onComplete: () => { this._animating = false },
     })
     this._tween
       .to(from, { opacity: 0, x: -SHIFT * dir, duration: step.out.duration, ease: step.out.ease })
       .set(from, { display: "none", clearProps: "opacity,transform" })
       .set(to, { display: "block" })
+      .call(focusTarget)
       .fromTo(
         to,
         { opacity: 0, x: SHIFT * dir },

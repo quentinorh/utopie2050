@@ -6,7 +6,7 @@
 <% title = local_assigns.fetch(:title, "").to_s %>
 <% pattern_settings = local_assigns.fetch(:pattern_settings, "").to_s %>
 <% show_title = local_assigns.fetch(:show_title, false) %>
-<div class="sp-cover">
+<div class="sp-cover" data-controller="mobile-keyboard">
   <%# Logo — retour à l'accueil (la navbar est masquée sur ces pages). %>
   <%= link_to "SP2050", root_path, class: "sp-logo", "aria-label": "Retour à l'accueil" %>
 

@@ -160,12 +160,13 @@ export default class extends Controller {
     this._animating = true
     this._tween?.kill()
     this._tween = gsap.timeline({
-      onComplete: () => { this._animating = false; focusField() },
+      onComplete: () => { this._animating = false },
     })
     this._tween
       .to(from, { opacity: 0, x: -SHIFT * dir, duration: stepMotion.out.duration, ease: stepMotion.out.ease })
       .set(from, { display: "none", clearProps: "opacity,transform" })
       .set(to, { display: "block" })
+      .call(focusField)
       .fromTo(to,
         { opacity: 0, x: SHIFT * dir },
         { opacity: 1, x: 0, duration: stepMotion.in.duration, ease: stepMotion.in.ease, clearProps: "transform,opacity" })

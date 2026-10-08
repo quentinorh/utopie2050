@@ -569,6 +569,36 @@ button.jackpot__reel {
   z-index: 6;
 }
 
+/* Clavier ouvert : la phrase de progression reste lisible, le champ se rapproche du titre. */
+@media (max-width: 1023px) {
+  .sp-auth--funnel.is-keyboard {
+    .funnel-progress {
+      top: 10px;
+      left: 16px;
+      right: 16px;
+    }
+
+    .sp-panel {
+      padding-top: 40px;
+    }
+
+    .funnel-field,
+    .funnel-intro__lead,
+    .funnel-trend__panel {
+      margin-top: 16px;
+    }
+
+    .sp-subtitle--q {
+      margin-top: 10px;
+    }
+
+    .funnel-textarea {
+      min-height: 88px;
+      resize: none;
+    }
+  }
+}
+
 /* ================================================================
    Éditeur — révélation du brouillon (skeleton → texte)
    ================================================================ */

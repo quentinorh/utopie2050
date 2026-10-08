@@ -26,8 +26,8 @@
 .sp-cover {
   position: relative;
   width: 100%;
-  height: 40vh;
-  min-height: 240px;
+  height: 30vh;
+  min-height: 140px;
   overflow: hidden;
   background: var(--sp-cover-bg);
   flex-shrink: 0;
@@ -71,7 +71,7 @@
   letter-spacing: 0.02em;
   color: #fff;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, top 0.32s var(--sp-ease);
 
   &:hover {
     opacity: 0.7;
@@ -326,6 +326,45 @@
   text-align: center;
 }
 
+/* Connexion, mobile : le formulaire centré peut descendre sur le lien ancré
+   à 10vh (« Créer mon compte » recouvre « Me connecter »). Le lien revient
+   dans le flux, sous le bouton, et le surplus d'espace le pousse vers le bas. */
+@media (max-width: 1023px) {
+  .sp-auth--signin {
+    .sp-panel {
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      /* Pas de 10vh ici : il s'ajoutait à la hauteur mini et faisait
+         défiler un vide sous le lien sur les petits écrans. */
+      padding-bottom: 1.75rem;
+    }
+
+    .sp-content {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-self: stretch;
+      justify-content: center;
+    }
+
+    /* Le formulaire a margin-inline: auto : dans un flex, ça le réduit
+       à la largeur du texte. On le force à la colonne (max 384px). */
+    .sp-form {
+      width: 100%;
+    }
+
+    .sp-alt-wrap {
+      position: static;
+      left: auto;
+      bottom: auto;
+      flex-shrink: 0;
+      margin-top: 2rem;
+      transform: none;
+    }
+  }
+}
+
 /* --- Entrée : pré-masquage anti-flash (GSAP prend le relais) ------------ */
 .sp-auth.is-revealing {
   .form-cover-svg,
@@ -495,4 +534,132 @@
 .sp-danger-form {
   margin: 12px 0 0;
   text-align: center;
+}
+
+/* ================================================================
+   Clavier virtuel — formulaires à couverture haute (.sp-auth).
+   Sous 1024px la couverture est empilée. Au focus d'un champ,
+   .is-keyboard (mobile-keyboard) replie la couverture et cale le
+   cadre sur la zone visible, CTA collé au-dessus du clavier.
+   ================================================================ */
+
+html.sp-keyboard-lock {
+  background: var(--sp-surface);
+  overflow: hidden;
+}
+
+@media (max-width: 1023px) {
+  /* height ET min-height : sinon, à la réouverture, min-height (140px) s'applique
+     d'un coup, puis height seulement s'anime jusqu'à 30vh — deux mouvements. */
+  .sp-cover {
+    transition: height 0.32s var(--sp-ease), min-height 0.32s var(--sp-ease);
+  }
+
+  .sp-auth .cover-toolbar,
+  .sp-auth .cover-title-block {
+    transition: opacity 0.32s var(--sp-ease), visibility 0.32s var(--sp-ease);
+  }
+
+  .sp-auth.is-keyboard {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--sp-vv-offset, 0px);
+    width: 100%;
+    height: var(--sp-vvh, 100%);
+    min-height: 0;
+    overflow: hidden;
+    z-index: 30;
+
+    .sp-cover {
+      height: #{"calc(48px + env(safe-area-inset-top, 0px))"};
+      min-height: 0;
+      flex-shrink: 0;
+    }
+
+    .sp-logo {
+      top: #{"calc(env(safe-area-inset-top, 0px) + 14px)"};
+      left: 16px;
+    }
+
+    .cover-toolbar,
+    .cover-title-block {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .sp-panel {
+      min-height: 0;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding-top: 16px;
+      padding-bottom: 12px;
+      scroll-padding-top: 8px;
+      scroll-padding-bottom: 76px;
+    }
+
+    .sp-content {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      align-self: stretch;
+      justify-content: flex-start;
+      min-height: 100%;
+    }
+
+    .sp-form {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .sp-title {
+      font-size: clamp(1.5rem, 6vw, 1.85rem);
+      line-height: 1.12;
+    }
+
+    .sp-subtitle {
+      margin-top: 6px;
+    }
+
+    .sp-head .sp-note {
+      display: none;
+    }
+
+    /* Le lien secondaire (Passer, Créer un compte…) revient quand le clavier se ferme. */
+    .sp-alt-wrap {
+      display: none;
+    }
+
+    .sp-nav,
+    .sp-cta {
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      margin-top: auto;
+      padding-top: 12px;
+      padding-bottom: 2px;
+      background: linear-gradient(to top, var(--sp-surface) 62%, rgba(255, 255, 255, 0));
+    }
+
+    .sp-input,
+    .funnel-textarea {
+      scroll-margin-top: 8px;
+      scroll-margin-bottom: 72px;
+    }
+  }
+}
+
+@media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
+  .sp-cover {
+    transition: none;
+  }
 }
