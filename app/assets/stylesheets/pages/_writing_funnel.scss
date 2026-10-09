@@ -596,6 +596,8 @@ button.jackpot__reel {
 }
 
 .sp-auth--funnel.sp-auth--wizard .sp-panel {
+  flex-direction: column;
+  align-items: stretch;
   padding-bottom: 32px;
 
   @media (min-width: 1024px) {
