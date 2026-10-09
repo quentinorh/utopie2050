@@ -71,7 +71,7 @@
   letter-spacing: 0.02em;
   color: #fff;
   text-decoration: none;
-  transition: opacity 0.2s ease, top 0.32s var(--sp-ease);
+  transition: opacity 0.2s ease, top 0.32s var(--sp-ease), color 0.32s var(--sp-ease);
 
   &:hover {
     opacity: 0.7;
@@ -543,6 +543,10 @@
    cadre sur la zone visible, CTA collé au-dessus du clavier.
    ================================================================ */
 
+.sp-cover-reopen {
+  display: none;
+}
+
 html.sp-keyboard-lock {
   background: var(--sp-surface);
   overflow: hidden;
@@ -555,9 +559,92 @@ html.sp-keyboard-lock {
     transition: height 0.32s var(--sp-ease), min-height 0.32s var(--sp-ease);
   }
 
+  /* Voile blanc : à la réouverture il se retire en même temps que la hauteur,
+     sans toucher à l'opacité du motif (animée par GSAP à l'entrée). */
+  .sp-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    background: #fff;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s var(--sp-ease);
+  }
+
   .sp-auth .cover-toolbar,
   .sp-auth .cover-title-block {
     transition: opacity 0.32s var(--sp-ease), visibility 0.32s var(--sp-ease);
+  }
+
+  /* Barre blanche : clavier, ou didacticiel tenu fermé jusqu'au choix du style. */
+  .sp-auth.is-cover-collapsed,
+  .sp-auth.is-keyboard {
+    .sp-cover {
+      height: #{"calc(48px + env(safe-area-inset-top, 0px))"};
+      min-height: 0;
+      flex-shrink: 0;
+
+      &::after {
+        opacity: 1;
+      }
+    }
+
+    .sp-logo {
+      top: #{"calc(env(safe-area-inset-top, 0px) + 14px)"};
+      left: 16px;
+      color: #000;
+    }
+
+    .cover-toolbar,
+    .cover-title-block {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  /* La barre reste en haut pendant le défilement, clavier ouvert ou non. */
+  .sp-auth.is-cover-collapsed .sp-cover {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .sp-cover-reopen {
+    display: none;
+    position: absolute;
+    z-index: 21;
+    top: #{"calc(env(safe-area-inset-top, 0px) + 6px)"};
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 50%;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:active {
+      scale: 0.96;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #000;
+      outline-offset: 2px;
+    }
+  }
+
+  .sp-auth.is-cover-collapsed .sp-cover-reopen {
+    display: grid;
   }
 
   .sp-auth.is-keyboard {
@@ -570,24 +657,6 @@ html.sp-keyboard-lock {
     min-height: 0;
     overflow: hidden;
     z-index: 30;
-
-    .sp-cover {
-      height: #{"calc(48px + env(safe-area-inset-top, 0px))"};
-      min-height: 0;
-      flex-shrink: 0;
-    }
-
-    .sp-logo {
-      top: #{"calc(env(safe-area-inset-top, 0px) + 14px)"};
-      left: 16px;
-    }
-
-    .cover-toolbar,
-    .cover-title-block {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
 
     .sp-panel {
       min-height: 0;
@@ -659,7 +728,8 @@ html.sp-keyboard-lock {
 }
 
 @media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
-  .sp-cover {
+  .sp-cover,
+  .sp-cover::after {
     transition: none;
   }
 }

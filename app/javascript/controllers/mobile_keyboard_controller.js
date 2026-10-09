@@ -16,21 +16,36 @@ export default class extends Controller {
     this.mq = window.matchMedia(STACKED)
     this._on = false
     this._awaitingClose = false
+    this._coverPinned = false
 
     this._onFocusIn = (event) => this._focusIn(event)
     this._onFocusOut = (event) => this._focusOut(event)
     this._onVvResize = () => this._onViewportResize()
     this._onVvScroll = () => this._syncViewport()
-    this._onMq = () => { if (!this.mq.matches) this._release() }
+    this._onMq = () => {
+      if (!this.mq.matches) {
+        this._coverPinned = false
+        this.auth.classList.remove("is-cover-collapsed")
+        this._release()
+        return
+      }
+      if (!this.auth.classList.contains("sp-auth--funnel")) this.setCoverPinned(true)
+    }
     this._onCache = () => this._release()
 
     this._onPointerDown = (event) => this._pointerDown(event)
+    this._onPanelPointerDown = (event) => this._closeCoverFromForm(event)
 
     this.auth.addEventListener("focusin", this._onFocusIn)
     this.auth.addEventListener("focusout", this._onFocusOut)
     this.auth.addEventListener("pointerdown", this._onPointerDown)
+    this.panel?.addEventListener("pointerdown", this._onPanelPointerDown)
     this.mq.addEventListener("change", this._onMq)
     document.addEventListener("turbo:before-cache", this._onCache)
+
+    // Connexion, inscription, etc. : fermée dès l'arrivée. Le didacticiel
+    // gère lui-même la fenêtre (ouverte à l'intro, jusqu'au choix du style).
+    if (!this.auth.classList.contains("sp-auth--funnel")) this.setCoverPinned(this.mq.matches)
   }
 
   disconnect() {
@@ -38,6 +53,7 @@ export default class extends Controller {
     this.auth?.removeEventListener("focusin", this._onFocusIn)
     this.auth?.removeEventListener("focusout", this._onFocusOut)
     this.auth?.removeEventListener("pointerdown", this._onPointerDown)
+    this.panel?.removeEventListener("pointerdown", this._onPanelPointerDown)
     this.mq?.removeEventListener("change", this._onMq)
     document.removeEventListener("turbo:before-cache", this._onCache)
     window.clearTimeout(this._blurTimer)
@@ -52,6 +68,11 @@ export default class extends Controller {
   }
 
   _focusIn(event) {
+    // Couverture rouverte : un champ la referme, sans changer la mise en page.
+    if (this._coverPinned) {
+      if (this._isField(event.target)) this._collapseCover()
+      return
+    }
     if (!this.mq.matches || !this._isField(event.target)) return
     window.clearTimeout(this._blurTimer)
     this._awaitingClose = false
@@ -132,6 +153,39 @@ export default class extends Controller {
     this._lastVvHeight = height
     if (!this._stableSince) this._stableSince = performance.now()
     return performance.now() - this._stableSince >= 80
+  }
+
+  // Didacticiel, mobile : couverture fermée entre « Commencer » et le choix
+  // du style, même sur les étapes sans champ. Le bouton de la barre la rouvre.
+  setCoverPinned(pinned) {
+    if (!this.auth) return
+    if (!this.mq.matches) pinned = false
+    this._coverPinned = pinned
+    if (pinned && this._on) this._release()
+    // Chaque étape dans la fenêtre referme la couverture, même si on l'avait rouverte.
+    this.auth.classList.toggle("is-cover-collapsed", pinned)
+  }
+
+  reopenCover(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    this.auth.classList.remove("is-cover-collapsed")
+  }
+
+  _collapseCover() {
+    if (!this._coverPinned || !this.auth) return
+    this.auth.classList.add("is-cover-collapsed")
+  }
+
+  // Champ ou fond du formulaire. Les boutons (« Suite », puces) ne ferment
+  // pas au pointerdown : le changement d'étape s'en charge, sans déplacer le clic.
+  _closeCoverFromForm(event) {
+    if (!this._coverPinned) return
+    if (this.auth.classList.contains("is-cover-collapsed")) return
+    const target = event.target
+    if (!(target instanceof Element) || !this.panel.contains(target)) return
+    if (target.closest("button, a")) return
+    this._collapseCover()
   }
 
   _release() {

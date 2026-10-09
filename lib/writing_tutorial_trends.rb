@@ -31,7 +31,7 @@ module WritingTutorialTrends
       "Nationalisme",
       "Instabilités politiques"
     ].freeze,
-    "Sociétal" => [
+    "Société" => [
       "Polarisation",
       "Individualisme",
       "Lien social",

@@ -83,12 +83,20 @@ export default class extends Controller {
     this.go(this.index - 1, -1)
   }
 
+  // Mobile : une étape referme la couverture si on l'avait rouverte.
+  _collapseCover() {
+    const cover = this.element.querySelector(".sp-cover")
+    const kb = cover && this.application.getControllerForElementAndIdentifier(cover, "mobile-keyboard")
+    kb?.setCoverPinned(true)
+  }
+
   go(toIndex, dir) {
     const from = this.stepTargets[this.index]
     const to = this.stepTargets[toIndex]
     this.index = toIndex
     this.updateNav()
     this.rerollCover()
+    this._collapseCover()
 
     const focusTarget = () => {
       const field = to.querySelector("input:not([type=hidden]):not([type=file]), [contenteditable]")

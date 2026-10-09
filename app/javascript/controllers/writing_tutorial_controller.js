@@ -73,6 +73,7 @@ export default class extends Controller {
     this.applyRegistrationPrefill()
     this.updateNav()
     this.updateProgress()
+    this._syncCoverPin()
 
     this._onKeydown = this.handleKeydown.bind(this)
     this.element.addEventListener("keydown", this._onKeydown)
@@ -86,6 +87,22 @@ export default class extends Controller {
 
   get currentName() {
     return this.stepTargets[this.index]?.dataset.step
+  }
+
+  // Mobile : après l'intro, la couverture reste la barre blanche jusqu'au
+  // choix du style. À cette étape, elle reprend sa hauteur.
+  _syncCoverPin() {
+    const cover = this.element.querySelector(".sp-cover")
+    const kb = cover && this.application.getControllerForElementAndIdentifier(cover, "mobile-keyboard")
+    if (!kb) {
+      this._coverPinTries = (this._coverPinTries || 0) + 1
+      if (this._coverPinTries <= 8) requestAnimationFrame(() => this._syncCoverPin())
+      return
+    }
+    this._coverPinTries = 0
+    const style = this.stepTargets.findIndex((step) => step.dataset.step === "style")
+    const pinned = style !== -1 && this.index > 0 && this.index < style
+    kb.setCoverPinned(pinned)
   }
 
   get isLast() {
@@ -143,8 +160,12 @@ export default class extends Controller {
     this.index = toIndex
     this.updateNav()
     this.updateProgress()
+    this._syncCoverPin()
+    this._syncCoverIdentity()
 
     const focusField = () => {
+      // « Inverser la tendance » : le textarea ne doit pas être sélectionné à l'arrivée.
+      if (to.dataset.step === "inversion") return
       const field = to.querySelector("input:not([type=hidden]), textarea")
       field?.focus({ preventScroll: true })
     }
@@ -222,14 +243,10 @@ export default class extends Controller {
 
   persistForStep(name) {
     if (!this.signedInValue && (name === "username" || name === "age")) this.persistPrefill()
-    if (name === "username") this.applyCoverUsername()
     if (name === "living-place") this.persistLivingPlace()
     if (name === "positive") saveRegistrationPrefill({ termsAccepted: true })
     if (name === "theme" && this.selectedTheme) saveRegistrationPrefill({ theme: this.selectedTheme })
-    if (name === "etincelle") {
-      this.persistIdeaGenerator()
-      this.applyCoverTitle()
-    }
+    if (name === "etincelle") this.persistIdeaGenerator()
     if (name === "inversion") this.persistTrend()
   }
 
@@ -617,6 +634,24 @@ export default class extends Controller {
 
   coverEditor() {
     return this.application.getControllerForElementAndIdentifier(this.element, "cover-editor")
+  }
+
+  // Nom et titre n'apparaissent sur la couverture qu'au choix du style.
+  _syncCoverIdentity() {
+    if (this.currentName === "style") {
+      this.applyCoverUsername()
+      this.applyCoverTitle()
+    } else {
+      this.clearCoverIdentity()
+    }
+  }
+
+  clearCoverIdentity() {
+    const cover = this.coverEditor()
+    if (!cover) return
+    if (cover.hasUserNameTarget) cover.userNameTarget.textContent = ""
+    if (cover.hasTitleInputTarget) cover.titleInputTarget.value = ""
+    cover.updateTitle()
   }
 
   applyCoverUsername() {

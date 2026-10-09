@@ -10,6 +10,15 @@
   <%# Logo — retour à l'accueil (la navbar est masquée sur ces pages). %>
   <%= link_to "SP2050", root_path, class: "sp-logo", "aria-label": "Retour à l'accueil" %>
 
+  <button type="button" class="sp-cover-reopen"
+          data-action="click->mobile-keyboard#reopenCover"
+          aria-label="Afficher la couverture">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M5.5 5h5M5.5 8h5M5.5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
   <div class="form-cover-svg form-cover-svg--editor">
     <svg class="cover-svg" shape-rendering="auto" viewBox="0 0 250 350" preserveAspectRatio="xMidYMid slice">
       <defs>

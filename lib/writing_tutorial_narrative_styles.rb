@@ -13,7 +13,7 @@ module WritingTutorialNarrativeStyles
 
         Titre
 
-        [Un titre qui ouvre une scène du quotidien : un repas, une rue, ce que tu vois depuis chez toi.]
+        [Trouve un titre qui ouvre une scène du quotidien : un repas, une rue, ce que tu vois depuis chez toi.]
 
         Ce matin, à %{cap:lieu}…
 
@@ -73,7 +73,7 @@ module WritingTutorialNarrativeStyles
         %{cap:lieu}, 2050
 
         Je me souviens…
-        [Le souvenir peut être une petite anecdote, un moment qui a marqué ta vie, un geste qui a changé ton quotidien.]
+        [Raconte un souvenir, une petite anecdote, un moment qui a marqué ta vie, un geste qui a changé ton quotidien.]
 
         [Ancre la scène : un jour, un lieu, des visages.]
 
@@ -83,7 +83,7 @@ module WritingTutorialNarrativeStyles
 
         %{lower:inversion}
 
-        [Le tournant peut être minuscule : un geste, une parole, un événement.]
+        [Imagine un tournant, qui peut être minuscule : un geste, une parole, un événement.]
         [Qui a porté ce retournement de situation ?]
 
         %{theme}
@@ -102,11 +102,11 @@ module WritingTutorialNarrativeStyles
 
         Nous, à %{cap:lieu}…
 
-        [Une phrase au « nous ». Dis simplement ce que tu veux voir exister.]
+        [Commence par une phrase au « nous ». Dis simplement ce que tu veux voir exister.]
 
         1. %{theme}
 
-        [Une règle du quotidien, assez courte pour être dite à voix haute.]
+        [Invente une règle du quotidien.]
 
         2. %{lower:inversion}
 
@@ -114,7 +114,7 @@ module WritingTutorialNarrativeStyles
 
         3. %{lower:tendance}
 
-        [Une limite : qu'est-ce que tu ne veux plus voir dans ce nouveau monde ?]
+        [Imagine une limite : qu'est-ce que tu ne veux plus voir dans ce nouveau monde ?]
 
         %{title:etincelle}
 
@@ -134,15 +134,15 @@ module WritingTutorialNarrativeStyles
         [Donne un nom à l'autre : voisin, enfant, inconnu, toi plus jeune.]
 
         %{pseudo} —
-        [Une question sur ce que l'autre est en train de faire.]
+        [Pose une question sur ce que l'autre est en train de faire.]
 
         —
-        [Une réponse décrivant une action quotidienne : se déplacer, manger, travailler, décider.]
+        [Écris une réponse décrivant une action quotidienne : se déplacer, manger, travailler, décider.]
 
         %{pseudo} —
         %{theme}
 
-        [Relance sur un détail. Tu peux être surpris, ému, pas d'accord.]
+        [Relance sur un détail. Tu peux être surpris, ému, en désaccord.]
 
         —
         %{lower:tendance}

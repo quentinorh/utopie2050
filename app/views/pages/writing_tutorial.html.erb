@@ -26,10 +26,6 @@
             data-controller="randomize-letter-animation"
             data-randomize-letter-animation-text-value="initialisation du récit">initialisation du récit</span>
       <span class="funnel-progress__pill">
-        <svg class="funnel-progress__icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <rect x="3" y="1.5" width="10" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-          <path d="M5.5 5h5M5.5 8h5M5.5 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
         <span class="funnel-progress__percent" data-writing-tutorial-target="progressPercent">12%</span>
       </span>
     </div>
@@ -111,15 +107,6 @@
           </div>
         <% end %>
 
-        <!-- Générateur d'étincelles -->
-        <div class="sp-step" data-writing-tutorial-target="step" data-step="etincelle">
-          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
-          <h1 class="sp-title">Générateur d'étincelles</h1>
-          <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit</p>
-          <%= render "shared/jackpot" %>
-          <p class="funnel-etincelle__note">La combinaison choisie permet de préremplir le titre de ton futur texte. Tu pourras le modifier plus tard.</p>
-        </div>
-
         <!-- Thème (checkboxes délicieuses) -->
         <div class="sp-step" data-writing-tutorial-target="step" data-step="theme">
           <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
@@ -127,7 +114,7 @@
           <p class="sp-subtitle sp-subtitle--q">Choisis un thème qui te plait</p>
 
           <div class="funnel-chips" role="radiogroup" aria-label="Thèmes de récit">
-            <% %w[Économie Environnement Géopolitique Sociétal Technologie].each do |theme| %>
+            <% %w[Économie Environnement Géopolitique Société Technologie].each do |theme| %>
               <button type="button" class="funnel-chip"
                       role="radio" aria-checked="false"
                       data-writing-tutorial-target="themeOption"
@@ -180,6 +167,15 @@
                       data-action="input->writing-tutorial#updateTrendOpposite"></textarea>
             <p class="sp-error" data-writing-tutorial-target="trendOppositeError"></p>
           </div>
+        </div>
+
+        <!-- Générateur d'étincelles -->
+        <div class="sp-step" data-writing-tutorial-target="step" data-step="etincelle">
+          <%# <p class="sp-eyebrow">La fabrique à idée</p> %>
+          <h1 class="sp-title">Générateur d'étincelles</h1>
+          <p class="sp-subtitle sp-subtitle--q">Expérimente des idées pour ton futur récit</p>
+          <%= render "shared/jackpot" %>
+          <p class="funnel-etincelle__note">La combinaison choisie permet de préremplir le titre de ton futur texte. Tu pourras le modifier plus tard.</p>
         </div>
 
         <!-- Style (checkboxes classiques) -->

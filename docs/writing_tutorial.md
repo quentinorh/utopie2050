@@ -106,7 +106,7 @@ Lecture seule, pas de saisie.
   - Économie
   - Environnement
   - Géopolitique
-  - Sociétal
+  - Société
   - Technologie
 
 **Donnée :** `theme`
@@ -125,7 +125,7 @@ Lecture seule, pas de saisie.
 
 ### Tendances disponibles
 
-Définies par thème dans `WritingTutorialTrends::BY_THEME` (`lib/writing_tutorial_trends.rb`) : Économie, Environnement, Géopolitique, Sociétal, Technologie. Le rouleau ne propose que le vivier du thème sélectionné, dans un ordre aléatoire.
+Définies par thème dans `WritingTutorialTrends::BY_THEME` (`lib/writing_tutorial_trends.rb`) : Économie, Environnement, Géopolitique, Société, Technologie. Le rouleau ne propose que le vivier du thème sélectionné, dans un ordre aléatoire.
 
 **Données :** `trend`, `trendOpposite`
 
