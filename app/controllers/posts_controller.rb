@@ -35,10 +35,12 @@ class PostsController < ApplicationController
   def new
     @post = user_signed_in? ? current_user.posts.build : Post.new
     @guest_writer = !user_signed_in?
+    @client_token = SecureRandom.uuid
   end
 
   def stage
-    @post = Post.new(stage_post_params.except(:event_code))
+    @client_token = params.dig(:post, :client_token).presence || SecureRandom.uuid
+    @post = Post.new(stage_post_params.except(:event_code, :client_token))
     @guest_writer = true
 
     if @post.title.blank?
@@ -114,19 +116,33 @@ class PostsController < ApplicationController
   end
 
   def claim
-    pending_record = PendingPostSession.find_record(session)
-    @post = PendingPostSession.build_post(current_user, @pending_post)
-    PendingPostSession.assign_event_code(@post, @pending_post["event_code"])
+    posts = []
+    PendingPostSession.claimable_records(session, current_user).each do |record|
+      post = PendingPostSession.claim_record!(current_user, record)
+      unless post.persisted?
+        redirect_to pending_posts_path, alert: post.errors.full_messages.to_sentence
+        return
+      end
 
-    if @post.save
-      PendingPostSession.attach_cover_image(@post, pending_record)
-      PendingPostSession.clear(session)
-      AttachCoverImageJob.perform_later(@post.id)
-      notice = PendingPostSession.draft?(@pending_post) ? "Ton brouillon a été enregistré." : "Ton futur a été publié."
-      redirect_to @post, notice: notice, flash: { clear_registration_prefill: true }
-    else
-      redirect_to pending_posts_path, alert: @post.errors.full_messages.to_sentence
+      AttachCoverImageJob.perform_later(post.id)
+      posts << post
     end
+    PendingPostSession.clear_token!(session)
+
+    if posts.empty?
+      redirect_to new_post_path, alert: "Aucun futur en attente. Tu peux recommencer ton écriture."
+      return
+    end
+
+    notice = if posts.many?
+      "Tes textes ont été enregistrés."
+    elsif posts.first.draft
+      "Ton brouillon a été enregistré."
+    else
+      "Ton futur a été publié."
+    end
+    destination = posts.one? ? posts.first : user_posts_path
+    redirect_to destination, notice: notice, flash: { clear_registration_prefill: true }
   end
 
   def create
@@ -256,7 +272,7 @@ class PostsController < ApplicationController
 
   def stage_post_params
     params.require(:post).permit(:cover, :pattern_settings, :title, :body, :color, :draft,
-      :cover_image, :event_code,
+      :cover_image, :event_code, :client_token,
       chapters_attributes: [:id, :title, :body, :position, :_destroy])
   end
 
@@ -277,6 +293,7 @@ class PostsController < ApplicationController
   end
 
   def deliver_pending_link(user)
+    PendingPostSession.assign_email!(session, user.email)
     refresh_pending_cover
 
     begin
@@ -306,10 +323,10 @@ class PostsController < ApplicationController
 
   def load_pending_post
     @pending_post = PendingPostSession.fetch(session)
+    return if @pending_post
+    return if user_signed_in? && %w[pending claim].include?(action_name) && PendingPostSession.pending_for?(session, current_user)
 
-    unless @pending_post
-      redirect_to new_post_path, alert: "Aucun futur en attente. Tu peux recommencer ton écriture."
-    end
+    redirect_to new_post_path, alert: "Aucun futur en attente. Tu peux recommencer ton écriture."
   end
 
   def can_view_draft?(post)

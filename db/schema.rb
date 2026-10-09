@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_07_24_020000) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_10_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,10 @@ ActiveRecord::Schema[7.0].define(version: 2026_07_24_020000) do
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
+    t.string "client_token"
+    t.index ["client_token"], name: "index_pending_posts_on_client_token", unique: true
+    t.index ["email"], name: "index_pending_posts_on_email"
     t.index ["expires_at"], name: "index_pending_posts_on_expires_at"
     t.index ["token"], name: "index_pending_posts_on_token", unique: true
   end
@@ -105,6 +109,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_07_24_020000) do
     t.string "pattern_settings"
     t.bigint "event_code_id"
     t.integer "reading_time"
+    t.jsonb "body_provenance"
+    t.integer "ai_ratio"
     t.index ["event_code_id"], name: "index_posts_on_event_code_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end

@@ -53,9 +53,18 @@ export default class extends Controller {
 
   async prepareSubmit(event) {
     if (this._allowSubmit) return
+    if (this._submitted) {
+      event.preventDefault()
+      return
+    }
 
     const needsGate = this.hasUsernameFieldTarget || this.hasTermsTarget
-    if (!needsGate) return
+    if (!needsGate) {
+      this._submitted = true
+      const button = event.target.querySelector("button[type=submit]")
+      if (button) button.disabled = true
+      return
+    }
 
     event.preventDefault()
     if (this._preparing) return
@@ -82,11 +91,11 @@ export default class extends Controller {
       await this.attachCoverFile()
 
       this._allowSubmit = true
+      this._submitted = true
       event.target.requestSubmit()
     } finally {
       this._preparing = false
-      if (!this._allowSubmit && button) button.disabled = false
-      queueMicrotask(() => { this._allowSubmit = false })
+      if (!this._submitted && button) button.disabled = false
     }
   }
 

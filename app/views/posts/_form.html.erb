@@ -9,7 +9,8 @@
   <%= form_with(model: @post,
                 url: guest_writer ? stage_posts_path : nil,
                 local: true,
-                html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { action: "submit->cover-editor#handleFormSubmit" } }) do |form| %>
+                html: { multipart: true, class: "flex min-h-screen w-full min-w-0 max-w-full flex-col", data: { turbo: false, action: "submit->cover-editor#handleFormSubmit" } }) do |form| %>
+    <%= hidden_field_tag "post[client_token]", @client_token if @client_token.present? %>
 
     <% if @post.errors.any? %>
       <div class="editor-errors" role="alert">

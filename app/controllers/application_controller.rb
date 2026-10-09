@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def after_sign_in_path_for(resource)
-    if PendingPostSession.fetch(session)
+    if PendingPostSession.pending_for?(session, resource)
       claim_posts_path
     else
       super

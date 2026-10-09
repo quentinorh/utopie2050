@@ -7,10 +7,14 @@ class Admin::DashboardController < ApplicationController
     @posts = Post.includes(:user, :reports).order(created_at: :desc)
     @users = User.includes(:posts).order(created_at: :desc)
     @reports = Report.includes(:post, :user).order(created_at: :desc)
+    @pending_posts = PendingPost.order(created_at: :desc)
 
     if params[:search].present?
       @posts = @posts.where("title ILIKE ?", "%#{params[:search]}%")
+      @pending_posts = @pending_posts.where("payload->>'title' ILIKE ?", "%#{params[:search]}%")
     end
+
+    @users_by_email = @users.index_by { |user| user.email.downcase }
   end
 
   def reel_data

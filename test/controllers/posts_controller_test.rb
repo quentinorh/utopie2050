@@ -108,6 +108,48 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_nil User.find_by(email: "autre@example.com")
   end
 
+  test "deux envois du même formulaire ne créent qu'un texte en attente" do
+    2.times do
+      post stage_posts_path, params: {
+        post: { title: "Maisonnées", body: "Un texte.", draft: "1", client_token: "meme-formulaire" }
+      }
+    end
+
+    assert_equal 1, PendingPost.count
+    assert_equal "Maisonnées", PendingPost.last.payload["title"]
+    assert_equal true, PendingPost.last.payload["draft"]
+  end
+
+  test "le lien magique publie le texte même sans le cookie de session" do
+    post stage_posts_path, params: {
+      post: { title: "Erasmus en Mycocratie", body: "Le texte du futur.", draft: "0", client_token: "erasmus" }
+    }
+    assert_difference "User.count", 1 do
+      post pending_auth_posts_path, params: {
+        email: "perdu@example.com",
+        username: "Auteur Perdu",
+        age: "33",
+        terms_accepted: "1"
+      }
+    end
+
+    assert_equal "perdu@example.com", PendingPost.last.email
+    magic = magic_token_from_last_mail
+    reset!
+
+    get user_magic_link_path(magic)
+
+    assert_redirected_to claim_posts_path
+    assert_difference "Post.count", 1 do
+      follow_redirect!
+    end
+
+    published = Post.find_by!(title: "Erasmus en Mycocratie")
+    assert_redirected_to post_path(published)
+    assert_equal "perdu@example.com", published.user.email
+    assert_equal 0, PendingPost.where(email: "perdu@example.com").count
+  end
+
   private
 
   def stage_guest_post
@@ -120,5 +162,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     user.skip_confirmation_notification!
     user.save!
     user
+  end
+
+  def magic_token_from_last_mail
+    mail = ActionMailer::Base.deliveries.last
+    body = mail.text_part&.decoded || mail.body.decoded
+    body[/\/users\/magic_link\/(\S+)/, 1]
   end
 end

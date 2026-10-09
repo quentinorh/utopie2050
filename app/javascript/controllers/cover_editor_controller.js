@@ -493,7 +493,7 @@ export default class extends Controller {
    * Sans fichier raster, AttachCoverImageJob retombe sur le SVG seul.
    */
   async handleFormSubmit(event) {
-    if (this._allowNativeFormSubmit) return
+    if (this._submitting || this._allowNativeFormSubmit) return
 
     event.preventDefault()
 
@@ -505,29 +505,23 @@ export default class extends Controller {
     this.titleInputTarget.classList.remove("border-red-500")
     if (this.hasTitleErrorTarget) this.titleErrorTarget.classList.add("hidden")
 
+    this._submitting = true
     this.saveSVG()
     this.savePatternSettings()
 
     const submitBtn = this.hasSubmitButtonTarget ? this.submitButtonTarget : null
     if (submitBtn) submitBtn.disabled = true
 
-    try {
-      if (this.hasCoverImageFileTarget && this.coverTarget.value) {
-        try {
-          await this.attachSocialCoverRaster()
-        } catch (err) {
-          console.warn("Couverture réseau non générée (repli SVG)", err)
-        }
+    if (this.hasCoverImageFileTarget && this.coverTarget.value) {
+      try {
+        await this.attachSocialCoverRaster()
+      } catch (err) {
+        console.warn("Couverture réseau non générée (repli SVG)", err)
       }
-
-      this._allowNativeFormSubmit = true
-      event.target.requestSubmit()
-    } finally {
-      if (submitBtn) submitBtn.disabled = false
-      queueMicrotask(() => {
-        this._allowNativeFormSubmit = false
-      })
     }
+
+    this._allowNativeFormSubmit = true
+    event.target.requestSubmit()
   }
 
   async attachSocialCoverRaster() {

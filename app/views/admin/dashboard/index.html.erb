@@ -8,6 +8,7 @@
   <div class="grid grid-cols-2 gap-x-6 gap-y-5 border-b border-gray-950/5 dark:border-white/5 pb-6 sm:flex sm:flex-wrap sm:items-baseline sm:gap-x-10 sm:gap-y-4">
     <% [
       ["Articles", @posts.size],
+      ["En attente", @pending_posts.size],
       ["Utilisateurs", @users.size],
       ["Signalements", @reports.size],
       ["Événements", @event_codes.size]
@@ -100,6 +101,86 @@
           </div>
         </div>
       <% end %>
+    </div>
+  </section>
+
+  <%# ── Pending posts — textes pas encore rattachés à un compte ── %>
+  <section class="mt-16">
+    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 text-balance">Textes en attente</h2>
+      <span class="font-mono text-[0.6875rem] text-gray-400 dark:text-gray-500 tabular-nums"><%= @pending_posts.size %></span>
+    </div>
+    <p class="mt-2 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+      Écrits avant la connexion. L'adresse est enregistrée au moment de l'envoi du lien : la prochaine connexion rattache le texte, ou tu peux le faire depuis ici.
+    </p>
+
+    <div class="-mx-4 -my-2 mt-4 overflow-x-auto whitespace-nowrap sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full px-4 py-2 align-middle sm:px-6 lg:px-8">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-950/10 dark:border-white/10">
+              <th class="whitespace-nowrap py-2.5 pr-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Texte</th>
+              <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Email</th>
+              <th class="whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Créé</th>
+              <th class="whitespace-nowrap px-3 py-2.5 text-right text-sm font-medium text-gray-500 dark:text-gray-400">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-950/5 dark:divide-white/5">
+            <% if @pending_posts.any? %>
+              <% @pending_posts.each do |pending| %>
+                <% account = @users_by_email[pending.email.to_s.downcase] %>
+                <tr class="align-top hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                  <td class="py-3 pr-3 text-sm text-gray-900 dark:text-gray-100 whitespace-normal min-w-[12rem] max-w-xs">
+                    <p class="font-medium"><%= pending.title.presence || "Sans titre" %></p>
+                    <p class="mt-1 text-gray-500 dark:text-gray-400"><%= pending.body_excerpt %></p>
+                    <p class="mt-1 font-mono text-[0.6875rem] uppercase tracking-wide text-gray-400">
+                      <%= pending.draft? ? "brouillon" : "publication" %>
+                      <% if pending.expired? %>
+                        <span class="text-red-500"> · expiré</span>
+                      <% end %>
+                    </p>
+                  </td>
+                  <td class="px-3 py-3 text-sm whitespace-normal min-w-[16rem]">
+                    <%= form_with url: admin_pending_post_path(pending), method: :patch, class: "flex flex-col gap-2" do %>
+                      <input type="email"
+                             name="email"
+                             value="<%= pending.email %>"
+                             placeholder="auteur@example.com"
+                             aria-label="Email associé à <%= pending.title %>"
+                             class="w-full min-w-0 rounded-lg bg-transparent ring-1 ring-gray-950/10 dark:ring-white/10 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-950/20 dark:focus:ring-white/20 focus:outline-none">
+                      <% if account %>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Compte : <%= account.username %></p>
+                      <% elsif pending.email.present? %>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Pas encore de compte</p>
+                      <% end %>
+                      <div class="flex flex-wrap gap-2">
+                        <button type="submit" class="rounded-lg px-2.5 py-1 text-sm text-gray-600 dark:text-gray-300 ring-1 ring-gray-950/10 dark:ring-white/10 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer">
+                          Enregistrer
+                        </button>
+                        <button type="submit" name="claim" value="1" class="rounded-lg bg-gray-900 dark:bg-white px-2.5 py-1 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 cursor-pointer">
+                          Rattacher au compte
+                        </button>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td class="px-3 py-3 text-sm text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">
+                    <%= pending.created_at.strftime("%d.%m.%Y %H:%M") %>
+                  </td>
+                  <td class="px-3 py-3 text-right whitespace-nowrap">
+                    <%= link_to "Supprimer", admin_pending_post_path(pending),
+                        data: { turbo_method: :delete, turbo_confirm: "Supprimer ce texte en attente ?" },
+                        class: "text-sm text-gray-400 hover:text-red-600 dark:hover:text-red-400" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="4" class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">Aucun texte en attente.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
