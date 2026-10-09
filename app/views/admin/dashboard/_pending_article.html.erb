@@ -1,0 +1,44 @@
+<div class="group relative">
+  <div class="relative overflow-hidden rounded-xl bg-gray-950/[0.03] dark:bg-white/[0.03] ring-1 ring-gray-950/5 dark:ring-white/5 aspect-[3/4] flex">
+    <% if pending.payload["cover"].present? %>
+      <div class="size-full [&>svg]:size-full"><%= pending.payload["cover"].html_safe %></div>
+    <% end %>
+    <div class="absolute top-2 left-2 flex flex-col items-start gap-1">
+      <span class="rounded-md bg-amber-500/90 px-1.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-wide text-white">en attente</span>
+      <% if pending.draft? %>
+        <span class="rounded-md bg-gray-900/70 px-1.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-wide text-white/80">brouillon</span>
+      <% end %>
+    </div>
+    <%= link_to admin_pending_post_path(pending),
+        data: { turbo_method: :delete, turbo_confirm: "Supprimer ce texte en attente ?" },
+        class: "absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-400 hover:text-red-600",
+        aria_label: "Supprimer",
+        title: "Supprimer" do %>
+      <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M6 4V2.5h4V4M4.5 4v9a1 1 0 001 1h5a1 1 0 001-1V4"/></svg>
+    <% end %>
+  </div>
+
+  <div class="mt-2.5">
+    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= pending.title.presence || "Sans titre" %></p>
+    <p class="text-sm text-gray-400 dark:text-gray-500 truncate">
+      <span><%= pending.email.presence || "Sans adresse" %></span>
+      <span class="mx-1 text-gray-300 dark:text-gray-700">&middot;</span>
+      <span class="tabular-nums"><%= pending.created_at.strftime("%d.%m.%Y") %></span>
+    </p>
+
+    <%= form_with url: admin_pending_post_path(pending), method: :patch, class: "mt-2 flex flex-col gap-1.5" do %>
+      <input type="email"
+             name="email"
+             value="<%= pending.email %>"
+             placeholder="mail@example.com"
+             aria-label="Email à rattacher à <%= pending.title %>"
+             class="min-w-0 w-full rounded-lg bg-transparent ring-1 ring-gray-950/10 dark:ring-white/10 px-2.5 py-1 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-950/20 dark:focus:ring-white/20 focus:outline-none">
+      <button type="submit"
+              name="claim"
+              value="1"
+              class="rounded-lg bg-gray-900 dark:bg-white px-2.5 py-1 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 cursor-pointer">
+        Rattacher
+      </button>
+    <% end %>
+  </div>
+</div>

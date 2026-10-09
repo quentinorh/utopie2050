@@ -14,7 +14,7 @@ class Admin::DashboardController < ApplicationController
       @pending_posts = @pending_posts.where("payload->>'title' ILIKE ?", "%#{params[:search]}%")
     end
 
-    @users_by_email = @users.index_by { |user| user.email.downcase }
+    @articles = (@posts.to_a + @pending_posts.to_a).sort_by(&:created_at).reverse
   end
 
   def reel_data
