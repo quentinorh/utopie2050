@@ -11,10 +11,6 @@ export default class extends Controller {
     this.boundUpdateView = this.updateView.bind(this)
     this.mobileBreakpoint.addEventListener("change", this.boundUpdateView)
     this.updateView()
-
-    if (!this.mobileBreakpoint.matches || this.showFormValue) {
-      this.loginFormTarget.querySelector("input")?.focus()
-    }
   }
 
   disconnect() {
@@ -24,7 +20,6 @@ export default class extends Controller {
   showLogin() {
     this.showFormValue = true
     this.updateView()
-    this.loginFormTarget.querySelector("input")?.focus()
   }
 
   updateView() {

@@ -174,18 +174,10 @@ export default class extends Controller {
     this._syncCoverIdentity()
     this._scrollToTop()
 
-    const focusField = () => {
-      // « Inverser la tendance » : le textarea ne doit pas être sélectionné à l'arrivée.
-      if (to.dataset.step === "inversion") return
-      const field = to.querySelector("input:not([type=hidden]), textarea")
-      field?.focus({ preventScroll: true })
-    }
-
     if (this.reduceMotion) {
       from.style.display = "none"
       to.style.display = "block"
       to.style.opacity = "1"
-      focusField()
       return
     }
 
@@ -198,7 +190,6 @@ export default class extends Controller {
       .to(from, { opacity: 0, x: -SHIFT * dir, duration: stepMotion.out.duration, ease: stepMotion.out.ease })
       .set(from, { display: "none", clearProps: "opacity,transform" })
       .set(to, { display: "block" })
-      .call(focusField)
       .fromTo(to,
         { opacity: 0, x: SHIFT * dir },
         { opacity: 1, x: 0, duration: stepMotion.in.duration, ease: stepMotion.in.ease, clearProps: "transform,opacity" })

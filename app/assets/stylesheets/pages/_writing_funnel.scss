@@ -12,6 +12,14 @@
     max-width: none;
   }
 
+  /* La progression est en absolu (top 24px, ~24px de haut). Le titre doit
+     commencer en dessous, sinon les deux se superposent. */
+  @media (max-width: 1023px) {
+    .sp-panel {
+      padding-top: 60px;
+    }
+  }
+
   /* Titre un cran plus petit que l'auth (les titres de l'entonnoir sont longs). */
   .sp-title {
     font-size: clamp(2rem, 4.6vw, 3.25rem);

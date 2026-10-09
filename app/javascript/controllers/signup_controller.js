@@ -98,16 +98,10 @@ export default class extends Controller {
     this.rerollCover()
     this._collapseCover()
 
-    const focusTarget = () => {
-      const field = to.querySelector("input:not([type=hidden]):not([type=file]), [contenteditable]")
-      field?.focus({ preventScroll: true })
-    }
-
     if (this.reduceMotion) {
       from.style.display = "none"
       to.style.display = "block"
       to.style.opacity = "1"
-      focusTarget()
       return
     }
 
@@ -122,7 +116,6 @@ export default class extends Controller {
       .to(from, { opacity: 0, x: -SHIFT * dir, duration: step.out.duration, ease: step.out.ease })
       .set(from, { display: "none", clearProps: "opacity,transform" })
       .set(to, { display: "block" })
-      .call(focusTarget)
       .fromTo(
         to,
         { opacity: 0, x: SHIFT * dir },
