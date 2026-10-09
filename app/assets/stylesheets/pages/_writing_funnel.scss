@@ -583,9 +583,24 @@ button.jackpot__reel {
   }
 }
 
-/* Lien « Passer le guide » : réutilise .sp-alt-wrap (10vh du bas, centré). */
-.funnel-skip-wrap {
-  z-index: 6;
+/* « Passer le guide » dans le flux, sous la barre d'actions.
+   En absolu à 10vh il recouvrait Retour / Suivant dès que l'étape était haute. */
+.sp-auth--funnel .funnel-skip-wrap {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  margin-top: 1.5rem;
+  z-index: auto;
+}
+
+.sp-auth--funnel.sp-auth--wizard .sp-panel {
+  padding-bottom: 32px;
+
+  @media (min-width: 1024px) {
+    padding-bottom: 48px;
+  }
 }
 
 /* Clavier ouvert : la phrase de progression reste lisible, le champ se rapproche du titre. */
