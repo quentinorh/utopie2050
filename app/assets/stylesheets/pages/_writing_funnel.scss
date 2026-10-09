@@ -134,7 +134,11 @@
 
 /* Intro : le paragraphe descend au niveau des champs des autres étapes. */
 .funnel-intro__lead {
-  margin-top: clamp(40px, 9vw, 96px);
+  margin-top: 24px;
+
+  @media (min-width: 1024px) {
+    margin-top: clamp(40px, 9vw, 96px);
+  }
 }
 
 /* Sous-titre « question » (au-dessus d'un widget). */
@@ -143,9 +147,9 @@
   margin-top: clamp(20px, 3vw, 36px);
   margin-bottom: 0;
 
-  @media (max-width: 639px) {
+  @media (max-width: 1023px) {
     font-size: var(--sp-text-subtitle-mobile);
-    margin-top: 32px;
+    margin-top: 16px;
   }
 }
 
@@ -156,7 +160,11 @@
 /* Champ simple (pseudo, âge, lieu) — colonne 384 centrée, marge sous le titre. */
 .funnel-field {
   max-width: 384px;
-  margin: clamp(40px, 9vw, 96px) auto 0;
+  margin: 24px auto 0;
+
+  @media (min-width: 1024px) {
+    margin-top: clamp(40px, 9vw, 96px);
+  }
   display: flex;
   flex-direction: column;
   gap: 11px;
@@ -166,7 +174,11 @@
 /* Conditions d'utilisation — texte un cran plus grand. */
 .funnel-terms {
   max-width: 460px;
-  margin: clamp(32px, 6vw, 64px) auto 0;
+  margin: 20px auto 0;
+
+  @media (min-width: 1024px) {
+    margin-top: clamp(32px, 6vw, 64px);
+  }
 
   .sp-terms__title {
     font-size: 1.0625rem;

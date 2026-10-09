@@ -91,7 +91,7 @@
   flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px 56px;
+  padding: 28px 24px 32px;
 
   @media (min-width: 1024px) {
     /* Padding bas plus fort : bloc centré remonté vers le tiers supérieur. */
@@ -141,7 +141,11 @@
 .sp-form {
   max-width: 384px;
   margin-inline: auto;
-  margin-top: clamp(40px, 9vw, 112px);
+  margin-top: 24px;
+
+  @media (min-width: 1024px) {
+    margin-top: clamp(40px, 9vw, 112px);
+  }
 }
 
 .sp-field {
@@ -240,7 +244,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 30px;
+  margin-top: 18px;
+
+  @media (min-width: 1024px) {
+    margin-top: 30px;
+  }
 }
 
 .sp-checkbox {
@@ -299,7 +307,11 @@
   flex-direction: column;
   align-items: stretch; /* CTA pleine largeur */
   gap: 6px;
-  margin-top: 6vw;
+  margin-top: 20px;
+
+  @media (min-width: 1024px) {
+    margin-top: 6vw;
+  }
 }
 
 /* CTA connexion : bouton animé standard, PLEINE LARGEUR (tweak demandé). */
@@ -363,7 +375,7 @@
       left: auto;
       bottom: auto;
       flex-shrink: 0;
-      margin-top: 2rem;
+      margin-top: 1.25rem;
       transform: none;
     }
   }

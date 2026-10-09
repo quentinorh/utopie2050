@@ -8,12 +8,13 @@
 .sp-auth--wizard {
   .sp-panel {
     align-items: flex-start;
-    padding-top: clamp(56px, 12vh, 120px);
-    /* Réserve l'espace du lien « J'ai déjà un compte » ancré en bas (10vh). */
-    padding-bottom: 16vh;
+    padding-top: 28px;
+    /* Réserve l'espace du lien « J'ai déjà un compte » ancré en bas. */
+    padding-bottom: 72px;
 
     @media (min-width: 1024px) {
       padding-top: clamp(80px, 14vh, 131px);
+      padding-bottom: 16vh;
     }
   }
 }
@@ -23,7 +24,11 @@
   position: relative;
   /* Hauteur stable pour les étapes « question » → la nav ne saute pas.
      (L'étape charte, plus longue, s'étend naturellement.) */
-  min-height: clamp(132px, 22vh, 172px);
+  min-height: 96px;
+
+  @media (min-width: 1024px) {
+    min-height: clamp(132px, 22vh, 172px);
+  }
 
   /* Anti-FOUC : avant JS, seule la 1re étape est visible. */
   .sp-step {
@@ -67,7 +72,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-top: clamp(28px, 5vw, 56px);
+  margin-top: 20px;
+
+  @media (min-width: 1024px) {
+    margin-top: clamp(28px, 5vw, 56px);
+  }
 }
 
 /* « Retour » — lien texte léger (gris), animation de trait Osmo au survol.
