@@ -101,11 +101,12 @@
   border-color: transparent !important;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  /* Pas de transition sur backdrop-filter : Firefox mobile s'en sert comme
+     contenant pour position:fixed, la navbar décroche et un bandeau blanc
+     apparaît sous le hero (100vh plus haut que l'écran visible). */
   transition:
     background-color 1s ease,
-    border-color 1s ease,
-    backdrop-filter 1s ease,
-    -webkit-backdrop-filter 1s ease;
+    border-color 1s ease;
 
   .navbar-logo-text {
     color: #fff;

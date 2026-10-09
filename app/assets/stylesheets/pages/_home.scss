@@ -1,3 +1,11 @@
+/* Firefox mobile : 100vh inclut la barre du navigateur, le hero dépasse
+   l'écran. svh suit la zone visible ; 100vh reste le repli. */
+.hero-stage,
+.hero-stage > [data-controller="hero-animation"] {
+  height: 100vh;
+  height: 100svh;
+}
+
 // Homepage — derniers futurs : masquer les cartes qui laisseraient une ligne incomplète
 // (multiples de 2 à partir de 640px, multiples de 3 à partir de 1024px).
 // Si le nombre de posts est inférieur au nombre de colonnes, tout reste visible

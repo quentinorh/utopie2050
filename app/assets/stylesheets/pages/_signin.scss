@@ -114,6 +114,10 @@
   color: var(--sp-ink);
   text-align: center;
   text-wrap: balance;
+
+  @media (max-width: 1023px) {
+    font-size: clamp(2.5rem, 7vw, 3rem);
+  }
 }
 
 .sp-subtitle {
@@ -561,7 +565,7 @@ html.sp-keyboard-lock {
 
   /* Voile blanc : à la réouverture il se retire en même temps que la hauteur,
      sans toucher à l'opacité du motif (animée par GSAP à l'entrée). */
-  .sp-cover::after {
+  .sp-auth .sp-cover::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -729,7 +733,7 @@ html.sp-keyboard-lock {
 
 @media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
   .sp-cover,
-  .sp-cover::after {
+  .sp-auth .sp-cover::after {
     transition: none;
   }
 }

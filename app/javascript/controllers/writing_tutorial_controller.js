@@ -89,6 +89,16 @@ export default class extends Controller {
     return this.stepTargets[this.index]?.dataset.step
   }
 
+  _scrollToTop() {
+    const lenis = window.lenis
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(0, { immediate: true, force: true })
+    }
+    window.scrollTo(0, 0)
+    const panel = this.element.querySelector(".sp-panel")
+    if (panel) panel.scrollTop = 0
+  }
+
   // Mobile : après l'intro, la couverture reste la barre blanche jusqu'au
   // choix du style. À cette étape, elle reprend sa hauteur.
   _syncCoverPin() {
@@ -162,6 +172,7 @@ export default class extends Controller {
     this.updateProgress()
     this._syncCoverPin()
     this._syncCoverIdentity()
+    this._scrollToTop()
 
     const focusField = () => {
       // « Inverser la tendance » : le textarea ne doit pas être sélectionné à l'arrivée.
