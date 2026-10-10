@@ -1,5 +1,5 @@
 <div class="group relative">
-  <div class="relative aspect-[3/4]">
+  <div class="relative aspect-[3/4]" data-controller="dropdown">
     <div class="absolute inset-0 overflow-hidden rounded-xl bg-gray-950/[0.03] dark:bg-white/[0.03] ring-1 ring-gray-950/5 dark:ring-white/5">
       <%= link_to admin_pending_post_path(pending), class: "absolute inset-0 z-0 flex", aria: { label: pending.title.presence || "Texte en attente" } do %>
         <% if pending.payload["cover"].present? %>
@@ -15,38 +15,37 @@
       <% end %>
     </div>
 
-    <div class="absolute right-1.5 bottom-1.5 z-10 flex items-center gap-1 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
-      <div class="relative" data-controller="dropdown">
-        <button type="button"
-                data-action="click->dropdown#toggle"
-                class="flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                aria-label="Ajouter un email"
-                title="Ajouter un email">
-          <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="1.5" y="3.5" width="13" height="9" rx="1"/>
-            <path d="M2 4.5 8 9l6-4.5"/>
-          </svg>
+    <div data-dropdown-target="menu"
+         class="hidden absolute inset-x-2 bottom-12 z-20 max-h-[calc(100%-3.75rem)] origin-bottom overflow-y-auto rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-950/10 dark:ring-white/10 p-2 shadow-lg shadow-gray-950/5 dark:shadow-none opacity-0 scale-95 transition duration-100 ease-out data-[open]:opacity-100 data-[open]:scale-100">
+      <%= form_with url: admin_pending_post_path(pending), method: :patch, class: "flex flex-col gap-2" do %>
+        <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="pending_email_<%= pending.id %>">Ajouter un email</label>
+        <input type="email"
+               name="email"
+               id="pending_email_<%= pending.id %>"
+               value="<%= pending.email %>"
+               placeholder="mail@example.com"
+               required
+               class="min-w-0 w-full rounded-lg bg-transparent ring-1 ring-gray-950/10 dark:ring-white/10 px-2.5 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-950/20 dark:focus:ring-white/20 focus:outline-none">
+        <button type="submit"
+                name="claim"
+                value="1"
+                class="rounded-lg bg-gray-900 dark:bg-white px-2.5 py-1.5 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 cursor-pointer">
+          Rattacher
         </button>
-        <div data-dropdown-target="menu"
-             class="hidden absolute right-0 bottom-full z-30 mb-1 w-56 origin-bottom-right rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-950/10 dark:ring-white/10 p-2 shadow-lg shadow-gray-950/5 dark:shadow-none opacity-0 scale-95 transition duration-100 ease-out data-[open]:opacity-100 data-[open]:scale-100">
-          <%= form_with url: admin_pending_post_path(pending), method: :patch, class: "flex flex-col gap-2" do %>
-            <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="pending_email_<%= pending.id %>">Ajouter un email</label>
-            <input type="email"
-                   name="email"
-                   id="pending_email_<%= pending.id %>"
-                   value="<%= pending.email %>"
-                   placeholder="mail@example.com"
-                   required
-                   class="min-w-0 w-full rounded-lg bg-transparent ring-1 ring-gray-950/10 dark:ring-white/10 px-2.5 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-950/20 dark:focus:ring-white/20 focus:outline-none">
-            <button type="submit"
-                    name="claim"
-                    value="1"
-                    class="rounded-lg bg-gray-900 dark:bg-white px-2.5 py-1.5 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200 cursor-pointer">
-              Rattacher
-            </button>
-          <% end %>
-        </div>
-      </div>
+      <% end %>
+    </div>
+
+    <div class="absolute right-1.5 bottom-1.5 z-10 flex items-center gap-1 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
+      <button type="button"
+              data-action="click->dropdown#toggle"
+              class="flex size-7 items-center justify-center rounded-lg bg-white/90 dark:bg-gray-900/90 ring-1 ring-gray-950/10 dark:ring-white/10 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+              aria-label="Ajouter un email"
+              title="Ajouter un email">
+        <svg viewBox="0 0 16 16" fill="none" class="size-3.5 stroke-current shrink-0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1.5" y="3.5" width="13" height="9" rx="1"/>
+          <path d="M2 4.5 8 9l6-4.5"/>
+        </svg>
+      </button>
 
       <%= link_to admin_pending_post_path(pending),
           data: { turbo_method: :delete, turbo_confirm: "Supprimer ce texte en attente ?" },
