@@ -51,7 +51,7 @@ Rails.application.routes.draw do
       end
     end
     resources :reports, only: [:destroy]
-    resources :pending_posts, only: [:update, :destroy]
+    resources :pending_posts, only: [:show, :update, :destroy]
     resources :event_codes
   end
 

@@ -1,0 +1,43 @@
+<% content_for :title, "SP2050 - #{@post.title}" %>
+<% content_for :description, truncate(strip_tags(@post.body), length: 160) %>
+<% content_for :meta_robots, "noindex, nofollow" %>
+
+<div class="post-show-layout flex flex-col lg:flex-row dark:bg-gray-800 bg-gray-100">
+  <div class="cover">
+    <% if @post.cover.present? %>
+      <%= render "posts/cover", post: @post, ratio: "4x5" %>
+    <% end %>
+  </div>
+
+  <div class="show-content-panel bg-[#fafaf9] dark:bg-gray-800 text-black-900 dark:text-gray-100">
+    <div class="show-metadata flex w-full justify-between items-baseline font-mono uppercase tracking-wide py-sm lg:py-[18px]">
+      <div class="show-metadata__group">
+        <span class="rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[0.625rem] tracking-wide text-white">en attente</span>
+        <span class="tabular-nums"><%= @pending.created_at.strftime("%d.%m.%Y") %></span>
+      </div>
+      <div class="show-metadata__group">
+        <span><%= @pending.email.presence || "Sans adresse" %></span>
+      </div>
+    </div>
+
+    <div class="show-separator border-t border-gray-950/10 dark:border-white/10"></div>
+
+    <div class="post-body">
+      <div class="body-content mt-[24px] lg:mt-sm adjustable w-full whitespace-pre-wrap"><%= @post.body %></div>
+      <% if @post.chapters.any? %>
+        <% @post.chapters.each_with_index do |chapter, index| %>
+          <div class="mt-lg">
+            <h2 class="chapter-title text-2xl mt-8 mb-4">
+              Chapitre <%= index + 1 %> : <%= chapter.title %>
+            </h2>
+            <div class="chapter-content mt-0 whitespace-pre-wrap"><%= chapter.body %></div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <p class="mt-10">
+      <%= link_to "Retour aux articles", admin_dashboard_path, class: "text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-100" %>
+    </p>
+  </div>
+</div>

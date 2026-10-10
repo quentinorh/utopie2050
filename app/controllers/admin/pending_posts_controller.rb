@@ -1,6 +1,13 @@
 class Admin::PendingPostsController < ApplicationController
   include AdminAuthorizable
 
+  def show
+    @pending = PendingPost.find(params[:id])
+    author = User.new(username: @pending.email.presence || "En attente")
+    @post = PendingPostSession.build_post(author, @pending.payload || {})
+    @post.created_at = @pending.created_at
+  end
+
   def update
     pending = PendingPost.find(params[:id])
     email = params[:email].to_s.strip.downcase

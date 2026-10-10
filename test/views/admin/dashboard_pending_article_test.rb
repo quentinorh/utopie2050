@@ -15,7 +15,9 @@ class AdminDashboardPendingArticleTest < ActionView::TestCase
     assert_includes rendered, "brouillon"
     assert_includes rendered, "Texte orphelin"
     assert_includes rendered, "auteur@example.com"
+    assert_includes rendered, "Ajouter un email"
     assert_includes rendered, "Rattacher"
+    assert_includes rendered, "bottom-1.5"
     assert_includes rendered, admin_pending_post_path(pending)
 
     @articles = [pending]
@@ -30,5 +32,21 @@ class AdminDashboardPendingArticleTest < ActionView::TestCase
     assert_includes rendered, "en attente"
     assert_includes rendered, "Rattacher"
     assert_not_includes rendered, "Textes en attente"
+    assert_includes rendered, "bottom-1.5"
+  end
+
+  test "les boutons d'un article publié sont sur la couverture" do
+    user = User.new(email: "publie@example.com", username: "Publié", age: 30)
+    user.skip_confirmation_notification!
+    user.skip_confirmation!
+    user.save!
+    post = user.posts.create!(title: "Déjà publié", body: "Le texte.")
+
+    render partial: "admin/dashboard/article", locals: { post: post }
+
+    assert_includes rendered, "bottom-1.5"
+    assert_includes rendered, post_path(post)
+    assert_includes rendered, edit_post_path(post)
+    assert_not_includes rendered, "bottom-[2.9rem]"
   end
 end
