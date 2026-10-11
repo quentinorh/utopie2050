@@ -50,25 +50,37 @@
     display: none;
   }
 
-  @media (max-width: 1023px) {
+  /* Même ligne que sur futurs/new : la barre est centrée dans la bande
+     navbar (56px, puis 75px dès 640px). Le retrait droit suit le padding
+     de la navbar (10px, 20px), sans icône d'action à éviter. */
+  @media (max-width: 639px) {
     .cover-toolbar {
-      top: 16px;
-      right: 16px;
+      right: 10px;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .cover-toolbar {
+      right: 20px;
     }
   }
 }
 
-/* Logo — retour accueil, en haut à gauche sur la couverture (navbar masquée). */
+/* Logo — retour accueil, en haut à gauche sur la couverture (navbar masquée).
+   Même glyphes que .navbar-logo-text : Apfel Regular 18/16, sans interlettrage.
+   La graisse reste 400 à toutes les largeurs (le h1 de la navbar hérite 400).
+   Centré dans la bande 56px / 75px, retrait 10 / 20 / 40. */
 .sp-logo {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: calc((56px - 16px) / 2);
+  left: 10px;
   z-index: 20;
-  font-family: var(--sp-h1-family);
-  font-weight: 500;
+  font-family: "Apfel", sans-serif;
+  font-weight: 400;
+  font-synthesis: none;
   font-size: 18px;
-  line-height: 1;
-  letter-spacing: 0.02em;
+  line-height: 16px;
+  letter-spacing: normal;
   color: #fff;
   text-decoration: none;
   transition: opacity 0.2s ease, top 0.32s var(--sp-ease), color 0.32s var(--sp-ease);
@@ -77,8 +89,12 @@
     opacity: 0.7;
   }
 
+  @media (min-width: 640px) {
+    top: calc((75px - 16px) / 2);
+    left: 20px;
+  }
+
   @media (min-width: 1024px) {
-    top: 28px;
     left: 40px;
   }
 }
@@ -91,7 +107,12 @@
   flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  padding: 28px 24px 32px;
+  padding: 28px 10px 32px;
+
+  @media (min-width: 640px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 
   @media (min-width: 1024px) {
     /* Padding bas plus fort : bloc centré remonté vers le tiers supérieur. */
@@ -583,6 +604,7 @@ html.sp-keyboard-lock {
     inset: 0;
     z-index: 15;
     background: #fff;
+    /* Filet gris clair, peint sur le voile (au-dessus du motif). */
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.08);
     opacity: 0;
     pointer-events: none;
@@ -601,6 +623,9 @@ html.sp-keyboard-lock {
       height: #{"calc(48px + env(safe-area-inset-top, 0px))"};
       min-height: 0;
       flex-shrink: 0;
+      /* Blanc : un pixel du fond sombre (#12142c) ne peut plus dépasser
+         sous la barre aux largeurs qui tombent entre deux pixels. */
+      background: #fff;
 
       &::after {
         opacity: 1;
@@ -608,8 +633,7 @@ html.sp-keyboard-lock {
     }
 
     .sp-logo {
-      top: #{"calc(env(safe-area-inset-top, 0px) + 14px)"};
-      left: 16px;
+      top: #{"calc(env(safe-area-inset-top, 0px) + (48px - 16px) / 2)"};
       color: #000;
     }
 
@@ -633,7 +657,11 @@ html.sp-keyboard-lock {
     position: absolute;
     z-index: 21;
     top: #{"calc(env(safe-area-inset-top, 0px) + 6px)"};
-    right: 12px;
+    right: 10px;
+
+    @media (min-width: 640px) {
+      right: 20px;
+    }
     width: 36px;
     height: 36px;
     place-items: center;

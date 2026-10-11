@@ -130,7 +130,12 @@ export default class extends Controller {
   // dans .sp-cover (overflow: hidden, ~42 % de l'écran) : se caler sur la
   // fenêtre laissait le popover Motif dépasser à droite et se faire couper.
   get boundsElement() {
-    return this.element.closest(".form-cover-wrapper, .sp-cover, .hero-stage") || document.documentElement
+    const inside = this.element.closest(".form-cover-wrapper, .sp-cover, .hero-stage")
+    if (inside) return inside
+    // Éditeur : la barre est sœur du panneau pour échapper à son contexte
+    // d'empilement. Le popover se cale quand même sur la couverture.
+    const panel = this.element.closest(".form-editor")?.querySelector(".form-cover-wrapper")
+    return panel || document.documentElement
   }
 
   fitOpenPop() {

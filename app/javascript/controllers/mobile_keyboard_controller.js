@@ -68,12 +68,10 @@ export default class extends Controller {
   }
 
   _focusIn(event) {
-    // Couverture rouverte : un champ la referme, sans changer la mise en page.
-    if (this._coverPinned) {
-      if (this._isField(event.target)) this._collapseCover()
-      return
-    }
-    if (!this.mq.matches || !this._isField(event.target)) return
+    if (!this._isField(event.target)) return
+    // Couverture rouverte : le champ la referme, puis le cadre se cale sur le clavier.
+    if (this._coverPinned) this._collapseCover()
+    if (!this.mq.matches) return
     window.clearTimeout(this._blurTimer)
     this._awaitingClose = false
     this._stableSince = 0
@@ -161,8 +159,8 @@ export default class extends Controller {
     if (!this.auth) return
     if (!this.mq.matches) pinned = false
     this._coverPinned = pinned
-    if (pinned && this._on) this._release()
     // Chaque étape dans la fenêtre referme la couverture, même si on l'avait rouverte.
+    // Le cadre clavier (is-keyboard) peut coexister : un champ focalisé remonte le contenu.
     this.auth.classList.toggle("is-cover-collapsed", pinned)
   }
 
@@ -255,17 +253,30 @@ export default class extends Controller {
     const panel = this.panel
     if (!this._on || !field || !panel || !panel.contains(field)) return
 
-    const chrome = this.auth.querySelector(".sp-nav, .sp-cta")
-    const reserve = chrome ? chrome.getBoundingClientRect().height + 12 : 16
-    const panelRect = panel.getBoundingClientRect()
+    const scroller = this._scrollParent(field) || panel
     const rect = field.getBoundingClientRect()
-    const topLimit = panelRect.top + 8
-    const bottomLimit = panelRect.bottom - reserve
+    const scrollerRect = scroller.getBoundingClientRect()
+    let bottomLimit = scrollerRect.bottom - 8
+    const chrome = this.auth.querySelector(".sp-nav, .sp-cta")
+    if (chrome && scroller.contains(chrome)) {
+      bottomLimit -= chrome.getBoundingClientRect().height + 12
+    }
+    const topLimit = scrollerRect.top + 8
 
     let delta = 0
     if (rect.bottom > bottomLimit) delta = rect.bottom - bottomLimit
     if (rect.top - delta < topLimit) delta = rect.top - topLimit
-    if (Math.abs(delta) > 2) panel.scrollTop += delta
+    if (Math.abs(delta) > 2) scroller.scrollTop += delta
+  }
+
+  _scrollParent(node) {
+    let el = node.parentElement
+    while (el && el !== document.body) {
+      const overflow = getComputedStyle(el).overflowY
+      if (/(auto|scroll)/.test(overflow) && el.scrollHeight > el.clientHeight + 1) return el
+      el = el.parentElement
+    }
+    return this.panel
   }
 
   _lockPage() {

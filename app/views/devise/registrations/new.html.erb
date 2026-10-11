@@ -105,10 +105,14 @@
             à droite. Le libellé du CTA et l'action sont pilotés par le contrôleur. %>
         <div class="sp-nav editor-stagger">
           <button type="button"
-                  class="sp-back sp-back--hidden"
+                  class="btn-animate-chars sp-back sp-back--hidden"
+                  data-controller="stagger-chars"
                   data-underline-link
                   data-signup-target="back"
-                  data-action="click->signup#back">Retour</button>
+                  data-action="click->signup#back">
+            <span data-button-animate-chars data-stagger-chars-target="text"
+                  class="btn-animate-chars__text">Retour</span>
+          </button>
           <button type="button"
                   class="btn-animate-chars btn-animate-chars--primary sp-next"
                   data-signup-target="next"

@@ -5,7 +5,7 @@
 
 <% unique_id = "funnel-#{SecureRandom.hex(4)}" %>
 
-<div class="sp-auth sp-auth--wizard sp-auth--funnel"
+<div class="sp-auth sp-auth--wizard sp-auth--funnel is-revealing"
      data-controller="cover-editor editor-reveal writing-tutorial"
      data-cover-editor-unique-id-value="<%= unique_id %>"
      data-cover-editor-new-record-value="true"
@@ -205,10 +205,14 @@
       </div>
 
       <!-- Barre de nav partagée (stationnaire) -->
-      <div class="sp-nav editor-stagger">
-        <button type="button" class="sp-back sp-back--hidden" data-underline-link
+      <div class="sp-nav sp-nav--solo editor-stagger">
+        <button type="button" class="btn-animate-chars sp-back sp-back--hidden" data-underline-link
+                data-controller="stagger-chars"
                 data-writing-tutorial-target="back"
-                data-action="click->writing-tutorial#back">Retour</button>
+                data-action="click->writing-tutorial#back">
+          <span data-button-animate-chars data-stagger-chars-target="text"
+                class="btn-animate-chars__text">Retour</span>
+        </button>
         <button type="button" class="btn-animate-chars btn-animate-chars--primary sp-next"
                 data-controller="stagger-chars"
                 data-writing-tutorial-target="next"

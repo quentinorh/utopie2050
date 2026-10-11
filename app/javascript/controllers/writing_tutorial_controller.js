@@ -81,6 +81,7 @@ export default class extends Controller {
 
   disconnect() {
     this.element.removeEventListener("keydown", this._onKeydown)
+    this._cancelCoverWait()
     this._tween?.kill()
     this._trendTween?.kill()
   }
@@ -167,6 +168,9 @@ export default class extends Controller {
   go(toIndex, dir) {
     const from = this.stepTargets[this.index]
     const to = this.stepTargets[toIndex]
+    // Mobile, sortie de l'intro : la couverture se replie (0,32s). Le glissement
+    // d'étape attend la fin de cette fermeture, sinon les deux se superposent.
+    const waitForCover = this._coverClosesOnLeave()
     this.index = toIndex
     this.updateNav()
     this.updateProgress()
@@ -182,6 +186,20 @@ export default class extends Controller {
     }
 
     this._animating = true
+    const play = () => this._playStep(from, to, dir)
+    if (waitForCover) this._afterCoverClosed(play)
+    else play()
+  }
+
+  // Vrai seulement au passage « Bienvenue » → étape suivante, sur mobile,
+  // tant que la couverture est encore ouverte.
+  _coverClosesOnLeave() {
+    if (this.reduceMotion || this.currentName !== "intro") return false
+    if (!window.matchMedia("(max-width: 1023px)").matches) return false
+    return !this.element.classList.contains("is-cover-collapsed")
+  }
+
+  _playStep(from, to, dir) {
     this._tween?.kill()
     this._tween = gsap.timeline({
       onComplete: () => { this._animating = false },
@@ -193,6 +211,46 @@ export default class extends Controller {
       .fromTo(to,
         { opacity: 0, x: SHIFT * dir },
         { opacity: 1, x: 0, duration: stepMotion.in.duration, ease: stepMotion.in.ease, clearProps: "transform,opacity" })
+  }
+
+  _afterCoverClosed(callback) {
+    const cover = this.element.querySelector(".sp-cover")
+    if (!cover) {
+      callback()
+      return
+    }
+
+    let settled = false
+    const finish = () => {
+      if (settled) return
+      settled = true
+      this._cancelCoverWait()
+      callback()
+    }
+
+    this._onCoverTransitionEnd = (event) => {
+      if (event.target !== cover || event.propertyName !== "height") return
+      finish()
+    }
+    cover.addEventListener("transitionend", this._onCoverTransitionEnd)
+    this._coverWaitTimer = window.setTimeout(finish, this._coverTransitionMs(cover) + 40)
+  }
+
+  _coverTransitionMs(cover) {
+    const raw = getComputedStyle(cover).transitionDuration.split(",")[0].trim()
+    if (raw.endsWith("ms")) return parseFloat(raw) || 320
+    if (raw.endsWith("s")) return (parseFloat(raw) || 0.32) * 1000
+    return 320
+  }
+
+  _cancelCoverWait() {
+    const cover = this.element.querySelector(".sp-cover")
+    if (cover && this._onCoverTransitionEnd) {
+      cover.removeEventListener("transitionend", this._onCoverTransitionEnd)
+    }
+    this._onCoverTransitionEnd = null
+    window.clearTimeout(this._coverWaitTimer)
+    this._coverWaitTimer = null
   }
 
   updateNav() {

@@ -25,6 +25,13 @@
   color: var(--editor-ink);
 }
 
+/* Repère de la barre de couverture sur mobile (position: absolute). Pas de
+   z-index : ce n'est pas un contexte d'empilement, la barre ouverte peut
+   donc passer au-dessus de la navbar. */
+.form-columns {
+  position: relative;
+}
+
 /* Mobile : hauteur pilotée par --editor-visual-vh (Visual Viewport API, JS).
    Les unités svh/dvh/100vh se trompent souvent au 1er paint iOS ; au scroll la
    barre d’adresse met à jour le viewport et tout « se recale » — d’où l’illusion
@@ -216,6 +223,25 @@
     pointer-events: auto;
     flex: 0 0 auto;
     align-self: center;
+  }
+}
+
+/* Éditeur : la barre n'est plus dans .form-left-panel (fixed + z-index 40),
+   donc son z-index n'est plus plafonné sous la navbar (z-index 99). Ouverte,
+   elle passe devant le titre — même rendu que le logo de l'entonnoir.
+   Desktop : la couverture est fixe, la barre aussi, calée sur son bord droit. */
+.form-editor .cover-toolbar {
+  &[data-controls-open="true"] {
+    z-index: 100;
+  }
+
+  @media (min-width: 1024px) {
+    position: fixed;
+    right: calc(50% + 40px);
+  }
+
+  @media (min-width: 1440px) {
+    right: calc(60% + 40px);
   }
 }
 

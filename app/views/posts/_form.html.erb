@@ -23,7 +23,7 @@
       </div>
     <% end %>
 
-    <div class="flex min-w-0 flex-1 flex-col">
+    <div class="form-columns flex min-w-0 flex-1 flex-col">
       <!-- Colonne de gauche : couverture + carte de contrôles flottante -->
       <aside class="form-left-panel">
         <div class="form-cover-wrapper">
@@ -55,8 +55,6 @@
             </div>
           </div>
 
-          <%= render "posts/cover_toolbar", unique_id: unique_id %>
-
           <div class="sr-only">
             <input type="range" data-cover-editor-target="firstSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
             <input type="range" data-cover-editor-target="secondSliderControl" data-action="input->cover-editor#updateCurve" class="hidden">
@@ -73,6 +71,10 @@
           </div>
         </div>
       </aside>
+
+      <%# Hors du panneau (z-index 40, sous la navbar) : une fois ouverte, la
+          barre peut passer devant le titre de la navbar, comme sur l'entonnoir. %>
+      <%= render "posts/cover_toolbar", unique_id: unique_id %>
 
       <!-- Colonne de droite : contenu -->
       <main class="form-right-panel">

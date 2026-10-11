@@ -3,7 +3,8 @@
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Instagram</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Typographies</p>
         <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Création &</p>
-        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Développement</p>     
+        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Développement</p>  
+        <p class="text-l sm:text-2xl md:text-xl md:mb-xs">Contact</p>   
     </div>
     <div class="col-span-4 text-right">
         <%= link_to "https://www.instagram.com/sp2050_org",
@@ -28,6 +29,9 @@
             "aria-label": "SuperSerif studio" do %>
             & SuperSerif
         <% end %>
+        <%= mail_to "contact@sp2050.org",
+            "contact@sp2050.org",
+            class: "block text-l sm:text-2xl md:text-xl md:mb-xs" %>
     </div>
     <div class="col-span-6 h-[4px] bg-gray-900">
     </div>
