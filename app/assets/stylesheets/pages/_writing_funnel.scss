@@ -604,9 +604,15 @@ button.jackpot__reel {
   }
 }
 
-/* Clavier ouvert : la progression et le panneau gardent le même calage vertical. */
+/* Clavier ouvert : les boutons restent en bas de la page. Seul l'écart entre
+   la progression et le contenu se resserre, pour laisser voir le champ. */
 @media (max-width: 1023px) {
   .sp-auth--funnel.is-keyboard {
+    /* Pas le visual viewport : sinon le bas du cadre, et les boutons avec, remontent. */
+    top: 0;
+    height: 100vh;
+    height: 100lvh;
+
     .funnel-progress {
       top: 10px;
     }
@@ -614,7 +620,8 @@ button.jackpot__reel {
     .sp-panel {
       justify-content: flex-start;
       overflow: hidden;
-      padding-top: 60px;
+      /* La pastille est à 10px, ~26px de haut : le contenu vient juste dessous. */
+      padding-top: 44px;
       padding-bottom: 32px;
     }
 
@@ -626,10 +633,12 @@ button.jackpot__reel {
       overflow: hidden;
     }
 
-    /* La question défile ; Retour / Suivant et « Passer le guide » restent en bas. */
+    /* La question défile dans l'espace du milieu. La barre ne bouge pas. */
     .sp-stage {
       flex: 1 1 auto;
       min-height: 0;
+      margin-top: 0;
+      margin-bottom: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
     }
@@ -640,7 +649,7 @@ button.jackpot__reel {
       width: 100%;
       max-width: none;
       margin-inline: 0;
-      margin-top: 12px;
+      margin-top: auto;
       justify-content: space-between;
       background: var(--sp-surface);
     }
