@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_10_010000) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_13_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -149,9 +149,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_10_010000) do
     t.string "role"
     t.string "magic_link_token"
     t.datetime "magic_link_sent_at"
+    t.string "remember_token"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["magic_link_token"], name: "index_users_on_magic_link_token", unique: true
+    t.index ["remember_token"], name: "index_users_on_remember_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end

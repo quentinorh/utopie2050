@@ -108,6 +108,69 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_nil User.find_by(email: "autre@example.com")
   end
 
+  test "un âge saisi comme « 60 ans » crée le compte et envoie le lien" do
+    stage_guest_post
+
+    assert_difference "User.count", 1 do
+      post pending_auth_posts_path, params: {
+        email: "soixante@example.com",
+        username: "Soixante",
+        age: "60 ans",
+        terms_accepted: "1"
+      }
+    end
+
+    assert_equal 60, User.find_by!(email: "soixante@example.com").age
+    assert_redirected_to pending_posts_path(mail_sent: 1)
+    assert_equal 1, ActionMailer::Base.deliveries.size
+  end
+
+  test "un âge sans chiffre affiche un champ pour le corriger, en français" do
+    stage_guest_post
+
+    assert_no_difference "User.count" do
+      post pending_auth_posts_path, params: {
+        email: "lettres@example.com",
+        username: "En Lettres",
+        age: "soixante",
+        terms_accepted: "1"
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "input[name=age][type=text]"
+    assert_select "input[name=age][type=hidden]", count: 0
+    assert_select "p.sp-error", text: "L'âge doit être un nombre, par exemple 60"
+    assert_no_match "Translation missing", response.body
+    assert_equal 0, ActionMailer::Base.deliveries.size
+  end
+
+  test "la page d'attente affiche l'adresse et permet de la corriger" do
+    stage_guest_post
+    post pending_auth_posts_path, params: {
+      email: "fautee@example.com",
+      username: "Faute De Frappe",
+      age: "40",
+      terms_accepted: "1"
+    }
+    follow_redirect!
+
+    assert_match "fautee@example.com", response.body
+    assert_select "a[href=?]", pending_posts_path(email: "fautee@example.com"), text: "Corriger l'adresse"
+
+    get pending_posts_path(email: "fautee@example.com")
+    assert_select "input[name=email][value=?]", "fautee@example.com"
+
+    post pending_auth_posts_path, params: {
+      email: "correcte@example.com",
+      username: "Faute Corrigée",
+      age: "40",
+      terms_accepted: "1"
+    }
+    assert_redirected_to pending_posts_path(mail_sent: 1)
+    assert_equal "correcte@example.com", PendingPost.last.email
+  end
+
   test "deux envois du même formulaire ne créent qu'un texte en attente" do
     2.times do
       post stage_posts_path, params: {

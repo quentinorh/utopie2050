@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { loadRegistrationPrefill, saveRegistrationPrefill } from "utils/registration_prefill"
+import { loadRegistrationPrefill, saveRegistrationPrefill, normalizeAge } from "utils/registration_prefill"
 
 const PLACEHOLDER_NAME = "…"
 
@@ -25,7 +25,7 @@ export default class extends Controller {
     }
 
     if (prefill.age && this.hasAgeTarget && !this.ageTarget.value.trim()) {
-      this.ageTarget.value = prefill.age
+      this.ageTarget.value = normalizeAge(prefill.age)
     }
 
     if (prefill.termsAccepted && this.hasTermsAcceptedTarget && this.termsAcceptedTarget.value !== "1") {

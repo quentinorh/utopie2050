@@ -1,5 +1,15 @@
 fr:
   activerecord:
+    attributes:
+      user:
+        email: "L'adresse email"
+        username: "Le nom d'auteur·ice"
+        age: "L'âge"
+        password: "Le mot de passe"
+        password_confirmation: "La confirmation du mot de passe"
+      post:
+        title: "Le titre"
+        body: "Le texte"
     errors:
       models:
         user:
@@ -13,8 +23,23 @@ fr:
               blank: "Le mot de passe ne peut pas être vide"
             password_confirmation:
               confirmation: "Les mots de passe ne correspondent pas"
+            age:
+              not_a_number: "doit être un nombre, par exemple 60"
+              not_an_integer: "doit être un nombre entier"
+              greater_than_or_equal_to: "doit être positif"
+              blank: "est à renseigner"
   errors:
+    format: "%{attribute} %{message}"
     messages:
       invalid: "n'est pas valide"
+      blank: "doit être rempli·e"
+      taken: "est déjà utilisé·e"
+      too_short: "est trop court·e (minimum %{count} caractères)"
+      too_long: "est trop long·ue (maximum %{count} caractères)"
+      not_a_number: "n'est pas un nombre"
+      not_an_integer: "doit être un nombre entier"
+      greater_than_or_equal_to: "doit être supérieur·e ou égal·e à %{count}"
+      less_than_or_equal_to: "doit être inférieur·e ou égal·e à %{count}"
+      confirmation: "ne correspond pas"
       already_confirmed: "a déjà été confirmé"
       confirmation_period_expired: "doit être confirmé dans les %{period}, veuillez en faire une nouvelle demande"

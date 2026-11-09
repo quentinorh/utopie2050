@@ -54,7 +54,10 @@ class PostsController < ApplicationController
   end
 
   def pending
-    redirect_to claim_posts_path if user_signed_in?
+    redirect_to claim_posts_path and return if user_signed_in?
+
+    # Retour depuis « Corriger l'adresse » : on repart de l'adresse saisie.
+    @pending_auth_email = params[:email].to_s.strip.downcase if params[:email].present?
   end
 
   def pending_auth
@@ -93,14 +96,16 @@ class PostsController < ApplicationController
 
     unless user.save
       flash.now[:alert] = user.errors.full_messages.to_sentence
-      if user.errors[:username].empty?
+      # Un âge refusé doit pouvoir être corrigé : le champ sort du caché.
+      @show_age = user.errors[:age].any?
+      if user.errors[:username].empty? && !@show_age
         @pending_auth_email = email
         @identity_username = username
         @pending_auth_age = params[:age].to_s
         @terms_already_accepted = true
       else
         assign_identity_form(email, username, true)
-        @show_username = true
+        @show_username = user.errors[:username].any?
       end
       render :pending, status: :unprocessable_entity
       return
@@ -309,7 +314,7 @@ class PostsController < ApplicationController
       Rails.logger.error "[SMTP] Erreur SMTP inattendue (pending_auth) : #{e.message}"
     end
 
-    redirect_to pending_posts_path(mail_sent: 1), flash: { pending_author: user.username }
+    redirect_to pending_posts_path(mail_sent: 1), flash: { pending_author: user.username, pending_email: user.email }
   end
 
   def refresh_pending_cover
@@ -322,7 +327,9 @@ class PostsController < ApplicationController
   end
 
   def load_pending_post
-    @pending_post = PendingPostSession.fetch(session)
+    record = PendingPostSession.find_record(session)
+    @pending_post = record&.payload
+    @pending_email = record&.email
     return if @pending_post
     return if user_signed_in? && %w[pending claim].include?(action_name) && PendingPostSession.pending_for?(session, current_user)
 

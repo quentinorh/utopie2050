@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
-import { saveRegistrationPrefill, loadRegistrationPrefill, clearRegistrationPrefill, forgetRegistrationPrefill } from "utils/registration_prefill"
+import { saveRegistrationPrefill, loadRegistrationPrefill, clearRegistrationPrefill, forgetRegistrationPrefill, normalizeAge, isValidAge } from "utils/registration_prefill"
 import { interpolateNarrativeTemplate, buildNarrativeContext, buildEtincelle } from "utils/narrative_template"
 import { step as stepMotion } from "utils/motion"
 
@@ -338,11 +338,11 @@ export default class extends Controller {
 
   validateAge() {
     if (this.signedInValue) return true
-    const raw = this.ageTarget.value.trim()
-    const age = Number.parseInt(raw, 10)
-    if (!raw || Number.isNaN(age) || age < 1 || age > 150) {
-      return this.fail(this.ageTarget, this.ageErrorTarget, "Indique un âge valide.")
+    if (!isValidAge(this.ageTarget.value)) {
+      return this.fail(this.ageTarget, this.ageErrorTarget, "Indique un âge en chiffres, par exemple 60.")
     }
+    // « 60 ans » devient « 60 » : seul le nombre est gardé et envoyé.
+    this.ageTarget.value = normalizeAge(this.ageTarget.value)
     return this.pass(this.ageTarget, this.ageErrorTarget)
   }
 
@@ -843,7 +843,7 @@ export default class extends Controller {
   }
 
   resolveAge() {
-    if (this.signedInValue && this.ageValue) return String(this.ageValue)
-    return this.hasAgeTarget ? this.ageTarget.value.trim() : undefined
+    if (this.signedInValue && this.ageValue) return normalizeAge(this.ageValue)
+    return this.hasAgeTarget ? normalizeAge(this.ageTarget.value) : undefined
   }
 }

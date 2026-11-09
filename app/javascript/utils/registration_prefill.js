@@ -26,7 +26,7 @@ export function saveRegistrationPrefill({
   }
 
   if (age !== undefined && age !== null) {
-    const value = String(age).trim()
+    const value = normalizeAge(age)
     if (value) data.age = value
   }
 
@@ -98,6 +98,20 @@ export function saveRegistrationPrefill({
   }
 }
 
+// « 60 ans » → "60". Chaîne vide si aucun chiffre.
+export function normalizeAge(value) {
+  const match = String(value ?? "").match(/\d+/)
+  return match ? match[0] : ""
+}
+
+// Âge utilisable par le serveur : un entier entre 1 et 150.
+export function isValidAge(value) {
+  const digits = normalizeAge(value)
+  if (!digits) return false
+  const age = Number.parseInt(digits, 10)
+  return age >= 1 && age <= 150
+}
+
 export function loadRegistrationPrefill() {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
@@ -140,7 +154,7 @@ export function syncRegistrationPrefillFromAccount(username, age) {
   }
 
   if (age !== undefined && age !== null && age !== "") {
-    const value = String(age).trim()
+    const value = normalizeAge(age)
     if (value && data.age !== value) {
       data.age = value
       changed = true

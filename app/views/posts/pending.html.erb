@@ -10,6 +10,7 @@
 <% outcome = draft ? "enregistre ton brouillon" : "publie ton futur" %>
 <% cover_username = @cover_username.presence || flash[:pending_author].to_s.presence %>
 <% identity_email = @pending_auth_email.to_s %>
+<% sent_email = flash[:pending_email].to_s.presence || @pending_email.to_s.presence %>
 
 <div class="sp-auth sp-auth--pending is-revealing"
      data-controller="cover-editor editor-reveal pending-auth"
@@ -33,15 +34,26 @@
         <div class="sp-head">
           <h1 class="sp-title editor-stagger">Vérifie ta boîte mail</h1>
           <p class="sp-subtitle editor-stagger">
-            Un lien de validation t'a été envoyé. Clique dessus pour te connecter :
+            Un lien de validation t'a été envoyé<% if sent_email %> à
+            <strong class="sp-sent-email"><%= sent_email %></strong><% end %>.
+            Clique dessus pour te connecter :
             ton futur sera alors <%= draft ? "enregistré en brouillon" : "publié" %>.
           </p>
         </div>
 
+        <% if sent_email %>
+          <p class="sp-note editor-stagger">
+            Une faute dans l'adresse ?
+            <%= link_to "Corriger l'adresse", pending_posts_path(email: sent_email), class: "sp-terms__link", data: { underline_link: "" } %>
+            : ton texte est conservé, un nouveau lien partira à la bonne adresse.
+          </p>
+        <% end %>
+
         <p class="sp-note editor-stagger">
           Sans validation de l'email, <%= draft ? "l'enregistrement" : "la publication" %> ne peut pas aboutir.
           Tu ne reçois rien ? Vérifie tes spams ou
-          <%= link_to "renvoie un lien", pending_posts_path, class: "sp-terms__link", data: { underline_link: "" } %>.
+          <%= link_to "renvoie un lien", pending_posts_path(email: sent_email), class: "sp-terms__link", data: { underline_link: "" } %>.
+          Ton texte reste disponible ici pendant 30 jours.
         </p>
       <% elsif @needs_identity %>
         <div class="sp-head">
@@ -56,6 +68,11 @@
             <p class="sp-subtitle editor-stagger">
               Il sera inscrit sur la couverture. Le lien partira à <%= identity_email %>.
             </p>
+          <% elsif @show_age %>
+            <h1 class="sp-title editor-stagger">Ton âge en 2050</h1>
+            <p class="sp-subtitle editor-stagger">
+              Un nombre suffit, par exemple 60. Le lien partira à <%= identity_email %>.
+            </p>
           <% else %>
             <h1 class="sp-title editor-stagger">Conditions d'utilisation</h1>
             <p class="sp-subtitle editor-stagger">
@@ -68,7 +85,9 @@
                       data: { pending_auth_target: "form", action: "submit->pending-auth#prepareSubmit", turbo: false } do %>
           <%= render "posts/pending_honeypot" %>
           <input type="hidden" name="email" value="<%= identity_email %>">
-          <input type="hidden" name="age" value="<%= @pending_auth_age %>" data-pending-auth-target="age">
+          <% unless @show_age %>
+            <input type="hidden" name="age" value="<%= @pending_auth_age %>" data-pending-auth-target="age">
+          <% end %>
           <input type="file" name="cover_image" accept="image/jpeg,image/png" tabindex="-1" aria-hidden="true" class="hidden" data-pending-auth-target="coverImage">
 
           <% if @show_username %>
@@ -88,6 +107,23 @@
             </div>
           <% else %>
             <input type="hidden" name="username" value="<%= @identity_username %>" data-pending-auth-target="username">
+          <% end %>
+
+          <% if @show_age %>
+            <div class="sp-field editor-stagger">
+              <label class="sp-label" for="pending_age">Quel âge auras-tu en 2050 ?</label>
+              <input type="text"
+                     name="age"
+                     id="pending_age"
+                     class="sp-input sp-input--error"
+                     inputmode="numeric"
+                     placeholder="Mon âge en 2050"
+                     autocomplete="off"
+                     required
+                     value="<%= @pending_auth_age.to_s[/\d+/] %>"
+                     data-pending-auth-target="age">
+              <p class="sp-error"><%= flash.now[:alert] %></p>
+            </div>
           <% end %>
 
           <% if @show_terms %>

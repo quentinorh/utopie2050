@@ -42,6 +42,24 @@ class Users::MagicLinksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
+  test "se souvenir de moi connecte un compte sans mot de passe" do
+    user = build_user(email: "souvenir@example.com")
+    assert user.encrypted_password.blank?
+
+    post user_magic_links_path, params: { user: { email: user.email, remember_me: "1" } }
+    token = magic_token_from_last_mail
+
+    get user_magic_link_path(token)
+
+    assert_redirected_to root_path
+    assert session["warden.user.user.key"].present?
+    assert cookies["remember_user_token"].present?
+
+    user.reload
+    assert user.remember_token.present?
+    assert user.remember_created_at.present?
+  end
+
   private
 
   def build_user(email:)
@@ -50,5 +68,11 @@ class Users::MagicLinksControllerTest < ActionDispatch::IntegrationTest
     user.skip_confirmation!
     user.save!
     user
+  end
+
+  def magic_token_from_last_mail
+    mail = ActionMailer::Base.deliveries.last
+    body = mail.text_part&.decoded || mail.body.decoded
+    body[/\/users\/magic_link\/(\S+)/, 1]
   end
 end

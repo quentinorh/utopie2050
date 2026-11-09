@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { gsap } from "gsap"
-import { loadRegistrationPrefill, saveRegistrationPrefill } from "utils/registration_prefill"
+import { loadRegistrationPrefill, saveRegistrationPrefill, normalizeAge, isValidAge } from "utils/registration_prefill"
 import { step } from "utils/motion"
 
 // Assistant d'inscription multi-étapes (« questions au toi du futur »).
@@ -162,11 +162,11 @@ export default class extends Controller {
   }
 
   validateAge(step) {
-    const raw = this.ageTarget.value.trim()
-    const age = Number.parseInt(raw, 10)
-    if (!raw || Number.isNaN(age) || age < 1 || age > 150) {
-      return this.fail(step, this.ageTarget, "Indique un âge valide.")
+    if (!isValidAge(this.ageTarget.value)) {
+      return this.fail(step, this.ageTarget, "Indique un âge en chiffres, par exemple 60.")
     }
+    // « 60 ans » devient « 60 » : seul le nombre est gardé et envoyé.
+    this.ageTarget.value = normalizeAge(this.ageTarget.value)
     return this.pass(step, this.ageTarget)
   }
 
@@ -230,10 +230,16 @@ export default class extends Controller {
   // --- Prefill (flux « futur en attente ») ------------------------------
 
   applyPrefill() {
+    // Ne remplit que les champs vides : après une erreur serveur, la valeur
+    // réaffichée par le formulaire doit rester corrigeable.
     const prefill = loadRegistrationPrefill()
     if (prefill) {
-      if (prefill.username && this.hasUsernameTarget) this.usernameTarget.value = prefill.username
-      if (prefill.age && this.hasAgeTarget) this.ageTarget.value = prefill.age
+      if (prefill.username && this.hasUsernameTarget && !this.usernameTarget.value.trim()) {
+        this.usernameTarget.value = prefill.username
+      }
+      if (prefill.age && this.hasAgeTarget && !this.ageTarget.value.trim()) {
+        this.ageTarget.value = normalizeAge(prefill.age)
+      }
     }
 
     const fromQuery = new URLSearchParams(window.location.search).get("email")

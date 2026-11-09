@@ -1,7 +1,8 @@
 class PendingPostSession
   SESSION_KEY = :pending_post_token
   LEGACY_SESSION_KEY = :pending_post
-  TTL = 7.days
+  # Un atelier peut se terminer sans connexion : on laisse le temps de revenir.
+  TTL = 30.days
   DUPLICATE_WINDOW = 30.minutes
 
   class << self

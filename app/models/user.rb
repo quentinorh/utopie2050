@@ -1,11 +1,13 @@
 class User < ApplicationRecord
   MAGIC_LINK_TTL = 20.minutes
 
+  # remember_token : sans mot de passe, authenticatable_salt est vide et
+  # Rememberable refuse le cookie « Se souvenir de moi ».
   devise :database_authenticatable, :registerable,
          :rememberable, :validatable, :confirmable
 
-  validates :username, presence: true, uniqueness: { case_sensitive: false, message: "Ce nom d'utilisateur est déjà pris." }
-  validates :email, presence: true, uniqueness: { case_sensitive: false, message: "Cette adresse email est déjà utilisée." }
+  validates :username, presence: true, uniqueness: { case_sensitive: false, message: "est déjà pris" }
+  validates :email, presence: true, uniqueness: { case_sensitive: false, message: "est déjà utilisée" }
   validates :age, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   has_many :posts, dependent: :destroy
@@ -40,6 +42,16 @@ class User < ApplicationRecord
 
   def admin?
     role == "admin"
+  end
+
+  # « 60 ans », « 60 » ou 60 : seul le nombre est conservé. Une saisie sans
+  # chiffre est laissée telle quelle pour que la validation la signale.
+  def age=(value)
+    if value.is_a?(String)
+      digits = value[/\d+/]
+      value = digits || value.strip.presence
+    end
+    super(value)
   end
 
   def password_required?

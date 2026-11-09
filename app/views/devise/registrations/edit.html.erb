@@ -30,7 +30,7 @@
                          class: "sp-input #{"sp-input--error" if resource.errors[:username].any?}",
                          data: { form_type: "other", auto_fill: "false", lpignore: "true", "1p_ignore": "true" } %>
         <% if resource.errors[:username].any? %>
-          <p class="sp-error"><%= resource.errors[:username].to_sentence %></p>
+          <p class="sp-error"><%= resource.errors.full_messages_for(:username).to_sentence %></p>
         <% end %>
       </div>
 
@@ -42,7 +42,7 @@
                           placeholder: "hello@fromfuture.com",
                           class: "sp-input #{"sp-input--error" if resource.errors[:email].any?}" %>
         <% if resource.errors[:email].any? %>
-          <p class="sp-error"><%= resource.errors[:email].to_sentence %></p>
+          <p class="sp-error"><%= resource.errors.full_messages_for(:email).to_sentence %></p>
         <% end %>
       </div>
 
@@ -55,7 +55,7 @@
                          placeholder: "Ton âge en 2050",
                          class: "sp-input #{"sp-input--error" if resource.errors[:age].any?}" %>
         <% if resource.errors[:age].any? %>
-          <p class="sp-error"><%= resource.errors[:age].to_sentence %></p>
+          <p class="sp-error"><%= resource.errors.full_messages_for(:age).to_sentence %></p>
         <% end %>
       </div>
 
