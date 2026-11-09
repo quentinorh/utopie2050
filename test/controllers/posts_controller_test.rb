@@ -161,14 +161,23 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get pending_posts_path(email: "fautee@example.com")
     assert_select "input[name=email][value=?]", "fautee@example.com"
 
-    post pending_auth_posts_path, params: {
-      email: "correcte@example.com",
-      username: "Faute Corrigée",
-      age: "40",
-      terms_accepted: "1"
-    }
+    # Même nom d'auteur·ice : le compte non confirmé doit être réutilisé,
+    # pas bloqué par l'unicité du username.
+    assert_no_difference "User.count" do
+      post pending_auth_posts_path, params: {
+        email: "correcte@example.com",
+        username: "Faute De Frappe",
+        age: "40",
+        terms_accepted: "1"
+      }
+    end
     assert_redirected_to pending_posts_path(mail_sent: 1)
     assert_equal "correcte@example.com", PendingPost.last.email
+
+    user = User.find_by!(username: "Faute De Frappe")
+    assert_equal "correcte@example.com", user.email
+    assert_nil User.find_by(email: "fautee@example.com")
+    assert_equal 2, ActionMailer::Base.deliveries.size
   end
 
   test "deux envois du même formulaire ne créent qu'un texte en attente" do

@@ -84,6 +84,28 @@ class User < ApplicationRecord
     Digest::SHA256.hexdigest(raw_token)
   end
 
+  # Correction d'adresse depuis « Vérifie ta boîte mail » : le compte non
+  # confirmé créé à la première saisie garde le même nom ; on change seulement
+  # l'email. Sans cela, l'unicité du username bloque et le texte reste perdu.
+  def self.reclaim_unconfirmed_for_pending!(username:, new_email:, previous_email:, age: nil)
+    previous = previous_email.to_s.strip.downcase
+    fresh = new_email.to_s.strip.downcase
+    return nil if previous.blank? || fresh.blank? || previous == fresh
+
+    user = find_by("LOWER(username) = ?", username.to_s.strip.downcase)
+    return nil unless user
+    return nil if user.confirmed?
+    return nil if user.posts.exists?
+    return nil unless user.email.downcase == previous
+    return nil if where("LOWER(email) = ?", fresh).where.not(id: user.id).exists?
+
+    user.skip_reconfirmation!
+    user.skip_confirmation_notification!
+    user.email = fresh
+    user.age = age if age.present?
+    user.save ? user : nil
+  end
+
   private
 
   def set_default_username

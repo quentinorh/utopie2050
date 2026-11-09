@@ -91,6 +91,19 @@ class PostsController < ApplicationController
       return
     end
 
+    # Même nom, nouvelle adresse : on récupère le compte non confirmé créé
+    # juste avant (lien « Corriger l'adresse »), au lieu d'échouer sur l'unicité.
+    previous_email = PendingPostSession.find_record(session)&.email
+    if (user = User.reclaim_unconfirmed_for_pending!(
+          username: username,
+          new_email: email,
+          previous_email: previous_email,
+          age: params[:age]
+        ))
+      deliver_pending_link(user)
+      return
+    end
+
     user = User.new(email: email, username: username, age: params[:age].presence || 0)
     user.skip_confirmation_notification!
 

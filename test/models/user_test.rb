@@ -26,6 +26,37 @@ class UserTest < ActiveSupport::TestCase
     assert_includes duplicate.errors.full_messages, "Le nom d'auteur·ice est déjà pris"
   end
 
+  test "un compte non confirmé peut changer d'adresse pour la même publication" do
+    user = build_user(age: 40, email: "ancienne@example.com", username: "Corrigé")
+    user.save!
+
+    reclaimed = User.reclaim_unconfirmed_for_pending!(
+      username: "Corrigé",
+      new_email: "nouvelle@example.com",
+      previous_email: "ancienne@example.com",
+      age: "41"
+    )
+
+    assert_equal user, reclaimed
+    assert_equal "nouvelle@example.com", user.reload.email
+    assert_equal 41, user.age
+    assert_nil user.unconfirmed_email
+  end
+
+  test "un compte confirmé ne peut pas être récupéré pour une autre adresse" do
+    user = build_user(age: 40, email: "confirme@example.com", username: "Déjà Confirmé")
+    user.skip_confirmation_notification!
+    user.save!
+    user.confirm
+
+    assert_nil User.reclaim_unconfirmed_for_pending!(
+      username: "Déjà Confirmé",
+      new_email: "autre@example.com",
+      previous_email: "confirme@example.com"
+    )
+    assert_equal "confirme@example.com", user.reload.email
+  end
+
   private
 
   def build_user(age:, email: "age@example.com", username: "Âge Test")
